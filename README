@@ -7,7 +7,7 @@ Phono to connect to any SIP Voice over IP infrastructure directly
 without the Voxeo cloud.
 
 Phono includes the Strophe XMPP Javascript library
-(http://code.stanziq.com/strophe/) which is distruted with the
+(http://code.stanziq.com/strophe/) which is distributed with the
 following license:
 
 Copyright (c) 2006-2009 Collecta, Inc.
