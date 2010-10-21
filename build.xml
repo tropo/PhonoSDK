@@ -1,43 +1,30 @@
 <project name="phono" default="build">
 
-  <property name="svn.url" value="svn://svn.voxeo.com/Projects/Gordon/${build.version}" />
-  
-	<target name="checkout">
-		<taskdef name="svn" classname="org.tigris.subversion.svnant.SvnTask" />
-		<svn>
-			<checkout url="${svn.url}" revision="HEAD" destPath="." />
-		</svn>
-	</target>  
-  
-	<target name="status">
-		<taskdef name="svn" classname="org.tigris.subversion.svnant.SvnTask" />
-		<svn>
-			<status path="." 
-                textStatusProperty="svn.textStatus"
-                propStatusProperty="svn.propStatus" 
-                lastChangedRevisionProperty="svn.lastCommitRevision" 
-                revisionProperty="svn.revision" 
-                lastCommitAuthorProperty="svn.lastCommitAuthor" 
-            />
-		</svn>
-		<property name="build.version.minor" value="${svn.lastCommitRevision}" />
-		<property name="build.version.full" value="${build.version}.${build.version.minor}" />
-	</target>
-  
-  <target name="cruisecontrol" depends="checkout,status,build">
+  <property file="build.properties" />
+
+  <target name="cruisecontrol" depends="build">
 		<mkdir dir="artifacts"/>
-    <zip destfile="artifacts/PhonoSDK-0.1.zip">
-      <zipfileset dir="target/sdk" prefix="phonosdk-0.1"/>
-      <zipfileset dir="installer/base" prefix="phonosdk-0.1" />
+    <zip destfile="artifacts/PhonoSDK-${build.version}.zip">
+      <zipfileset dir="target/sdk" prefix="phonosdk-${build.version}"/>
+      <zipfileset dir="installer/base" prefix="phonosdk-${build.version}" />
     </zip>
-    <tar destfile="artifacts/PhonoSDK-0.1.tgz" compression="gzip">
-      <tarfileset dir="target/sdk" prefix="phonosdk-0.1"/>
-      <tarfileset dir="installer/base" prefix="phonosdk-0.1" />
+    <tar destfile="artifacts/PhonoSDK-${build.version}.tgz" compression="gzip">
+      <tarfileset dir="target/sdk" prefix="phonosdk-${build.version}"/>
+      <tarfileset dir="installer/base" prefix="phonosdk-${build.version}" />
     </tar>
   </target>
   
   <target name="build" depends="clean">
-    <modules target="build" />
+    <antcall target="build-as-audio" />
+    <antcall target="build-js" />
+  </target>
+
+  <target name="build-as-audio">
+		<ant inheritAll="true" target="build" dir="modules/phono-as-audio" />
+  </target>
+
+  <target name="build-js">
+		<ant inheritAll="true" target="build" dir="modules/phono-js" />
   </target>
 
   <target name="clean">
@@ -45,16 +32,4 @@
     <delete dir="artifacts" />
   </target>
 
-  <target name="build-swf">
-		<ant inheritAll="true" target="build" dir="modules/phono-as-audio" />
-  </target>
-
-	<macrodef name="modules">
-		<attribute name="target" />
-		<sequential>
-			<ant inheritAll="true" target="@{target}" dir="modules/phono-as-audio" />
-			<ant inheritAll="true" target="@{target}" dir="modules/phono-js" />
-		</sequential>
-	</macrodef>
-  
 </project>

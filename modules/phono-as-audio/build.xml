@@ -1,9 +1,16 @@
 <project name="phono-as-media" default="build">
 
-  <property file="../../build.properties" />
-  <taskdef resource="flexTasks.tasks" classpath="${flextasks}"/>
-
   <target name="build" depends="clean">
+    
+    <fail message="Please set FLEX_HOME in build.properties">
+      <condition>
+        <not>
+          <available file="${FLEX_HOME}" />
+        </not>
+      </condition>
+    </fail>    
+
+    <taskdef resource="flexTasks.tasks" classpath="${flextasks}"/>
     
     <mkdir dir="target" />
     
