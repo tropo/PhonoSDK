@@ -6,6 +6,37 @@ near future we will release a downloadable Phono Gateway that allows
 Phono to connect to any SIP Voice over IP infrastructure directly
 without the Voxeo cloud.
 
+More information about Phono can be found at:
+
+  http://www.phono.com/
+
+  http://www.phono.com/docs
+
+Tutorials, sample applications, videos and more are available at:
+
+  http://www.phono.com/demos
+
+  http://blog.phono.com/
+
+To stay up-to-date with what is happening with Phono, you can follow:
+
+  http://twitter.com/phonosdk
+  http://www.facebook.com/phonosdk
+
+If you have questions or encounter issues using Phono, please visit the 
+Phono Forums at:
+
+  http://www.phono.com/forums/1
+
+Thank you for using Phono!
+
+--------------------------------------------------
+
+Phono is licensed for distribution under the Apache 2.0 license.  
+See the LICENSE file for more information.
+
+--------------------------------------------------
+
 Phono includes the Strophe XMPP Javascript library
 (http://code.stanziq.com/strophe/) which is distributed with the
 following license:
