@@ -172,54 +172,33 @@
       	.attr("id","_phono-audio-flash" + (FlashAudio.count++))
       	.addClass("phono_FlashHolder")
       	.appendTo("body");
-      	
-      if($.browser.msie){
-      	flashDiv.css({
-      		"width":"1px",
-      		"height":"1px",
-      		"position":"absolute",
-      		"top":"50%",
-      		"left":"50%",
-      		"margin-top":"-69px",
-      		"margin-left":"-107px",
-      		"z-index":"10001",
-      		"visibility":"visible"
-      	})
-      }else{
-      	flashDiv.css({
-      		"width":"215px",
-      		"height":"138px",
-      		"position":"absolute",
-      		"top":"50%",
-      		"left":"50%",
-      		"margin-top":"-69px",
-      		"margin-left":"-107px",
-      		"z-index":"10001",
-      		"visibility":"hidden"
-      	})
-      }
-      
+
+   	flashDiv.css({
+   		"width":"1px",
+   		"height":"1px",
+   		"position":"absolute",
+   		"top":"50%",
+   		"left":"50%",
+   		"margin-top":"-69px",
+   		"margin-left":"-107px",
+   		"z-index":"10001",
+   		"visibility":"visible"
+   	});
+
       var containerId = $(flashDiv).attr("id");
       
       Phono.events.bind(this, {
       	onPermissionBoxShow: function() {
-				$("#"+containerId).css("visibility","visible");
-				if($.browser.msie){
-					$("#"+containerId).css({
-						"width":"215px",
-      				"height":"138px"
-					})
-				}
+				$("#"+containerId).css({
+					"width":"215px",
+   				"height":"138px"
+				});
       	},
       	onPermissionBoxHide: function() {
-      		if($.browser.msie){
-					$("#"+containerId).css({
-						"width":"1px",
-      				"height":"1px"
-					})
-				}else{
-					$("#"+containerId).css("visibility","hidden");
-				}
+				$("#"+containerId).css({
+					"width":"1px",
+   				"height":"1px"
+				});
       	}
       });
       
