@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmpp:xmpp-app xmlns:javaee="http://java.sun.com/xml/ns/javaee"
+ xmlns:xmpp="http://www.voxeo.com/sipmethod/xmpp"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.voxeo.com/sipmethod/xmpp xmpp.xsd" version="1.1">
+    <xmpp:app-name>gordonapp</xmpp:app-name>
+      
+    <xmpp:servlet>
+        <javaee:servlet-name>gordonservlet</javaee:servlet-name>
+        <javaee:servlet-class>com.voxeo.gordon.server.GordonXMPPServlet</javaee:servlet-class>       
+        <javaee:load-on-startup>1</javaee:load-on-startup>
+        <init-param>
+          <param-name>rtmpdUri</param-name>
+          <param-value>http://127.0.0.1:8808/relay</param-value>
+        </init-param>
+    </xmpp:servlet>
+
+    <xmpp:defaultxmppapp/>
+    <xmpp:serv-domains>
+      <xmpp:servdomain>xmpp.im.voxeo.com</xmpp:servdomain>
+    </xmpp:serv-domains>
+    
+    <xmpp:servlet-selection>
+        <xmpp:main-servlet>gordonservlet</xmpp:main-servlet>
+    </xmpp:servlet-selection>
+    
+    <!-- the following is the main different part with SIP and HTTP descriptor-->    
+    <xmpp:client-login-config>
+       <xmpp:appProcessStream>
+       <xmpp:stream>SASLED</xmpp:stream>
+       </xmpp:appProcessStream>
+       
+        <xmpp:TLS-configure>SUPPORTED</xmpp:TLS-configure>
+        <xmpp:SASL-configure>
+            <xmpp:SASL-mechanism>
+                <xmpp:auth-method>PLAIN</xmpp:auth-method>
+                <xmpp:realm-name>MemoryRealm</xmpp:realm-name>
+                <xmpp:NeedSecureTransport>FALSE</xmpp:NeedSecureTransport>
+            </xmpp:SASL-mechanism>
+       
+        </xmpp:SASL-configure>
+       
+        <xmpp:resourcebinding/>
+    </xmpp:client-login-config>
+    
+    <xmpp:server-login-config>
+        <xmpp:TLS-configure>REQUIRED</xmpp:TLS-configure>
+        <xmpp:SASL-configure>
+            <xmpp:SASL-mechanism>
+                <xmpp:auth-method>EXTERNAL</xmpp:auth-method>
+                <xmpp:realm-name>realm-name1</xmpp:realm-name>
+                <xmpp:NeedSecureTransport>TRUE</xmpp:NeedSecureTransport>
+            </xmpp:SASL-mechanism>
+        </xmpp:SASL-configure>
+    </xmpp:server-login-config>
+    
+    <xmpp:loginto-otherserver-config>
+        <xmpp:TLS-configure>REQUIRED</xmpp:TLS-configure>
+        <xmpp:SASL-configure>
+            <xmpp:SASL-mechanism>
+                <xmpp:auth-method>DIGEST-MD5</xmpp:auth-method>
+                <xmpp:realm-name>realm-name8</xmpp:realm-name>
+                <xmpp:NeedSecureTransport>FALSE</xmpp:NeedSecureTransport>
+            </xmpp:SASL-mechanism>
+            <xmpp:SASL-mechanism>
+                <xmpp:auth-method>EXTERNAL</xmpp:auth-method>
+                <xmpp:realm-name>realm-name1</xmpp:realm-name>
+                <xmpp:NeedSecureTransport>TRUE</xmpp:NeedSecureTransport>
+            </xmpp:SASL-mechanism>
+        </xmpp:SASL-configure>
+    </xmpp:loginto-otherserver-config>
+</xmpp:xmpp-app>

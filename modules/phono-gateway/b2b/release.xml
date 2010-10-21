@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<project name="common" default="release" basedir=".">
+
+	<property environment="env" />
+	<property file="buildenv.properties"/>
+	
+	<property name="releasename" value="${product.name}" />
+	<property name="releasedir" value="${build.dir}/${product.name}" />
+	
+	<path id="classpath">
+		<pathelement location="${build.classes}" />
+		<pathelement location="${build.test}" />
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${servletAPIlib.dir}">
+					<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="-prepare">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.classes}" />
+		<mkdir dir="${build.test}" />
+		<mkdir dir="${build.reports}" />
+	</target>
+
+	<target name="compile-src" depends="-prepare">
+		<antcall target="clean-classes"/>
+		<echo message="JDK: ${env.JAVA_HOME}" />
+		<echo message="build-src : debug=${debug}" />
+		<javac destdir="${build.classes}" debug="${debug}" deprecation="on" optimize="on" fork="true" memoryMaximumSize="256m" nowarn="true">
+			<src path="${src.dir}" />
+			<classpath refid="classpath" />
+		</javac>
+		<copy todir="${build.classes}" preservelastmodified="yes" overwrite="true">
+			<fileset dir="${src.dir}">
+				<include name="**/*.properties" />
+				<include name="**/*.dtd" />
+				<include name="**/*.xml" />
+				<include name="**/*.xsd" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="release" description="release console" depends="compile-src">
+		<mkdir dir="${releasedir}" />
+
+		<copy todir="${releasedir}"
+			preservelastmodified="yes" overwrite="true">
+			<fileset dir="SIPContent" />
+		</copy>
+		
+		<mkdir dir="${releasedir}/WEB-INF/classes"/>
+		<copy todir="${releasedir}/WEB-INF/classes" preservelastmodified="yes" overwrite="true">
+		<fileset dir="${build.classes}"/>
+		</copy>
+
+		<war destfile="${build.dir}/${releasename}.sar"
+			webxml="${releasedir}/WEB-INF/web.xml">
+			<zipfileset dir="${releasedir}" />
+		</war>
+	</target>
+
+	<target name="clean-classes" description="remove build classes" >
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${build.classes}" includes="**/*" />
+		</delete>
+		<echo message="excute this target"/>
+	</target>
+
+</project>

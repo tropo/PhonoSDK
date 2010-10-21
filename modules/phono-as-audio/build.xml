@@ -1,0 +1,29 @@
+<project name="phono-as-media" default="build">
+
+  <property file="../../build.properties" />
+  <taskdef resource="flexTasks.tasks" classpath="${flextasks}"/>
+
+  <target name="build" depends="clean">
+    
+    <mkdir dir="target" />
+    
+    <!-- Compile -->
+    <mxmlc file="${basedir}/src/PhonoMedia.mxml" output="${basedir}/target/phono.audio.swf"> 
+        <source-path path-element="${basedir}/src" /> 
+    </mxmlc> 
+    
+    <!-- Binary -->
+    <copy file="target/phono.audio.swf" todir="../../target/sdk/plugins/audio/" />
+
+    <!-- Source -->
+    <copy todir="../../target/src/phono-as-audio" overwrite="true">
+      <fileset dir="src" />
+    </copy>
+    
+  </target>
+  
+  <target name="clean">
+    <delete dir="target" />
+  </target>
+  
+</project>

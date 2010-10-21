@@ -1,0 +1,43 @@
+<project name="phono-as" default="build" basedir=".">
+
+  <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpath="groovy-all-1.7.5.jar"/>
+
+  <target name="build" depends="clean">
+
+    <mkdir dir="target" />
+
+    <!-- Combinate -->
+    <groovy src="build.groovy">
+      <arg value="${basedir}" />
+    </groovy>
+
+    <!-- Minify -->
+    <java jar="yuicompressor-2.4.2.jar" fork="true">
+      <arg value="--type"/>
+      <arg value="js"/>
+      <arg value="-o"/>
+      <arg value="target/jquery.phono.min.js"/>
+      <arg value="-v"/>
+      <arg value="target/jquery.phono.js"/>
+    </java>
+
+    <!-- SDK -->
+    <copy file="target/jquery.phono.min.js" tofile="../../target/sdk/jquery.phono.js" overwrite="true" />
+
+    <!-- Source -->
+    <copy todir="../../target/src/phono-js" overwrite="true">
+      <fileset dir="src/main/js" />
+    </copy>
+
+    <!-- Samples -->
+    <copy todir="../../target/sdk/samples" overwrite="true">
+      <fileset dir="samples" />
+    </copy>
+
+  </target>
+
+  <target name="clean">
+    <delete dir="target" />
+  </target>
+
+</project>

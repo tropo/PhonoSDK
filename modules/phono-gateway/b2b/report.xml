@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<project name="report" default="report" basedir=".">
+	<import file="release.xml" />
+
+	<property name="junit.home" value="${env.JUNIT_HOME}" />
+	<property name="cobertura.home" value="${env.COVERAGE_HOME}" />
+
+	<!-- Test file name -->
+	<property name="testfile" value="*Test" />
+
+	<property name="emma.report.dir" value="${build.reports}/emma_report" />
+	<property name="junit.report.dir" value="${build.reports}/junit_report" />
+
+	<condition property="os.unix-like">
+		<os family="unix" />
+	</condition>
+
+	<condition property="os.windows">
+		<os family="windows" />
+	</condition>
+
+	<!-- path element used by Junit taskdef below: -->
+	<path id="junit.lib">
+		<pathelement location="${junit.home}/junit.jar" />
+	</path>
+
+	<path id="cobertura.lib">
+		<fileset dir="${cobertura.home}">
+			<include name="cobertura.jar" />
+			<include name="lib/**/*.jar" />
+		</fileset>
+	</path>
+
+	<taskdef classpathref="cobertura.lib" resource="tasks.properties" />
+
+	<target name="compile-test" description="compile the test code">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${build.test}" includes="**/*" />
+		</delete>
+		<antcall target="compile-src" />
+		<antcall target="instrument" />
+		<javac destdir="${build.test}" debug="${debug}" deprecation="on" nowarn="true">
+			<src path="${test.dir}" />
+			<classpath refid="junit.lib" />
+			<classpath refid="classpath" />
+			<classpath refid="cobertura.lib" />
+			<include name="com/**" />
+		</javac>
+
+		<copy todir="${build.test}" preservelastmodified="yes" overwrite="true">
+			<fileset dir="${test.dir}">
+				<include name="com/**/*.properties" />
+				<include name="com/**/*.dtd" />
+				<include name="com/**/*.xml" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="test-testcase" depends="compile-test">
+		<junit printsummary="yes" fork="yes" haltonfailure="yes" haltonerror="yes">
+			<classpath refid="classpath" />
+			<classpath refid="cobertura.lib" />
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="${build.reports}/cobertura.ser" />
+			<jvmarg value="-Djava.base=${env.JAVA_HOME}" />
+			<formatter type="plain" usefile="false" />
+			<formatter type="xml" />
+			<batchtest todir="${build.reports}">
+				<fileset dir="${build.test}">
+					<include name="com/**/${testfile}.*" />
+				</fileset>
+			</batchtest>
+		</junit>
+		<echo message="test-testcase are completed!" />
+	</target>
+
+	<target name="pre-report">
+		<!-- collected metadata and report -->
+		<mkdir dir="${junit.report.dir}" />
+		<junitreport todir="${junit.report.dir}">
+			<fileset dir="${build.reports}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report todir="${junit.report.dir}" />
+		</junitreport>
+
+		<mkdir dir="${emma.report.dir}" />
+		<cobertura-merge datafile="${build.reports}/cobertura.ser">
+			<fileset dir="${build.reports}">
+				<include name="*.ser" />
+			</fileset>
+		</cobertura-merge>
+		<cobertura-report format="html" destdir="${emma.report.dir}" srcdir="${src.dir}" datafile="${build.reports}/cobertura.ser" />
+		<!---->
+		<delete>
+			<fileset dir="${build.reports}" includes="**/TEST-*.xml" />
+			<fileset dir="${build.reports}" includes="**/*.ser" />
+		</delete>
+	</target>
+
+	<target name="instrument">
+		<cobertura-instrument todir="${build.classes}" datafile="${build.dir}/reports/cobertura.ser">
+			<ignore regex="org.apache.log4j.*" />
+			<fileset dir="${build.classes}">
+				<include name="**/*.class" />
+				<exclude name="**/*Test.class" />
+			</fileset>
+		</cobertura-instrument>
+	</target>
+
+	<target name="test" depends="test-testcase" description="run all the tests with coverage">
+		<echo message="All test are completed!" />
+	</target>
+
+	<target name="report">
+		<antcall target="test" />
+		<antcall target="pre-report" />
+	</target>
+</project>
