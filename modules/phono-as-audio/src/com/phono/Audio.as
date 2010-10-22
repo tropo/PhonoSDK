@@ -101,9 +101,8 @@ package com.phono
 		
 		public function get hasPermission():Boolean
 		{
-			var mic:Microphone = Microphone.getMicrophone();
-			if (mic) {
-				if (!mic.muted) return true;
+			if (_mic) {
+				return !_mic.muted;
 			}
 			return false;
 		}

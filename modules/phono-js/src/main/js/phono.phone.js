@@ -74,6 +74,9 @@
          this.input.start();
       }
       if(this.output) {
+         if(!this.audioLayer.permission()) {
+            Phono.events.trigger(this.audioLayer, "permissionBoxShow");
+         }
          this.output.start();
       }
    };
