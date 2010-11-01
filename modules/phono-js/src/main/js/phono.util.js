@@ -1,6 +1,6 @@
 ;Phono.util = {
    guid: function() {
-     return MD5.hexdigest((new Date()).getTime()) 
+     return new String((new Date()).getTime()) 
    },
    escapeXmppNode: function(input) {
       var node = input;
