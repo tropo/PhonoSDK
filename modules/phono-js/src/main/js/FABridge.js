@@ -103,7 +103,7 @@ function FABridge__bridgeInitialized(bridgeName)
 {
     var searchStr = "bridgeName="+ bridgeName;
 
-    if (/Explorer/.test(navigator.appName) || /Netscape/.test(navigator.appName) || /Konqueror|Safari|KHTML/.test(navigator.appVersion))
+    if (/Explorer/.test(navigator.appName) || /Opera/.test(navigator.appName) || /Netscape/.test(navigator.appName) || /Konqueror|Safari|KHTML/.test(navigator.appVersion))
     {
 
         var flashInstances = document.getElementsByTagName("object");
