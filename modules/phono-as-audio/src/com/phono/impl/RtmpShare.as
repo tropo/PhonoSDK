@@ -39,12 +39,14 @@ package com.phono.impl
 			_mic.gain = 50;
 			_gain = _mic.gain;
 			_mic.setUseEchoSuppression(true);			
-			_mic.framesPerPacket = 1;
 			_queue = queue;
 			
 			if (codec.name.toUpperCase() == "SPEEX") {
 				_mic.codec = SoundCodec.SPEEX;
 			} else _mic.codec = SoundCodec.SPEEX; // Anyway for now...
+			
+			_mic.framesPerPacket = 1;
+			
 		}
 
 		public function start():void

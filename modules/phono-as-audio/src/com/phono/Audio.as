@@ -171,7 +171,7 @@ package com.phono
 							case "NetConnection.Connect.Success":
 								// Now we can play and publish                	
 								for each (var op:Object in _waitQs[rtmpUri]) {
-								   setTimeout(op(),1000);
+								   op();
 								}	
 								delete _waitQs[rtmpUri];
 							break;
