@@ -64,7 +64,7 @@
       // Bind Event Listeners
       Phono.events.bind(this, config);
       
-      this.ringer = this.audioLayer.play(phone.ringTone());
+      this.ringer = this.audioLayer.play(phone.ringTone()); 
       this.ringback = this.audioLayer.play(phone.ringbackTone());
       
    };
@@ -171,7 +171,7 @@
       this.connection.sendIQ(jingleIq, function (iq) {
           call.state = CallState.CONNECTED;
           Phono.events.trigger(call, "answer");
-          call.ringer.stop();
+          if (call.ringer != null) call.ringer.stop();
           call.startAudio();
       });
       
@@ -209,8 +209,8 @@
           call.state = CallState.DISCONNECTED;
           Phono.events.trigger(call, "hangup");
           call.stopAudio();
-          call.ringer.stop();
-          call.ringback.stop();          
+          if (call.ringer != null) call.ringer.stop();
+          if (call.ringback != null) call.ringback.stop();          
       });
       
    };
@@ -424,7 +424,7 @@
             });
 
             // Start ringing
-            call.ringer.start();
+            if (call.ringer != null) call.ringer.start();
             
             //Fire imcoming call event
             Phono.events.trigger(this, "incomingCall", {
@@ -449,7 +449,7 @@
             call.state = CallState.CONNECTED;
 
             // Stop ringback
-            call.ringback.stop();
+            if (call.ringback != null) call.ringback.stop();
 
             // Connect audio streams
             call.startAudio();
@@ -465,8 +465,8 @@
             call.state = CallState.DISCONNECTED;
             
             call.stopAudio();
-            call.ringer.stop();
-            call.ringback.stop();
+            if (call.ringer != null) call.ringer.stop();
+            if (call.ringback != null) call.ringback.stop();
             
             // Fire hangup event
             Phono.events.trigger(call, "hangup")
@@ -478,7 +478,7 @@
          
             if ($(iq).find('ringing')) {
                call.state = CallState.RINGING;
-               call.ringback.start();
+               if (call.ringback != null) call.ringback.start();
                Phono.events.trigger(call, "ring")
             }
             
