@@ -72,7 +72,7 @@ package com.phono
 			return player;
 		}
 		
-		public function share(url:String, autoStart:Boolean, codecId:String="97", codecName:String="SPEEX", codecRate:String="16000"):Share
+		public function share(url:String, autoStart:Boolean, codecId:String="97", codecName:String="SPEEX", codecRate:String="16000", suppress:Boolean=true):Share
 		{
 		   
 		   var codec:Codec = new Codec(codecId, codecName, codecRate);
@@ -93,7 +93,7 @@ package com.phono
 				var nc:NetConnection = getNetConnection(rtmpUri);
 			
 				var queue:Array = _waitQs[rtmpUri]
-				var share:Share = new RtmpShare(queue, nc, streamName, codec, url, _mic);
+				var share:Share = new RtmpShare(queue, nc, streamName, codec, url, _mic, suppress);
 				if (autoStart) share.start();
 				return share;
 			} else return null;

@@ -4,12 +4,22 @@ package com.phono.impl
 	import com.phono.Codec;
 	import com.phono.Share;
 	
+	import flash.events.Event;
+	import flash.events.TimerEvent;
 	import flash.media.Microphone;
+	import flash.media.Sound;
+	import flash.media.SoundChannel;
 	import flash.media.SoundCodec;
+	import flash.media.SoundMixer;
 	import flash.net.NetConnection;
 	import flash.net.NetStream;
 	import flash.net.ObjectEncoding;
 	import flash.net.Responder;
+	import flash.utils.ByteArray;
+	import flash.utils.Timer;
+	import flash.utils.setTimeout;
+	
+	import flashx.textLayout.formats.Float;
 	
 	import mx.utils.*;
 	
@@ -24,29 +34,33 @@ package com.phono.impl
 		private var _codec:Codec;
 		private var _gain:Number;
 		private var _mute:Boolean = false;
+		private var _suppress:Boolean = false;
 		private var _queue:Array;
 		private var _mic:Microphone;
+		private var _active:Boolean = false;
 		
-		public function RtmpShare(queue:Array, nc:NetConnection, streamName:String, codec:Codec, url:String, mic:Microphone)
+		private var _soundTimer:Timer = new Timer(50, 0);
+		
+		public function RtmpShare(queue:Array, nc:NetConnection, streamName:String, codec:Codec, url:String, mic:Microphone, suppress:Boolean)
 		{
 			_nc = nc;
 			_streamName = streamName;
 			_url = url;
 			_tones = new Tones();
 			_codec = codec;
+			_suppress = suppress;
 			_mic = mic;
 			_mic.setSilenceLevel(0,2000);
 			_mic.gain = 50;
+					
 			_gain = _mic.gain;
 			_mic.setUseEchoSuppression(true);			
 			_queue = queue;
 			
 			if (codec.name.toUpperCase() == "SPEEX") {
-				_mic.codec = SoundCodec.SPEEX;
-			} else _mic.codec = SoundCodec.SPEEX; // Anyway for now...
-			
+				_mic.codec = SoundCodec.SPEEX;				
+			} else _mic.codec = SoundCodec.SPEEX; // Anyway for now..			
 			_mic.framesPerPacket = 1;
-			
 		}
 
 		public function start():void
@@ -55,10 +69,17 @@ package com.phono.impl
 			else {
 				// Start the stream				
 				if (_mic) {
-					_tx = new NetStream(_nc);
+					_tx = new NetStream(_nc);	
+					
 					_tx.client = this;
 					_tx.attachAudio(_mic);
 					_tx.publish(_streamName, "live");
+				
+					if (_suppress) {
+						_soundTimer.addEventListener(TimerEvent.TIMER, onSoundTicker);
+						_soundTimer.start();
+					}
+					_active = true;
 				}
 			}
 		}
@@ -67,6 +88,9 @@ package com.phono.impl
 		{
 			if (!_nc.connected) _queue.push(this.stop);
 			if (_tx != null) _tx.close();
+			_soundTimer.stop();
+			_soundTimer.removeEventListener(TimerEvent.TIMER, onSoundTicker);
+			_active = false;
 		}
 		
 		public function digit(digit:String, duration:Number=250, audible:Boolean=true):void
@@ -102,15 +126,17 @@ package com.phono.impl
 		public function set gain(value:Number):void
 		{
 			_gain = value;	
-			if (_mic != null) _mic.gain = _gain;
+			if (!_mute) _mic.gain = _gain;
 		}
 		
 		public function set mute(value:Boolean):void
 		{
 			_mute = value;
 			if (_mute) {
+				if (_suppress && _active) _soundTimer.stop();
 				_mic.gain = 0;
 			} else {
+				if (_suppress && _active) _soundTimer.start();
 				_mic.gain = _gain;
 			}
 		}
@@ -119,5 +145,46 @@ package com.phono.impl
 		{
 			return _mute;
 		}		
+		
+		public function set suppress(value:Boolean):void
+		{
+			_suppress = value;
+			if (_suppress) {
+				if (!_mute && _active) _soundTimer.start();
+			}
+			else if (_active) _soundTimer.stop();
+		}
+		
+		public function get suppress():Boolean
+		{
+			return _suppress;
+		}
+		
+		private function onSoundTicker(event:Event):void {
+			var bytes:ByteArray = new ByteArray();
+			const CHANNEL_LENGTH:int = 256;
+			const SUPPRESS_THRESHOLD:Number = 1;
+			var n:Number = 0;
+			if (!SoundMixer.areSoundsInaccessible()) {
+				try {
+					SoundMixer.computeSpectrum(bytes, false, 0);
+					for (var i:int = 0; i < CHANNEL_LENGTH; i++) {
+						n += Math.abs(bytes.readFloat());
+					}
+					trace("c: " + n);
+					if (n > SUPPRESS_THRESHOLD) {
+						_mic.gain = 0;	
+					} else {
+						if (!_mute) _mic.gain = _gain;	
+					}
+				} catch (e:Error) {
+					trace("Error accessing samples, stop suppressing");
+					trace(e);
+					_soundTimer.stop();
+					_suppress = false;
+					if (!_mute) _mic.gain = _gain;
+				}
+			}
+		}			
 	}
 }

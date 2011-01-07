@@ -30,6 +30,7 @@ package com.phono.impl
 			else {
 				_rx = new NetStream(_nc);
 				_rx.client = this;
+				_rx.bufferTime=0.01;
 				_rx.play(_streamName);
 				_volume = _rx.soundTransform.volume;
 			}
