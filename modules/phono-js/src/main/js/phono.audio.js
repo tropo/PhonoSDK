@@ -40,18 +40,23 @@
          callback(plugin);
       });
 
+      wmodeSetting = "opaque";
+
+      if ((navigator.appVersion.indexOf("X11")!=-1) || (navigator.appVersion.indexOf("Linux")!=-1)) {
+          wmodeSetting = "window";
+      }
+
       // Embed flash plugin
       flashembed(containerId, 
-         {
-            id:containerId + "id",
-             src:this.config.swf,
-             wmode:"opaque"
-         }, 
-         {
-            bridgeName:containerId
-         }
-      );
-
+                 {
+                     id:containerId + "id",
+                     src:this.config.swf,
+                     wmode:wmodeSetting
+                 }, 
+                 {
+                     bridgeName:containerId
+                 }
+                );
    };
    
    FlashAudio.count = 0;
