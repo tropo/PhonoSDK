@@ -144,6 +144,14 @@
    			else {
    				share.setMute(value);
    			}
+         },
+         suppress: function(value) {
+   			if(arguments.length === 0) {
+   				return share.getSuppress();
+   			}
+   			else {
+   				share.setSuppress(value);
+   			}
          }
       }
    };   
