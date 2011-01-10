@@ -47,10 +47,15 @@ Strophe.addConnectionPlugin('cors', {
         } else if (flensed && flensed.flXHR) {
             // We don't have CORS support, so include flXHR
             Strophe.debug("CORS not supported, using flXHR");
+            var poolingSetting = true;
+            if (navigator.userAgent.indexOf('MSIE') !=-1) {
+                // IE 7 has an issue with instance pooling and flash 10.1
+                poolingSetting = false;
+            }
             Strophe.Request.prototype._newXHR = function () {
                 var xhr = new flensed.flXHR({
                     autoUpdatePlayer: true,
-                    instancePooling: true,
+                    instancePooling: poolingSetting,
                     noCacheHeader: false});
                 xhr.onreadystatechange = this.func.prependArg(this);
                 return xhr;
