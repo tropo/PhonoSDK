@@ -184,6 +184,7 @@
       this.gain(this.gain());
       this.mute(this.mute());
       this.hold(this.hold());
+      this.headset(this.headset());
       this.pushToTalkStateChanged();
    };
    
@@ -279,6 +280,16 @@
    	   this.output.gain(value);
    	}
    };
+
+   Call.prototype.headset = function(value) {
+   	if(arguments.length === 0) {
+   	    return this._headset;
+   	}
+   	this._headset = value;
+   	if(this.output) {
+   	   this.output.suppress(!value);
+   	}
+   };
    
 	Call.prototype.pushToTalkStateChanged = function() {
 	   if(this.input && this.output) {
@@ -362,7 +373,8 @@
       // Define defualt config and merge from constructor
       this.config = Phono.util.extend({
          ringTone: "http://s.phono.com/ringtones/Diggztone_Marimba.mp3",
-         ringbackTone: "http://s.phono.com/ringtones/ringback-us.mp3"
+         ringbackTone: "http://s.phono.com/ringtones/ringback-us.mp3",
+         headset: false
       }, config);
       
       // Apply config
@@ -501,6 +513,11 @@
       //Generate unique ID
       var id = Phono.util.guid();
 
+      // Configure Call properties inherited from Phone
+      config = Phono.util.extend({
+         headset: this.headset(),
+      }, (config || {}));
+
       // Create and configure Call
       var call = new Call(this, id, Direction.OUTBOUND, config);
       call.phone = this;
@@ -562,6 +579,16 @@
          return this._ringbackTone;
       }
       this._ringbackTone = value;
+   };
+
+   Phone.prototype.headset = function(value) {
+      if(arguments.length == 0) {
+         return this._headset;
+      }
+      this._headset = value;
+      Phono.util.each(this.calls, function() {
+        this.headset(value);
+      });
    };
 
    Phono.registerPlugin("phone", {

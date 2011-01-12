@@ -56,8 +56,6 @@ $(document).ready(function() {
             	 calls[newCallID] = event.call;
             	 log.info("["+newPhonoID+"] New incoming call");
                 
-                calls[newCallID].pushToTalk(true);
-                
             	 //Bind events from this call
             	 Phono.events.bind(calls[newCallID], {
              		onHangup: function(event) {
@@ -97,7 +95,6 @@ $(document).ready(function() {
 		
 		calls[newCallID] = phonos[phonoID].phone.dial(to, {
 		    tones: true,
-            pushToTalk: true,
             onAnswer: function(event) {
             	log.info("["+phonoDiv.attr('id')+"] ["+newCallID+"] Call answered");
             },
@@ -248,6 +245,13 @@ $(document).ready(function() {
 		var thisPhono = $(this).closest(".phono").attr("id");
 		var callTo = $("#"+thisPhono).find(".callTo").val();
 		createNewCall(thisPhono, callTo);
+	});
+	
+	$('.headset').live('change', function() {
+		var phonoId = $(this).closest(".phono").attr("id");
+		var headsetEnabled = $("#"+phonoId).find(".headset").is(":checked");
+		log.info("Headset: " + headsetEnabled);
+    phonos[phonoId].phone.headset(headsetEnabled);		
 	});
 	
 	$('.flashHelp a').live('click', function() {

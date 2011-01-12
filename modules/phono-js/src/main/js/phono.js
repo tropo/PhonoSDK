@@ -37,7 +37,7 @@ var flensed={base_path:"http://s.phono.com/deps/flensed/1.0/"};
    //@Include=log4javascript_lite_stub.js
 
    // Global
-   Phono.version = "0.1";
+   Phono.version = "0.2";
    Phono.log = log4javascript.getDefaultLogger();
 
    Phono.registerPlugin = function(name, config) {
