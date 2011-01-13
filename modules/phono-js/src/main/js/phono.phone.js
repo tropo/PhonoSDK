@@ -516,6 +516,7 @@
       // Configure Call properties inherited from Phone
       config = Phono.util.extend({
          headset: this.headset(),
+         pushToTalk: this.pushToTalk(),
       }, (config || {}));
 
       // Create and configure Call
@@ -588,6 +589,16 @@
       this._headset = value;
       Phono.util.each(this.calls, function() {
         this.headset(value);
+      });
+   };
+
+   Phone.prototype.pushToTalk = function(value) {
+      if(arguments.length == 0) {
+         return this._pushToTalk;
+      }
+      this._pushToTalk = value;
+      Phono.util.each(this.calls, function() {
+        this.pushToTalk(value);
       });
    };
 
