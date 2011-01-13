@@ -255,7 +255,7 @@ $(document).ready(function() {
 	
 	$('.call').live('click', function() {
 		var thisPhono = $(this).closest(".phono").attr("id");
-		var callTo = $("#"+thisPhono).find(".callTo").val();
+		var callTo = $.trim($("#"+thisPhono).find(".callTo").val());
 		createNewCall(thisPhono, callTo);
 	});
 	
@@ -287,7 +287,7 @@ $(document).ready(function() {
 	
 	$('.chat').live('click', function() {
 		var thisPhono = $(this).closest(".phono").attr("id");
-		var chatTo = $("#"+thisPhono).find(".chatTo").val();
+		var chatTo = $.trim($("#"+thisPhono).find(".chatTo").val());
 		createNewChat(thisPhono, chatTo, "");
 	});
 	
