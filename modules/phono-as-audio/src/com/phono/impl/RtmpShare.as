@@ -25,6 +25,8 @@ package com.phono.impl
 	
 	public class RtmpShare implements Share
 	{
+		private const ECHO_TICKER_MS:int = 50;
+		
 		private var _audio:Audio;
 		private var _nc:NetConnection;
 		private var _tx:NetStream;
@@ -37,9 +39,10 @@ package com.phono.impl
 		private var _suppress:Boolean = false;
 		private var _queue:Array;
 		private var _mic:Microphone;
-		private var _active:Boolean = false;
+		private var _active:Boolean = false;		
+		private var _tail:int = 0;
 		
-		private var _soundTimer:Timer = new Timer(50, 0);
+		private var _soundTimer:Timer = new Timer(ECHO_TICKER_MS, 0);
 		
 		public function RtmpShare(queue:Array, nc:NetConnection, streamName:String, codec:Codec, url:String, mic:Microphone, suppress:Boolean)
 		{
@@ -61,6 +64,8 @@ package com.phono.impl
 				_mic.codec = SoundCodec.SPEEX;				
 			} else _mic.codec = SoundCodec.SPEEX; // Anyway for now..			
 			_mic.framesPerPacket = 1;
+			
+			_soundTimer.addEventListener(TimerEvent.TIMER, onSoundTicker);
 		}
 
 		public function start():void
@@ -75,8 +80,7 @@ package com.phono.impl
 					_tx.attachAudio(_mic);
 					_tx.publish(_streamName, "live");
 				
-					if (_suppress) {
-						_soundTimer.addEventListener(TimerEvent.TIMER, onSoundTicker);
+					if (_suppress) {						
 						_soundTimer.start();
 					}
 					_active = true;
@@ -89,7 +93,6 @@ package com.phono.impl
 			if (!_nc.connected) _queue.push(this.stop);
 			if (_tx != null) _tx.close();
 			_soundTimer.stop();
-			_soundTimer.removeEventListener(TimerEvent.TIMER, onSoundTicker);
 			_active = false;
 		}
 		
@@ -125,12 +128,14 @@ package com.phono.impl
 		
 		public function set gain(value:Number):void
 		{
+			trace("gain: " + value);
 			_gain = value;	
 			if (!_mute) _mic.gain = _gain;
 		}
 		
 		public function set mute(value:Boolean):void
 		{
+			trace("mute: " + value);
 			_mute = value;
 			if (_mute) {
 				if (_suppress && _active) _soundTimer.stop();
@@ -148,6 +153,7 @@ package com.phono.impl
 		
 		public function set suppress(value:Boolean):void
 		{
+			trace("suppress: " + value);
 			_suppress = value;
 			if (_suppress) {
 				if (!_mute && _active) _soundTimer.start();
@@ -161,18 +167,29 @@ package com.phono.impl
 		}
 		
 		private function onSoundTicker(event:Event):void {
-			var bytes:ByteArray = new ByteArray();
 			const CHANNEL_LENGTH:int = 256;
 			const SUPPRESS_THRESHOLD:Number = 1;
+			const ECHO_TAIL_MS:int = 200;
+			
+			var bytes:ByteArray = new ByteArray();			
 			var n:Number = 0;
+			
 			if (!SoundMixer.areSoundsInaccessible()) {
 				try {
 					SoundMixer.computeSpectrum(bytes, false, 0);
 					for (var i:int = 0; i < CHANNEL_LENGTH; i++) {
 						n += Math.abs(bytes.readFloat());
 					}
-					trace("c: " + n);
-					if (n > SUPPRESS_THRESHOLD) {
+					//trace("c: " + n);
+					// If we have audio, then set a tail
+					if (n > SUPPRESS_THRESHOLD)
+					{
+						_tail = ECHO_TAIL_MS/ECHO_TICKER_MS;
+					}
+					// If we have a tail then disable the mic
+					if (_tail > 0) {
+						//trace("t: " + _tail);
+						_tail = _tail - 1;
 						_mic.gain = 0;	
 					} else {
 						if (!_mute) _mic.gain = _gain;	
