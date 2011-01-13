@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This is a helper for units that would not compile by them selves, namely 
+	 actionscript classes.
+	 
+	 WARNING! THIS IS A GENERATED FILE, AND WILL BE RE-GENERATED EACH TIME THE 
+	 AJAXBRIDGE APPLICATION IS RUN. YOU SHOULD NOT ADD CUSTOM CODE TO THIS FILE.
+ -->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:local="*" 
+	layout="absolute" height="138" width="215"
+	creationComplete="initApp()">
+	<mx:Script>
+		<![CDATA[
+			import Wrapper;
+			
+			import mx.core.FlexGlobals;
+
+      Security.allowDomain("*");
+
+			// Force the compiler to link our exported AS class:
+			public var ajxBrdg:Array = [ Wrapper ];
+			
+			private var focusTimer:Timer = new Timer(1000, 0);
+			
+			private function initApp():void {
+				trace("initApp()");
+				FlexGlobals.topLevelApplication.addEventListener(KeyboardEvent.KEY_UP,keyUp);
+				FlexGlobals.topLevelApplication.addEventListener(KeyboardEvent.KEY_DOWN,keyDown);
+				FlexGlobals.topLevelApplication.setFocus();
+				focusTimer.addEventListener(TimerEvent.TIMER, tickFocus);
+				focusTimer.start();
+			}
+			
+			// Event handlers
+			private function keyUp(event:KeyboardEvent):void {
+				trace("keyUp: " + event.charCode);
+				ExternalInterface.call('flashKeyUp', event.charCode, ExternalInterface.objectID);
+			}
+			
+			private function keyDown(event:KeyboardEvent):void {
+				trace("keyUp: " + event.charCode);
+				ExternalInterface.call('flashKeyDown', event.charCode, ExternalInterface.objectID);
+			}
+			
+			private function tickFocus(event:TimerEvent):void {
+				FlexGlobals.topLevelApplication.setFocus();
+			}
+		]]>
+	</mx:Script>
+	<fab:FABridge xmlns:fab="bridge.*" />
+</mx:Application>

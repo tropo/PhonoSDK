@@ -49,28 +49,24 @@ $(document).ready(function() {
 	      
 	      phone: {
             onIncomingCall: function(event) {
-                // was push to talk enabled for calls?
-				var pttEnabled;
-				(newPhonoID.find(".push-to-talk").is(":checked")) ? pttEnabled = true : pttEnabled = false;
-                
-                var newCallID = createCallDiv(newPhonoID,"incoming",pttEnabled);
+                var newCallID = createCallDiv(newPhonoID,"incoming");
                 var newCallDiv = $("#"+newCallID);
                 newCallDiv.find(".callHeader .callDetail").html("<strong>Incoming call</strong>");
                 newCallDiv.find(".callHeader .callID").html(newCallID);
-            	calls[newCallID] = event.call;
-            	log.info("["+newPhonoID+"] New incoming call");
+            	 calls[newCallID] = event.call;
+            	 log.info("["+newPhonoID+"] New incoming call");
                 
-            	//Bind events from this call
-            	Phono.events.bind(calls[newCallID], {
-             	   onHangup: function(event) {
-             	       newCallDiv.slideUp();
-             	       calls[newCallID] = null;
-             	       log.info("["+newPhonoID+"] ["+newCallID+"] Call hungup");
-             	   },
-             	   onError: function(event) {
-             	   	log.error("["+newPhonoID+"] ["+newCallID+"] Error: [" + event.reason + "]");
-             	   }
-            	});
+            	 //Bind events from this call
+            	 Phono.events.bind(calls[newCallID], {
+             		onHangup: function(event) {
+             		    newCallDiv.slideUp();
+             		    calls[newCallID] = null;
+             		    log.info("["+newPhonoID+"] ["+newCallID+"] Call hungup");
+             		},
+             		onError: function(event) {
+             			log.error("["+newPhonoID+"] ["+newCallID+"] Error: [" + event.reason + "]");
+             		}
+            	 });
             },
             onError: function(event) {
             	log.error("["+newPhonoID+"] Error: [" + event.reason + "]");
@@ -91,12 +87,7 @@ $(document).ready(function() {
 	function createNewCall(phonoID, to){
 		//clone a call box
 		var phonoDiv = $("#"+phonoID);
-		
-		// was push to talk enabled for calls?
-		var pttEnabled;
-		(phonoDiv.find(".push-to-talk").is(":checked")) ? pttEnabled = true : pttEnabled = false;
-		
-		var newCallID = createCallDiv(phonoID,"outgoing",pttEnabled);
+		var newCallID = createCallDiv(phonoID,"outgoing");
 		var callDiv = $("#"+newCallID);
 		callDiv.find(".callID").text(newCallID);
 		callDiv.find(".callDetail").html("<strong>Outgoing call to:</strong> " + to);
@@ -104,7 +95,6 @@ $(document).ready(function() {
 		
 		calls[newCallID] = phonos[phonoID].phone.dial(to, {
 		    tones: true,
-		    pushToTalk: pttEnabled,
             onAnswer: function(event) {
             	log.info("["+phonoDiv.attr('id')+"] ["+newCallID+"] Call answered");
             },
@@ -143,7 +133,7 @@ $(document).ready(function() {
 	}
 	
 	//Creates a new div to hold a call. Returns the id of the new div
-	function createCallDiv(phonoID,callType,pttEnabled){
+	function createCallDiv(phonoID,callType){
 		//clone a call box
 		var phonoDiv = $("#"+phonoID);
 		var callBox = phonoDiv.find(".calls");
@@ -158,8 +148,6 @@ $(document).ready(function() {
 		}else{
 			newCallDiv.find(".callControls").show();
 		}
-		
-		pttEnabled ? newCallDiv.find(".talkStart").show() : newCallDiv.find(".talkStart").hide();
 		
 		return newCallID;
 	}
@@ -262,21 +250,8 @@ $(document).ready(function() {
 	$('.headset').live('change', function() {
 		var phonoId = $(this).closest(".phono").attr("id");
 		var headsetEnabled = $("#"+phonoId).find(".headset").is(":checked");
-		log.info("["+phonoId+"] Headset: " + headsetEnabled);
-    	phonos[phonoId].phone.headset(headsetEnabled);		
-	});
-	
-	$('.ring-tone, .ringback-tone').live('change', function() {
-		var phonoId = $(this).closest(".phono").attr("id");
-		var tone = $(this).val();
-		
-		if($(this).hasClass("ring-tone")){
-			phonos[phonoId].phone.ringTone(tone);
-			log.info("["+phonoId+"] Ring tone set: " + tone);
-		}else{
-			phonos[phonoId].phone.ringbackTone(tone);
-			log.info("["+phonoId+"] Ringback tone set: " + tone);
-		}	
+		log.info("Headset: " + headsetEnabled);
+    phonos[phonoId].phone.headset(headsetEnabled);		
 	});
 	
 	$('.flashHelp a').live('click', function() {

@@ -19,9 +19,6 @@ a:active, a, :focus{
 h1{
 	color:#FFF;
 }
-.clear-left{
-	clear:left;
-}
 .introduction{
 	line-height: 1.3em;
 	width:750px;
@@ -190,15 +187,6 @@ span.tiny{
 	color:#999;
 	font-size:87%;
 	padding-left:12px;
-}
-.phone-settings{
-	margin:8px 0 4px 0;
-	font-size:12px;
-	color:#666;
-}
-.phone-settings .setting{
-	float:left;
-	margin-right:45px;
 }
 /* chat styles */
 .chatEntry{
