@@ -51,7 +51,7 @@ $(document).ready(function() {
             onIncomingCall: function(event) {
                 // was push to talk enabled for calls?
 				var pttEnabled;
-				(newPhonoID.find(".push-to-talk").is(":checked")) ? pttEnabled = true : pttEnabled = false;
+				($("#"+newPhonoID).find(".push-to-talk").is(":checked")) ? pttEnabled = true : pttEnabled = false;
                 
                 var newCallID = createCallDiv(newPhonoID,"incoming",pttEnabled);
                 var newCallDiv = $("#"+newCallID);
