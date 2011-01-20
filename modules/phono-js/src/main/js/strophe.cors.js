@@ -6,7 +6,7 @@
 Strophe.addConnectionPlugin('cors', {
     init: function () {
         // replace Strophe.Request._newXHR with new CORS version
-        if (window.XDomainRequest) {
+        if (false && window.XDomainRequest) {
             // We are in IE with CORS support
             Strophe.debug("CORS with IE");
             Strophe.Request.prototype._newXHR = function () {
@@ -46,7 +46,7 @@ Strophe.addConnectionPlugin('cors', {
                 }
                 return xhr;
             };
-        } else if (new XMLHttpRequest().withCredentials !== undefined) {
+        } else if (XMLHttpRequest && (new XMLHttpRequest().withCredentials !== undefined)) {
             // We are in a sane browser with CROS support - no need to do anything
             Strophe.debug("CORS with Firefox/Safari/Chome");
         } else if (flensed && flensed.flXHR) {
