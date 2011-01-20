@@ -515,7 +515,7 @@
 
       // Configure Call properties inherited from Phone
       config = Phono.util.extend({
-         headset: this.headset(),
+         headset: this.headset()
       }, (config || {}));
 
       // Create and configure Call

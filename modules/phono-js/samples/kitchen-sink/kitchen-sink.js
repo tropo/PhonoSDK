@@ -13,78 +13,74 @@ $(document).ready(function() {
 		newPhonoDiv.find(".phonoID").text(newPhonoID);
 		
 		var newPhonoDiv = $("#"+newPhonoID);
-
 		phonos[newPhonoID] = $.phono({
-		   apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
-		   
-         onReady: function(event) {
-             newPhonoDiv.find(".sessionId").text(this.sessionId);
-			    newPhonoDiv.find(".phoneControl").slideDown();
-             log.info("["+newPhonoID+"] Phono loaded"); 
-             
-             if( ! this.audio.permission() ){
-                this.audio.showPermissionBox();
-             }
-         },
-         onUnready: function(event) {
-             newPhonoDiv.find(".sessionId").text("disconnected");
-             log.info("["+newPhonoID+"] Phono disconnected");  
-         },		   
-         
-         onError: function(event) {
-             log.error(event.reason);  
-         },		   
-         
-	      audio: {
-            onPermissionBoxShow: function(event) {
-                log.info("["+newPhonoID+"] Flash permission box loaded"); 
-            },
-            onPermissionBoxHide: function(event) {
-                log.info("["+newPhonoID+"] Flash permission box closed");
-                if( ! this.permission() ){
-       				this.showPermissionBox();
-       			 }
-            }
-	      },
+			apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
+        	onReady: function(event) {
+        	    newPhonoDiv.find(".sessionId").text(this.sessionId);
+			       newPhonoDiv.find(".phoneControl").slideDown();
+        	    log.info("["+newPhonoID+"] Phono loaded"); 
+        	    
+        	    if( ! this.audio.permission() ){
+        	       this.audio.showPermissionBox();
+        	    }
+        	},
+        	onUnready: function(event) {
+        	    newPhonoDiv.find(".sessionId").text("disconnected");
+        	    log.info("["+newPhonoID+"] Phono disconnected");  
+        	},		   
+        	onError: function(event) {
+        	    log.error(event.reason);  
+        	},		   
+	     	audio: {
+         		onPermissionBoxShow: function(event) {
+         		    log.info("["+newPhonoID+"] Flash permission box loaded"); 
+         		},
+         		onPermissionBoxHide: function(event) {
+         		    log.info("["+newPhonoID+"] Flash permission box closed");
+         		    if( ! this.permission() ){
+       	 		  	this.showPermissionBox();
+       	 		   }
+         		}
+	     	},
 	      
-	      phone: {
-            onIncomingCall: function(event) {
-                // was push to talk enabled for calls?
-				var pttEnabled;
-				($("#"+newPhonoID).find(".push-to-talk").is(":checked")) ? pttEnabled = true : pttEnabled = false;
-                
-                var newCallID = createCallDiv(newPhonoID,"incoming",pttEnabled);
-                var newCallDiv = $("#"+newCallID);
-                newCallDiv.find(".callHeader .callDetail").html("<strong>Incoming call</strong>");
-                newCallDiv.find(".callHeader .callID").html(newCallID);
-            	calls[newCallID] = event.call;
-            	log.info("["+newPhonoID+"] New incoming call");
-                
-            	//Bind events from this call
-            	Phono.events.bind(calls[newCallID], {
-             	   onHangup: function(event) {
-             	       newCallDiv.slideUp();
-             	       calls[newCallID] = null;
-             	       log.info("["+newPhonoID+"] ["+newCallID+"] Call hungup");
-             	   },
-             	   onError: function(event) {
-             	   	log.error("["+newPhonoID+"] ["+newCallID+"] Error: [" + event.reason + "]");
-             	   }
-            	});
-            },
-            onError: function(event) {
-            	log.error("["+newPhonoID+"] Error: [" + event.reason + "]");
-            }
-	      },
+	     	phone: {
+         	   onIncomingCall: function(event) {
+         	       // was push to talk enabled for calls?
+		 			var pttEnabled;
+		 			($("#"+newPhonoID).find(".push-to-talk").is(":checked")) ? pttEnabled = true : pttEnabled = false;
+         	       
+         	       var newCallID = createCallDiv(newPhonoID,"incoming",pttEnabled);
+         	       var newCallDiv = $("#"+newCallID);
+         	       newCallDiv.find(".callHeader .callDetail").html("<strong>Incoming call</strong>");
+         	       newCallDiv.find(".callHeader .callID").html(newCallID);
+         	   	calls[newCallID] = event.call;
+         	   	log.info("["+newPhonoID+"] New incoming call");
+         	       
+         	   	//Bind events from this call
+         	   	Phono.events.bind(calls[newCallID], {
+         	    	   onHangup: function(event) {
+         	    	       newCallDiv.slideUp();
+         	    	       calls[newCallID] = null;
+         	    	       log.info("["+newPhonoID+"] ["+newCallID+"] Call hungup");
+         	    	   },
+         	    	   onError: function(event) {
+         	    	   	log.error("["+newPhonoID+"] ["+newCallID+"] Error: [" + event.reason + "]");
+         	    	   }
+         	   	});
+         	   },
+         	   onError: function(event) {
+         	   	log.error("["+newPhonoID+"] Error: [" + event.reason + "]");
+         	   }
+	     	},
 	      
-	      messaging: {
-            onMessage: function(event, message) {
-            	var JID = message.from.split("/");
-            	log.info("["+newPhonoID+"] Message from " + JID[0] + " [" + message.body + "]");
-            	routeMessage(newPhonoID,"incoming",JID[0],message.body);
-            }
-	      }
-      });
+	     	messaging: {
+         	   onMessage: function(event, message) {
+         	   	var JID = message.from.split("/");
+         	   	log.info("["+newPhonoID+"] Message from " + JID[0] + " [" + message.body + "]");
+         	   	routeMessage(newPhonoID,"incoming",JID[0],message.body);
+         	   }
+	     	}
+      	});
 	}
 	
 	//Creates a new call
