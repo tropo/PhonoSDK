@@ -13,41 +13,37 @@ $(document).ready(function() {
 		newPhonoDiv.find(".phonoID").text(newPhonoID);
 		
 		var newPhonoDiv = $("#"+newPhonoID);
-
 		phonos[newPhonoID] = $.phono({
-		   apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
-		   
-         onReady: function(event) {
-             newPhonoDiv.find(".sessionId").text(this.sessionId);
-			    newPhonoDiv.find(".phoneControl").slideDown();
-             log.info("["+newPhonoID+"] Phono loaded"); 
-             
-             if( ! this.audio.permission() ){
-                this.audio.showPermissionBox();
-             }
-         },
-         onUnready: function(event) {
-             newPhonoDiv.find(".sessionId").text("disconnected");
-             log.info("["+newPhonoID+"] Phono disconnected");  
-         },		   
-         
-         onError: function(event) {
-             log.error(event.reason);  
-         },		   
-         
-	      audio: {
-            onPermissionBoxShow: function(event) {
-                log.info("["+newPhonoID+"] Flash permission box loaded"); 
-            },
-            onPermissionBoxHide: function(event) {
-                log.info("["+newPhonoID+"] Flash permission box closed");
-                if( ! this.permission() ){
-       				this.showPermissionBox();
-       			 }
-            }
-	      },
+			//apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
+        	onReady: function(event) {
+        	    newPhonoDiv.find(".sessionId").text(this.sessionId);
+			       newPhonoDiv.find(".phoneControl").slideDown();
+        	    log.info("["+newPhonoID+"] Phono loaded"); 
+        	    
+        	    if( ! this.audio.permission() ){
+        	       this.audio.showPermissionBox();
+        	    }
+        	},
+        	onUnready: function(event) {
+        	    newPhonoDiv.find(".sessionId").text("disconnected");
+        	    log.info("["+newPhonoID+"] Phono disconnected");  
+        	},		   
+        	onError: function(event) {
+        	    log.error(event.reason);  
+        	},		   
+	     	audio: {
+         	  onPermissionBoxShow: function(event) {
+         	      log.info("["+newPhonoID+"] Flash permission box loaded"); 
+         	  },
+         	  onPermissionBoxHide: function(event) {
+         	      log.info("["+newPhonoID+"] Flash permission box closed");
+         	      if( ! this.permission() ){
+       	 	  		this.showPermissionBox();
+       	 	  	 }
+         	  }
+	     },
 	      
-	      phone: {
+	     phone: {
             onIncomingCall: function(event) {
                 // was push to talk enabled for calls?
 				var pttEnabled;
@@ -75,15 +71,15 @@ $(document).ready(function() {
             onError: function(event) {
             	log.error("["+newPhonoID+"] Error: [" + event.reason + "]");
             }
-	      },
+	     },
 	      
-	      messaging: {
+	     messaging: {
             onMessage: function(event, message) {
             	var JID = message.from.split("/");
             	log.info("["+newPhonoID+"] Message from " + JID[0] + " [" + message.body + "]");
             	routeMessage(newPhonoID,"incoming",JID[0],message.body);
             }
-	      }
+	     }
       });
 	}
 	
