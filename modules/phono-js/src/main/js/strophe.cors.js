@@ -46,7 +46,7 @@ Strophe.addConnectionPlugin('cors', {
                 }
                 return xhr;
             };
-        } else if (XMLHttpRequest && (new XMLHttpRequest().withCredentials !== undefined)) {
+        } else if ((window.XMLHttpRequest || window.XMLHttpRequest !== undefined) && (new XMLHttpRequest().withCredentials !== undefined)) {
             // We are in a sane browser with CROS support - no need to do anything
             Strophe.debug("CORS with Firefox/Safari/Chome");
         } else if (flensed && flensed.flXHR) {

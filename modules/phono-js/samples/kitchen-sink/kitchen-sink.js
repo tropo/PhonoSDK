@@ -389,3 +389,8 @@ var appender = new log4javascript.InPageAppender("logHldr",[lazyInit = false,ini
 log.addAppender(appender);
 appender.setShowCommandLine(false);
 appender.setHeight("245px");
+
+
+Strophe.log = function(level, msg) {
+	log.info(msg);
+};
