@@ -158,7 +158,12 @@ package com.phono.impl
 			if (_suppress) {
 				if (!_mute && _active) _soundTimer.start();
 			}
-			else if (_active) _soundTimer.stop();
+			else if (_active) {
+			  _soundTimer.stop();
+			  if(!_mute) {
+			    _mic.gain = _gain;
+			  }
+		  }
 		}
 		
 		public function get suppress():Boolean
