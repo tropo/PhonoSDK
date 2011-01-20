@@ -7,9 +7,9 @@ $(document).ready(function() {
 		//Clone a phono div
 		var phonoCtr = ($(".phono").size() + 1) - 1;
 		var newPhonoID = "Phono" + phonoCtr;
-		var firstPhono = $('.phono').first()
-		var newPhonoDiv = firstPhono.clone()
-		newPhonoDiv.attr("id",newPhonoID).appendTo('.phonoHldr').slideDown();
+		var firstPhono = $('.phono').first();
+		var newPhonoDiv = firstPhono.clone();
+		newPhonoDiv.attr("id",newPhonoID).appendTo('.phonoHldr').show();
 		newPhonoDiv.find(".phonoID").text(newPhonoID);
 		
 		var newPhonoDiv = $("#"+newPhonoID);
@@ -17,7 +17,7 @@ $(document).ready(function() {
 			apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
         	onReady: function(event) {
         	    newPhonoDiv.find(".sessionId").text(this.sessionId);
-			       newPhonoDiv.find(".phoneControl").slideDown();
+			    newPhonoDiv.find(".phoneControl").show();
         	    log.info("["+newPhonoID+"] Phono loaded"); 
         	    
         	    if( ! this.audio.permission() ){
@@ -44,41 +44,41 @@ $(document).ready(function() {
 	     	},
 	      
 	     	phone: {
-         	   onIncomingCall: function(event) {
-         	       // was push to talk enabled for calls?
+         		onIncomingCall: function(event) {
+         	    	// was push to talk enabled for calls?
 		 			var pttEnabled;
 		 			($("#"+newPhonoID).find(".push-to-talk").is(":checked")) ? pttEnabled = true : pttEnabled = false;
          	       
-         	       var newCallID = createCallDiv(newPhonoID,"incoming",pttEnabled);
-         	       var newCallDiv = $("#"+newCallID);
-         	       newCallDiv.find(".callHeader .callDetail").html("<strong>Incoming call</strong>");
-         	       newCallDiv.find(".callHeader .callID").html(newCallID);
-         	   	calls[newCallID] = event.call;
-         	   	log.info("["+newPhonoID+"] New incoming call");
+         	       	var newCallID = createCallDiv(newPhonoID,"incoming",pttEnabled);
+         	       	var newCallDiv = $("#"+newCallID);
+         	       	newCallDiv.find(".callHeader .callDetail").html("<strong>Incoming call</strong>");
+         	       	newCallDiv.find(".callHeader .callID").html(newCallID);
+         	       	calls[newCallID] = event.call;
+         	   	   	log.info("["+newPhonoID+"] New incoming call");
          	       
-         	   	//Bind events from this call
-         	   	Phono.events.bind(calls[newCallID], {
-         	    	   onHangup: function(event) {
-         	    	       newCallDiv.slideUp();
-         	    	       calls[newCallID] = null;
-         	    	       log.info("["+newPhonoID+"] ["+newCallID+"] Call hungup");
-         	    	   },
-         	    	   onError: function(event) {
-         	    	   	log.error("["+newPhonoID+"] ["+newCallID+"] Error: [" + event.reason + "]");
-         	    	   }
-         	   	});
+         	   		//Bind events from this call
+         	   		Phono.events.bind(calls[newCallID], {
+         	    		   onHangup: function(event) {
+         	    		       newCallDiv.slideUp();
+         	    		       calls[newCallID] = null;
+         	    		       log.info("["+newPhonoID+"] ["+newCallID+"] Call hungup");
+         	    		   },
+         	    		   onError: function(event) {
+         	    		       log.error("["+newPhonoID+"] ["+newCallID+"] Error: [" + event.reason + "]");
+         	    		   }
+         	   		});
          	   },
          	   onError: function(event) {
-         	   	log.error("["+newPhonoID+"] Error: [" + event.reason + "]");
+         	       log.error("["+newPhonoID+"] Error: [" + event.reason + "]");
          	   }
 	     	},
 	      
 	     	messaging: {
-         	   onMessage: function(event, message) {
-         	   	var JID = message.from.split("/");
-         	   	log.info("["+newPhonoID+"] Message from " + JID[0] + " [" + message.body + "]");
-         	   	routeMessage(newPhonoID,"incoming",JID[0],message.body);
-         	   }
+         		onMessage: function(event, message) {
+         		 var JID = message.from.split("/");
+         		 log.info("["+newPhonoID+"] Message from " + JID[0] + " [" + message.body + "]");
+         		 routeMessage(newPhonoID,"incoming",JID[0],message.body);
+         		}
 	     	}
       	});
 	}
@@ -147,7 +147,7 @@ $(document).ready(function() {
 		newCallID = "Call" + newCallCtr;
 		var firstCall = $(".callHldr").first()
 		var newCallDiv = firstCall.clone()
-		newCallDiv.attr("id",newCallID).appendTo(callBox).slideDown();
+		newCallDiv.attr("id",newCallID).appendTo(callBox).show();
 		
 		if( callType == "outgoing"){
 			newCallDiv.find(".callInputs").show();
@@ -188,7 +188,7 @@ $(document).ready(function() {
 		newChatID = "Chat" + newChatCtr;
 		var firstChat = $(".chatHldr").first();
 		var newChatDiv = firstChat.clone();
-		newChatDiv.attr("id",newChatID).appendTo(chatBox).slideDown();
+		newChatDiv.attr("id",newChatID).appendTo(chatBox).show();
 		newChatDiv.find(".chatTxtInput").focus();
 		
 		return newChatID;
@@ -255,23 +255,26 @@ $(document).ready(function() {
 		createNewCall(thisPhono, callTo);
 	});
 	
-	$('.headset').live('change', function() {
+	$('.headset').live($.browser.msie ? 'click': 'change', function() {
 		var phonoId = $(this).closest(".phono").attr("id");
 		var headsetEnabled = $("#"+phonoId).find(".headset").is(":checked");
 		log.info("["+phonoId+"] Headset: " + headsetEnabled);
     	phonos[phonoId].phone.headset(headsetEnabled);		
 	});
 	
-	$('.ring-tone, .ringback-tone').live('change', function() {
+	$('.ring-tone, .ringback-tone').live($.browser.msie ? 'click': 'change', function() {
 		var phonoId = $(this).closest(".phono").attr("id");
 		var tone = $(this).val();
-		
 		if($(this).hasClass("ring-tone")){
-			phonos[phonoId].phone.ringTone(tone);
-			log.info("["+phonoId+"] Ring tone set: " + tone);
+			if(phonos[phonoId].phone.ringTone() !== tone){
+				phonos[phonoId].phone.ringTone(tone);
+				log.info("["+phonoId+"] Ring tone set: " + tone);
+			}
 		}else{
-			phonos[phonoId].phone.ringbackTone(tone);
-			log.info("["+phonoId+"] Ringback tone set: " + tone);
+			if(phonos[phonoId].phone.ringbackTone() !== tone){
+				phonos[phonoId].phone.ringbackTone(tone);
+				log.info("["+phonoId+"] Ringback tone set: " + tone);
+			}
 		}	
 	});
 	
@@ -389,3 +392,7 @@ var appender = new log4javascript.InPageAppender("logHldr",[lazyInit = false,ini
 log.addAppender(appender);
 appender.setShowCommandLine(false);
 appender.setHeight("245px");
+
+Strophe.log = function(level, msg) {
+	log.info(msg);
+};

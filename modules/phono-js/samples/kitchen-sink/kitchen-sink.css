@@ -19,9 +19,16 @@ a:active, a, :focus{
 h1{
 	color:#FFF;
 }
-.clear-left{
-	clear:left;
-}
+.clearfix:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+	}
+* html .clearfix             { zoom: 1; } /* IE6 */
+*:first-child+html .clearfix { zoom: 1; } /* IE7 */
 .introduction{
 	line-height: 1.3em;
 	width:750px;
@@ -67,8 +74,7 @@ h1{
 .phonoHeader{
 	position:relative;
 	background:#D9D9D9;
-	padding:0 10px;
-	line-height: 30px;
+	padding:8px 10px;
 }
 .phonoHeader .phonoIDLabel{
 	font-weight: bold;
@@ -195,6 +201,7 @@ span.tiny{
 	margin:8px 0 4px 0;
 	font-size:12px;
 	color:#666;
+	height:40px;
 }
 .phone-settings .setting{
 	float:left;
