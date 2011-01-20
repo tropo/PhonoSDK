@@ -255,23 +255,26 @@ $(document).ready(function() {
 		createNewCall(thisPhono, callTo);
 	});
 	
-	$('.headset').live('change', function() {
+	$('.headset').live($.browser.msie ? 'click': 'change', function() {
 		var phonoId = $(this).closest(".phono").attr("id");
 		var headsetEnabled = $("#"+phonoId).find(".headset").is(":checked");
 		log.info("["+phonoId+"] Headset: " + headsetEnabled);
     	phonos[phonoId].phone.headset(headsetEnabled);		
 	});
 	
-	$('.ring-tone, .ringback-tone').live('change', function() {
+	$('.ring-tone, .ringback-tone').live($.browser.msie ? 'click': 'change', function() {
 		var phonoId = $(this).closest(".phono").attr("id");
 		var tone = $(this).val();
-		
 		if($(this).hasClass("ring-tone")){
-			phonos[phonoId].phone.ringTone(tone);
-			log.info("["+phonoId+"] Ring tone set: " + tone);
+			if(phonos[phonoId].phone.ringTone() !== tone){
+				phonos[phonoId].phone.ringTone(tone);
+				log.info("["+phonoId+"] Ring tone set: " + tone);
+			}
 		}else{
-			phonos[phonoId].phone.ringbackTone(tone);
-			log.info("["+phonoId+"] Ringback tone set: " + tone);
+			if(phonos[phonoId].phone.ringbackTone() !== tone){
+				phonos[phonoId].phone.ringbackTone(tone);
+				log.info("["+phonoId+"] Ringback tone set: " + tone);
+			}
 		}	
 	});
 	
@@ -389,7 +392,6 @@ var appender = new log4javascript.InPageAppender("logHldr",[lazyInit = false,ini
 log.addAppender(appender);
 appender.setShowCommandLine(false);
 appender.setHeight("245px");
-
 
 Strophe.log = function(level, msg) {
 	log.info(msg);
