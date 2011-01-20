@@ -6,7 +6,7 @@
 Strophe.addConnectionPlugin('cors', {
     init: function () {
         // replace Strophe.Request._newXHR with new CORS version
-        if (false && window.XDomainRequest) {
+        if (window.XDomainRequest) {
             // We are in IE with CORS support
             Strophe.debug("CORS with IE");
             Strophe.Request.prototype._newXHR = function () {
