@@ -238,6 +238,7 @@ $(document).ready(function() {
 			calls[$(this).attr("id")] = null;
 		});
 		log.info("["+thisPhonoID+"] Phone removed");
+		return false;
 	});
 	
 	$('.closeChat').live('click', function() {
@@ -245,8 +246,8 @@ $(document).ready(function() {
 		var thisChatID = $(this).closest(".chatHldr").attr("id");
 		thisChat.slideUp();
 		chats[thisChatID] = null;
-		
 		log.info("["+thisChatID+"] Chat closed");
+		return false;
 	});
 	
 	$('.call').live('click', function() {
@@ -282,6 +283,7 @@ $(document).ready(function() {
 		var thisPhono = $(this).closest(".phono");
 		$(".flash-hldr").css("left","250.5px");
 		thisPhono.find(".flashHelp").text("Try again");
+		return false;
 	});
 	
 	$('.chat').live('click', function() {
