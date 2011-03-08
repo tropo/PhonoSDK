@@ -438,14 +438,14 @@
             // Start ringing
             if (call.ringer != null) call.ringer.start();
             
+            // Auto accept the call (i.e. send ringing)
+            call.state = CallState.PROGRESS;
+            call.accept();
+
             //Fire imcoming call event
             Phono.events.trigger(this, "incomingCall", {
                call: call
             });
-            
-            // Auto accept the call (i.e. send ringing)
-            call.state = CallState.PROGRESS;
-            call.accept();
             
             break;
             
