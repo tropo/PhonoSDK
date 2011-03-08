@@ -7,9 +7,92 @@
     <meta http-equiv="PRAGMA" content="NO-CACHE" />
     <meta http-equiv="X-UA-Compatible" content="IE=8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- CSS for sample layout -->
     <link type="text/css"rel="stylesheet" href="../samples.css"/>
-    <script type="text/javascript" src="jquery_1_4_2.js"></script>  
-    <script type="text/javascript" src="../../jquery.phono.js"></script>     
+    <link type="text/css" rel="stylesheet" href="http://s.phono.com/deps/prettify/prettify.css"/>
+    
+    <!-- jQuery - required -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script> 
+    
+    <!-- Libraries/plugins for sample display - not required -->
+	<script type="text/javascript" src="http://s.phono.com/deps/prettify/prettify.js"></script>
+    <script type="text/javascript" src="http://s.phono.com/deps/themeswitcher/jquery.themeswitcher.min.js"></script> 
+    
+    <!-- Phono and phone plugin - required -->
+    <script type="text/javascript" src="../../jquery.phono.js"></script>
+    <script type="text/javascript" src="http://s.phono.com/deps/phone/jquery.phone.js"></script>
+    
+    <!-- Sample styles -->
+    <style type="text/css">
+    	#phone-hldr, #switcher{
+    		width:925px;
+    		position:relative;
+    		margin:0 auto;
+    		margin-top:25px;
+    	}
+    	#sample-1{
+    		float:left;
+    	}
+    	#sample-2{
+    		float:right;
+    	}
+    	.sample-hldr{
+    		width:430px;
+    		min-height:200px;
+    		text-align:center;
+    		font-size: 120%;
+    		padding:10px;
+    		background:#efefef;
+    		border-radius:10px;-moz-border-radius:10px;-webkit-border-radius:10px;
+    		min-height:225px;
+    	}
+    	pre{
+    		height:250px;
+    		overflow-y: auto;
+    		overflow-x: auto;
+    		text-align:left;
+    		font-size:11px;
+			padding:5px !important;
+			background:#FFF;
+			border:3px solid #CCC !important;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;
+			font-family: monaco, 'Bitstream Vera Sans Mono', 'Courier New', courier, monospace;
+    	}
+    </style>
+    
+    <script type="text/javascript">
+		$(document).ready(function(){
+	    	prettyPrint();
+	    	$("#switcher").themeswitcher({
+	    		loadTheme:"UI darkness",
+	    		width:210,
+	    		imgPath:"http://s.phono.com/deps/themeswitcher/images/"
+	    	})
+
+	    	$("#sample-1 .sample-phone").append(
+	    		$("<div/>")
+	    			.css({"width":"220px","margin":"0 auto"})
+	    			.phone({
+	    				apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
+	    				numberToDial: "8003544487",
+	    				buttonTextReady: "1-800-FLIGHTS",
+	    				slideOpen:false,
+	    				dialPad: false
+	    			})
+	    	)
+	    	
+	    	$("#sample-2 .sample-phone").append(
+	    		$("<div/>")
+	    			.css({"width":"220px","margin":"0 auto"})
+	    			.phone({
+	    				apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
+	    				numberToDial: "8007773456",
+	    				buttonTextReady: "1-800-777-FILM",
+	    				slideOpen:true
+	    			})
+	    	)
+
+	    });
+	</script>     
 </head>
 <body>
 	<div id="sample-header">
@@ -20,12 +103,80 @@
 			<div class="intro">
 				<h1> $(div).phone()</h1>
 				<p>
-					The kitchen sink sample showcases all of the functionality available to you in the Phono SDK. With it, you can create 
-					multiple phono instances; each able to make and receive multiple calls and chats. The log viewer, located at the bottom of this sample, monitors client/server events and errors. 
-					You can make calls to any Phono session ID, US domestic phone numbers, as well as any <a href="http://www.tropo.com" target="_blank">Tropo</a> or <a target="_blank" href="http://evolution.voxeo.com">Voxeo Evolution</a> application. 
-					You can learn more about how to use Phone by visiting the <a href="http://www.phono.com/docs">documentation</a> page and the <a href="http://www.phono.com/forums">forums</a>.
+					$(div).phone() is a jQuery plugin that makes it easy to drop a phone directly into any webpage with just a few lines of code. 
+					The Phone plugin depends on the Phono library to make calls and uses <a href="http://jqueryui.com/themeroller/">jQuery UI theming</a> for styling. 
+				</p>
+				<p>
+					Checkout the <a href="https://github.com/phono/div.phone">Github repository</a> for the project source and full documentation. 
 				</p>	
 			</div>
+		</div>
+	</div>
+	
+	<div id="switcher"></div>
+	
+	<div id="phone-hldr">
+		<div id="sample-2" class="sample-hldr">
+			<h2>Phone with sliding dialpad</h2>
+			<div class="sample-phone"></div>
+			
+			<h3>Get the code</h3>
+<pre class="prettyprint">
+&lt;html&gt;
+&lt;head&gt;
+ &lt;link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/themes/ui-darkness/jquery-ui.css"/&gt;
+ &lt;script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"&gt;&lt;/script&gt;
+ &lt;script type="text/javascript" src="http://s.phono.com/releases/0.2/jquery.phono.js"&gt;&lt;/script&gt;
+ &lt;script type="text/javascript" src="http://s.phono.com/deps/jquery.phone.js"&gt;&lt;/script&gt;
+ &lt;script type="text/javascript"&gt;
+  $("body").append(
+   $("&lt;div/&gt;")
+    .css("width","210px")
+    .phone({
+      apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
+      numberToDial: "8007773456",
+      buttonTextReady: "1-800-FILM (Moviefone)",
+      slideOpen:true
+    })
+  )
+ &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+		</div>
+		
+		<div id="sample-1" class="sample-hldr">
+			<h2>Phone with no dialpad</h2>
+			<div class="sample-phone"></div>
+			
+			<h3>Get the code</h3>
+<pre class="prettyprint">
+&lt;html&gt;
+&lt;head&gt;
+ &lt;link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/themes/ui-darkness/jquery-ui.css"/&gt;
+ &lt;script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"&gt;&lt;/script&gt;
+ &lt;script type="text/javascript" src="http://s.phono.com/releases/0.2/jquery.phono.js"&gt;&lt;/script&gt;
+ &lt;script type="text/javascript" src="http://s.phono.com/deps/jquery.phone.js"&gt;&lt;/script&gt;
+ &lt;script type="text/javascript"&gt;
+  $("body").append(
+   $("&lt;div/&gt;")
+    .css("width","210px")
+    .phone({
+      apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
+      numberToDial: "8003544487",
+      buttonTextReady: "1-800-FLIGHTS",
+      slideOpen:false,
+      dialPad: false
+    })
+  )
+ &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
 		</div>
 	</div>
 	
