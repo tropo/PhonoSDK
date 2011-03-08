@@ -42,7 +42,7 @@
 
       wmodeSetting = "opaque";
 
-      if ((navigator.appVersion.indexOf("X11")!=-1) || (navigator.appVersion.indexOf("Linux")!=-1)) {
+      if ((navigator.appVersion.indexOf("X11")!=-1) || (navigator.appVersion.indexOf("Linux")!=-1) || (jQuery.browser.opera)) {
           wmodeSetting = "window";
       }
 
