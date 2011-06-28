@@ -1,8 +1,9 @@
-<project name="phono" default="build">
+<project name="phono" default="build-default">
 
   <property file="build.properties" />
 
-  <target name="cruisecontrol" depends="build">
+  <!-- SDK Distribution -->
+  <target name="sdk">
 		<mkdir dir="artifacts"/>
     <zip destfile="artifacts/PhonoSDK-${build.version}.zip">
       <zipfileset dir="target/sdk" prefix="phonosdk-${build.version}"/>
@@ -12,21 +13,38 @@
       <tarfileset dir="target/sdk" prefix="phonosdk-${build.version}"/>
       <tarfileset dir="installer/base" prefix="phonosdk-${build.version}" />
     </tar>
+    <copy todir="artifacts/sdk">
+      <fileset dir="target/sdk" />
+      <fileset dir="installer/base" />
+    </copy>
   </target>
   
-  <target name="build" depends="clean">
+  <!-- Device Targets -->
+  <target name="build-desktop">
     <antcall target="build-as-audio" />
+    <antcall target="build-java-audio" />
     <antcall target="build-js" />
+    <antcall target="build-phonegap-plugin" />
+  </target>
+  <target name="build-mobile">
+    <antcall target="build-phonegap-plugin" />
   </target>
 
+  <!-- Modules -->
   <target name="build-as-audio">
 		<ant inheritAll="true" target="build" dir="modules/phono-as-audio" />
   </target>
-
+  <target name="build-java-audio">
+		<ant inheritAll="true" target="build" dir="modules/phono-java-audio" />
+  </target>
   <target name="build-js">
 		<ant inheritAll="true" target="build" dir="modules/phono-js" />
   </target>
+  <target name="build-phonegap-plugin">
+		<ant inheritAll="true" target="build" dir="modules/phono-phonegap" />
+  </target>
 
+  <!-- Util -->
   <target name="clean">
     <delete dir="target" />
     <delete dir="artifacts" />

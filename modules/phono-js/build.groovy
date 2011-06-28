@@ -21,7 +21,9 @@ def processIncludes = { file, vars->
 def base = args[0];
 
 def plugin = processIncludes("$base/src/main/js/jquery.phono.js", [
-  "phono-core" : processIncludes("$base/src/main/js/phono.js", null)
+  "phono-core" : processIncludes("$base/src/main/js/phono.js", [
+               "phono-audio" : processIncludes("$base/src/main/js/phono.audio.js", null)
+  ])
 ])
 
 new File("$base/target/jquery.phono.js").text = plugin;

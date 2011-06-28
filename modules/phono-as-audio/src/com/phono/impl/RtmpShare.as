@@ -72,6 +72,7 @@ package com.phono.impl
 		{
 			if (!_nc.connected) _queue.push(this.start);
 			else {
+					
 				// Start the stream				
 				if (_mic) {
 					_tx = new NetStream(_nc);	
@@ -158,12 +159,7 @@ package com.phono.impl
 			if (_suppress) {
 				if (!_mute && _active) _soundTimer.start();
 			}
-			else if (_active) {
-			  _soundTimer.stop();
-			  if(!_mute) {
-			    _mic.gain = _gain;
-			  }
-		  }
+			else if (_active) _soundTimer.stop();
 		}
 		
 		public function get suppress():Boolean

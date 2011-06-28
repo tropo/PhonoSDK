@@ -105,13 +105,13 @@ var flensed={base_path:"http://s.phono.com/deps/flensed/1.0/"};
 
    // ======================================================================
 
-   //@Include=flXHR.js
+   //Include=flXHR.js
    //@Include=strophe.js   
    //@Include=strophe.cors.js
    //@Include=phono.util.js
    //@Include=phono.events.js
    //@Include=flashembed.min.js
-   //@Include=phono.audio.js
+   //@Include=$phono-audio
    //@Include=phono.messaging.js
    //@Include=phono.phone.js
 

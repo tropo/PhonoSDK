@@ -74,17 +74,19 @@ package com.phono
 		
 		public function share(url:String, autoStart:Boolean, codecId:String="97", codecName:String="SPEEX", codecRate:String="16000", suppress:Boolean=true):Share
 		{
-		   
-		   var codec:Codec = new Codec(codecId, codecName, codecRate);
-		   
 			// Force an open request for microphone permisson if we don't already have it - 
 			// Flash will automatically open the box, so we need to be ready
-         setTimeout(function():void {
-   			if (_mic.muted) {
-   				_boxOpen = true;
-   				dispatchEvent( new MediaEvent(MediaEvent.OPEN) );			
-   			}
-         },1000);			
+			setTimeout(function():void {
+				if (_mic.muted) {
+					showPermissionBox();
+				}
+			},10);
+			
+			// Doing this prevents it from opening the box:
+			//_mic.setLoopBack(true);
+			//_mic.setLoopBack(false);
+			
+		    var codec:Codec = new Codec(codecId, codecName, codecRate);		
 			
 			var protocolName:String = getProtocolName(url);
 			if (protocolName.toLowerCase() == "rtmp") {
@@ -110,43 +112,45 @@ package com.phono
 		public function showPermissionBox():void
 		{
 			var audio:Audio = this;
-			setTimeout(function():void {
-				
-				var count:Number = 0;
-				
-				dispatchEvent(new MediaEvent(MediaEvent.OPEN, audio));
-				var alert:Alert = Alert.show('Click "OK" to continue.', "Success", Alert.OK, null, function(e:Event):void {
-					dispatchEvent(new MediaEvent(MediaEvent.CLOSE, audio));
-				});
-				
-				var listener:Function = function(event:flash.events.Event):void {
-					if(count == 0) {
-						Security.showSettings(SecurityPanel.PRIVACY);
-						count = count +1;
-					}
-					else if(count == 1) {
-						count = count +1;
-					}
-					else {
-						alert.removeEventListener(flash.events.Event.RENDER, listener);
-						alert.visible = false;
+			if (!_boxOpen) {
+				_boxOpen = true;	
+				setTimeout(function():void {					
+					var count:Number = 0;
+					
+					dispatchEvent(new MediaEvent(MediaEvent.OPEN, audio));
+					var alert:Alert = Alert.show('Click "OK" to continue.', "Success", Alert.OK, null, function(e:Event):void {
 						dispatchEvent(new MediaEvent(MediaEvent.CLOSE, audio));
-					}
-				};
-				
-				alert.addEventListener(flash.events.Event.RENDER, listener);
-				
-			}, 1000);
-			
+						_boxOpen = false;
+					});
+					
+					var listener:Function = function(event:flash.events.Event):void {
+						if(count == 0) {
+							Security.showSettings(SecurityPanel.PRIVACY);
+							count = count +1;
+						}
+						else if(count == 1) {
+							count = count +1;
+						}
+						else {
+							alert.removeEventListener(flash.events.Event.RENDER, listener);
+							alert.visible = false;
+							dispatchEvent(new MediaEvent(MediaEvent.CLOSE, audio));
+							_boxOpen = false;
+						}
+					};
+					
+					alert.addEventListener(flash.events.Event.RENDER, listener);
+					
+				}, 1000);		
+			}
 		}	
 		
 		// --- Internal functions
 	
 		private function onMicStatus(event:StatusEvent):void 
 		{
-			if ((event.code == "Microphone.Unmuted" || event.code == "Microphone.Muted") && _boxOpen == true) {
-			   _boxOpen = false;
-				dispatchEvent( new MediaEvent(MediaEvent.CLOSE) );
+			if ((event.code == "Microphone.Unmuted" || event.code == "Microphone.Muted") && _boxOpen == false) {
+                        	dispatchEvent( new MediaEvent(MediaEvent.CLOSE) );
 			}
 		}
 		

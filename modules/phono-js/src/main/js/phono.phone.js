@@ -30,6 +30,7 @@
       this.phone = phone;
       this.phono = phone.phono;
       this.audioLayer = this.phono.audio;
+      this.transport = this.audioLayer.transport();
       this.connection = this.phono.connection;
       
       this.config = Phono.util.extend({
@@ -39,7 +40,8 @@
          hold: false,
          volume: 50,
          gain: 50,
-         tones: false
+         tones: false,
+         codecs: phone.config.codecs
       }, config);
       
       // Apply config
@@ -54,6 +56,7 @@
       this.state = CallState.INITIAL;  
       this.remoteJid = null;
       this.initiator = null;
+      this.codec = null;
 
       this.headers = [];
       
@@ -74,9 +77,6 @@
          this.input.start();
       }
       if(this.output) {
-         if(!this.audioLayer.permission()) {
-            Phono.events.trigger(this.audioLayer, "permissionBoxShow");
-         }
          this.output.start();
       }
    };
@@ -108,18 +108,20 @@
       $(call.headers).each(function() {
          jingle.c("custom-header", {name:this.name, data:this.value}).up();
       });
-      
-      var codec = this.audioLayer.codecs()[0];
-      
-      jingle
-         .c('content', {creator:"initiator"})
-         .c('description', {xmlns:this.audioLayer.transport().description})
-         .c('payload-type', {
-            id: codec.id,
-            name: codec.name,
-            clockrate: codec.rate
-         }).up().up()
-         .c('transport', {xmlns:this.audioLayer.transport().description});
+             
+       var partial = jingle
+           .c('content', {creator:"initiator"})
+           .c('description', {xmlns:this.transport.description})
+       
+       Phono.util.each(this.config.codecs(Phono.util.filterWideband(this.audioLayer.codecs(),this.phone.wideband())), function() {
+           partial = partial.c('payload-type', {
+               id: this.id,
+               name: this.name,
+               clockrate: this.rate
+           }).up();           
+       });
+
+       this.transport.buildTransport(partial.up());
        
       this.connection.sendIQ(jingleIq, function (iq) {
          call.state = CallState.PROGRESS;
@@ -157,24 +159,39 @@
       
       if (call.state != CallState.RINGING 
       && call.state != CallState.PROGRESS) return;
+
+       var jingleIq = $iq({type:"set", to:call.remoteJid});
       
-      var jingleIq = $iq({
-         type:"set", 
-         to:call.remoteJid})
-         .c('jingle', {
-            xmlns: Strophe.NS.JINGLE,
-            action: "session-accept",
-            initiator: call.initiator,
-            sid: call.id}
-      );
-      
-      this.connection.sendIQ(jingleIq, function (iq) {
-          call.state = CallState.CONNECTED;
-          Phono.events.trigger(call, "answer");
-          if (call.ringer != null) call.ringer.stop();
-          call.startAudio();
-      });
-      
+       var jingle = jingleIq.c('jingle', {
+           xmlns: Strophe.NS.JINGLE,
+           action: "session-accept",
+           initiator: call.initiator,
+           sid: call.id
+       });
+       
+       var partial = jingle
+           .c('content', {creator:"initiator"})
+           .c('description', {xmlns:this.transport.description})
+       
+       Phono.util.each(this.config.codecs(Phono.util.filterWideband(this.audioLayer.codecs(),this.phone.wideband())), function() {
+           if (this.id == call.codec.id || this.name == "telephone-event") {
+               partial = partial.c('payload-type', {
+                   id: this.id,
+                   name: this.name,
+                   clockrate: this.rate
+               }).up();           
+           }
+       });
+       
+       this.transport.buildTransport(partial.up());
+       
+       this.connection.sendIQ(jingleIq, function (iq) {
+           call.state = CallState.CONNECTED;
+           Phono.events.trigger(call, "answer");
+           if (call.ringer != null) call.ringer.stop();
+           call.startAudio();
+       });
+       
    };
 
    Call.prototype.bindAudio = function(binding) {
@@ -218,7 +235,7 @@
    
    Call.prototype.digit = function(value, duration) {
       if(!duration) {
-         duration = 250;
+         duration = 349;
       }
       this.output.digit(value, duration, this._tones);
    };
@@ -312,47 +329,50 @@
 
       var call = this;
 
-      // Find a matching codec
+      // Find a matching audio codec
       var description = $(iq).find('description');
       var codec = null;
       description.find('payload-type').each(function () {
          var codecName = $(this).attr('name');
          var codecRate = $(this).attr('clockrate');
-         $.each(call.audioLayer.codecs(), function() {
-            if (this.name == codecName && this.rate == codecRate) {
+          var codecId = $(this).attr('id');
+          $.each(call.config.codecs(Phono.util.filterWideband(call.audioLayer.codecs(),call.phone.wideband())), function() {
+             if ((this.name == codecName && this.rate == codecRate && this.name != "telephone-event") || (parseInt(this.id) < 90 && this.id == codecId)) {
                codec = this;
                return false;
-            }
+            } 
          });
       });
       
       // No matching codec
       if (!codec) {
-        return false;
+          Phono.log.error("No matching codec");
+          return null;
       }
-      
+       
       // Find a matching media transport
-      var transport = $(iq).find('transport');
       var foundTransport = false;
-      if (this.audioLayer.transport().name == transport.attr('xmlns')) {
-         transport.find('candidate').each(function () {
-            var url = $(this).attr('rtmpUri') + "/" + $(this).attr('playName');
-            call.bindAudio({
-               input: call.audioLayer.play(url, false),
-               output: call.audioLayer.share(url, false, codec)
-            });
-            foundTransport = true;
-            return false;
-         });
-      }                      
+      $(iq).find('transport').each(function () {
+          if (call.transport.name == $(this).attr('xmlns') && foundTransport == false) {
+              var uri = call.transport.processTransport($(this));      
+              if (uri != undefined) {
+                  call.bindAudio({
+                      input: call.audioLayer.play(uri, false),
+                      output: call.audioLayer.share(uri, false, codec)
+                  });
+                  foundTransport = true;
+              } else {
+                  Phono.log.error("No valid candidate in transport");
+              }
+          }
+      });
 
-      // No matching Transport
-      if (!foundTransport) {
-        return false;
+      if (foundTransport == false) {
+          Phono.log.error("No matching valid transport");
+          return null;
       }
-      
-      return true;
-      
+      return codec;
+       
    };
 
    // Phone
@@ -369,12 +389,17 @@
       
       // Initialize call hash
       this.calls = {};
-      
+
+      // Initial state
+      this._wideband = true;
+
       // Define defualt config and merge from constructor
       this.config = Phono.util.extend({
          ringTone: "http://s.phono.com/ringtones/Diggztone_Marimba.mp3",
          ringbackTone: "http://s.phono.com/ringtones/ringback-us.mp3",
-         headset: false
+         wideband: true,
+         headset: false,
+         codecs: function(offer) {return offer;}
       }, config);
       
       // Apply config
@@ -421,7 +446,8 @@
             phone.calls[call.id] = call;
 
             // Negotiate SDP
-            if(!call.negotiate(iq)) {
+            call.codec = call.negotiate(iq);
+            if(call.codec == null) {
                Phono.log.warn("Failed to negotiate incoming call", iq);
                return true;
             }
@@ -442,18 +468,24 @@
             call.state = CallState.PROGRESS;
             call.accept();
 
-            //Fire imcoming call event
+            // Fire imcoming call event
             Phono.events.trigger(this, "incomingCall", {
                call: call
             });
-            
+
+            // Get microphone permission if we are going to need it
+            if(!audioLayer.permission()) {
+                Phono.events.trigger(audioLayer, "permissionBoxShow");
+            }
+                        
             break;
             
          // Accepted Outbound Call
          case "session-accept":
          
             // Negotiate SDP
-            if(!call.negotiate(iq)) {
+            call.codec = call.negotiate(iq);
+            if(call.codec == null) {
                Phono.log.warn("Failed to negotiate outbound call", iq);
                return true;
             }
@@ -515,7 +547,7 @@
 
       // Configure Call properties inherited from Phone
       config = Phono.util.extend({
-         headset: this.headset()
+         headset: this.headset(),
       }, (config || {}));
 
       // Create and configure Call
@@ -590,6 +622,13 @@
         this.headset(value);
       });
    };
+
+   Phone.prototype.wideband = function(value) {
+      if(arguments.length == 0) {
+         return this._wideband;
+      }
+      this._wideband = value;
+   }
 
    Phono.registerPlugin("phone", {
       create: function(phono, config, callback) {

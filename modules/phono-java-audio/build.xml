@@ -1,0 +1,38 @@
+<project name="phono-java-audio" default="build">
+  
+  <property environment="env" />
+
+  <property name="lib.dir" value="lib"/>
+  <property name="java.dir" value="${env.JAVA_HOME}"/>
+
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    <fileset dir="${java.dir}" includes="**/plugin.jar"/>
+  </path>
+  
+  <target name="applet" depends="clean">
+    <mkdir dir="target"/>
+    <mkdir dir="build/applet/classes"/>
+    <javac srcdir="src/java" destdir="build/applet/classes" classpathref="classpath" target="1.5"/>
+    <jar destfile="target/phono.audio.jar" basedir="build/applet/classes">
+      <zipfileset src="${lib.dir}/JLayer.jar"/>
+      <zipfileset src="${lib.dir}/jtransforms-fft-2.3.jar"/>
+      <zipfileset prefix="sounds" dir="sounds"/>
+    </jar>
+
+    <signjar jar="target/phono.audio.jar"
+             alias="phono" storepass="phonorocks" keystore="keys/phonokeys"/>
+    
+  </target>
+  
+  <target name="build" depends="applet">
+    <!-- Binary -->
+    <copy file="target/phono.audio.jar" todir="../../target/sdk/plugins/audio/" />
+  </target>
+
+  <target name="clean">
+    <delete dir="target" />
+    <delete dir="build" />
+  </target>
+  
+</project>

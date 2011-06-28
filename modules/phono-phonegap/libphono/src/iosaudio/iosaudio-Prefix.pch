@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'iosaudio' target in the 'iosaudio' project
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+#endif

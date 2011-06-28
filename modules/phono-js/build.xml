@@ -2,12 +2,6 @@
 
   <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" classpath="groovy-all-1.7.5.jar"/>
 
-  <property name="phono.minify" value="true" />
-
-  <condition property="minify">
-    <equals arg1="${phono.minify}" arg2="true" />
-  </condition>
-
   <target name="build" depends="clean">
 
     <mkdir dir="target" />
@@ -17,7 +11,15 @@
       <arg value="${basedir}" />
     </groovy>
 
-    <antcall target="minify" />
+    <!-- Minify -->
+    <java jar="yuicompressor-2.4.2.jar" fork="true">
+      <arg value="--type"/>
+      <arg value="js"/>
+      <arg value="-o"/>
+      <arg value="target/jquery.phono.min.js"/>
+      <arg value="-v"/>
+      <arg value="target/jquery.phono.js"/>
+    </java>
 
     <!-- SDK -->
     <copy file="target/jquery.phono.js" tofile="../../target/sdk/jquery.phono.js" overwrite="true" />
@@ -32,18 +34,9 @@
       <fileset dir="samples" />
     </copy>
 
-  </target>
+    <!-- Copy phono js to the kitchen sink -->
+    <copy file="target/jquery.phono.js" tofile="../../target/sdk/samples/kitchen-sink/www/jquery.phono.js" overwrite="true" />
 
-  <target name="minify" if="minify">
-    <java jar="yuicompressor-2.4.2.jar" fork="true">
-      <arg value="--type"/>
-      <arg value="js"/>
-      <arg value="-o"/>
-      <arg value="target/jquery.phono.min.js"/>
-      <arg value="-v"/>
-      <arg value="target/jquery.phono.js"/>
-    </java>
-    <copy file="target/jquery.phono.min.js" tofile="target/jquery.phono.js" overwrite="true" />
   </target>
 
   <target name="clean">
