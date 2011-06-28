@@ -24,7 +24,6 @@
     <antcall target="build-as-audio" />
     <antcall target="build-java-audio" />
     <antcall target="build-js" />
-    <antcall target="build-phonegap-plugin" />
   </target>
   <target name="build-mobile">
     <antcall target="build-phonegap-plugin" />
