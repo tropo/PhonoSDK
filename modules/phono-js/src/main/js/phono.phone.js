@@ -298,6 +298,13 @@
    	}
    };
 
+   Call.prototype.energy = function() {
+   	if(this.output) {
+   	   ret = this.output.energy();
+   	}
+	return ret;
+   };
+
    Call.prototype.headset = function(value) {
    	if(arguments.length === 0) {
    	    return this._headset;

@@ -91,6 +91,10 @@ public class Share {
         return value; // for now
     }
 
+    public double [] energy(){
+        return audio.getEnergy();
+    }
+    
     public boolean mute(boolean v) {
         audio.muteMic(v);
         return v;

@@ -3,11 +3,10 @@
   <property environment="env" />
 
   <property name="lib.dir" value="lib"/>
-  <property name="java.dir" value="${env.JAVA_HOME}"/>
 
   <path id="classpath">
     <fileset dir="${lib.dir}" includes="**/*.jar"/>
-    <fileset dir="${java.dir}" includes="**/plugin.jar"/>
+    <fileset dir="${java.home}" includes="**/plugin.jar"/>
   </path>
   
   <target name="applet" depends="clean">

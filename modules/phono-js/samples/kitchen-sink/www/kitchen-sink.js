@@ -111,8 +111,26 @@ $(document).ready(function() {
             onAnswer: function(event) {
             	log.info("["+phonoDiv.attr('id')+"] ["+newCallID+"] Call answered using " + calls[newCallID].codec.name + "/" + calls[newCallID].codec.rate);
                 callDiv.find(".callCodec").html("<strong>Codec:</strong> " + calls[newCallID].codec.name + "/" + calls[newCallID].codec.rate);
+                calls[newCallID].energyPoll = window.setInterval(function(){
+	             var callDiv = $("#"+newCallID);
+                     str = "<strong>Mic:</strong> ";
+                     me = calls[newCallID].energy().mic;
+                     for (i=0;i<10;i++){
+                       str = str+ ((i < me)?"X":"_");
+                     }
+                     callDiv.find(".callMicEnergy").html(str);	
+                     
+                     str = "<strong>Spk:</strong> ";
+                     se = calls[newCallID].energy().spk;
+                     for (i=0;i<10;i++){
+                       str = str+ ((i < se)?"X":"_");
+                     }
+                     callDiv.find(".callSpkEnergy").html(str);	
+		},500);
+			
             },
             onHangup: function() {
+		window.clearInterval(calls[newCallID].energyPoll);
             	calls[newCallID] = null;
             	$("#"+newCallID).slideUp();
             	log.info("["+phonoDiv.attr('id')+"] ["+newCallID+"] Call hungup");
@@ -396,6 +414,7 @@ $(document).ready(function() {
 
     //Create a phono when the sample is loaded
     createNewPhono();
+
     
 });
 

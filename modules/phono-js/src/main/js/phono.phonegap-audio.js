@@ -217,6 +217,12 @@ PhonegapAudio.prototype.share = function(url, autoPlay, codec) {
    	    }
    	    else {
    	    }
+        },
+        energy: function(){
+            return {
+               mic: 0.0,
+               spk: 0.0
+            }
         }
     }
 };   

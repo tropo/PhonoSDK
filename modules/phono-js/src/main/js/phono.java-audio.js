@@ -121,6 +121,13 @@ JavaAudio.prototype.share = function(url, autoPlay, codec) {
    	    else {
    		share.doES(value);
    	    }
+        },
+        energy: function(){
+            var en = share.energy();
+            return {
+               mic: Math.floor(Math.max((Math.LOG2E * Math.log(en[0])-4.0),0.0)),
+               spk: Math.floor(Math.max((Math.LOG2E * Math.log(en[1])-4.0),0.0))
+            }
         }
     }
 };   

@@ -160,6 +160,12 @@ FlashAudio.prototype.share = function(url, autoPlay, codec) {
    	    else {
    		share.setSuppress(value);
    	    }
+        },
+        energy: function(){
+            return {
+               mic: 0.0 ,
+               spk: 0.0
+            }
         }
     }
 };   
