@@ -115,13 +115,18 @@ public class EsupPhonoAudio extends com.phono.audio.phone.PhonoAudio {
             String v = (String) value;
             _doEc = Boolean.parseBoolean(v);
             Log.debug("EsupPhonoAudio.setAudioProperty(): _doEc=" + _doEc);
+            if (pan != null && _osname.startsWith("mac")){
+                float val = _doEc?1.0f:0.0f;
+                Log.debug("EsupPhonoAudio.setAudioProperty(): Mac with pan detected ... pan set to"+val);
+                pan.setValue(val);
+            }
         } else if (name.equalsIgnoreCase(PhonoAudioPropNames.ECFLOOR)) {
             String v = (String) value;
             _echoFloor = Integer.parseInt(v);
             Log.debug("EsupPhonoAudio.setAudioProperty(): _echoFloor=" + _echoFloor);
         } else if (name.equalsIgnoreCase(PhonoAudioPropNames.GAIN)) {
             String v = (String) value;
-            _gain = Double.parseDouble(v);
+            _gain = 2 * Double.parseDouble(v); // default is half - too low - double it.
             Log.debug("EsupPhonoAudio.setAudioProperty(): _gain=" + _gain);
         }
         return super.setAudioProperty(name, value);
@@ -143,6 +148,6 @@ public class EsupPhonoAudio extends com.phono.audio.phone.PhonoAudio {
 
     public void setGain(double gain) {
         Log.debug("EsupPhonoAudio.setGain(): gain=" + gain);
-        _gain = gain;
+        _gain = 2.0 * gain;
     }
 }

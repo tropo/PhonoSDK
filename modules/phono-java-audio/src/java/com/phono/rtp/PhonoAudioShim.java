@@ -36,6 +36,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
@@ -263,7 +266,10 @@ public class PhonoAudioShim extends com.phono.audio.phone.EsupPhonoAudio {
             super.startRec();
             _recstarted = true;
         } else {
-            Log.debug("not restarting rec");
+            Exception whereami = new Exception("not restarting rec");
+            StringWriter sw = new StringWriter();
+            whereami.printStackTrace(new PrintWriter(sw));
+            Log.debug(sw.toString());
         }
     }
 

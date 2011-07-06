@@ -151,6 +151,7 @@ public class RTPProtocolImpl implements RTPProtocolFace {
             if (sa != null) {
                 int fac = CodecList.getFac(af.getCodec());
                 sendPacket(sa.getData(), sa.getStamp() * fac, _ptype);
+                // Log.debug("send "+ sa.getStamp() * fac);
             }
         } catch (Exception ex) {
             Log.error(ex.toString());

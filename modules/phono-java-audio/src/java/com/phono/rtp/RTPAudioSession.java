@@ -62,7 +62,7 @@ public class RTPAudioSession implements RTPDataSink {
         }
         // receive side
 
-        _audio.startPlay();
+        //_audio.startPlay(); // actually don't - let some packets build up first
         _audio.startRec();
     }
 
@@ -155,18 +155,20 @@ public class RTPAudioSession implements RTPDataSink {
     }
 
     public void dataPacketReceived(byte[] data, long stamp) {
-        //Log.debug("stamp: " + stamp);
+        // Log.debug("stamp: " + stamp);
         StampedAudio sa = _audio.getCleanStampedAudio();
         stamp = stamp / CodecList.getFac(_audio.getCodec());
 
         sa.setStampAndBytes(data, 0, data.length, (int) stamp);
         try {
-            if (!_audio.isAudioUp()) {
+            /*  let the audio layer decide this.
+             * in a nat situation we want to wait a while.
+             if (!_audio.isAudioUp()) {
                 _audioheld++;
                 if (_audioheld > 3) {
                     _audio.startPlay();
                 }
-            }
+            } */
             _audio.writeStampedAudio(sa);
         } catch (AudioException ex) {
             Log.error(ex.toString());

@@ -44,6 +44,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Control;
 import javax.sound.sampled.Control.Type;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
@@ -103,6 +104,7 @@ public class PhonoAudio implements AudioFace {
     private int _pvadhvc;
     private int _pvadvc;
     private static float __mac_rate =  44100.0F;
+    protected FloatControl pan;
     /**
      * Creates a new instance of PhonoAudio
      */
@@ -453,6 +455,9 @@ public class PhonoAudio implements AudioFace {
                     for (int i = 0; i < c.length; i++) {
                         Control control = c[i];
                         Type type = control.getType();
+                        if ("Pan".equals(type.toString())){
+                            pan = (FloatControl) control;
+                        }
                         Log.debug("  _play control: " + control + ", type=" + type.toString() + ", " + type.getClass().getName());
                     }
                 }
@@ -521,12 +526,13 @@ public class PhonoAudio implements AudioFace {
                     Log.debug("PhonoAudio.writeBuff(): note (" + _pframes + ") trimming play to " + dlen + ", av=" + av);
                 }
                 int plink = _play.write(framebuffP, 0, dlen);
+                /* don't do this EXPERIMENT
                 if ((_play.getBufferSize() - av) < dlen) {
                     // if the buffer is empty, pad it out a bit with the last bit
                     _play.write(framebuffP, dlen - _cutsz, _cutsz);
                     trimmed = _cutsz;
                 }
-
+                */
                 trim(trimmed/2);
 
             // record this play (speaker) sound
@@ -555,8 +561,6 @@ public class PhonoAudio implements AudioFace {
         if (_play != null) {
             int stamp = stampedAudio.getStamp();
             if (_pframes == 0) {
-                // let the mic buffer prefill before we play
-                startRec();
                 // init _stamp, make sure it less than the current audio.
                 _timestampPlay = stamp - _codec.getFrameInterval();
             }
@@ -614,6 +618,7 @@ public class PhonoAudio implements AudioFace {
 
     public void stopPlay() {
         if (_play != null) {
+            _play.flush();
             _play.stop();
             Log.debug("PhonoAudio.stopPlay(): play stopped");
             _pframes = 0;
@@ -680,8 +685,8 @@ public class PhonoAudio implements AudioFace {
     /**
      * Reads from the microphone into a (circular) buffer of StampedAudio
      */
-    private void readMic() {
-
+    private boolean readMic() {
+        boolean more = false;
         if (_rec != null) {
             int av = _rec.available();
             int bsz = 0;
@@ -727,9 +732,11 @@ public class PhonoAudio implements AudioFace {
                     _audioReceiver.newAudioDataReady(this, _codecFrameSize);
                 }
                 _countFrames++;
+                av = _rec.available();
+                more = av >= bsz;
             }
         }
-
+        return more;
     }
 
     // very dumb downsample for the Mac
@@ -838,9 +845,11 @@ public class PhonoAudio implements AudioFace {
 
                     public void run() {
                         while (_recThread != null) {
-                            readMic();
+                            boolean more = readMic();
                             try {
-                                Thread.sleep(getFrameInterval() - 5);
+                                long nap = getFrameInterval();
+                                if (more) nap -=1;
+                                Thread.sleep(nap);
                             } catch (InterruptedException ex) {
                                 Log.debug("PhonoAudio.startRec(): InterruptedException: " + ex.getMessage());
                             }
