@@ -114,7 +114,7 @@ public class CodecList {
             ret = 8;
         }
         if (iaxcn == CodecFace.AUDIO_G722) {
-            ret = 16; // I think - weird spec error here -
+            ret = 8; // I think - weird spec error here -
         }
         if (iaxcn == CodecFace.AUDIO_GSM) {
             ret = 8;
