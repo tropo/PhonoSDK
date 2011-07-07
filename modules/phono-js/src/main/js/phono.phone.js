@@ -174,7 +174,7 @@
            .c('description', {xmlns:this.transport.description})
        
        Phono.util.each(this.config.codecs(Phono.util.filterWideband(this.audioLayer.codecs(),this.phone.wideband())), function() {
-           if (this.id == call.codec.id || this.name == "telephone-event") {
+           if ((this.id == call.codec.id && this.rate == call.codec.rate) || this.name == "telephone-event") {
                partial = partial.c('payload-type', {
                    id: this.id,
                    name: this.name,
@@ -345,8 +345,8 @@
           var codecId = $(this).attr('id');
           $.each(call.config.codecs(Phono.util.filterWideband(call.audioLayer.codecs(),call.phone.wideband())), function() {
              if ((this.name == codecName && this.rate == codecRate && this.name != "telephone-event") || (parseInt(this.id) < 90 && this.id == codecId)) {
-               codec = this;
-               return false;
+                 if (codec == null) codec = this;
+                 return false;
             } 
          });
       });
