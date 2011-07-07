@@ -65,7 +65,9 @@ public class Share {
             public Void run() {
                 if (ds != null) {
                     ras = new RTPAudioSession(ds, far, pt, audio, lsrtpProps, rsrtpProps);
-                    Log.debug("starting :"+uri+" with pt="+pt+" codec "+audio.getCodecName());
+                    Log.debug("starting : original local uri was "+uri);
+                    Log.debug("starting : using    local "+ds.getLocalSocketAddress().toString()
+                            +" remote "+ds.getRemoteSocketAddress().toString()+" with pt="+pt+" codec "+audio.getCodecName());
                 } else {
                     Log.error("Cant start - no socket set for " + getLocalURI());
                 }
