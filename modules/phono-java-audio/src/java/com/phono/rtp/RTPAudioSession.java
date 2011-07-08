@@ -159,9 +159,9 @@ public class RTPAudioSession implements RTPDataSink {
         StampedAudio sa = _audio.getCleanStampedAudio();
         /* broken timestamps so make up stamp from index */
 
-        stamp = stamp / CodecList.getFac(_audio.getCodec());
-        //long fstamp = index * _audio.getFrameInterval();
-        //Log.debug("rcv fake stamp =" + fstamp);
+        //stamp = stamp / CodecList.getFac(_audio.getCodec());
+        stamp = index * _audio.getFrameInterval();
+        //Log.debug("rcv fake stamp =" + stamp);
         sa.setStampAndBytes(data, 0, data.length, (int) stamp);
         try {
             /*  let the audio layer decide this.

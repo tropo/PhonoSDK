@@ -30,10 +30,10 @@ public class CodecList {
     private static long phonoPrefOrder[] = {
         /*CodecFace.AUDIO_SPEEX16,
         CodecFace.AUDIO_SPEEX,*/
-        CodecFace.AUDIO_ULAW/*,
+        CodecFace.AUDIO_ULAW,
         CodecFace.AUDIO_ALAW,
         CodecFace.AUDIO_GSM,
-        CodecFace.AUDIO_G722*/};
+        CodecFace.AUDIO_G722};
 
     public CodecList(PhonoAudioShim a) {
         _audio = a;
