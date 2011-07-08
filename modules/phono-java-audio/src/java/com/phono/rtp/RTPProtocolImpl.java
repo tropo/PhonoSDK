@@ -44,6 +44,8 @@ public class RTPProtocolImpl implements RTPProtocolFace {
     private long _sync = -1;
     protected long _index;
     private boolean _first;
+    protected long _roc = 0; // only used for inbound we _know_ the answer for outbound.
+    protected char _s_l;// only used for inbound we _know_ the answer for outbound.
 
     /* networky stuff bidriectional*/
     DatagramSocket _ds;
@@ -303,8 +305,7 @@ public class RTPProtocolImpl implements RTPProtocolFace {
 
             throw rpx;
         }
-
-        deliverPayload(payload, stamp, sync);
+        deliverPayload(payload, stamp, sync, seqno);
 
 
         Log.verb("got RTP " + ptype + " packet " + payload.length + " from " + _far.toString());
@@ -314,13 +315,40 @@ public class RTPProtocolImpl implements RTPProtocolFace {
     void checkAuth(byte[] packet, int plen) throws RTPPacketException {
     }
 
-    long getIndex(char seqno) {
-        return seqno; // wrong wrong wrong  - todo
+    long getIndex(
+            char seqno) {
+        long v = _roc; // default assumption
+
+        // detect wrap(s)
+        int diff = seqno - _s_l; // normally we expect this to be 1
+        if (diff < Short.MIN_VALUE) {
+            // large negative offset so
+            v = _roc + 1; // if the old value is more than 2^15 smaller
+            // then we have wrapped
+        }
+        if (diff > Short.MAX_VALUE) {
+            // big positive offset
+            v = _roc - 1; // we  wrapped recently and this is an older packet.
+        }
+        if (v < 0) {
+            v = 0; // trap odd initial cases
+        }
+        /*
+        if (_s_l < 32768) {
+        v = ((seqno - _s_l) > 32768) ? (_roc - 1) % (1 << 32) : _roc;
+        } else {
+        v = ((_s_l - 32768) > seqno) ? (_roc + 1) % (1 << 32) : _roc;
+        }*/
+        long low = (long) seqno;
+        long high = ((long) v << 16);
+        long ret = low | high;
+        return ret;
+
     }
 
-    void deliverPayload(byte[] payload, long stamp, int ssrc) {
+    void deliverPayload(byte[] payload, long stamp, int ssrc,char seqno) {
         if (_rtpds != null) {
-            _rtpds.dataPacketReceived(payload, stamp);
+            _rtpds.dataPacketReceived(payload, stamp,getIndex(seqno));
         }
     }
 
@@ -328,7 +356,19 @@ public class RTPProtocolImpl implements RTPProtocolFace {
         // nothing to do in rtp
     }
 
-    void updateCounters(char seqno) {
+    void updateCounters(
+            char seqno) {
+        // note that we have seen it.
+        int diff = seqno - _s_l; // normally we expect this to be 1
+        if (seqno == 0) {
+            Log.debug("seqno = 0 _index =" + _index + " _roc =" + _roc + " _s_l= " + (0 + _s_l) + " diff = " + diff + " mins=" + Short.MIN_VALUE);
+        }
+        if (diff < Short.MIN_VALUE) {
+            // large negative offset so
+            _roc++; // if the old value is more than 2^15 smaller
+            // then we have wrapped
+        }
+        _s_l = seqno;
     }
 
     protected void syncChanged(long sync) throws RTPPacketException {

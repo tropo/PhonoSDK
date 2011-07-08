@@ -18,5 +18,5 @@
 package com.phono.rtp;
 
 public interface RTPDataSink {
-    public void dataPacketReceived(byte [] data, long stamp);
+    public void dataPacketReceived(byte [] data, long stamp, long index);
 }

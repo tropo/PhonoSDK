@@ -143,6 +143,8 @@ public class PhonoAudio implements AudioFace {
         _codecMap.put(new Long(slinCodec.getCodec()), slinCodec);
 
         _defaultCodec = gsmCodec;
+
+        _defaultCodec = g722Codec;
     }
 
     public void printAvailableCodecs() {

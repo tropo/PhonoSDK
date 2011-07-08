@@ -48,8 +48,6 @@ public class SRTPProtocolImpl extends RTPProtocolImpl {
     private SRTPSecContext _scOut;
     private boolean _doCrypt = true;
     private boolean _doAuth = true;
-    private char _s_l;// only used for inbound we _know_ the answer for outbound.
-    protected long _roc = 0; // only used for inbound we _know_ the answer for outbound.
 
     private void init(Properties lcryptoProps, Properties rcryptoProps) {
         _srtp = true;
@@ -233,48 +231,18 @@ public class SRTPProtocolImpl extends RTPProtocolImpl {
 
     @Override
     void deliverPayload(
-            byte[] payload, long stamp, int ssrc) {
+            byte[] payload, long stamp, int ssrc , char seqno) {
         try {
             if (_doCrypt) {
                 decrypt(payload, ssrc);
             }
-            super.deliverPayload(payload, stamp, ssrc);
+            super.deliverPayload(payload, stamp, ssrc,seqno);
         } catch (GeneralSecurityException ex) {
             Log.error("problem with decryption " + ex.getMessage());
         }
     }
 
-    @Override
-    long getIndex(
-            char seqno) {
-        long v = _roc; // default assumption
 
-        // detect wrap(s)
-        int diff = seqno - _s_l; // normally we expect this to be 1
-        if (diff < Short.MIN_VALUE) {
-            // large negative offset so
-            v = _roc + 1; // if the old value is more than 2^15 smaller
-            // then we have wrapped
-        }
-        if (diff > Short.MAX_VALUE) {
-            // big positive offset
-            v = _roc - 1; // we  wrapped recently and this is an older packet.
-        }
-        if (v < 0) {
-            v = 0; // trap odd initial cases
-        }
-        /*
-        if (_s_l < 32768) {
-        v = ((seqno - _s_l) > 32768) ? (_roc - 1) % (1 << 32) : _roc;
-        } else {
-        v = ((_s_l - 32768) > seqno) ? (_roc + 1) % (1 << 32) : _roc;
-        }*/
-        long low = (long) seqno;
-        long high = ((long) v << 16);
-        long ret = low | high;
-        return ret;
-
-    }
 
     @Override
     void updateCounters(
@@ -286,16 +254,7 @@ public class SRTPProtocolImpl extends RTPProtocolImpl {
         if (_index > _windowLeadingEdge) {
             _windowLeadingEdge = _index;
         }
-        int diff = seqno - _s_l; // normally we expect this to be 1
-        if (seqno == 0) {
-            Log.debug("seqno = 0 _index =" + _index + " _roc =" + _roc + " _s_l= " + (0 + _s_l) + " diff = " + diff + " mins=" + Short.MIN_VALUE);
-        }
-        if (diff < Short.MIN_VALUE) {
-            // large negative offset so
-            _roc++; // if the old value is more than 2^15 smaller
-            // then we have wrapped
-        }
-        _s_l = seqno;
+        super.updateCounters(seqno);
     }
 
     @Override
@@ -453,7 +412,7 @@ public class SRTPProtocolImpl extends RTPProtocolImpl {
 
         RTPDataSink sink = new RTPDataSink() {
 
-            public void dataPacketReceived(byte[] data, long stamp) {
+            public void dataPacketReceived(byte[] data, long stamp,long idx) {
                 Log.debug("got " + data.length + " bytes");
                 Log.debug("data =" + getHex(data));
                 Log.debug("Message is " + new String(data));
@@ -524,7 +483,7 @@ public class SRTPProtocolImpl extends RTPProtocolImpl {
         // kinda don'r expect this.....
         RTPDataSink sink = new RTPDataSink() {
 
-            public void dataPacketReceived(byte[] data, long stamp) {
+            public void dataPacketReceived(byte[] data, long stamp,long idx) {
                 Log.debug("got " + data.length + " bytes");
                 Log.debug("data =" + getHex(data));
                 Log.debug("Message is " + new String(data));

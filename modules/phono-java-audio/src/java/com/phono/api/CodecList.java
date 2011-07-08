@@ -17,6 +17,7 @@
 
 package com.phono.api;
 
+import com.phono.audio.Log;
 import com.phono.audio.codec.CodecFace;
 import com.phono.rtp.PhonoAudioShim;
 import java.util.Vector;
@@ -27,12 +28,12 @@ public class CodecList {
     private Codec[] _codecs;
     final public static int DTMFPAYLOADTTYPE = 101;
     private static long phonoPrefOrder[] = {
-        CodecFace.AUDIO_SPEEX16,
-        CodecFace.AUDIO_SPEEX,
-        CodecFace.AUDIO_ULAW,
+        /*CodecFace.AUDIO_SPEEX16,
+        CodecFace.AUDIO_SPEEX,*/
+        CodecFace.AUDIO_ULAW/*,
         CodecFace.AUDIO_ALAW,
         CodecFace.AUDIO_GSM,
-        CodecFace.AUDIO_G722};
+        CodecFace.AUDIO_G722*/};
 
     public CodecList(PhonoAudioShim a) {
         _audio = a;
@@ -67,6 +68,7 @@ public class CodecList {
         _codecs = new Codec[o.length];
         for (int i = 0; i < _codecs.length; i++) {
             _codecs[i] = (Codec) o[i];
+            Log.debug("will offer codec: "+_codecs[i].name+" pt="+_codecs[i].pt);
         }
     }
 

@@ -97,11 +97,13 @@ public class PhonoAudioShim extends com.phono.audio.phone.EsupPhonoAudio {
         SpeexCodec sc = new SpeexCodec(false);
         SpeexCodec sc16 = new SpeexCodec(true);
 
-        _defaultCodec = sc;
 
         super.fillCodecMap();
+        
         _codecMap.put(new Long(sc16.getCodec()), sc16);
         _codecMap.put(new Long(sc.getCodec()), sc);
+        _defaultCodec = sc;
+
         printAvailableCodecs();
     }
 
