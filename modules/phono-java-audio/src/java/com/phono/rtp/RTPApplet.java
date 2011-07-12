@@ -32,7 +32,10 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.security.AccessControlException;
 import java.security.AccessController;
+import java.security.AllPermission;
+import java.security.Permission;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -48,6 +51,7 @@ public class RTPApplet extends Applet {
     private PhonoAudioShim _audio;
     final private Hashtable _endpoints = new Hashtable();
     private CodecList _codecList;
+    private boolean _userClickedTrust = false;
 
     /**
      * Initialization method that will be called after the applet is loaded
@@ -56,6 +60,16 @@ public class RTPApplet extends Applet {
     @Override
     public void init() {
         Log.setLevel(Log.DEBUG);
+        Permission all = new AllPermission();
+        try {
+            AccessController.checkPermission(all);
+            _userClickedTrust = true;
+        } catch (AccessControlException ace) {
+            _userClickedTrust = false;
+            Log.error("permission problem " + ace.getMessage());
+        }
+        printSigners(this.getClass());
+        getAudioDeviceList();
         _audio = new PhonoAudioShim();
         _codecList = new CodecList(_audio);
 
@@ -66,7 +80,20 @@ public class RTPApplet extends Applet {
             jso.call(callback, null);
         }
     }
-
+    @Override
+    public void start(){
+        if (!_userClickedTrust){
+            Log.error("User does not trust us. Can't continue.");
+        }
+    }
+    @Override
+    public void stop(){
+            Log.debug("Applet stopped");
+    }
+    @Override
+    public void destroy(){
+            Log.debug("Applet destroyed");
+    }
     public String allocateEndpoint() {
         String ret = null;
         // strictly we supposedly want to actually allocate a socket here,
@@ -240,6 +267,8 @@ public class RTPApplet extends Applet {
 
     public String getJSONStatus() {
         StringBuffer ret = new StringBuffer("{\n");
+        ret.append("userTrust").append(" : ");
+        ret.append(_userClickedTrust?"true":"false").append("\n");
         Enumeration rat = _endpoints.elements();
         ret.append("endpoints").append(" : ");
         ret.append("[");
@@ -253,4 +282,36 @@ public class RTPApplet extends Applet {
         // Log.debug("Phonefromhere.getCallStatus(): " + ret);
         return ret.toString();
     }
+
+    void printSigners(Class cl) {
+        Object[] signers = cl.getSigners();
+        if (signers != null) {
+            int len = signers.length;
+            for (int i = 0; i < len; i++) {
+                Object o = signers[i];
+                if (o instanceof java.security.cert.X509Certificate) {
+                    java.security.cert.X509Certificate cert =
+                        (java.security.cert.X509Certificate) o;
+                    Log.debug(cl.getName() + ": signer " + i
+                              + " = " + cert.getSubjectX500Principal().getName());
+                }
+            }
+        }
+        else {
+            Log.debug(cl.getName() + " is not signed (has no signers)");
+        }
+    }
+
+    public String getAudioDeviceList(){
+        StringBuffer bret = new StringBuffer();
+        PhonoAudioShim.getMixersJSON(bret);
+        return bret.toString();
+    }
+
+    public void setAudioIn(String ain){
+        if (_audio != null){
+            _audio.setAudioInName(ain);
+        }
+    }
+
 }

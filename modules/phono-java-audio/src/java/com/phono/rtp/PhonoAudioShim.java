@@ -43,6 +43,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.Mixer;
 
 public class PhonoAudioShim extends com.phono.audio.phone.EsupPhonoAudio {
 
@@ -63,6 +68,11 @@ public class PhonoAudioShim extends com.phono.audio.phone.EsupPhonoAudio {
     boolean debugAudio = false; // Write samples to local disk
     int cutterTime = 0; // Don't cut for this long
     int dropMicSamples = 48;
+    private String _mixinName = null;
+
+    public void setAudioInName(String ain){
+        _mixinName = ain;
+    }
 
     @Override
     public void init(long codec, int latency) throws AudioException {
@@ -350,5 +360,131 @@ public class PhonoAudioShim extends com.phono.audio.phone.EsupPhonoAudio {
             }
             return output;
         }
+    }
+
+    static void getMixersJSON(StringBuffer sb) {
+    Mixer.Info[] mixI = AudioSystem.getMixerInfo();
+    sb.append("mixers").append(" : ").append(" [ \n");
+    for (int i = 0; i < mixI.length; i++) {
+      Mixer.Info mi = mixI[i];
+      Log.debug("Mixer "+mi.getName()+" vendor "+mi.getVendor());
+
+      if(i>0){sb.append(",");}
+      sb.append("{\n");
+      sb.append("class : ").append('"').append(mi.getClass().getName()).append('"').append("\n");
+      sb.append("name : ").append('"').append(mi.getName().trim()).append('"').append("\n");
+      sb.append("vendor : ").append('"').append(mi.getVendor()).append('"').append("\n");
+      Mixer m = AudioSystem.getMixer(mi);
+      getMixerLinesJSON(sb, m);
+      sb.append("}\n");
+    }
+    sb.append(" ] \n");
+  }
+
+  /**
+   * listLines
+   *
+   * @param ps PrintStream
+   * @param m Mixer
+   */
+    static void getMixerLinesJSON(StringBuffer sb, Mixer m) {
+        Line.Info[] infos = m.getSourceLineInfo();
+        sb.append("sources : [ \n");
+        boolean first = true;
+        if (infos.length > 0){
+            Log.debug("sources = "+infos.length);
+        }
+        for (int i = 0; i < infos.length; i++) {
+            if (infos[i] instanceof DataLine.Info) {
+
+                if (!first) {
+                    sb.append(",");
+                } else {
+                    first = false;
+                }
+                sb.append("{\n");
+
+                DataLine.Info dataLineInfo = (DataLine.Info) infos[i];
+                AudioFormat[] supportedFormats = dataLineInfo.getFormats();
+                sb.append("minBuf : ").append("" + dataLineInfo.getMinBufferSize()).append("\n");
+                sb.append("maxBuf : ").append("" + dataLineInfo.getMaxBufferSize()).append("\n");
+
+                getMixerLineFormatsJSON(sb, supportedFormats);
+                sb.append("}\n");
+
+            }
+        }
+        sb.append(" ] \n");
+        first = true;
+        infos = m.getTargetLineInfo();
+        if (infos.length > 0){
+            Log.debug("targets = "+infos.length);
+        }
+        sb.append("targets : [ \n");
+        for (int i = 0; i < infos.length; i++) {
+            if (infos[i] instanceof DataLine.Info) {
+
+                if (!first) {
+                    sb.append(",");
+                } else {
+                    first = false;
+                }
+                sb.append("{\n");
+
+                DataLine.Info dataLineInfo = (DataLine.Info) infos[i];
+                AudioFormat[] supportedFormats = dataLineInfo.getFormats();
+                sb.append("minBuf : ").append("" + dataLineInfo.getMinBufferSize()).append("\n");
+                sb.append("maxBuf : ").append("" + dataLineInfo.getMaxBufferSize()).append("\n");
+
+                getMixerLineFormatsJSON(sb, supportedFormats);
+                sb.append("}\n");
+
+            }
+        }
+        sb.append(" ] \n");
+
+    }
+
+  /**
+   * showFormats
+   *
+   * @param ps PrintStream
+   * @param fmts AudioFormat[] supportedFormats
+   */
+    static void getMixerLineFormatsJSON(StringBuffer sb, AudioFormat[] fmts) {
+
+        sb.append("formats : [ \n");
+
+        for (int i = 0; i < fmts.length; i++) {
+            if (i > 0) {
+                sb.append(",");
+            }
+            sb.append("{\n");
+            AudioFormat af = fmts[i];
+            sb.append("encoding : ").append('"').append(af.getEncoding()).append('"').append("\n");
+            sb.append("samplerate : ").append("" + af.getSampleRate()).append("\n");
+            sb.append("bitsPerSample : ").append("" + af.getSampleSizeInBits()).append("\n");
+            sb.append("}\n");
+        }
+        sb.append(" ] \n");
+    }
+
+    @Override
+    //try and use the prefered mixer.
+    protected void initMic() throws AudioException {
+        Mixer pref = null;
+        if (_mixinName != null) {
+            Mixer.Info[] mixes = AudioSystem.getMixerInfo();
+            for (int i = 0; i < mixes.length; i++) {
+                Mixer.Info mixi = mixes[i];
+                String mixup = mixi.getName().trim();
+                Log.debug("Looking at Mixer " + i + " " + mixup);
+                if (mixup.equals(_mixinName)) {
+                    pref = AudioSystem.getMixer(mixi);
+                    Log.debug("Selected Mixer " + i + " " + mixup);
+                }
+            }
+        }
+        super.initMic(pref);
     }
 }

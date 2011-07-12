@@ -46,6 +46,7 @@ import javax.sound.sampled.Control.Type;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
@@ -630,7 +631,7 @@ public class PhonoAudio implements AudioFace {
 
     /**
      */
-    private void initMic() throws AudioException {
+    protected void initMic(Mixer m) throws AudioException {
         if (_rec == null) {
             // TODO: other codecs might not work very well with 8k!
             AudioFormat slin = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, _sampleRate, 16, 1, 2, _sampleRate, true);
@@ -647,14 +648,20 @@ public class PhonoAudio implements AudioFace {
                 _macbuff = new byte[mbpf];
             }
             Log.verb("PhonoAudio.initMic(): audioFormat = " + recfmt);
-            DataLine.Info info = new DataLine.Info(TargetDataLine.class, recfmt, AudioSystem.NOT_SPECIFIED);
+            DataLine.Info info = null;
+
+            if (m == null){
+                info = new DataLine.Info(TargetDataLine.class, recfmt, AudioSystem.NOT_SPECIFIED);
+            } else {
+                info = new DataLine.Info(TargetDataLine.class, recfmt);
+            }
 
             _encode = _codec.getEncoder();
             // _encodedbuffRec = new byte[_codecFrameSize];
             _framebuffR = new byte[_bytesPerFrame];
 
             try {
-                _rec = (TargetDataLine) (DataLine) AudioSystem.getLine(info);
+                _rec = (TargetDataLine) ( (m== null) ? AudioSystem.getLine(info): m.getLine(info)) ;
                 _rec.open(recfmt, recBuffsz);
                 Control[] c = _rec.getControls();
                 if (c.length > 0) {
@@ -679,6 +686,10 @@ public class PhonoAudio implements AudioFace {
         return;
     }
 
+    protected void initMic() throws AudioException {
+        initMic(null);
+    }
+    
     public int getOutboundTimestamp() {
         return (int) (this.getTime() - _timestampRecStart);
     }
