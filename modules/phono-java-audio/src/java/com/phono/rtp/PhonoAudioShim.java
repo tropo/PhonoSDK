@@ -371,9 +371,9 @@ public class PhonoAudioShim extends com.phono.audio.phone.EsupPhonoAudio {
 
       if(i>0){sb.append(",");}
       sb.append("{\n");
-      sb.append("class : ").append('"').append(mi.getClass().getName()).append('"').append("\n");
-      sb.append("name : ").append('"').append(mi.getName().trim()).append('"').append("\n");
-      sb.append("vendor : ").append('"').append(mi.getVendor()).append('"').append("\n");
+      sb.append("class : ").append('"').append(mi.getClass().getName()).append('"').append("\n,");
+      sb.append("name : ").append('"').append(mi.getName().trim()).append('"').append("\n,");
+      sb.append("vendor : ").append('"').append(mi.getVendor()).append('"').append("\n,");
       Mixer m = AudioSystem.getMixer(mi);
       getMixerLinesJSON(sb, m);
       sb.append("}\n");
@@ -406,15 +406,15 @@ public class PhonoAudioShim extends com.phono.audio.phone.EsupPhonoAudio {
 
                 DataLine.Info dataLineInfo = (DataLine.Info) infos[i];
                 AudioFormat[] supportedFormats = dataLineInfo.getFormats();
-                sb.append("minBuf : ").append("" + dataLineInfo.getMinBufferSize()).append("\n");
+                sb.append("minBuf : ").append("" + dataLineInfo.getMinBufferSize()).append("\n,");
                 sb.append("maxBuf : ").append("" + dataLineInfo.getMaxBufferSize()).append("\n");
 
-                getMixerLineFormatsJSON(sb, supportedFormats);
+                //getMixerLineFormatsJSON(sb, supportedFormats);
                 sb.append("}\n");
 
             }
         }
-        sb.append(" ] \n");
+        sb.append(" ], \n");
         first = true;
         infos = m.getTargetLineInfo();
         if (infos.length > 0){
@@ -433,10 +433,10 @@ public class PhonoAudioShim extends com.phono.audio.phone.EsupPhonoAudio {
 
                 DataLine.Info dataLineInfo = (DataLine.Info) infos[i];
                 AudioFormat[] supportedFormats = dataLineInfo.getFormats();
-                sb.append("minBuf : ").append("" + dataLineInfo.getMinBufferSize()).append("\n");
-                sb.append("maxBuf : ").append("" + dataLineInfo.getMaxBufferSize()).append("\n");
+                sb.append("minBuf : ").append("" + dataLineInfo.getMinBufferSize()).append("\n,");
+                sb.append("maxBuf : ").append("" + dataLineInfo.getMaxBufferSize()).append("\n,");
 
-                getMixerLineFormatsJSON(sb, supportedFormats);
+                //getMixerLineFormatsJSON(sb, supportedFormats);
                 sb.append("}\n");
 
             }
@@ -461,8 +461,8 @@ public class PhonoAudioShim extends com.phono.audio.phone.EsupPhonoAudio {
             }
             sb.append("{\n");
             AudioFormat af = fmts[i];
-            sb.append("encoding : ").append('"').append(af.getEncoding()).append('"').append("\n");
-            sb.append("samplerate : ").append("" + af.getSampleRate()).append("\n");
+            sb.append("encoding : ").append('"').append(af.getEncoding()).append('"').append(",\n");
+            sb.append("samplerate : ").append("" + af.getSampleRate()).append(",\n");
             sb.append("bitsPerSample : ").append("" + af.getSampleSizeInBits()).append("\n");
             sb.append("}\n");
         }

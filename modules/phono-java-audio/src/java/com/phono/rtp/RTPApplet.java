@@ -303,14 +303,16 @@ public class RTPApplet extends Applet {
     }
 
     public String getAudioDeviceList(){
-        StringBuffer bret = new StringBuffer();
+        StringBuffer bret = new StringBuffer("{\n");
         PhonoAudioShim.getMixersJSON(bret);
+        bret.append("}\n");
         return bret.toString();
     }
 
     public void setAudioIn(String ain){
         if (_audio != null){
             _audio.setAudioInName(ain);
+            Log.debug("Set audio input device preference to "+ ain);
         }
     }
 

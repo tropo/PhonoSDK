@@ -185,6 +185,28 @@ JavaAudio.prototype.codecs = function() {
     return result;
 };
 
+JavaAudio.prototype.audioIn = function(str) {
+     var applet = this.$applet;
+    applet.setAudioIn(str);
+}
+
+JavaAudio.prototype.audioInDevices = function(){
+    var result = new Array();
+
+    var applet = this.$applet;
+    var jsonstr = applet.getAudioDeviceList();
+    var devs = eval ('(' +jsonstr+ ')');
+    var mixers = devs.mixers;
+    result.push("Let my system choose");
+    for (l=0; l<mixers.length; l++) {
+        if (mixers[l].targets.length > 0){
+            result.push(mixers[l].name );
+        }
+    }
+    return result;
+}
+
+
 // Creates a DIV to hold the capture applet if one was not specified by the user
 _createContainer = function() {
     
@@ -215,7 +237,8 @@ _loadApplet = function(containerId, jar, callback, plugin) {
     var callbackName = id+"Callback";
     
     window[callbackName] = function() {callback(plugin)};
-    
+   // window[callbackName] = function() {window.setTimeout(callback(plugin),10)};
+
     var applet = $("<applet>")
         .attr("id", id)
         .attr("name",id)

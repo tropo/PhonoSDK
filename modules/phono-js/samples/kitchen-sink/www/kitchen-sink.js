@@ -20,12 +20,24 @@ $(document).ready(function() {
 	    
             onReady: function(event) {
                 newPhonoDiv.find(".sessionId").text(this.sessionId);
+                if (this.audio.audioInDevices){
+                    var inList = this.audio.audioInDevices();
+                    log.info("devices are :"+inList);
+                    var output = [];
+
+                    for (l=0;l<inList.length;l++){
+                        output.push('<option value="'+ inList[l] +'">'+ inList[l] +'</option>');
+                    }
+                    newPhonoDiv.find(".audio-input").html(output.join(''));;
+                }
 		newPhonoDiv.find(".phoneControl").show();
                 log.info("["+newPhonoID+"] Phono loaded"); 
                 
                 if( ! this.audio.permission() ){
                    this.audio.showPermissionBox();
                 }
+
+
             },
             onUnready: function(event) {
                 newPhonoDiv.find(".sessionId").text("disconnected");
@@ -306,7 +318,12 @@ $(document).ready(function() {
 	    log.info("["+phonoId+"] Ringback tone set: " + tone);
 	}	
     });
-    
+    $('.audio-input').live($.browser.msie ? 'click': 'change', function() {
+	var phonoId = $(this).closest(".phono").attr("id");
+        var device = $(this).val();
+        log.info("["+phonoId+"] Audio Input set: " + device);
+	phonos[phonoId].phone.audioInput(device);
+    }); 
     $('.flashHelp a').live('click', function() {
 	var thisPhono = $(this).closest(".phono");
 	$(".flash-hldr").css("left","250.5px");
