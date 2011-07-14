@@ -52,6 +52,7 @@ public class RTPApplet extends Applet {
     final private Hashtable _endpoints = new Hashtable();
     private CodecList _codecList;
     private boolean _userClickedTrust = false;
+    private String _deviceList;
 
     /**
      * Initialization method that will be called after the applet is loaded
@@ -69,7 +70,10 @@ public class RTPApplet extends Applet {
             Log.error("permission problem " + ace.getMessage());
         }
         printSigners(this.getClass());
-        getAudioDeviceList();
+        StringBuffer bret = new StringBuffer("{\n");
+        PhonoAudioShim.getMixersJSON(bret);
+        bret.append("}\n");
+        _deviceList =  bret.toString();
         _audio = new PhonoAudioShim();
         _codecList = new CodecList(_audio);
 
@@ -77,7 +81,11 @@ public class RTPApplet extends Applet {
         String callback = this.getParameter("callback");
         if (callback != null) {
             JSObject jso = JSObject.getWindow(this);
-            jso.call(callback, null);
+            try {
+            jso.call(callback, new String[]{_deviceList});
+            } catch (Throwable t){
+                Log.error(t.getMessage());
+            }
         }
     }
     @Override
@@ -93,6 +101,9 @@ public class RTPApplet extends Applet {
     @Override
     public void destroy(){
             Log.debug("Applet destroyed");
+ //           if (_audio != null){
+ //               _audio.destroy();
+ //           }
     }
     public String allocateEndpoint() {
         String ret = null;
@@ -268,7 +279,7 @@ public class RTPApplet extends Applet {
     public String getJSONStatus() {
         StringBuffer ret = new StringBuffer("{\n");
         ret.append("userTrust").append(" : ");
-        ret.append(_userClickedTrust?"true":"false").append("\n");
+        ret.append(_userClickedTrust?"true":"false").append(",\n");
         Enumeration rat = _endpoints.elements();
         ret.append("endpoints").append(" : ");
         ret.append("[");
@@ -303,10 +314,7 @@ public class RTPApplet extends Applet {
     }
 
     public String getAudioDeviceList(){
-        StringBuffer bret = new StringBuffer("{\n");
-        PhonoAudioShim.getMixersJSON(bret);
-        bret.append("}\n");
-        return bret.toString();
+        return _deviceList;
     }
 
     public void setAudioIn(String ain){

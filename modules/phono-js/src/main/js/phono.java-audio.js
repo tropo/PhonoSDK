@@ -193,9 +193,10 @@ JavaAudio.prototype.audioIn = function(str) {
 JavaAudio.prototype.audioInDevices = function(){
     var result = new Array();
 
-    var applet = this.$applet;
+ /*   var applet = this.$applet;
     var jsonstr = applet.getAudioDeviceList();
-    var devs = eval ('(' +jsonstr+ ')');
+    */
+    var devs = eval ('(' +this.audioDeviceList+ ')');
     var mixers = devs.mixers;
     result.push("Let my system choose");
     for (l=0; l<mixers.length; l++) {
@@ -203,6 +204,7 @@ JavaAudio.prototype.audioInDevices = function(){
             result.push(mixers[l].name );
         }
     }
+
     return result;
 }
 
@@ -236,8 +238,10 @@ _loadApplet = function(containerId, jar, callback, plugin) {
     
     var callbackName = id+"Callback";
     
-    window[callbackName] = function() {callback(plugin)};
-   // window[callbackName] = function() {window.setTimeout(callback(plugin),10)};
+    window[callbackName] = function(devJson) {plugin.audioDeviceList = devJson; t = window.setTimeout(callback(plugin),10);};
+    //window[callbackName] = function() {
+    //                                    window.setTimeout(callback(plugin),10);
+    //                                };
 
     var applet = $("<applet>")
         .attr("id", id)

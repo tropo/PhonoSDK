@@ -900,10 +900,11 @@ public class PhonoAudio implements AudioFace {
 
     public void destroy() {
         boolean closeLine = true;
-        if (_osname.startsWith("mac")) {
+        /*if (_osname.startsWith("mac")) {
             closeLine = false;
-        }
-
+        }*/
+        stopRec();
+        stopPlay();
         if (closeLine == true) {
             Log.debug("PhonoAudio.destroy(): closeLine=" + closeLine);
             if (_play != null) {

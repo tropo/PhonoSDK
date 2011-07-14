@@ -20,8 +20,11 @@ $(document).ready(function() {
 	    
             onReady: function(event) {
                 newPhonoDiv.find(".sessionId").text(this.sessionId);
+                newPhonoDiv.find(".phoneControl").show();
+
                 if (this.audio.audioInDevices){
                     var inList = this.audio.audioInDevices();
+                    //var inList = ["A","B","C"];
                     log.info("devices are :"+inList);
                     var output = [];
 
@@ -30,7 +33,6 @@ $(document).ready(function() {
                     }
                     newPhonoDiv.find(".audio-input").html(output.join(''));;
                 }
-		newPhonoDiv.find(".phoneControl").show();
                 log.info("["+newPhonoID+"] Phono loaded"); 
                 
                 if( ! this.audio.permission() ){
