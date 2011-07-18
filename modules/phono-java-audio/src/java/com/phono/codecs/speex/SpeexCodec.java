@@ -17,7 +17,7 @@
 
 package com.phono.codecs.speex;
 
-import com.phono.audio.Log;
+import com.phono.android.audio.Log;
 import com.phono.audio.codec.CodecFace;
 import com.phono.audio.codec.DecoderFace;
 import com.phono.audio.codec.EncoderFace;

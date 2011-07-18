@@ -1,3 +1,5 @@
+package com.phono.rtp;
+
 /*
  * Copyright 2011 Voxeo Corp.
  *
@@ -15,9 +17,9 @@
  *
  */
 
-package com.phono.rtp;
 
-import com.phono.audio.Log;
+
+import com.phono.android.audio.Log;
 import com.phono.api.Share;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
@@ -39,7 +41,7 @@ public class Endpoint {
     public Endpoint(String uri) {
         _initialuri = uri;
     }
-    static Endpoint allocate() throws SocketException{
+    public static Endpoint allocate() throws SocketException{
         Endpoint end = new Endpoint();
         end.allocateSocket();
         return end;
@@ -82,7 +84,7 @@ public class Endpoint {
         _initialuri = "rtp://"+findMyLocalIPAddress()+":"+_ds.getLocalPort() ;
     }
 
-    void setShare(Share s) {
+    public void setShare(Share s) {
         if (_share != null){
             Log.error("Duplicate share on (stopping old one) "+_initialuri);
             _share.stop();
@@ -98,6 +100,10 @@ public class Endpoint {
         s.setSocket(_ds);
 
         _share = s;
+    }
+
+    public Share getShare(){
+        return _share;
     }
 
     private String findMyLocalIPAddress() {

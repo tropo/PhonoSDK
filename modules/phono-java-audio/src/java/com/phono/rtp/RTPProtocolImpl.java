@@ -18,7 +18,7 @@
 package com.phono.rtp;
 
 import com.phono.audio.AudioFace;
-import com.phono.audio.Log;
+import com.phono.android.audio.Log;
 import com.phono.audio.StampedAudio;
 import com.phono.audio.codec.gsm.GSM_Base;
 import com.phono.api.CodecList;

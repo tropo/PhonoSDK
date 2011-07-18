@@ -24,7 +24,7 @@
 
 package com.phono.audio.codec.g722;
 
-import com.phono.audio.Log;
+import com.phono.android.audio.Log;
 import com.phono.audio.codec.*;
 
 public class G722Decoder implements DecoderFace {

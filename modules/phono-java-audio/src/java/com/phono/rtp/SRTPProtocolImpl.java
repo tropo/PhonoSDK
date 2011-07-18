@@ -17,19 +17,15 @@
 
 package com.phono.rtp;
 
-import biz.source_code.Base64Coder;
-import com.phono.audio.Log;
+import com.phono.android.audio.Log;
+import java.io.*;
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.crypto.Cipher;
 import javax.crypto.Mac;
 
 /**
@@ -357,7 +353,7 @@ public class SRTPProtocolImpl extends RTPProtocolImpl {
                 + "session-params='KDR=0' \n"
                 + "tag='1' \n";
 
-        StringReader sr = new StringReader(sdp);
+        InputStream sr = new ByteArrayInputStream(sdp.getBytes());
         Properties cryptoProps = new Properties();
         try {
             cryptoProps.load(sr);

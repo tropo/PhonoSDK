@@ -17,9 +17,9 @@
 
 package com.phono.api;
 
-import com.phono.audio.Log;
+import com.phono.android.rtp.PhonoAudioShim;
+import com.phono.android.audio.Log;
 import com.phono.audio.codec.CodecFace;
-import com.phono.rtp.PhonoAudioShim;
 import java.util.Vector;
 
 public class CodecList {
@@ -46,6 +46,10 @@ public class CodecList {
         Vector cv = new Vector();
         for (int i = 0; i < iaxcodecs.length; i++) {
             CodecFace c = _audio.getCodec(iaxcodecs[i]);
+            if (c == null){
+                Log.error("Codec "+iaxcodecs[i]+" missing");
+                continue;
+            }
             Integer pt = ptLookup(iaxcodecs[i]);
             if (pt != null) {
                 Codec tc = null;

@@ -17,11 +17,10 @@
 
 package com.phono.api;
 
-import com.phono.audio.Log;
+import com.phono.android.rtp.PhonoAudioShim;
+import com.phono.android.audio.Log;
 import com.phono.audio.phone.PhonoAudioPropNames;
-import com.phono.rtp.Endpoint;
-import com.phono.rtp.PhonoAudioShim;
-import com.phono.rtp.RTPAudioSession;
+import com.phono.android.rtp.RTPAudioSession;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.security.AccessController;
