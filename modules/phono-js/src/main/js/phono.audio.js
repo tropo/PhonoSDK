@@ -21,8 +21,7 @@
                 window.setTimeout(callback,10);
                 return null;
             } else if (config.type === "auto") {
-                if (JavaAudio.exists()) return new JavaAudio(phono, config, callback);
-                else if (PhonegapAudio.exists()) return new PhonegapAudio(phono, config, callback);
+                if (PhonegapAudio.exists()) return new PhonegapAudio(phono, config, callback);
                 else return new FlashAudio(phono, config, callback);
             }
         }
