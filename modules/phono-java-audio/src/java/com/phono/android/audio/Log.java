@@ -161,7 +161,6 @@ public class Log {
                 android.util.Log.i("Phono", message);
                 break;
             }
-
         }
     }
 }

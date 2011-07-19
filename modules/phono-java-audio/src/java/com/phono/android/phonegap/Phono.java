@@ -5,8 +5,6 @@
 package com.phono.android.phonegap;
 
 import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,6 +56,8 @@ public class Phono extends Plugin {
 
     public static void log(String string) {
         Log.debug("Phono " + string);
+        System.out.println("Phono "+string);
+
     }
     private Hashtable _endpoints;
     private PhonoAudioShim _audio;
@@ -71,6 +71,7 @@ public class Phono extends Plugin {
         _audio = new PhonoAudioShim();
         _codecList = new CodecList(_audio);
         log("in new Constructor");
+        System.out.println("in new Constructor");
     }
     /*
      * (non-Javadoc)
@@ -450,10 +451,11 @@ public class Phono extends Plugin {
                 status = freeEndpoint(options, joret);
             } else if (LOG.equals(action)) {
                 Log.debug(options.getString("message"));
+                joret.put(VALUE, "logged");
                 status = true;
             }
             Log.debug("returning " + joret.toString());
-            result = status ? new PluginResult(Status.OK, joret.toString()) : new PluginResult(Status.INVALID_ACTION);
+            result = status ? new PluginResult(Status.OK, joret) : new PluginResult(Status.INVALID_ACTION);
         } catch (JSONException jsonEx) {
             Log.debug("Got JSON Exception " + jsonEx.getMessage());
             result = new PluginResult(Status.JSON_EXCEPTION);
