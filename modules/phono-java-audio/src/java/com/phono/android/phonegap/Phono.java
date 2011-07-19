@@ -146,8 +146,14 @@ public class Phono extends Plugin {
         String uri = options.getString(URI);
         String autoplay = options.getString(AUTOPLAY);
         String codec = options.getString(CODEC);
-        String lsrtp = options.getString(LSRTP);
-        String rsrtp = options.getString(RSRTP);
+        String lsrtp =null;
+        String rsrtp =null;
+        try {
+         lsrtp= options.getString(LSRTP);
+         rsrtp= options.getString(RSRTP);
+        } catch (JSONException x){
+            ;
+        }
         Codec cod = null;
         if (codec != null) {
             Codec[] cs = _codecList.getCodecs();
@@ -168,10 +174,17 @@ public class Phono extends Plugin {
             if (sh != null) {
                 reply.put(URI, sh.getLocalURI());
                 ret = true;
+            } else {
+                Log.error("Share was null");
             }
 
         } else {
-            //error messages here
+            if (cod == null){
+                Log.error("cod is null codec name was "+codec);
+            }
+            if (uri == null){
+                Log.error("uri was null");
+            }
         }
         return ret;
     }
@@ -201,8 +214,8 @@ public class Phono extends Plugin {
                 Log.error("srtp Props invalid format" + ex.toString());
             }
         }
-        Log.verb("in share() codec = " + codec.name);
-        Log.verb("in share() uri = " + uri);
+        Log.debug("in share() codec = " + codec.name);
+        Log.debug("in share() uri = " + uri);
         try {
             s = new Share(uri, _audio, codec.pt, spl, spr);
 
