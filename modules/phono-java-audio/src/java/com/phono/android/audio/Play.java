@@ -23,19 +23,20 @@ public class Play extends Endpoint {
         _mp = new MediaPlayer();
 
         _mp.setDataSource(uri);
+        _mp.prepare();
 
 
     }
 
     public void stop() {
         if (_mp != null){
-            _mp.start();
+            _mp.stop();
         }
     }
 
     public void start() {
         if (_mp != null){
-            _mp.stop();
+            _mp.start();
         }
     }
 

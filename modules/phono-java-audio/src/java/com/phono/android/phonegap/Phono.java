@@ -259,6 +259,7 @@ public class Phono extends Plugin {
                     }
                     ret = true;
                 }
+                reply.put(URI,p.getLocalURI() );
             } catch (Exception ex) {
                 Log.error("problem with playing :"+uri+" exception -> "+ex.getMessage());
             }
