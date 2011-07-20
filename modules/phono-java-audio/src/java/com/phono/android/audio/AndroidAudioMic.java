@@ -260,4 +260,8 @@ public class AndroidAudioMic implements Runnable {
         }
         return output;
     }
+
+    float getGain() {
+        return _gain;
+    }
 }

@@ -254,7 +254,7 @@ public class AndroidAudio implements AudioFace {
                 ret = _cleanAudioList.remove(0);
             } else {
                 ret = new StampedAudioImpl();
-                Log.debug(
+                Log.verb(
                         this.getClass().getSimpleName()
                         + ".getCleanStampedAudio(): created a fresh stampedAudio instance " + _aibc);
                 _aibc++;
@@ -445,8 +445,8 @@ public class AndroidAudio implements AudioFace {
         _codecMap.put(new Long(ulawCodec.getCodec()), ulawCodec);
         ALaw_Codec alawCodec = new ALaw_Codec();
         _codecMap.put(new Long(alawCodec.getCodec()), alawCodec);
-        GSM_Codec gsmCodec = new GSM_Codec();
-        _codecMap.put(new Long(gsmCodec.getCodec()), gsmCodec);
+       /* GSM_Codec gsmCodec = new GSM_Codec();
+        _codecMap.put(new Long(gsmCodec.getCodec()), gsmCodec);*/
 
 
         _defaultCodec = ulawCodec;
@@ -471,5 +471,9 @@ public class AndroidAudio implements AudioFace {
         if (_mic != null){
             _mic.setGain(f);
         }
+    }
+
+    public double getMicGain() {
+        return (double) _mic.getGain();
     }
 }

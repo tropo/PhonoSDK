@@ -39,6 +39,7 @@ public class PhonoAudioShim extends AndroidAudio {
     boolean debugAudio = false; // Write samples to local disk
     int cutterTime = 0; // Don't cut for this long
     int dropMicSamples = 48;
+    double _oMicGain = 1.0;
 
 
 
@@ -56,16 +57,16 @@ public class PhonoAudioShim extends AndroidAudio {
 
     @Override
     protected void fillCodecMap() {
-        SpeexCodec sc = new SpeexCodec(false);
+        /*SpeexCodec sc = new SpeexCodec(false);
         SpeexCodec sc16 = new SpeexCodec(true);
-
+*/
 
         super.fillCodecMap();
         
-        _codecMap.put(new Long(sc16.getCodec()), sc16);
+        /*_codecMap.put(new Long(sc16.getCodec()), sc16);
         _codecMap.put(new Long(sc.getCodec()), sc);
         _defaultCodec = sc;
-
+*/
     }
 
     // make the timestamps tidy
@@ -94,13 +95,19 @@ public class PhonoAudioShim extends AndroidAudio {
         super.stopRec();
     }
 
-    public void setGain(double d) {
+    public void setVolume(double d) {
         float fvol = (float) (d/100.0);
         this.getAudioTrack().setStereoVolume(fvol, fvol);
     }
 
     public void muteMic(boolean v) {
-        super.setMicGain(v?0.0f:1.0f);
+        if (v){
+            _oMicGain = super.getMicGain();
+            super.setMicGain(0.0f);
+        } else {
+            super.setMicGain((float)_oMicGain);
+        }
+        
     }
 
     public boolean callHasECon() {
@@ -113,6 +120,9 @@ public class PhonoAudioShim extends AndroidAudio {
         Log.error("No dtmf playback yet.");
         return null; // todo
     }
+
+
+
 
 
 

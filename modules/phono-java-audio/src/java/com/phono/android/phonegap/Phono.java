@@ -40,6 +40,7 @@ public class Phono extends Plugin {
     public static final String SHARE = "share";
     public static final String PLAY = "play";
     public static final String GAIN = "gain";
+    public static final String VOLUME = "volume";
     public static final String DIGIT = "digit";
     public static final String MUTE = "mute";
     public static final String ALLOCATEENDPOINT = "allocateEndpoint";
@@ -56,7 +57,7 @@ public class Phono extends Plugin {
 
     public static void log(String string) {
         Log.debug("Phono " + string);
-        System.out.println("Phono "+string);
+        System.out.println("Phono " + string);
 
     }
     private Hashtable _endpoints;
@@ -146,12 +147,12 @@ public class Phono extends Plugin {
         String uri = options.getString(URI);
         String autoplay = options.getString(AUTOPLAY);
         String codec = options.getString(CODEC);
-        String lsrtp =null;
-        String rsrtp =null;
+        String lsrtp = null;
+        String rsrtp = null;
         try {
-         lsrtp= options.getString(LSRTP);
-         rsrtp= options.getString(RSRTP);
-        } catch (JSONException x){
+            lsrtp = options.getString(LSRTP);
+            rsrtp = options.getString(RSRTP);
+        } catch (JSONException x) {
             ;
         }
         Codec cod = null;
@@ -179,10 +180,10 @@ public class Phono extends Plugin {
             }
 
         } else {
-            if (cod == null){
-                Log.error("cod is null codec name was "+codec);
+            if (cod == null) {
+                Log.error("cod is null codec name was " + codec);
             }
-            if (uri == null){
+            if (uri == null) {
                 Log.error("uri was null");
             }
         }
@@ -272,9 +273,9 @@ public class Phono extends Plugin {
                     }
                     ret = true;
                 }
-                reply.put(URI,p.getLocalURI() );
+                reply.put(URI, p.getLocalURI());
             } catch (Exception ex) {
-                Log.error("problem with playing :"+uri+" exception -> "+ex.getMessage());
+                Log.error("problem with playing :" + uri + " exception -> " + ex.getMessage());
             }
 
         }
@@ -348,9 +349,27 @@ public class Phono extends Plugin {
             if (s != null) {
                 s.gain(val);
                 res = true;
+            }
+        }
+        return res;
+    }
+
+    boolean volume(JSONObject options, JSONObject reply) throws JSONException {
+        boolean res = false;
+        String uri = options.getString(URI);
+        String value = options.getString(VALUE);
+
+        if ((value != null) && (uri != null)) {
+            float val = Float.parseFloat(value);
+
+            Endpoint e = (Endpoint) _endpoints.get(uri);
+            Share s = e.getShare();
+            if (s != null) {
+                s.volume(val);
+                res = true;
             } else {
                 if (e instanceof Play) {
-                    ((Play) e).gain(val);
+                    ((Play) e).volume(val);
                     res = true;
                 }
             }

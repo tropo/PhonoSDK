@@ -40,10 +40,11 @@ public class Play extends Endpoint {
         }
     }
 
-    public void gain(float val) {
+    public void volume(float val) {
         float fval = val / 100.0f;
         if (_mp != null){
             _mp.setVolume(fval, fval);
         }
     }
+
 }

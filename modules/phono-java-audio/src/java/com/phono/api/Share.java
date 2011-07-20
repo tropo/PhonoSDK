@@ -89,7 +89,12 @@ public class Share {
     }
 
     public float gain(float value) {
-        audio.setGain(value / 100.0);
+        audio.setMicGain((float) (value / 100.0));
+        return value; // for now
+    }
+
+    public float volume(float value) {
+        audio.setVolume(value / 100.0);
         return value; // for now
     }
 
