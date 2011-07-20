@@ -9,7 +9,7 @@ function PhonegapAudio(phono, config, callback) {
 };
 
 PhonegapAudio.exists = function() {
-    return (PhoneGap.exec != undefined);
+    return (typeof PhoneGap != "undefined");
 }
 
 PhonegapAudio.codecs = new Array();
