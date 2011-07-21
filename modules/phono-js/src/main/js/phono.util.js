@@ -202,5 +202,12 @@
             return true;
         }
         return false;
+    },
+    isAndroid: function() {
+        var userAgent = window.navigator.userAgent;
+        if (userAgent.match(/Android/i)) {
+            return true;
+        }
+        return false;
     }
 }
