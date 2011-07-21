@@ -1,4 +1,4 @@
-function PhonegapAudio(phono, config, callback) {
+function PhonegapIOSAudio(phono, config, callback) {
     
     // Bind Event Listeners
     Phono.events.bind(this, config);
@@ -8,18 +8,18 @@ function PhonegapAudio(phono, config, callback) {
     _initState(callback, plugin);
 };
 
-PhonegapAudio.exists = function() {
-    return (typeof PhoneGap != "undefined");
+PhonegapIOSAudio.exists = function() {
+    return ((typeof PhoneGap != "undefined") && Phono.util.isIOS());
 }
 
-PhonegapAudio.codecs = new Array();
-PhonegapAudio.endpoint = "rtp://0.0.0.0";
+PhonegapIOSAudio.codecs = new Array();
+PhonegapIOSAudio.endpoint = "rtp://0.0.0.0";
 
 _allocateEndpoint = function () {
-    PhonegapAudio.endpoint = "rtp://0.0.0.0";
+    PhonegapIOSAudio.endpoint = "rtp://0.0.0.0";
     PhoneGap.exec("Phono.allocateEndpoint", 
                   GetFunctionName(function(result) {console.log("endpoint success: " + result);
-                                                    PhonegapAudio.endpoint = result;}), 
+                                                    PhonegapIOSAudio.endpoint = result;}), 
                   GetFunctionName(function(result) {console.log("endpoint fail:" + result);}));
 }
 
@@ -34,7 +34,7 @@ _initState = function(callback, plugin) {
                           var name;
                           if (codecs[l].name.startsWith("SPEEX")) {name = "SPEEX";}
                           else name = codecs[l].name;
-                          PhonegapAudio.codecs.push({
+                          PhonegapIOSAudio.codecs.push({
                               id: codecs[l].ptype,
                               name: name,
                               rate: codecs[l].rate,
@@ -54,13 +54,13 @@ _localUri = function(fullUri) {
     return splitUri[0] + ":" + splitUri[1] + ":" + splitUri[2];
 }
 
-// PhonegapAudio Functions
+// PhonegapIOSAudio Functions
 //
 // Most of these will simply pass through to the underlying Phonegap layer.
 // =============================================================================================
 
 // Creates a new Player and will optionally begin playing
-PhonegapAudio.prototype.play = function(url, autoPlay) {
+PhonegapIOSAudio.prototype.play = function(url, autoPlay) {
     
     var luri = url;
     var uri = Phono.util.parseUri(url);
@@ -115,7 +115,7 @@ PhonegapAudio.prototype.play = function(url, autoPlay) {
 };
 
 // Creates a new audio Share and will optionally begin playing
-PhonegapAudio.prototype.share = function(url, autoPlay, codec) {
+PhonegapIOSAudio.prototype.share = function(url, autoPlay, codec) {
 
     // Get PhoneGap to create the share
     PhoneGap.exec("Phono.share", 
@@ -228,14 +228,14 @@ PhonegapAudio.prototype.share = function(url, autoPlay, codec) {
 };   
 
 // We always have phonegap audio permission
-PhonegapAudio.prototype.permission = function() {
+PhonegapIOSAudio.prototype.permission = function() {
     return true;
 };
 
 // Returns an object containg JINGLE transport information
-PhonegapAudio.prototype.transport = function() {
+PhonegapIOSAudio.prototype.transport = function() {
     
-    var endpoint = PhonegapAudio.endpoint;
+    var endpoint = PhonegapIOSAudio.endpoint;
     // We've used this one, get another ready
     _allocateEndpoint();
 
@@ -263,7 +263,7 @@ String.prototype.startsWith = function(str) {
 };
 
 // Returns an array of codecs supported by this plugin
-PhonegapAudio.prototype.codecs = function() {
-    return PhonegapAudio.codecs;
+PhonegapIOSAudio.prototype.codecs = function() {
+    return PhonegapIOSAudio.codecs;
 };
 
