@@ -124,6 +124,8 @@ function dialConference(){
 	$.mobile.showPageLoadingMsg();
 	console.log(phono.sessionId);
 	call = phono.phone.dial("app:9996137020", {
+        gain: 25,
+        volume: 50,
 	    tones: false,
 	    headers: [{
         	name: "x-conferenceID",
