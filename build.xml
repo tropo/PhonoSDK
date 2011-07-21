@@ -26,7 +26,7 @@
     <antcall target="build-js" />
   </target>
   <target name="build-mobile">
-    <antcall target="build-phonegap-plugin" />
+    <antcall target="build-phonegap-ios" />
     <antcall target="build-js" />
   </target>
 
@@ -40,8 +40,8 @@
   <target name="build-js">
 		<ant inheritAll="true" target="build" dir="modules/phono-js" />
   </target>
-  <target name="build-phonegap-plugin">
-		<ant inheritAll="true" target="build" dir="modules/phono-phonegap" />
+  <target name="build-phonegap-ios">
+		<ant inheritAll="true" target="build" dir="modules/phono-phonegap-ios" />
   </target>
 
   <!-- Util -->

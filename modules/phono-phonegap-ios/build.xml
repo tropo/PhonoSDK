@@ -1,4 +1,4 @@
-<project name="phono-phonegap" default="build">
+<project name="phono-phonegap-ios" default="build">
   
   <property name="libphono.dir" value="libphono"/>
   <property name="plugin.dir" value="Plugins"/>
@@ -34,7 +34,7 @@
         <include name="README" />
       </fileset>
     </copy>
-    <copy todir="../../target/sdk/plugins/phonegap" overwrite="true">
+    <copy todir="../../target/sdk/plugins/phonegap-ios" overwrite="true">
       <fileset dir="target"/>
     </copy>
   </target>
