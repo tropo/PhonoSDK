@@ -372,7 +372,7 @@ static OSStatus outRender(
 
 - (void) setUpSendTimer{
     wout = [[NSMutableData  alloc] initWithCapacity:160]; // we put the wire data here before sending it. 
-	send  = [NSTimer timerWithTimeInterval:0.019 target:self selector:@selector(encodeAndSend) userInfo:nil repeats:YES];
+	send  = [NSTimer timerWithTimeInterval:0.02 target:self selector:@selector(encodeAndSend) userInfo:nil repeats:YES];
 	NSRunLoop *crl = [NSRunLoop currentRunLoop];
 	[crl addTimer:send forMode:NSDefaultRunLoopMode];
 }
@@ -415,7 +415,7 @@ static OSStatus outRender(
     int64_t avail  = putIn - get;
    // NSLog(@"avail = %qd",avail);
     //int64_t count = 0;
-    while (avail >= aframeLen) {
+    if (avail >= aframeLen) {
         // got enough to send a packet
         //if (count >0) NSLog(@"taken = %d get=%qd put=%qd count=%qd",aframeLen,getIn,putIn,count );
         //count++;
