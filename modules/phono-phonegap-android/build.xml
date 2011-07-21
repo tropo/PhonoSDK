@@ -1,0 +1,19 @@
+<project name="phono-phonegap-android" default="build">
+  
+  <target name="build">
+    <copy todir="target" overwrite="true">
+      <fileset dir=".">
+        <include name="README" />
+        <include name="libs/**" />
+      </fileset>
+    </copy>
+    <copy todir="../../target/sdk/plugins/phonegap-android" overwrite="true">
+      <fileset dir="target"/>
+    </copy>
+  </target>
+
+  <target name="clean">
+    <delete dir="target" />
+  </target>
+  
+</project>

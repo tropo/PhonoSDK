@@ -37,6 +37,7 @@
 
     <!-- Copy phono js to the kitchen sink -->
     <copy file="target/jquery.phono.js" tofile="../../target/sdk/samples/kitchen-sink/www/jquery.phono.js" overwrite="true" />
+    <copy file="target/jquery.phono.js" tofile="../../target/sdk/samples/conference/www/jquery.phono.js" overwrite="true" />
 
   </target>
 

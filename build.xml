@@ -7,15 +7,21 @@
 		<mkdir dir="artifacts"/>
     <zip destfile="artifacts/PhonoSDK-${build.version}.zip">
       <zipfileset dir="target/sdk" prefix="phonosdk-${build.version}"/>
-      <zipfileset dir="installer/base" prefix="phonosdk-${build.version}" />
+      <zipfileset dir="." prefix="phonosdk-${build.version}">
+        <include name="README" />
+      </zipfileset>
     </zip>
     <tar destfile="artifacts/PhonoSDK-${build.version}.tgz" compression="gzip">
       <tarfileset dir="target/sdk" prefix="phonosdk-${build.version}"/>
-      <tarfileset dir="installer/base" prefix="phonosdk-${build.version}" />
+      <tarfileset dir="." prefix="phonosdk-${build.version}">
+        <include name="README" />
+      </tarfileset>
     </tar>
     <copy todir="artifacts/sdk">
       <fileset dir="target/sdk" />
-      <fileset dir="installer/base" />
+      <fileset dir=".">
+        <include name="README" />
+      </fileset>
     </copy>
   </target>
   
@@ -27,6 +33,7 @@
   </target>
   <target name="build-mobile">
     <antcall target="build-phonegap-ios" />
+    <antcall target="build-phonegap-android" />
     <antcall target="build-js" />
   </target>
 
@@ -42,6 +49,9 @@
   </target>
   <target name="build-phonegap-ios">
 		<ant inheritAll="true" target="build" dir="modules/phono-phonegap-ios" />
+  </target>
+  <target name="build-phonegap-android">
+		<ant inheritAll="true" target="build" dir="modules/phono-phonegap-android" />
   </target>
 
   <!-- Util -->

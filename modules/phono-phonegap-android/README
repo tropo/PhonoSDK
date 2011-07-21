@@ -1,0 +1,28 @@
+Phono PhoneGap Android Plugin - Adding the power of Phono to mobile devices
+===========================================================================
+
+The Phono PhoneGap plugin adds the power of Phono (http://phono.com) to mobile app using the PhonGap application framework.
+
+This plugins allows Android applications built using PhoneGap to place High Definition (wideband) voice calls and instant messages using our simple unified API (http://phono.com/docs).
+
+DISCLAIMER
+  - Libraries included in this release are experimental so use AT YOUR OWN RISK
+  - Please do not deploy these applications to the 'App Store' until we announce the final release
+  
+Enough of that, let's get started...
+
+
+Adding Phono support to an an existing PhoneGap project
+-------------------------------------------------------
+
+1. Add the Phono Plugin
+   - Copy the contents of libs to your PhoneGap libs directory. This includes:
+      armeab/libg722.so
+      phonogap.jar
+    
+2. Copy 'jquery.phono.js' to your PhoneGap 'www' directory and incude it in your app (e.g. index.html)
+
+
+You're now ready to use Phono as you would in a standard web application. 
+
+If this is your first Phono application, check out our awesome documentation here: http://phono.com/docs
