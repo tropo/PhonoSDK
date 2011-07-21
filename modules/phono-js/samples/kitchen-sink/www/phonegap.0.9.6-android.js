@@ -562,7 +562,6 @@ PhoneGap.callbackStatus = {
  * @param {Array.<String>} [args]     Zero or more arguments to pass to the method
  */
 PhoneGap.exec = function(success, fail, service, action, args) {
-console.log("execXXXXXXXX");
     try {
         var callbackId = service + PhoneGap.callbackId++;
         if (success || fail) {
@@ -571,18 +570,13 @@ console.log("execXXXXXXXX");
 
         var r = prompt(PhoneGap.stringify(args), "gap:"+PhoneGap.stringify([service, action, callbackId, true]));
 
-console.log("WWWWWWWW");
-
         // If a result was returned
         if (r.length > 0) {
             eval("var v="+r+";");
 
-console.log("YYYYYYYY");
-
             // If status is OK, then return value back to caller
             if (v.status === PhoneGap.callbackStatus.OK) {
 
-console.log("callbackSatus.OK");
                 // If there is a success callback, then call it now with
                 // returned value
                 if (success) {
@@ -605,7 +599,6 @@ console.log("callbackSatus.OK");
 
                 // Clear callback if not expecting any more results
                 if (!v.keepCallback) {
-console.log("delete callback");
                     delete PhoneGap.callbacks[callbackId];
                 }
             }
@@ -643,7 +636,6 @@ console.log("delete callback");
  * @param args
  */
 PhoneGap.callbackSuccess = function(callbackId, args) {
-console.log("callbackSuccess");
     if (PhoneGap.callbacks[callbackId]) {
 
         // If result is to be sent to callback
@@ -752,7 +744,7 @@ PhoneGap.JSCallbackToken = null;
  * Java to JavaScript.
  */
 PhoneGap.JSCallback = function() {
-console.log("JSCallback...");
+
     // Exit if shutting down app
     if (PhoneGap.shuttingDown) {
         return;
@@ -768,7 +760,6 @@ console.log("JSCallback...");
 
     // Callback function when XMLHttpRequest is ready
     xmlhttp.onreadystatechange=function(){
-console.log("onreadystatechange");
         if(xmlhttp.readyState === 4){
 
             // Exit if shutting down app
@@ -852,7 +843,6 @@ PhoneGap.UsePolling = false;    // T=use polling, F=use XHR
  * Java to JavaScript.
  */
 PhoneGap.JSCallbackPolling = function() {
-    console.log("POLLING");
 
     // Exit if shutting down app
     if (PhoneGap.shuttingDown) {
