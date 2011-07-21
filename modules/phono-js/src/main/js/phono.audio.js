@@ -24,9 +24,14 @@
                 window.setTimeout(callback,10);
                 return null;
             } else if (config.type === "auto") {
-                if (PhonegapIOSAudio.exists()) return new PhonegapIOSAudio(phono, config, callback);
-                else if (PhonegapAndroidAudio.exists()) return new PhonegapAndroidAudio(phono, config, callback);
-                else return new FlashAudio(phono, config, callback);
+                console.log("Detecting Audio Plugin");
+                if (PhonegapIOSAudio.exists())  { 
+                    console.log("Detected iOS"); return new PhonegapIOSAudio(phono, config, callback);
+                } else if (PhonegapAndroidAudio.exists()) { 
+                    console.log("Detected Android"); return new PhonegapAndroidAudio(phono, config, callback);
+                } else { 
+                    console.log("Detected Flash"); return new FlashAudio(phono, config, callback);
+                }
             }
         }
     });

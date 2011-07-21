@@ -8,7 +8,7 @@ function PhonegapAndroidAudio(phono, config, callback) {
     // Register our Java plugin with Phonegap so that we can call it later
     PhoneGap.exec(null, null, "App", "addService", ['PhonogapAudio', 'com.phono.android.phonegap.Phono']);
 
-    _initState(callback, plugin);
+    this.initState(callback, plugin);
 };
 
 PhonegapAndroidAudio.exists = function() {
@@ -18,7 +18,7 @@ PhonegapAndroidAudio.exists = function() {
 PhonegapAndroidAudio.codecs = new Array();
 PhonegapAndroidAudio.endpoint = "rtp://0.0.0.0";
 
-_allocateEndpoint = function () {
+PhonegapAndroidAudio.prototype.allocateEndpoint = function () {
     
     PhonegapAndroidAudio.endpoint = "rtp://0.0.0.0";
 
@@ -31,9 +31,9 @@ _allocateEndpoint = function () {
                   [{}]);      
 }
 
-_initState = function(callback, plugin) {
+PhonegapAndroidAudio.prototype.initState = function(callback, plugin) {
 
-    _allocateEndpoint();
+    this.allocateEndpoint();
 
     var codecSuccess = function(result) {
         console.log("codec: success");
@@ -143,7 +143,7 @@ PhonegapAndroidAudio.prototype.share = function(url, autoPlay, codec) {
                       'codec':codec.name
                   }]);   
 
-    var luri = _localUri(url);
+    var luri = Phono.util.localUri(url);
     var muteStatus = false;
     var gainValue = 50;
 
@@ -253,7 +253,7 @@ PhonegapAndroidAudio.prototype.transport = function() {
     
     var endpoint = PhonegapAndroidAudio.endpoint;
     // We've used this one, get another ready
-    _allocateEndpoint();
+    this.allocateEndpoint();
 
     return {
         name: "urn:xmpp:jingle:transports:raw-udp:1",

@@ -5,7 +5,7 @@ function PhonegapIOSAudio(phono, config, callback) {
     
     var plugin = this;
 
-    _initState(callback, plugin);
+    this.initState(callback, plugin);
 };
 
 PhonegapIOSAudio.exists = function() {
@@ -15,7 +15,7 @@ PhonegapIOSAudio.exists = function() {
 PhonegapIOSAudio.codecs = new Array();
 PhonegapIOSAudio.endpoint = "rtp://0.0.0.0";
 
-_allocateEndpoint = function () {
+PhonegapIOSAudio.prototype.allocateEndpoint = function () {
     PhonegapIOSAudio.endpoint = "rtp://0.0.0.0";
     PhoneGap.exec("Phono.allocateEndpoint", 
                   GetFunctionName(function(result) {console.log("endpoint success: " + result);
@@ -23,9 +23,9 @@ _allocateEndpoint = function () {
                   GetFunctionName(function(result) {console.log("endpoint fail:" + result);}));
 }
 
-_initState = function(callback, plugin) {
+PhonegapIOSAudio.prototype.initState = function(callback, plugin) {
 
-    _allocateEndpoint();
+    this.allocateEndpoint();
     PhoneGap.exec("Phono.codecs", 
                   GetFunctionName(function(result) {
                       console.log("codec success: " + result);
@@ -48,11 +48,6 @@ _initState = function(callback, plugin) {
                   GetFunctionName(function(result) {console.log("codec fail:" + result);})
                  );
 };
-
-_localUri = function(fullUri) {
-    var splitUri = fullUri.split(":");
-    return splitUri[0] + ":" + splitUri[1] + ":" + splitUri[2];
-}
 
 // PhonegapIOSAudio Functions
 //
@@ -127,7 +122,7 @@ PhonegapIOSAudio.prototype.share = function(url, autoPlay, codec) {
                       'codec':codec.id,
                   });
 
-    var luri = _localUri(url);
+    var luri = Phono.util.localUri(url);
     var muteStatus = false;
     var gainValue = 50;
 
@@ -237,7 +232,7 @@ PhonegapIOSAudio.prototype.transport = function() {
     
     var endpoint = PhonegapIOSAudio.endpoint;
     // We've used this one, get another ready
-    _allocateEndpoint();
+    this.allocateEndpoint();
 
     return {
         name: "urn:xmpp:jingle:transports:raw-udp:1",

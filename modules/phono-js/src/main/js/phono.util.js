@@ -209,5 +209,10 @@
             return true;
         }
         return false;
+    },
+    localUri : function(fullUri) {
+        var splitUri = fullUri.split(":");
+        return splitUri[0] + ":" + splitUri[1] + ":" + splitUri[2];
     }
-}
+};
+

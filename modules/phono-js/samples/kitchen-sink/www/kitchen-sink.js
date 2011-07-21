@@ -25,7 +25,7 @@ $(document).ready(function() {
                 if (this.audio.audioInDevices){
                     var inList = this.audio.audioInDevices();
                     //var inList = ["A","B","C"];
-                    log.info("devices are :"+inList);
+                    console.log("devices are :"+inList);
                     var output = [];
 
                     for (l=0;l<inList.length;l++){
@@ -33,7 +33,7 @@ $(document).ready(function() {
                     }
                     newPhonoDiv.find(".audio-input").html(output.join(''));;
                 }
-                log.info("["+newPhonoID+"] Phono loaded"); 
+                console.log("["+newPhonoID+"] Phono loaded"); 
                 
                 if( ! this.audio.permission() ){
                    this.audio.showPermissionBox();
@@ -43,20 +43,20 @@ $(document).ready(function() {
             },
             onUnready: function(event) {
                 newPhonoDiv.find(".sessionId").text("disconnected");
-                log.info("["+newPhonoID+"] Phono disconnected");  
+                console.log("["+newPhonoID+"] Phono disconnected");  
             },		   
             onError: function(event) {
-                log.error(event.reason);  
+                console.log(event.reason);  
             },		   
 	    audio: {
                 type: $('.audio-plugin').val(), // flash|java|none|auto
                 jar: "../../../plugins/audio/phono.audio.jar",
                 swf: "../../../plugins/audio/phono.audio.swf",
                 onPermissionBoxShow: function(event) {
-                    log.info("["+newPhonoID+"] Flash permission box loaded"); 
+                    console.log("["+newPhonoID+"] Flash permission box loaded"); 
                 },
                 onPermissionBoxHide: function(event) {
-                    log.info("["+newPhonoID+"] Flash permission box closed");
+                    console.log("["+newPhonoID+"] Flash permission box closed");
                     if( ! this.permission() ){
        		    	this.showPermissionBox();
        		    }
@@ -75,29 +75,29 @@ $(document).ready(function() {
                     newCallDiv.find(".callHeader .callDetail").html("<strong>Incoming call</strong>");
                     newCallDiv.find(".callHeader .callID").html(newCallID);
             	    calls[newCallID] = event.call;
-            	    log.info("["+newPhonoID+"] New incoming call");
+            	    console.log("["+newPhonoID+"] New incoming call");
                     
             	    //Bind events from this call
             	    Phono.events.bind(calls[newCallID], {
              	        onHangup: function(event) {
              	            newCallDiv.slideUp();
              	            calls[newCallID] = null;
-             	            log.info("["+newPhonoID+"] ["+newCallID+"] Call hungup");
+             	            console.log("["+newPhonoID+"] ["+newCallID+"] Call hungup");
              	        },
              	        onError: function(event) {
-             	   	    log.error("["+newPhonoID+"] ["+newCallID+"] Error: [" + event.reason + "]");
+             	   	    console.log("["+newPhonoID+"] ["+newCallID+"] Error: [" + event.reason + "]");
              	        }
             	    });
                 },
                 onError: function(event) {
-            	    log.error("["+newPhonoID+"] Error: [" + event.reason + "]");
+            	    console.log("["+newPhonoID+"] Error: [" + event.reason + "]");
                 }
 	    },
 	    
 	    messaging: {
                 onMessage: function(event, message) {
             	    var JID = message.from.split("/");
-            	    log.info("["+newPhonoID+"] Message from " + JID[0] + " [" + message.body + "]");
+            	    console.log("["+newPhonoID+"] Message from " + JID[0] + " [" + message.body + "]");
             	    routeMessage(newPhonoID,"incoming",JID[0],message.body);
                 }
 	    }
@@ -117,13 +117,13 @@ $(document).ready(function() {
 	var callDiv = $("#"+newCallID);
 	callDiv.find(".callID").text(newCallID);
 	callDiv.find(".callDetail").html("<strong>Outgoing call to:</strong> " + to);
-	log.info("["+phonoDiv.attr('id')+"] ["+newCallID+"] Calling "+to);
+	console.log("["+phonoDiv.attr('id')+"] ["+newCallID+"] Calling "+to);
 	
 	calls[newCallID] = phonos[phonoID].phone.dial(to, {
 	    tones: true,
 	    pushToTalk: pttEnabled,
             onAnswer: function(event) {
-            	log.info("["+phonoDiv.attr('id')+"] ["+newCallID+"] Call answered using " + calls[newCallID].codec.name + "/" + calls[newCallID].codec.rate);
+            	console.log("["+phonoDiv.attr('id')+"] ["+newCallID+"] Call answered using " + calls[newCallID].codec.name + "/" + calls[newCallID].codec.rate);
                 callDiv.find(".callCodec").html("<strong>Codec:</strong> " + calls[newCallID].codec.name + "/" + calls[newCallID].codec.rate);
                 calls[newCallID].energyPoll = window.setInterval(function(){
 	             var callDiv = $("#"+newCallID);
@@ -147,7 +147,7 @@ $(document).ready(function() {
 		window.clearInterval(calls[newCallID].energyPoll);
             	calls[newCallID] = null;
             	$("#"+newCallID).slideUp();
-            	log.info("["+phonoDiv.attr('id')+"] ["+newCallID+"] Call hungup");
+            	console.log("["+phonoDiv.attr('id')+"] ["+newCallID+"] Call hungup");
             }
         });
     }
@@ -214,7 +214,7 @@ $(document).ready(function() {
 	    renderNewMessage(chatDiv, newMsg);
 	}
 	
-	log.info("["+phonoDiv.attr('id')+"] ["+newChatID+"] Chat started with " + to);
+	console.log("["+phonoDiv.attr('id')+"] ["+newChatID+"] Chat started with " + to);
 	
 	chats[newChatID] = to;
     }
@@ -277,7 +277,7 @@ $(document).ready(function() {
 	thisPhono.find(".callHldr").each(function(){
 	    calls[$(this).attr("id")] = null;
 	});
-	log.info("["+thisPhonoID+"] Phone removed");
+	console.log("["+thisPhonoID+"] Phone removed");
     });
     
     $('.closeChat').live('click', function() {
@@ -285,7 +285,7 @@ $(document).ready(function() {
 	var thisChatID = $(this).closest(".chatHldr").attr("id");
 	thisChat.slideUp();
 	chats[thisChatID] = null;	
-	log.info("["+thisChatID+"] Chat closed");
+	console.log("["+thisChatID+"] Chat closed");
     });
     
     $('.call').live('click', function() {
@@ -297,14 +297,14 @@ $(document).ready(function() {
     $('.headset').live('change', function() {
 	var phonoId = $(this).closest(".phono").attr("id");
 	var headsetEnabled = $("#"+phonoId).find(".headset").is(":checked");
-	log.info("["+phonoId+"] Headset: " + headsetEnabled);
+	console.log("["+phonoId+"] Headset: " + headsetEnabled);
     	phonos[phonoId].phone.headset(headsetEnabled);		
     });
 
     $('.wideband').live('change', function() {
         var phonoId = $(this).closest(".phono").attr("id");
 	var widebandDisabled = $("#"+phonoId).find(".wideband").is(":checked");
-	log.info("["+phonoId+"] WidebandDisabled: " + widebandDisabled);
+	console.log("["+phonoId+"] WidebandDisabled: " + widebandDisabled);
     	phonos[phonoId].phone.wideband(!widebandDisabled);
     });
     
@@ -314,16 +314,16 @@ $(document).ready(function() {
 	
 	if($(this).hasClass("ring-tone")){
 	    phonos[phonoId].phone.ringTone(tone);
-	    log.info("["+phonoId+"] Ring tone set: " + tone);
+	    console.log("["+phonoId+"] Ring tone set: " + tone);
 	}else{
 	    phonos[phonoId].phone.ringbackTone(tone);
-	    log.info("["+phonoId+"] Ringback tone set: " + tone);
+	    console.log("["+phonoId+"] Ringback tone set: " + tone);
 	}	
     });
     $('.audio-input').live($.browser.msie ? 'click': 'change', function() {
 	var phonoId = $(this).closest(".phono").attr("id");
         var device = $(this).val();
-        log.info("["+phonoId+"] Audio Input set: " + device);
+        console.log("["+phonoId+"] Audio Input set: " + device);
 	phonos[phonoId].phone.audioInput(device);
     }); 
     $('.flashHelp a').live('click', function() {
@@ -347,7 +347,7 @@ $(document).ready(function() {
 	renderNewMessage(thisChat,newMsg);
 	phonos[thisPhono.attr("id")].messaging.send(chats[thisChat.attr("id")],msgText);
 	thisChat.find(".chatTxtInput").val("");
-	log.info("["+thisPhono.attr('id')+"] Sending message to: " + chats[thisChat.attr('id')] + " [" + msgText + "]");
+	console.log("["+thisPhono.attr('id')+"] Sending message to: " + chats[thisChat.attr('id')] + " [" + msgText + "]");
     });
     
     $('.hangup').live('click', function() {
@@ -364,7 +364,7 @@ $(document).ready(function() {
 	calls[callDiv.attr("id")].answer();
 	callDiv.find(".callControls").hide();
 	callDiv.find(".callInputs").show();
-	log.info("Call answered");
+	console.log("Call answered");
     });
     
     $('.mute').live('click', function() {
@@ -437,15 +437,8 @@ $(document).ready(function() {
     
 });
 
-//Log4Javascript Logging
-var log = log4javascript.getLogger("main");
-var appender = new log4javascript.InPageAppender("logHldr",[lazyInit = false,initiallyMinimized = false]);
-log.addAppender(appender);
-appender.setShowCommandLine(false);
-appender.setHeight("245px");
-
 Strophe.log = function(level, msg) {
-	log.info(msg);
+	console.log(msg);
 };
 
 //Load the phonegap javascript

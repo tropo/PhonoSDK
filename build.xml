@@ -27,6 +27,7 @@
   </target>
   <target name="build-mobile">
     <antcall target="build-phonegap-plugin" />
+    <antcall target="build-js" />
   </target>
 
   <!-- Modules -->
