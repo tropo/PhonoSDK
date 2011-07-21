@@ -59,6 +59,9 @@
 	<exec executable="/bin/cp" >
             <arg line="phonogap.jar /project2/PhonoSDK-vox/phonegap-0.9.6/Android/Sample/libs "/>
         </exec>
+	<exec executable="/bin/cp" >
+            <arg line="libs/armeabi/libg722.so /project2/PhonoSDK-vox/phonegap-0.9.6/Android/Sample/libs/armeabi "/>
+        </exec>
 
     </target>
 

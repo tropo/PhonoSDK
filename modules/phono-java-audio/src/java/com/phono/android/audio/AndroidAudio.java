@@ -14,6 +14,7 @@
  */
 package com.phono.android.audio;
 
+import android.content.Context;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -30,6 +31,7 @@ import com.phono.audio.codec.ulaw.ULaw_Codec;
 import com.phono.audio.*;
 import com.phono.audio.codec.alaw.ALaw_Codec;
 import com.phono.audio.codec.g722.G722Codec;
+import com.phono.audio.codec.g722.NativeG722Codec;
 import com.phono.audio.phone.StampedAudioImpl;
 
 
@@ -58,7 +60,6 @@ public class AndroidAudio implements AudioFace {
         fillCodecMap();
         _audioProperties = new Properties();
         _cleanAudioList = new ArrayList<StampedAudio>();
-
     }
 
     @Override
@@ -345,7 +346,7 @@ public class AndroidAudio implements AudioFace {
     @Override
     public void startPlay() {
         if (_speaker != null) {
-            _speaker.startPlay();
+            //_speaker.startPlay(); // let the arrival of audio decide
         } else {
             Log.error(
                     this.getClass().getSimpleName()
@@ -438,16 +439,25 @@ public class AndroidAudio implements AudioFace {
 
         protected void fillCodecMap() {
         // add all the supported Codecs, in the order of preference
-        G722Codec g722Codec = new G722Codec();
-        _codecMap.put(new Long(g722Codec.getCodec()), g722Codec);
+        try {
+            NativeG722Codec g722Codec = new NativeG722Codec();
+                    _codecMap.put(new Long(g722Codec.getCodec()), g722Codec);
+
+            Log.debug("fillCodecMap: " + "got native g722 codec");
+
+        } catch (Throwable thrown) {
+            Log.debug("fillCodecMap: " + "didn't get g722 native "+thrown.getMessage());
+        }
+
 
         ULaw_Codec ulawCodec = new ULaw_Codec();
         _codecMap.put(new Long(ulawCodec.getCodec()), ulawCodec);
+/*
         ALaw_Codec alawCodec = new ALaw_Codec();
         _codecMap.put(new Long(alawCodec.getCodec()), alawCodec);
-       /* GSM_Codec gsmCodec = new GSM_Codec();
-        _codecMap.put(new Long(gsmCodec.getCodec()), gsmCodec);*/
-
+        GSM_Codec gsmCodec = new GSM_Codec();
+        _codecMap.put(new Long(gsmCodec.getCodec()), gsmCodec);
+*/
 
         _defaultCodec = ulawCodec;
 

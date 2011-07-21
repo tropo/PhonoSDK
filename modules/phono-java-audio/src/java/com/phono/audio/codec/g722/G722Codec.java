@@ -41,7 +41,7 @@ public class G722Codec implements CodecFace{
         return new G722Encoder(this.getFrameSize()); // thats in shorts..
     }
 
-    static short saturate(int amp) {
+    final static short saturate(int amp) {
         short amp16;
 
         /* Hopefully this is optimised for the common case - not clipping */

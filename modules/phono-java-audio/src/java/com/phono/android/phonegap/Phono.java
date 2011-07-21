@@ -450,7 +450,7 @@ public class Phono extends Plugin {
     }
 
     @Override
-    public PluginResult execute(String action, JSONArray data,
+    public synchronized PluginResult execute(String action, JSONArray data,
             String callbackId) {
         Log.debug("Plugin Called with action " + action + " and data " + data.toString());
         PluginResult result = null;
@@ -487,10 +487,10 @@ public class Phono extends Plugin {
                 joret.put(VALUE, "logged");
                 status = true;
             }
-            Log.debug("returning " + joret.toString());
+            Log.debug(action+" returning " + joret.toString());
             result = status ? new PluginResult(Status.OK, joret) : new PluginResult(Status.INVALID_ACTION);
         } catch (JSONException jsonEx) {
-            Log.debug("Got JSON Exception " + jsonEx.getMessage());
+            Log.debug(action+"Got JSON Exception " + jsonEx.getMessage());
             result = new PluginResult(Status.JSON_EXCEPTION);
         }
         Log.debug("result=" + result.getStatus() + " " + result.getJSONString());

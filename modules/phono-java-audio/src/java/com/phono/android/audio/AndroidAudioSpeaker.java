@@ -304,7 +304,7 @@ public class AndroidAudioSpeaker implements Runnable {
 
         boolean accepted = _qStampedAudio.offer(stampedAudio);
         if (!accepted) {
-            Log.debug(
+            Log.verb(
                     this.getClass().getSimpleName()
                     + ".setLastStampedAudio(): dumping excess frame ");
             _audio.releaseStampedAudio(stampedAudio);
@@ -358,7 +358,7 @@ public class AndroidAudioSpeaker implements Runnable {
         } else {
             _sampleRate -= i;
         }
-        Log.debug(
+        Log.verb(
                 this.getClass().getSimpleName()
                 + ".tweakSpeed(): would set speed to " + _sampleRate);
     }

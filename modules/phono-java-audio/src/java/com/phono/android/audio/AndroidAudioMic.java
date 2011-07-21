@@ -101,7 +101,7 @@ public class AndroidAudioMic implements Runnable {
 
 
     protected int getOutboundTimestamp() {
-        return (int) (this.getTime() - _timestampRecStart);
+        return (int) _countFrames * _audio.getFrameInterval();
     }
 
     protected void startRec() {
@@ -124,7 +124,7 @@ public class AndroidAudioMic implements Runnable {
                 _me.start();
                 Log.debug(
                         this.getClass().getSimpleName()
-                                + ".startRec(): micThread started");
+                                + ".startRec(): micThread started ");
             }
         } else {
             Log.error(
@@ -180,7 +180,7 @@ public class AndroidAudioMic implements Runnable {
         while (_me != null) {
             readMic();
             
-              try { 
+              try {
                   Thread.sleep(10);
               } catch (InterruptedException ex) {
                   Log.verb(this.getClass().getSimpleName() +
@@ -202,11 +202,15 @@ public class AndroidAudioMic implements Runnable {
                             + ".readMic(): length=" + _micFramebuff.length
                             + ", bufferRead=" + bufferRead);
 
-            // TODO: change so Android reads/write shorts, saves conversion.
-            short[] sframe = _micFramebuff; //bytesToShorts(_micFramebuff);
+            short[] sframe = _micFramebuff;
             short[] seframe = effectIn(sframe);
+            //long then = 0;
+            //if ((_countFrames % 500) == 0) { then = getTime();}
             byte[] tbuff = _encoder.encode_frame(seframe);
 
+            //if ((_countFrames % 50) == 0) {long diff = getTime() - then;
+            //    Log.debug("encode took "+ diff);
+            //}
             if (tbuff != null) {
                     stampedAudio = _audio.getCleanStampedAudio();
                     stampedAudio.setStampAndBytes(tbuff, 0, tbuff.length,
