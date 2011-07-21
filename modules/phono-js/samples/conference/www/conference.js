@@ -231,5 +231,5 @@ function displayDm(jid, msg){
 
 //Load the phonegap javascript
 if (Phono.util.isIOS()) {
-    $.getScript('phonegap.0.9.5.1.js');
+    $.getScript('phonegap.0.9.5.1-ios.js');
 }
