@@ -7,7 +7,9 @@ function PhonegapAndroidAudio(phono, config, callback) {
 
     // Register our Java plugin with Phonegap so that we can call it later
     PhoneGap.exec(null, null, "App", "addService", ['PhonogapAudio', 'com.phono.android.phonegap.Phono']);
-
+    
+    // FIXME: Should not have to do this twice!
+    this.allocateEndpoint();
     this.initState(callback, plugin);
 };
 
