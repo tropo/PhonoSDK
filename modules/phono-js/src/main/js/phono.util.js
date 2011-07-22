@@ -217,7 +217,7 @@
     loggify: function(objName, obj) {
         for(prop in obj) {
             if(typeof obj[prop] === 'function') {
-                this.loggyFunction(objName, obj, prop);
+                Phono.util.loggyFunction(objName, obj, prop);
             }
         }
         return obj;
