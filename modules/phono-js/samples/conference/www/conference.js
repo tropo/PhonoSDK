@@ -8,25 +8,7 @@ $(function() {
     	window.localStorage.displayName = ""; 
     }
     	
-	phono = $.phono({
-		apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
-		gateway: "staging.phono.com",
-        onReady: function(event) {
-            $("#home-content").show();
-            $.mobile.hidePageLoadingMsg();
-        },
-	    messaging: {
-        	onMessage: function(event) {
-        		var message = event.message;
-        	    try {
-			    	msgBody = $.parseJSON(message.body);
-			    	processParticipantEvent(msgBody);
-			    } catch (e) {
-			        processDirectMessage(message);
-			    }
-        	}
-	    }
-	});
+	connectPhono();
 	
 	/* Home Page */
 	$("#home").live("pageshow",function(event, ui){
@@ -119,6 +101,37 @@ $(function() {
 	});
 
 });
+
+function connectPhono(){
+	phono = $.phono({
+	    apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
+	    gateway: "staging.phono.com",
+	    onReady: function(event) {
+	        $("#home-content").show();
+	        $.mobile.hidePageLoadingMsg();
+	    },
+	    onUnready: function(event){
+	    	disconnectPhono();
+	    },
+	    messaging: {
+	    	onMessage: function(event) {
+	    		var message = event.message;
+	    	    try {
+	    	    	msgBody = $.parseJSON(message.body);
+	    	    	processParticipantEvent(msgBody);
+	    	    } catch (e) {
+	    	        processDirectMessage(message);
+	    	    }
+	    	}
+	    }
+	});
+}
+
+function disconnectPhono(){
+	phono = null;
+	$.mobile.showPageLoadingMsg();
+	connectPhono();
+}
 
 function dialConference(){
 	$.mobile.showPageLoadingMsg();
