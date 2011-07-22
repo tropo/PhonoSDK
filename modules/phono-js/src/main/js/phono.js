@@ -28,18 +28,39 @@ var flensed={base_path:"http://s.phono.com/deps/flensed/1.0/"};
    // Initialize Fields
    this.sessionId = null;
    this.connection = new Strophe.Connection(this.config.connectionUrl);
+   
+   xmlSerializer = new XMLSerializer();
+   
+   this.connection.xmlInput = function (body) {
+       Phono.log.debug("[WIRE] (i) " + xmlSerializer.serializeToString(body));
+   };
+
+   this.connection.xmlOutput = function (body) {
+       Phono.log.debug("[WIRE] (o) " + xmlSerializer.serializeToString(body));
+   };
+
+   // Wrap ourselves with logging
+   Phono.util.loggify("Phono", this);
+   
    this.connect();
    
 };
 
 (function() {
    
-   //@Include=log4javascript_lite_stub.js
+    // ======================================================================
+   
+    //@Include=phono.util.js
+    //@Include=phono.logging.js
+   
+    // ======================================================================
 
+   
    // Global
    Phono.version = "0.2";
-   Phono.log = log4javascript.getDefaultLogger();
-
+   
+   Phono.log = new PhonoLogger();
+   
    Phono.registerPlugin = function(name, config) {
       if(!Phono.plugins) {
          Phono.plugins = {};
@@ -48,7 +69,7 @@ var flensed={base_path:"http://s.phono.com/deps/flensed/1.0/"};
    };
 
    // ======================================================================
-   
+
    Phono.prototype.connect = function() {
 
       // Noop if already connected
@@ -108,7 +129,6 @@ var flensed={base_path:"http://s.phono.com/deps/flensed/1.0/"};
    //Include=flXHR.js
    //@Include=strophe.js   
    //@Include=strophe.cors.js
-   //@Include=phono.util.js
    //@Include=phono.events.js
    //@Include=flashembed.min.js
    //@Include=$phono-audio
@@ -116,6 +136,26 @@ var flensed={base_path:"http://s.phono.com/deps/flensed/1.0/"};
    //@Include=phono.phone.js
 
    // ======================================================================
+
+   Strophe.log = function(level, msg) {
+       Phono.log.debug("[STROPHE] " + msg);
+   };
+
+   // Register Loggign Callback
+   Phono.events.add(Phono.log, "log", function(event) {
+      var date = event.timeStamp;
+      var formattedDate = 
+            Phono.util.padWithZeroes(date.getHours(), 2) + ":" + 
+            Phono.util.padWithZeroes(date.getMinutes(), 2) + ":" + 
+            Phono.util.padWithZeroes(date.getSeconds(), 2) + "." +
+            Phono.util.padWithZeroes(date.getMilliseconds(), 3);
+      var formattedMessage = formattedDate + " " + Phono.util.padWithSpaces(event.level.name, 5) + " - " + event.getCombinedMessages();
+      var throwableStringRep = event.getThrowableStrRep();
+      if (throwableStringRep) {
+        formattedMessage += newLine + throwableStringRep;
+      }
+      console.log(formattedMessage);
+   });
 
    // PluginManager is responsible for initializing plugins an 
    // notifying when all plugins are initialized
@@ -148,7 +188,6 @@ var flensed={base_path:"http://s.phono.com/deps/flensed/1.0/"};
          }
       });
    };
-   
    
 })();
 

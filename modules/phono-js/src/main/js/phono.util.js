@@ -213,6 +213,43 @@
     localUri : function(fullUri) {
         var splitUri = fullUri.split(":");
         return splitUri[0] + ":" + splitUri[1] + ":" + splitUri[2];
+    },
+    loggify: function(objName, obj) {
+        for(prop in obj) {
+            if(typeof obj[prop] === 'function') {
+                this.loggyFunction(objName, obj, prop);
+            }
+        }
+        return obj;
+    },
+    loggyFunction: function(objName, obj, funcName) {
+        var original = obj[funcName];
+        obj[funcName] = function() {
+
+            // Convert arguments to a real array
+            var sep = "";
+            var args = "";
+            for (var i = 0; i < arguments.length; i++) {
+                args+= (sep + arguments[i]);
+                sep = ",";
+            }
+            
+            Phono.log.debug("[INVOKE] " + objName + "." + funcName + "(" + args  + ")");
+            return original.apply(obj, arguments);
+        }
+    },
+    padWithZeroes: function(num, len) {
+        var str = "" + num;
+        while (str.length < len) {
+            str = "0" + str;
+        }
+        return str;
+    },
+    padWithSpaces: function(str, len) {
+        while (str.length < len) {
+            str += " ";
+        }
+        return str;
     }
 };
 

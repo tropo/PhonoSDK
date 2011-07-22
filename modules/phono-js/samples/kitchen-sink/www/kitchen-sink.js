@@ -437,10 +437,6 @@ $(document).ready(function() {
     
 });
 
-Strophe.log = function(level, msg) {
-	console.log(msg);
-};
-
 //Load the phonegap javascript
 if (Phono.util.isIOS()) {
     $.getScript('phonegap.0.9.5.1-ios.js');
