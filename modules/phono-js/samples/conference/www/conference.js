@@ -113,6 +113,9 @@ function connectPhono(){
 	    onUnready: function(event){
 	    	disconnectPhono();
 	    },
+	    audio: {
+            swf: "../../../plugins/audio/phono.audio.swf",
+	    },
 	    messaging: {
 	    	onMessage: function(event) {
 	    		var message = event.message;
