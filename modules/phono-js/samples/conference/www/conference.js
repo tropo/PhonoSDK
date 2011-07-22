@@ -246,3 +246,7 @@ function displayDm(jid, msg){
 if (Phono.util.isIOS()) {
     $.getScript('phonegap.0.9.5.1-ios.js');
 }
+
+if (Phono.util.isAndroid()) {
+    $.getScript('phonegap.0.9.6-android.js',function() {PhoneGap.onDOMContentLoaded.fire();});
+}
