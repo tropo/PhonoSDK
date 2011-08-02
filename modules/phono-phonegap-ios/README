@@ -28,8 +28,23 @@ Adding Phono support to an an existing PhoneGap project
     - From the "Build Phases" panel select "Link Binary With Libraries"
     - Click the "+" and add scroll to add the "Security.framework" library set
 
-4. Copy 'jquery.phono.js' to your PhoneGap 'www' directory and incude it in your app (e.g. index.html)
+4. Modify PhoneGap.plist (located in the Supporting Files folder of your project) to include the Phono plugin:
 
+    <plist version="1.0">
+       <dict>
+          ...
+          <key>Plugins</key>
+          <dict>
+               ...
+               <key>Phono</key>
+               <string>Phono</string>
+               ...
+          </dict>
+          ...
+       </dict>
+    </plist>
+
+5. Copy 'jquery.phono.js' to your PhoneGap 'www' directory and incude it in your app (e.g. index.html)
 
 You're now ready to use Phono as you would in a standard web application. 
 
