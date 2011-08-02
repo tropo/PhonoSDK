@@ -439,7 +439,7 @@ $(document).ready(function() {
 
 //Load the phonegap javascript
 if (Phono.util.isIOS()) {
-    $.getScript('phonegap.0.9.5.1-ios.js');
+    $.getScript('phonegap-1.0.0-ios.js',function() {PhoneGap.onDOMContentLoaded.fire();});
 }
 
 if (Phono.util.isAndroid()) {

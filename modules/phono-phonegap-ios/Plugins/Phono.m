@@ -21,12 +21,12 @@
 
 @implementation Phono
 
--(PhoneGapCommand*) initWithWebView:(UIWebView*)theWebView{
+-(PGPlugin*) initWithWebView:(UIWebView*)theWebView{
     self = (id) [super initWithWebView:theWebView];
     phonoAPI = [[PhonoAPI alloc] init];
     return self;
 }
--(PhoneGapCommand*) initWithWebView:(UIWebView*)theWebView settings:(NSDictionary*)classSettings{
+-(PGPlugin*) initWithWebView:(UIWebView*)theWebView settings:(NSDictionary*)classSettings{
     self = (id) [super initWithWebView:theWebView settings:classSettings];
     phonoAPI = [[PhonoAPI alloc] init];
     return self; 

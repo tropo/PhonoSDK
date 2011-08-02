@@ -16,10 +16,13 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "PhoneGap/PhoneGapCommand.h"
+#ifdef PHONEGAP_FRAMEWORK
+#import <PhoneGap/PGPlugin.h>
+#else
+#import "PGPlugin.h"
+#endif
 
-
-@interface Phono : PhoneGapCommand {
+@interface Phono : PGPlugin {
     id phonoAPI;
 }
 
