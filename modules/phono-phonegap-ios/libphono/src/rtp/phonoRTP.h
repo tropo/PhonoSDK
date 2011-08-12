@@ -27,7 +27,8 @@
     uint64_t _sync;
     uint64_t _index;
     BOOL _first;
-    uint64_t ostamp;
+    int64_t _transit;
+    double jitter;
     /* networky stuff bidriectional*/
 	
 	NSString *farHost;
@@ -47,13 +48,19 @@
      uint64_t _csrcid;
      uint32_t _tailIn;
      uint32_t _tailOut;
+    uint64_t ostamp;
+
+    NSDate *firstSent;
+    NSTimeInterval latency;
+    
 
 }
 @property (nonatomic, retain) NSString *farHost;
 @property (nonatomic, assign) uint16_t farPort;
 @property (nonatomic, assign) int ptype;
 @property (nonatomic, assign) int codecfac;
-
+@property (readonly) double jitter;
+@property (readonly) NSTimeInterval latency;
 @property (nonatomic, assign) PhonoAudio  *rtpds;
 
 - (BOOL)start: (CFSocketRef) s ;

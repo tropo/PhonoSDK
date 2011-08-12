@@ -42,4 +42,8 @@
 - (BOOL) mute:(BOOL)v;
 - (BOOL) doES:(BOOL)v;
 - (void) digit:(NSString*) digit duration:(int) duration audible:(BOOL)audible;
+- (double) inEnergy;
+- (double) outEnergy;
+- (double) jitter;
+- (double) latency;
 @end

@@ -42,6 +42,7 @@ Return an array of codecs supported by the plugin {JSON array of property object
 - (NSString *) share:(NSString *)uri autoplay:(BOOL)autoplay codec:(NSString *)codec;
 - (NSString *) play:(NSString *)uri autoplay:(BOOL)autoplay;
 - (NSString *) codecs;
+- (NSString *) energy:(NSString *)uri;
 
 - (BOOL) start:(NSString *)uri;
 - (BOOL) stop:(NSString *)uri;

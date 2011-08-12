@@ -24,6 +24,8 @@
 static int frameIntervalMS = 20; 
 
 @implementation PhonoAudio
+@synthesize inEnergy, outEnergy;
+
 - (id) init {
     [super init];
     
@@ -120,7 +122,7 @@ void interruptionListenerCallback (void *inUserData, UInt32  interruptionState) 
     Float64 preferredSampleRate = [codec getRate]; // try and get the hardware to resample
     AudioSessionSetProperty(kAudioSessionProperty_PreferredHardwareSampleRate, sizeof(preferredSampleRate), &preferredSampleRate);
     
-    Float32 preferredBufferSize = .060; // I'd like a 60ms buffer duration
+    Float32 preferredBufferSize = .02; // I'd like a 20ms buffer duration but I can't have one....
     AudioSessionSetProperty(kAudioSessionProperty_PreferredHardwareIOBufferDuration, sizeof(preferredBufferSize), &preferredBufferSize);
     
     // *** Activate the Audio Session before asking for the "Current" properties ***
@@ -163,7 +165,10 @@ void interruptionListenerCallback (void *inUserData, UInt32  interruptionState) 
 
 
 - (void) consumeWireData:(NSData*)data time:(NSInteger) stamp{
-    
+    if (stopped) {
+        NSLog(@"Post call audio data ignored");
+        return;
+    }
     NSMutableData *din = [NSMutableData dataWithLength:aframeLen*2];
     if (data != nil){
         if (codec != nil) {
@@ -176,21 +181,32 @@ void interruptionListenerCallback (void *inUserData, UInt32  interruptionState) 
     int16_t *rp =  ringOut;
     int len = ringOutsz;
     int64_t put = putOut;
+    if (firstOut) {
+        firstOut = NO;
+        put += (MAXJITTER *16) ; // in effect insert some blank frames ahead of real data
+    }
     int off = 0;
     NSInteger samples = aframeLen;
     int16_t *bp =  (int16_t *) [din mutableBytes];
+    double energy = 0.0;
     for (UInt32 j=0;j< samples;j++){
         off = (put % len);
         rp[off] = bp[j];
         put++;
+        energy = energy + ABS(bp[j]);
     }
+    outEnergy = energy / samples;
+
     [din release];
-    if (ostamp > stamp){
+    if (ostamp >= stamp){
         NSLog(@"out of order %d > %d",ostamp , stamp);
+    }
+    if ((stamp -ostamp) > 20){
+        NSLog(@"Missing packet ? %d -> %d",ostamp , stamp);
     }
     ostamp = stamp;
     putOut = put;    
-    // NSLog(@"put = %d get=%qd put=%qd last took = %qd avail = %qd wanted %ld",aframeLen,getOut,putOut, getOut-getOutold , putOut - getOut, wanted );
+    //NSLog(@"put = %d get=%qd put=%qd last took = %qd avail = %qd wanted %ld",aframeLen,getOut,putOut, getOut-getOutold , putOut - getOut, wanted );
     getOutold = getOut;
 }
 - (NSArray *) listCodecs{
@@ -257,8 +273,10 @@ static OSStatus outRender(
     PhonoAudio *myself = (PhonoAudio *) inRefCon;
     int64_t get = myself->getOut;
     int64_t put = myself->putOut;
-    if ((put - get) < inNumberFrames){
+    if ((put - get) < inNumberFrames) {
         memset((void *) ioData->mBuffers[0].mData,0,ioData->mBuffers[0].mDataByteSize);
+        NSLog(@" No data to be sent to speaker - filling with silence %qd %qd",get,put);
+
     } else {
         int len = myself ->ringOutsz;
         int off = 0;
@@ -280,6 +298,10 @@ static OSStatus outRender(
         myself ->wanted = inNumberFrames;
         if (inNumberFrames != (get -  myself->getOut)){
             NSLog(@" out problem with counting %ld != %qd", inNumberFrames , (get -  myself->getOut));
+        }
+        if (ioData->mNumberBuffers != 1){
+            NSLog(@" out problem with number of buffers %ld", ioData->mNumberBuffers);
+
         }
         myself->getOut = get;
         
@@ -388,23 +410,27 @@ static OSStatus outRender(
     ringOutsz =ENOUGH;
 //    ringOutD = [[[NSMutableData alloc] initWithLength:(ringOutsz*2) ]retain];
 //    ringOut = (int16_t *) [ringOutD mutableBytes];
-    putOut =0;
+    putOut =0; 
+    firstOut = YES;// start with some headroom (silent)
     getOut =0;
     getOutold =0;
 }
 
-- (void)spawnAudio {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    // Do thread work here.
-	if ([NSThread isMultiThreaded]){
-		//[NSThread setThreadPriority:0.75];
-        audioThread = [NSThread currentThread];
-        NSLog(@"Audio thread Started");
-	}
+- (void) setupAudio {
     [self audioSessionStuff ];
     [self setUpRingBuffers];
     [self setUpAU];
     [self setUpSendTimer];
+}
+- (void)spawnAudio {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    // Do thread work here.
+	if ([NSThread isMultiThreaded]){
+		//[NSThread setThreadPriority:1.0];
+        audioThread = [NSThread currentThread];
+        NSLog(@"Audio thread Started");
+	}
+    [self setupAudio];
 	NSRunLoop* runLoop = [NSRunLoop currentRunLoop];
 	[runLoop run];
     [pool release];
@@ -429,11 +455,14 @@ static OSStatus outRender(
         } else {
             int16_t *audio = alloca(aframeLen*2);
             int len = ringInsz;
+            double energy = 0.0;
             for (int i=0;i<aframeLen;i++){
                 int offs = get % len;
                 audio[i] = ringIn[offs];
+                energy += ABS(ringIn[offs]);
                 get++;
             }
+            inEnergy = energy / aframeLen;
             dts = [NSData dataWithBytes:audio length:aframeLen*2];
         }
         [codec encode:dts  wireData:wout];
@@ -452,19 +481,20 @@ static OSStatus outRender(
         [wire setCodecfac:fac];
         [wire setPtype:[codec ptype]];
 
-        [self performSelectorInBackground:@selector(spawnAudio) withObject:nil];
+        //[self performSelectorInBackground:@selector(spawnAudio) withObject:nil];
+        [self setupAudio];
     }
     NSLog(@"set codec to %@ at %d - res = %@",[codec getName],[codec getRate],((codec != nil)?@"Yes":@"NO"));
     
     return (codec != nil);
 }
 - (void) start{
-    
+    stopped = NO;
 }
 - (void) stop{
     //AudioOutputUnitStop(vioUnitMic);
     AudioOutputUnitStop(vioUnitSpeak);
-
+    stopped = YES;
     [send invalidate];
 }
 

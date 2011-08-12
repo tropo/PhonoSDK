@@ -196,6 +196,27 @@
         [self writeJavascript:jsCB];
     }
 }
+
+
+- (void) energy:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
+    NSString *failCallback = nil;
+    NSUInteger argc = [arguments count];
+    NSString *cb = nil;
+    
+    NSString *successCallback = [arguments objectAtIndex:0];
+    if (argc > 1) {
+        failCallback = [arguments objectAtIndex:1];
+    } 
+    NSString *uri = [options objectForKey:@"uri"];
+    
+    NSString *res = [phonoAPI energy:uri ]; 
+    cb = (res != nil) ?successCallback:failCallback;
+    if (cb != nil) {
+        NSString *jsCB = [NSString stringWithFormat:@"%@(\"%@\")",cb,res];
+        [self writeJavascript:jsCB];
+    }
+}
+
 - (void) digit:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
     NSString *failCallback = nil;
     NSUInteger argc = [arguments count];
@@ -209,7 +230,7 @@
     NSString *digit = [options objectForKey:@"digit"];
     int duration = [[options objectForKey:@"duration"] intValue];
     NSString *au = [options objectForKey:@"audible"];
-    NSLog(@"sending %@ to %@ for %d ms autible = %@",digit,uri, duration, au);
+    NSLog(@"sending %@ to %@ for %d ms audible = %@",digit,uri, duration, au);
     BOOL res = [phonoAPI digit:uri digit:digit duration:duration audible:[au isEqualToString:@"YES"]];
     if (res == NO){
         uri = @"Can't send digits that endpoint";

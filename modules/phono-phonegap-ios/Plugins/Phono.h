@@ -104,5 +104,12 @@
 //
 - (void) codecs:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
 
+// energy
+// arguments[0]-> success function which will get invoked with a json string containing an array of energy values. 
+// arguments[1]-> failure function which will get invoked with an error message. 
+// options must contain the following key-value pairs (all strings):
+//                  'uri' -> "rtp://localipaddress:localport" 
+//
+- (void) energy:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
 
 @end

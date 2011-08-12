@@ -171,6 +171,26 @@
     return (ep != nil);
 }
 
+- (NSString *) energy:(NSString *)uri {
+    NSString *ret = nil;
+
+    PhonoEndpoint *ep = [endpoints objectForKey:uri];
+    if (ep != nil) {
+        PhonoShare *ps = (PhonoShare *) [ep player];
+        if (ps != nil){
+            NSMutableArray * en = [[NSMutableArray alloc] init];
+            [en addObject:[NSNumber numberWithDouble:[ps inEnergy]]];
+            [en addObject: [NSNumber numberWithDouble:[ps outEnergy]]];
+
+            NSError *error = NULL;
+            NSData *jsonData = [[CJSONSerializer serializer] serializeObject:en error:&error];
+            ret = [[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] autorelease];
+            NSLog(@"energy json->\n%@", ret);
+        }
+    }
+    return ret;
+}
+
 - (NSString *) codecs{
     NSString *ret = nil;
     PhonoAudio *audio = [[PhonoAudio alloc] init ];

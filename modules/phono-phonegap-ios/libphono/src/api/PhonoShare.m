@@ -67,7 +67,18 @@
         NSLog(@"no endpoint for %@",nearUri);
     }
 }
-
+- (double) inEnergy{
+    return (audio == nil) ? 0.0 : [audio inEnergy];
+}
+- (double) outEnergy{
+    return (audio == nil) ? 0.0 : [audio outEnergy];
+}
+- (double) jitter{
+    return (rtp == nil) ? 0.0 :[rtp jitter];
+}
+- (double) latency{
+    return (rtp == nil) ? 0.0 :[rtp latency];
+}
 
 - (void) stop{
     [audio stop];
@@ -78,6 +89,7 @@
 - (float) gain:(float) value{
     return value;
 }
+
 
 
 - (BOOL) mute:(BOOL)v{

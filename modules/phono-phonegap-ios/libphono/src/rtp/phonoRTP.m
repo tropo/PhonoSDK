@@ -28,7 +28,7 @@
 #define RTPHEAD (12)
 #define RTPVER  (2)
 @implementation phonoRTP
-@synthesize farHost , farPort, rtpds, ptype ,codecfac;
+@synthesize farHost , farPort, rtpds, ptype ,codecfac, jitter, latency;
 
 - (id) init{
 	self =  [super init];
@@ -202,7 +202,10 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
     }
     [self appendAuth:payload offs:(RTPHEAD+i)];
     int e = send(ipv4Soc,payload,payload_length,0);
-    
+    if (firstSent == nil) {
+        firstSent = [[NSDate alloc] init];
+        latency = 0.0;
+    }
     //NSLog(@"sending frame of %d ",[nsd length]) ;
     
     _seqno++;
@@ -251,6 +254,7 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
     int rptype = 0;
     char seqno = 0;
     long stamp = 0;
+    long tstamp = 0;
     int sync = 0;
     
     if (plen < 12) {
@@ -287,6 +291,9 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
     // SRTP packets have a tail auth section and potentially an MKI
     paylen -= _tailIn;
     payload = alloca(paylen);
+    if (paylen != 160) {
+        NSLog(@"Expected 160 byte payload, got %d",paylen);
+    }
     int o = 0;
     while (offs - endhead < paylen) {
         payload[o++] = packet[offs++];
@@ -306,18 +313,57 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
     _index = [self getIndex:seqno];
     [self updateCounters:seqno];
     [self checkAuth:packet length:plen];
-    
-    [self deliverPayload:payload length:paylen stamp:stamp ssrc:sync];
+    tstamp = 20*_index;
+    [self deliverPayload:payload length:paylen stamp:tstamp ssrc:sync];
     
     
    // NSLog(@"got RTP %d length %d packet from %@:%d" , rptype , paylen , farHost, farPort);
     
 }
 
+- (void) updateStats:(uint64_t)stamp{
+    NSTimeInterval clockms = [firstSent timeIntervalSinceNow] * -1000;
+    uint64_t arrival = clockms;
+    int64_t transit = arrival - stamp;
+    int64_t d = transit - _transit;
+    _transit = transit;
+    if (d < 0) d = -d;
+    
+    jitter += (1./16.) * ((double)d - jitter);
+    
+    if (latency == 0.0){
+        latency = clockms;
+        NSLog(@"latency estimate = %6.2lf ms",latency);
+    }    
+    /* 
+     The code fragments below implement the algorithm given in Section
+     6.3.1 for calculating an estimate of the statistical variance of the
+     RTP data interarrival time to be inserted in the interarrival jitter
+     field of reception reports. The inputs are r->ts , the timestamp from
+     the incoming packet, and arrival , the current time in the same
+     units. Here s points to state for the source; s->transit holds the
+     relative transit time for the previous packet, and s->jitter holds
+     the estimated jitter. The jitter field of the reception report is
+     measured in timestamp units and expressed as an unsigned integer, but
+     the jitter estimate is kept in a floating point. As each data packet
+     arrives, the jitter estimate is updated:
 
+     int transit = arrival - r->ts;
+     int d = transit - s->transit;
+     s->transit = transit;
+     if (d < 0) d = -d;
+     s->jitter += (1./16.) * ((double)d - s->jitter);
+     
+     When a reception report block (to which rr points) is generated for
+     this member, the current jitter estimate is returned:
+     
+     rr->jitter = (u_int32) s->jitter;
+     */
+}
 
 -(void) deliverPayload:(uint8_t *)payload length:(int)paylen  stamp:(uint64_t) stamp ssrc:(uint32_t) ssrc {
     if (rtpds != nil) {
+
         NSData * data = [NSData dataWithBytes:payload length:paylen];
         NSInteger clockStamp = stamp / codecfac;
         [rtpds consumeWireData:data time:clockStamp];
@@ -330,6 +376,8 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
 }
 
 - (void) updateCounters:(uint16_t) seqno {
+
+    
 }
 
 -(void) syncChanged:(uint64_t) sync {
@@ -362,7 +410,7 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
             [rb setLength:got];
             [self parsePacket:rb];
         } 
-        [NSThread sleepForTimeInterval:ntv];
+        //[NSThread sleepForTimeInterval:ntv];
     }
     NSLog(@"leaving rcv thread");
     [pool release];
@@ -394,7 +442,7 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
             ipv4Soc = sock;
             struct timeval tv;
             tv.tv_sec = 0;
-            tv.tv_usec = 5000; // 5ms 
+            tv.tv_usec = 20000; // 20ms 
             setsockopt(ipv4Soc,SOL_SOCKET,SO_RCVTIMEO,&tv, sizeof(tv));
         } else {
             NSLog(@"connect failed to host %@ at %d ",farHost,farPort) ;
@@ -405,6 +453,7 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
         // spawn rcv thread here .....
         rcvThread = [[NSThread alloc] initWithTarget:self selector:@selector(rcvLoop) object:nil];
         [rcvThread setName:@"rtp-rcv"];
+        [rcvThread setThreadPriority:0.9];
         [rcvThread start];
     }	
     /* No need for retrys I think.
