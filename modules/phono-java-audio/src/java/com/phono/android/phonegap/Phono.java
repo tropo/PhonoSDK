@@ -265,7 +265,7 @@ public class Phono extends Plugin {
                 if (autoplay != null) {
                     as = "YES".equals(autoplay);
                 }
-                Play p = new Play(uri);
+                Play p = new Play(uri,ctx);
                 if (p != null) {
                     _endpoints.put(uri, p);
                     if (as) {
