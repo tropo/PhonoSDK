@@ -20,16 +20,16 @@ package com.phono.android.rtp;
 import android.media.MediaPlayer;
 import com.phono.android.audio.AndroidAudio;
 import com.phono.audio.AudioException;
-import com.phono.android.audio.Log;
 import com.phono.audio.codec.CodecFace;
 import com.phono.codecs.speex.SpeexCodec;
+import com.phono.srtplight.Log;
 
 //import com.phono.dsp.EchoCanceler;
 
 
 
 
-public class PhonoAudioShim extends AndroidAudio {
+public class DroidPhonoAudioShim extends AndroidAudio {
 
     int _outstamp=0;
 
@@ -114,12 +114,7 @@ public class PhonoAudioShim extends AndroidAudio {
         return false;
     }
 
-    public MediaPlayer playDigit(char c) {
-        Log.debug("Beep dtmf "+c);
 
-        Log.error("No dtmf playback yet.");
-        return null; // todo
-    }
 
 
 

@@ -14,7 +14,6 @@
  */
 package com.phono.android.audio;
 
-import android.content.Context;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -33,7 +32,7 @@ import com.phono.audio.codec.alaw.ALaw_Codec;
 import com.phono.audio.codec.g722.G722Codec;
 import com.phono.audio.codec.g722.NativeG722Codec;
 import com.phono.audio.phone.StampedAudioImpl;
-
+import com.phono.srtplight.Log;
 
 public class AndroidAudio implements AudioFace {
 
@@ -50,10 +49,11 @@ public class AndroidAudio implements AudioFace {
     private StampedAudio[] _stampedBuffer;
     private int _stampedBufferStart;
     private int _stampedBufferEnd;
-    protected  AndroidAudioSpeaker _speaker;
+    protected AndroidAudioSpeaker _speaker;
     protected AndroidAudioMic _mic;
     private ArrayList<StampedAudio> _cleanAudioList;
     public int _sampleRate;
+    private int _dtmfDigit = -1;
 
     public AndroidAudio() {
         _codecMap = new LinkedHashMap<Long, CodecFace>();
@@ -104,7 +104,7 @@ public class AndroidAudio implements AudioFace {
         // frame rate per sec is:
         int frameRateSec = 1000 / frameIntMS;
         // samples per frame, at 8kHz, is:
-        int samplesPerFrame = _sampleRate / frameRateSec;
+        final int samplesPerFrame = _sampleRate / frameRateSec;
         // sample is in short, so frame size in bytes is:
         int bytesPerFrame = samplesPerFrame * 2;
 
@@ -115,7 +115,22 @@ public class AndroidAudio implements AudioFace {
         if (_speaker != null) {
             _speaker.destroy();
         }
-        _speaker = new AndroidAudioSpeaker(_codec, this);
+        _speaker = new AndroidAudioSpeaker(_codec, this) {
+
+            @Override
+            short[] effectOut(short[] out) {
+                short[] ret = super.effectOut(out);
+                int ld = _dtmfDigit;
+                if ( ld >= 0) {
+                    long k = _speakerFrames * samplesPerFrame;
+                    if ((_speakerFrames % 5) == 0) Log.debug("bleep "+_dtmfDigit);
+                    for (int j = 0; j < ret.length; j++) {
+                        ret[j] = (short) (getDigitSample(ld, j+k, _sampleRate) + ret[j] / 2);
+                    }
+                }
+                return ret;
+            }
+        };
         isOK = _speaker.initSpeaker(_sampleRate, bytesPerFrame);
 
         if (isOK == true) {
@@ -132,6 +147,13 @@ public class AndroidAudio implements AudioFace {
             throw new AudioException(text);
         }
 
+    }
+    long toneMap[][] = {{1336, 941}, {1209, 697}, {1336, 697}, {1477, 696}, {1209, 770}, {1336, 770}, {1477, 770}, {1209, 852}, {1336, 852}, {1447, 852}, {1209, 941}, {1477, 941}};
+
+    short getDigitSample(int digit, long position, long rate) {
+        double n1 = (2 * Math.PI) * toneMap[digit][0] / rate;
+        double n2 = (2 * Math.PI) * toneMap[digit][1] / rate;
+        return (short) (((Math.sin(position * n1) + Math.sin(position * n2)) / 4) * Short.MAX_VALUE);
     }
 
     @Override
@@ -264,7 +286,6 @@ public class AndroidAudio implements AudioFace {
         }
         return ret;
     }
-
 
     public void releaseStampedAudio(StampedAudio stampedAudio) {
         synchronized (_cleanAudioList) {
@@ -437,32 +458,31 @@ public class AndroidAudio implements AudioFace {
         return false;
     }
 
-        protected void fillCodecMap() {
+    protected void fillCodecMap() {
         // add all the supported Codecs, in the order of preference
         try {
             NativeG722Codec g722Codec = new NativeG722Codec();
-                    _codecMap.put(new Long(g722Codec.getCodec()), g722Codec);
+            _codecMap.put(new Long(g722Codec.getCodec()), g722Codec);
 
             Log.debug("fillCodecMap: " + "got native g722 codec");
 
         } catch (Throwable thrown) {
-            Log.debug("fillCodecMap: " + "didn't get g722 native "+thrown.getMessage());
+            Log.debug("fillCodecMap: " + "didn't get g722 native " + thrown.getMessage());
         }
 
 
         ULaw_Codec ulawCodec = new ULaw_Codec();
         _codecMap.put(new Long(ulawCodec.getCodec()), ulawCodec);
-/*
+        /*
         ALaw_Codec alawCodec = new ALaw_Codec();
         _codecMap.put(new Long(alawCodec.getCodec()), alawCodec);
         GSM_Codec gsmCodec = new GSM_Codec();
         _codecMap.put(new Long(gsmCodec.getCodec()), gsmCodec);
-*/
+         */
 
         _defaultCodec = ulawCodec;
 
     }
-
 
     private CodecFace getDefaultCodec() {
         return _defaultCodec;
@@ -478,12 +498,40 @@ public class AndroidAudio implements AudioFace {
     }
 
     public void setMicGain(float f) {
-        if (_mic != null){
+        if (_mic != null) {
             _mic.setGain(f);
         }
     }
 
     public double getMicGain() {
         return (double) _mic.getGain();
+    }
+
+    public double getSampleRate() {
+        return this._sampleRate;
+    }
+
+    public void playDigit(char c) {
+        String valid = "0123456789#*";
+        _dtmfDigit = valid.indexOf(c);
+        Log.debug("DtmfDigit is "+_dtmfDigit);
+    }
+
+    public void setVolume(double d) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void muteMic(boolean v) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean callHasECon() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public CodecFace getCodec(long codec) {
+        Long codecL = new Long(codec);
+        return (CodecFace) _codecMap.get(codecL);
+
     }
 }

@@ -21,6 +21,7 @@ import android.media.AudioTrack;
 import com.phono.audio.codec.CodecFace;
 import com.phono.audio.AudioException;
 import com.phono.audio.StampedAudio;
+import com.phono.srtplight.Log;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +37,7 @@ public class AndroidAudioSpeaker implements Runnable {
     private AudioTrack _speaker = null;
     private byte _encodedbuffSpeaker[];
     private boolean _hasSpeakerStarted;
-    private int _speakerFrames;
+    protected int _speakerFrames;
     private int _timestampSpeaker = 0;
     private StampedAudio _holdSpeaker;
     private double _outEnergy;
@@ -279,7 +280,7 @@ public class AndroidAudioSpeaker implements Runnable {
     }
 
     // data to speakers
-    private short[] effectOut(short[] out) {
+    short[] effectOut(short[] out) {
         double energy = 0;
         for (int i = 0; i < out.length; i++) {
             energy = energy + (Math.abs(out[i]));

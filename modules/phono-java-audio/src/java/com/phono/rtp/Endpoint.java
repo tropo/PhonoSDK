@@ -19,8 +19,8 @@ package com.phono.rtp;
 
 
 
-import com.phono.android.audio.Log;
 import com.phono.api.Share;
+import com.phono.srtplight.Log;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -29,8 +29,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class Endpoint {
 

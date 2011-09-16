@@ -4,18 +4,13 @@
  */
 package com.phono.android.audio;
 
-import android.content.Context;
-import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
+
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import com.phonegap.api.PhonegapActivity;
 import com.phono.rtp.Endpoint;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.phono.srtplight.Log;
+
 
 /**
  *

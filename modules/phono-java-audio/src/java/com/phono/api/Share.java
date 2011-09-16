@@ -14,18 +14,21 @@
  * limitations under the License.
  *
  */
-
 package com.phono.api;
 
-import com.phono.android.rtp.PhonoAudioShim;
-import com.phono.android.audio.Log;
+import com.phono.audio.AudioFace;
 import com.phono.audio.phone.PhonoAudioPropNames;
-import com.phono.android.rtp.RTPAudioSession;
+import com.phono.rtp.RTPAudioSession;
+import com.phono.srtplight.Log;
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Share {
 
@@ -35,14 +38,14 @@ public class Share {
     String farH;
     int farP;
     int pt;
-    PhonoAudioShim audio;
+    AudioFace audio;
     RTPAudioSession ras;
     private Properties lsrtpProps;
     private Properties rsrtpProps;
     private DatagramSocket ds;
     private InetSocketAddress far;
 
-    public Share(String remuri, PhonoAudioShim a, int t, Properties lsp, Properties rsp) throws IllegalArgumentException {
+    public Share(String remuri, AudioFace a, int t, Properties lsp, Properties rsp) throws IllegalArgumentException {
 
         uri = remuri;
         parseURI();
@@ -64,9 +67,9 @@ public class Share {
             public Void run() {
                 if (ds != null) {
                     ras = new RTPAudioSession(ds, far, pt, audio, lsrtpProps, rsrtpProps);
-                    Log.debug("starting : original local uri was "+uri);
-                    Log.debug("starting : using    local "+ds.getLocalSocketAddress().toString()
-                            +" remote "+ds.getRemoteSocketAddress().toString()+" with pt="+pt+" codec "+audio.getCodecName());
+                    Log.debug("starting : original local uri was " + uri);
+                    Log.debug("starting : using    local " + ds.getLocalSocketAddress().toString()
+                            + " remote " + ds.getRemoteSocketAddress().toString() + " with pt=" + pt + " codec " + audio.getCodecName());
                 } else {
                     Log.error("Cant start - no socket set for " + getLocalURI());
                 }
@@ -98,10 +101,10 @@ public class Share {
         return value; // for now
     }
 
-    public double [] energy(){
+    public double[] energy() {
         return audio.getEnergy();
     }
-    
+
     public boolean mute(boolean v) {
         audio.muteMic(v);
         return v;
@@ -113,22 +116,39 @@ public class Share {
     }
 
     public void digit(final String value, final int duration, final boolean audible) {
-        AccessController.doPrivileged(new PrivilegedAction<Void>() {
+        Log.debug("in Share.digit()");
 
-            public Void run() {
-                Runnable sendDTMF = new Runnable() {
+        try {
+           Log.debug("Sending digit " + value );
+            ras.digit(value, duration, audible);
+        } catch (Exception ex) {
+            Log.error("Problem sending digit " + value + " " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+    /*
+    public void digit(final String value, final int duration, final boolean audible) {
+    AccessController.doPrivileged(new PrivilegedAction<Void>() {
 
-                    public void run() {
-                        ras.digit(value, duration, audible);
-                    }
-                };
-                Thread ds = new Thread(sendDTMF);
-                ds.start();
-                return null; // nothing to return
-            }
-        });
+    public Void run() {
+    Runnable sendDTMF = new Runnable() {
+
+    public void run() {
+    try {
+    ras.digit(value, duration, audible);
+    } catch (Exception ex) {
+    Log.error("Problem sending digit "+value+" "+ex.getMessage());
+    }
+    }
+    };
+    Thread ds = new Thread(sendDTMF);
+    ds.start();
+    return null; // nothing to return
+    }
+    });
 
     }
+     */
 
     private void parseURI() throws IllegalArgumentException, NumberFormatException {
         if (!uri.startsWith("rtp://")) {
@@ -150,7 +170,7 @@ public class Share {
 
     public InetSocketAddress getNear() {
         InetSocketAddress ret = null;
-        ret = new InetSocketAddress(nearH,nearP);
+        ret = new InetSocketAddress(nearH, nearP);
         return ret;
     }
     /*

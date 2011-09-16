@@ -15,13 +15,13 @@
  *
  */
 
-package com.phono.audio.phone;
+package com.phono.applet.audio.phone;
 
 import com.phono.audio.AudioException;
-import com.phono.audio.Log;
 import com.phono.audio.phone.PhonoAudioPropNames;
+import com.phono.srtplight.Log;
 
-public class EsupPhonoAudio extends com.phono.audio.phone.PhonoAudio {
+public class EsupPhonoAudio extends PhonoAudio {
 
     protected double _gain = 1.0;
     private boolean _doEc = true;
@@ -137,10 +137,12 @@ public class EsupPhonoAudio extends com.phono.audio.phone.PhonoAudio {
      *
      * @return boolean
      */
+    @Override
     public boolean callHasECon() {
         return _doEc;
     }
 
+    @Override
     public void muteMic(boolean mute) {
         Log.debug("EsupPhonoAudio.muteMic(): mute=" + mute);
         _muteMic = mute;

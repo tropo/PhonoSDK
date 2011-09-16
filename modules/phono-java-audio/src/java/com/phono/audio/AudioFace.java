@@ -18,6 +18,7 @@
 package com.phono.audio;
 
 import com.phono.audio.NetStatsFace;
+import com.phono.audio.codec.CodecFace;
 import java.util.Properties;
 
 /**
@@ -217,4 +218,19 @@ public interface AudioFace {
      * @return True if it is detecting, false otherwise
      */
     public boolean doVAD();
+
+    public double getSampleRate();
+
+    public void playDigit(char c);
+
+    public void setMicGain(float f);
+
+    public void setVolume(double d);
+
+    public void muteMic(boolean v);
+
+    public boolean callHasECon();
+
+    public CodecFace getCodec(long l);
+
 }

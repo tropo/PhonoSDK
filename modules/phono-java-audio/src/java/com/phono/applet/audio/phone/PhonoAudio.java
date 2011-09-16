@@ -15,12 +15,11 @@
  *
  */
 
-package com.phono.audio.phone;
+package com.phono.applet.audio.phone;
 
 import com.phono.audio.AudioException;
 import com.phono.audio.AudioFace;
 import com.phono.audio.AudioReceiver;
-import com.phono.audio.Log;
 import com.phono.audio.StampedAudio;
 import com.phono.audio.codec.CodecFace;
 import com.phono.audio.codec.CodecUtil;
@@ -34,6 +33,9 @@ import com.phono.audio.codec.gsm.GSM_Codec;
 import com.phono.audio.codec.slin.SLin_Codec;
 import com.phono.audio.codec.ulaw.ULaw_Codec;
 import com.phono.audio.NetStatsFace;
+import com.phono.audio.phone.PhonoAudioPropNames;
+import com.phono.audio.phone.StampedAudioImpl;
+import com.phono.srtplight.Log;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -106,6 +108,7 @@ public class PhonoAudio implements AudioFace {
     private int _pvadvc;
     private static float __mac_rate =  44100.0F;
     protected FloatControl pan;
+    private char _dtmfDigit;
     /**
      * Creates a new instance of PhonoAudio
      */
@@ -466,12 +469,12 @@ public class PhonoAudio implements AudioFace {
                 }
 
             } catch (LineUnavailableException lue) {
-//                lue.printStackTrace();
-                Log.database(lue, this, "initPlay");
+                lue.printStackTrace();
+//                Log.database(lue, this, "initPlay");
                 throw new AudioException(lue.getMessage(), lue);
             } catch (Exception e) {
-//                e.printStackTrace();
-                Log.database(e, this, "initPlay");
+                e.printStackTrace();
+//                Log.database(e, this, "initPlay");
                 throw new AudioException(e.getMessage(), e);
             }
         }
@@ -674,10 +677,10 @@ public class PhonoAudio implements AudioFace {
             } catch (LineUnavailableException lue) {
                 // setMute(true);
                 lue.printStackTrace();
-                Log.database(lue, this, "initMic");
+//                Log.database(lue, this, "initMic");
                 throw new AudioException(lue.getMessage(), lue);
             } catch (Exception e) {
-                Log.database(e, this, "initMic");
+//                Log.database(e, this, "initMic");
                 e.printStackTrace();
                 throw new AudioException(e.getMessage(), e);
             }
@@ -997,5 +1000,32 @@ public class PhonoAudio implements AudioFace {
     }
     protected void trim(int numberOfSamplesRemovedOrAdded){
         // do nothing here, but echo cans want to know
+    }
+
+    public double getSampleRate() {
+       return this._sampleRate;
+    }
+
+    public void playDigit(char c) {
+        _dtmfDigit = c;
+    }
+
+    public void setMicGain(float f) {
+    }
+
+    public void setVolume(double d) {
+    }
+
+    public void muteMic(boolean v) {
+    }
+
+    public boolean callHasECon() {
+        return false;
+    }
+
+    public CodecFace getCodec(long codec) {
+        Long codecL = new Long(codec);
+        return (CodecFace) _codecMap.get(codecL);
+
     }
 }

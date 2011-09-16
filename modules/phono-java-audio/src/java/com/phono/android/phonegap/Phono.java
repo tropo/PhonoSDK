@@ -4,19 +4,18 @@
  */
 package com.phono.android.phonegap;
 
+import com.phono.srtplight.LogFace;
 import java.net.SocketException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-
 import com.phonegap.api.Plugin;
 import com.phonegap.api.PluginResult;
 import com.phonegap.api.PluginResult.Status;
-import com.phono.android.rtp.PhonoAudioShim;
+import com.phono.android.rtp.DroidPhonoAudioShim;
 import com.phono.api.Codec;
 import com.phono.api.CodecList;
-import com.phono.android.audio.Log;
+import com.phono.srtplight.Log;
 import com.phono.android.audio.Play;
 import com.phono.api.Share;
 import com.phono.rtp.Endpoint;
@@ -61,15 +60,16 @@ public class Phono extends Plugin {
 
     }
     private Hashtable _endpoints;
-    private PhonoAudioShim _audio;
+    private DroidPhonoAudioShim _audio;
     private CodecList _codecList;
 
     public Phono() {
 
         super();
         Log.setLevel(Log.DEBUG);
+        Log.setLogger(mkAndroidLogger());
         _endpoints = new Hashtable();
-        _audio = new PhonoAudioShim();
+        _audio = new DroidPhonoAudioShim();
         _codecList = new CodecList(_audio);
         log("in new Constructor");
         System.out.println("in new Constructor");
@@ -265,7 +265,7 @@ public class Phono extends Plugin {
                 if (autoplay != null) {
                     as = "YES".equals(autoplay);
                 }
-                Play p = new Play(uri,ctx);
+                Play p = new Play(uri, ctx);
                 if (p != null) {
                     _endpoints.put(uri, p);
                     if (as) {
@@ -420,8 +420,7 @@ public class Phono extends Plugin {
             Share s = e.getShare();
             if (s != null) {
                 int dur = Integer.parseInt(duration);
-                boolean aud = audible.equals("YES");
-
+                boolean aud = audible.toUpperCase().equals("YES")||audible.toUpperCase().equals("TRUE") ;
                 s.digit(digit, dur, aud);
                 res = true;
             }
@@ -487,13 +486,38 @@ public class Phono extends Plugin {
                 joret.put(VALUE, "logged");
                 status = true;
             }
-            Log.debug(action+" returning " + joret.toString());
+            Log.debug(action + " returning " + joret.toString());
             result = status ? new PluginResult(Status.OK, joret) : new PluginResult(Status.INVALID_ACTION);
         } catch (JSONException jsonEx) {
-            Log.debug(action+"Got JSON Exception " + jsonEx.getMessage());
+            Log.debug(action + "Got JSON Exception " + jsonEx.getMessage());
             result = new PluginResult(Status.JSON_EXCEPTION);
         }
         Log.debug("result=" + result.getStatus() + " " + result.getJSONString());
         return result;
+    }
+
+    private LogFace mkAndroidLogger() {
+        return new LogFace() {
+
+            public void e(String message) {
+                android.util.Log.e("Phono", message);
+            }
+
+            public void d(String message) {
+                android.util.Log.d("Phono", message);
+            }
+
+            public void w(String message) {
+                android.util.Log.w("Phono", message);
+            }
+
+            public void v(String message) {
+                android.util.Log.v("Phono", message);
+            }
+
+            public void i(String message) {
+                android.util.Log.i("Phono", message);
+            }
+        };
     }
 }

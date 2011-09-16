@@ -15,14 +15,14 @@
  *
  */
 
-package com.phono.rtp;
+package com.phono.applet.audio.phone;
 
 import com.phono.audio.AudioException;
-import com.phono.audio.Log;
 import com.phono.audio.codec.CodecFace;
 import com.phono.codecs.speex.SpeexCodec;
 
 //import com.phono.dsp.EchoCanceler;
+import com.phono.srtplight.Log;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
@@ -31,25 +31,20 @@ import java.util.Hashtable;
 
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
-import java.util.Arrays;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.Mixer;
 
-public class PhonoAudioShim extends com.phono.audio.phone.EsupPhonoAudio {
+public class PhonoAudioShim extends EsupPhonoAudio {
 
     Hashtable _clipcache;
     //EchoCanceler _ec;
@@ -150,19 +145,6 @@ public class PhonoAudioShim extends com.phono.audio.phone.EsupPhonoAudio {
         pl.start();
     }
 
-    AudioClip playDigit(char c) {
-        if (c == '#') {
-            c = 'p';
-        }
-        if (c == '*') {
-            c = 's';
-        }
-        AudioClip a = getDTMFClip(c);
-        if (a != null) {
-            a.play();
-        }
-        return a;
-    }
     /**
      * note that the superclass also implements the gain and mute functionality,
      * in these 2 methods, so if you override them without invoking the superclass methods,
@@ -451,7 +433,7 @@ public class PhonoAudioShim extends com.phono.audio.phone.EsupPhonoAudio {
    * @param ps PrintStream
    * @param fmts AudioFormat[] supportedFormats
    */
-    static void getMixerLineFormatsJSON(StringBuffer sb, AudioFormat[] fmts) {
+    public static void getMixerLineFormatsJSON(StringBuffer sb, AudioFormat[] fmts) {
 
         sb.append("formats : [ \n");
 
