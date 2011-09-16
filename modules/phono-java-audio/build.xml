@@ -21,7 +21,6 @@
       <zipfileset src="${lib.dir}/JLayer.jar"/>
       <zipfileset src="${lib.dir}/jtransforms-fft-2.3.jar"/>
       <zipfileset src="/project2/Phono-sg/srtplight/srtplight/dist/srtplight.jar"/>
-      <zipfileset prefix="sounds" dir="sounds"/>
     </jar>
 
     <signjar jar="target/phono.audio.jar"
