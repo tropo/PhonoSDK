@@ -46,7 +46,6 @@ import javax.sound.sampled.Mixer;
 
 public class PhonoAudioShim extends EsupPhonoAudio {
 
-    Hashtable _clipcache;
     //EchoCanceler _ec;
     SampleBuffer _speakBuf;
     public static final int SPEAKER_BUFFER_LEN = 1024;
@@ -73,10 +72,6 @@ public class PhonoAudioShim extends EsupPhonoAudio {
     public void init(long codec, int latency) throws AudioException {
         // Called at the start of every new share
         super.init(codec, latency);
-        if (_clipcache == null) {
-            _clipcache = new Hashtable();
-            preCacheDigits();
-        }
         cutterTime = CUTTER_TIME;
         //_ec = new EchoCanceler();
         _speakBuf = new SampleBuffer(SPEAKER_BUFFER_LEN);
@@ -112,38 +107,6 @@ public class PhonoAudioShim extends EsupPhonoAudio {
         printAvailableCodecs();
     }
 
-    private static String getDTMFWavName(char c) {
-        return "/sounds/" + c + ".wav";
-    }
-
-    private AudioClip getDTMFClip(char c) {
-        AudioClip ret = null;
-        String cname = getDTMFWavName(c);
-        ret = (AudioClip) _clipcache.get(cname);
-        if (ret == null) {
-            URL u = this.getClass().getResource(cname);
-            Log.debug("getting clip" + cname);
-            ret = Applet.newAudioClip(u);
-            if (ret != null) {
-                _clipcache.put(cname, ret);
-            }
-        }
-        return ret;
-    }
-
-    private void preCacheDigits() {
-        Runnable r = new Runnable() {
-
-            public void run() {
-                String digits = "0123456789sp";
-                for (int i = 0; i < digits.length(); i++) {
-                    getDTMFClip(digits.charAt(i));
-                }
-            }
-        };
-        Thread pl = new Thread(r);
-        pl.start();
-    }
 
     /**
      * note that the superclass also implements the gain and mute functionality,

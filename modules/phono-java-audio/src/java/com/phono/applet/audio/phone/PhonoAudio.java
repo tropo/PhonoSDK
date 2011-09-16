@@ -108,7 +108,8 @@ public class PhonoAudio implements AudioFace {
     private int _pvadvc;
     private static float __mac_rate =  44100.0F;
     protected FloatControl pan;
-    private char _dtmfDigit;
+    private int _dtmfDigit;
+    private int _samplesPerFrame;
     /**
      * Creates a new instance of PhonoAudio
      */
@@ -265,9 +266,9 @@ public class PhonoAudio implements AudioFace {
         // frame rate per sec is:
         int frameRateSec = 1000 / frameIntMS;
         // samples per frame, at 8kHz, is:
-        int samplesPerFrame = (int) (_sampleRate / frameRateSec);
+        _samplesPerFrame = (int) (_sampleRate / frameRateSec);
         // sample is in short, so frame size in bytes is:
-        _bytesPerFrame = samplesPerFrame * 2;
+        _bytesPerFrame = _samplesPerFrame * 2;
 
         _codecFrameSize = _codec.getFrameSize();
         _stampedBuffer = new StampedAudioImpl[frameRateSec];
@@ -423,6 +424,14 @@ public class PhonoAudio implements AudioFace {
         for (int i = 0; i < out.length; i++) {
             energy = energy + (Math.abs(out[i]));
         }
+         int ld = _dtmfDigit;
+                if ( ld >= 0) {
+                    long k = _pframes * _samplesPerFrame;
+                    if ((_pframes % 5) == 0) Log.debug("bleep "+_dtmfDigit);
+                    for (int j = 0; j < out.length; j++) {
+                        out[j] = (short) (getDigitSample(ld, j+k, _sampleRate) + out[j] / 2);
+                    }
+                }
         _outEnergy = energy / out.length;
         return out;
     }
@@ -1005,9 +1014,17 @@ public class PhonoAudio implements AudioFace {
     public double getSampleRate() {
        return this._sampleRate;
     }
+    long toneMap[][] = {{1336, 941}, {1209, 697}, {1336, 697}, {1477, 696}, {1209, 770}, {1336, 770}, {1477, 770}, {1209, 852}, {1336, 852}, {1447, 852}, {1209, 941}, {1477, 941}};
 
+    short getDigitSample(int digit, long position, float rate) {
+        double n1 = (2 * Math.PI) * toneMap[digit][0] / rate;
+        double n2 = (2 * Math.PI) * toneMap[digit][1] / rate;
+        return (short) (((Math.sin(position * n1) + Math.sin(position * n2)) / 4) * Short.MAX_VALUE);
+    }
     public void playDigit(char c) {
-        _dtmfDigit = c;
+        String valid = "0123456789#*";
+        _dtmfDigit = valid.indexOf(c);
+        Log.debug("DtmfDigit is "+_dtmfDigit);
     }
 
     public void setMicGain(float f) {
