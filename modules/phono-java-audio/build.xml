@@ -57,10 +57,13 @@
             excludes="**/com/phono/R*.class">
         </jar>
 	<exec executable="/bin/cp" >
-            <arg line="phonogap.jar /project2/PhonoSDK-vox/phonegap-0.9.6/Android/Sample/libs "/>
+            <arg line="/project2/Phono-sg/srtplight/srtplight/dist/srtplight.jar /project2/PhonoSDK-vox/pfhone/libs "/>
         </exec>
 	<exec executable="/bin/cp" >
-            <arg line="libs/armeabi/libg722.so /project2/PhonoSDK-vox/phonegap-0.9.6/Android/Sample/libs/armeabi "/>
+            <arg line="phonogap.jar /project2/PhonoSDK-vox/pfhone/libs "/>
+        </exec>
+	<exec executable="/bin/cp" >
+            <arg line="libs/armeabi/libg722.so /project2/PhonoSDK-vox/pfhone/libs/armeabi "/>
         </exec>
 
     </target>
@@ -112,20 +115,12 @@
             <src path="${source.absolute.dir}" />
             <src path="${gen.absolute.dir}" />
             <src refid="project.libraries.src" />
-	    <exclude name="java/com/phono/api/Play.*"/>
-	    <exclude name="java/com/phono/audio/codec/gsm/GSMPlayer.*"/>
-	    <exclude name="java/com/phono/audio/codec/ulaw/TestLaw_Codec.*"/>
-	    <exclude name="java/com/phono/audio/codec/VoiceDetectionCodec.*"/>
-	    <exclude name="java/com/phono/audio/Log.*"/>
-	    <exclude name="java/com/phono/audio/phone/EsupPhonoAudio.*"/>
-	    <exclude name="java/com/phono/audio/phone/PhonoAudio.*"/>
-	    <exclude name="java/com/phono/audio/phone/WavPlay.*"/>
-	    <exclude name="java/com/phono/rtp/PhonoAudioShim.*"/>
-	    <exclude name="java/com/phono/rtp/RTPApplet.*"/>
-	    <exclude name="java/com/phono/rtp/RTPAudioSession.*"/>
+	    <exclude name="java/com/phono/applet/**"/>
             <classpath>
                 <fileset dir="${external.libs.absolute.dir}" includes="*.jar" />
                 <fileset dir="${extensible.libs.classpath}" includes="*.jar" />
+                <fileset dir="/project2/Phono-sg/srtplight/srtplight/dist" includes="*.jar" />
+
             </classpath>
         </javac>
     </target>
