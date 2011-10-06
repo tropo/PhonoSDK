@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="phono" default="help">
+<project name="phono-phonegap-android" default="build">
 
 <!-- The local.properties file is created and updated by the 'android'
      tool.
@@ -52,19 +52,10 @@
     </target>
 -->
     <target name="jar" depends="compile">
-        <jar basedir="${out.dir}/classes" jarfile="phonogap.jar"
+        <jar basedir="${out.dir}/classes" jarfile="target/phonogap.jar"
             includes="**/*.class"
             excludes="**/com/phono/R*.class">
         </jar>
-	<exec executable="/bin/cp" >
-            <arg line="/project2/Phono-sg/srtplight/srtplight/dist/srtplight.jar /project2/PhonoSDK-vox/pfhone/libs "/>
-        </exec>
-	<exec executable="/bin/cp" >
-            <arg line="phonogap.jar /project2/PhonoSDK-vox/pfhone/libs "/>
-        </exec>
-	<exec executable="/bin/cp" >
-            <arg line="libs/armeabi/libg722.so /project2/PhonoSDK-vox/pfhone/libs/armeabi "/>
-        </exec>
 
     </target>
 
@@ -91,7 +82,7 @@
                below to <setup import="false" />.
              - customize to your needs.
     -->
-    <target name="compile" depends="-resource-src, -aidl, -pre-compile"
+    <target name="compile" depends="-aidl, -pre-compile"
                 description="Compiles project's .java files into .class files">
         <!-- If android rules are used for a test project, its classpath should include
              tested project's location -->
@@ -119,12 +110,30 @@
             <classpath>
                 <fileset dir="${external.libs.absolute.dir}" includes="*.jar" />
                 <fileset dir="${extensible.libs.classpath}" includes="*.jar" />
-                <fileset dir="/project2/Phono-sg/srtplight/srtplight/dist" includes="*.jar" />
+ <!--       <fileset dir="/project2/Phono-sg/srtplight/srtplight/dist" includes="*.jar" /> -->
 
             </classpath>
         </javac>
     </target>
 
-    <setup />
+  
+  <target name="build" depends="jar" >
+    <copy todir="target" overwrite="true">
+      <fileset dir=".">
+        <include name="README" />
+        <include name="libs/**" />
+      </fileset>
+    </copy>
+    <copy todir="../../target/sdk/plugins/phonegap-android" overwrite="true">
+      <fileset dir="target"/>
+    </copy>
+  </target>
 
+  <target name="clean">
+    <delete dir="target" verbose="${verbose}" />
+    <delete dir="${out.absolute.dir}" verbose="${verbose}" />
+    <delete dir="${gen.absolute.dir}" verbose="${verbose}" />
+  </target> 
+    <setup />
+  
 </project>

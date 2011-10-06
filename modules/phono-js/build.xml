@@ -23,6 +23,7 @@
 
     <!-- SDK -->
     <copy file="target/jquery.phono.js" tofile="../../target/sdk/jquery.phono.js" overwrite="true" />
+    <copy file="target/jquery.phono.min.js" tofile="../../target/sdk/jquery.phono.min.js" overwrite="true" />
 
     <!-- Source -->
     <copy todir="../../target/src/phono-js" overwrite="true">
@@ -36,6 +37,7 @@
 
     <!-- Copy phono js to the kitchen sink -->
     <copy file="target/jquery.phono.js" tofile="../../target/sdk/samples/kitchen-sink/www/jquery.phono.js" overwrite="true" />
+    <copy file="target/jquery.phono.js" tofile="../../target/sdk/samples/conference/www/jquery.phono.js" overwrite="true" />
 
   </target>
 

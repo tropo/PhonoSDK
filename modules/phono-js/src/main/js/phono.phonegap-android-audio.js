@@ -2,28 +2,25 @@ function PhonegapAndroidAudio(phono, config, callback) {
     
     // Bind Event Listeners
     Phono.events.bind(this, config);
-    
-    console.log("PhonegapAndroidAudio: init start.");
 
     var plugin = this;
 
     // Register our Java plugin with Phonegap so that we can call it later
     PhoneGap.exec(null, null, "App", "addService", ['PhonogapAudio', 'com.phono.android.phonegap.Phono']);
-
-    _initState(callback, plugin);
     
-    console.log("PhonegapAndroidAudio: init complete.");
+    // FIXME: Should not have to do this twice!
+    this.allocateEndpoint();
+    this.initState(callback, plugin);
 };
 
 PhonegapAndroidAudio.exists = function() {
-    console.log("PhonegapAndroidAudio: exists");
-    return (PhoneGap.exec != undefined && Phono.util.isAndroid());
+    return ((typeof PhoneGap != "undefined") && Phono.util.isAndroid());
 }
 
 PhonegapAndroidAudio.codecs = new Array();
 PhonegapAndroidAudio.endpoint = "rtp://0.0.0.0";
 
-_allocateEndpoint = function () {
+PhonegapAndroidAudio.prototype.allocateEndpoint = function () {
     
     PhonegapAndroidAudio.endpoint = "rtp://0.0.0.0";
 
@@ -36,9 +33,9 @@ _allocateEndpoint = function () {
                   [{}]);      
 }
 
-_initState = function(callback, plugin) {
+PhonegapAndroidAudio.prototype.initState = function(callback, plugin) {
 
-    _allocateEndpoint();
+    this.allocateEndpoint();
 
     var codecSuccess = function(result) {
         console.log("codec: success");
@@ -137,8 +134,6 @@ PhonegapAndroidAudio.prototype.play = function(url, autoPlay) {
 // Creates a new audio Share and will optionally begin playing
 PhonegapAndroidAudio.prototype.share = function(url, autoPlay, codec) {
 
-    console.log("OOOOOOOOO SHARE ooooooooo");
-
     // Get PhoneGap to create the share
     PhoneGap.exec(function(result) {console.log("share: success");},
                   function(result) {console.log("share: fail");},
@@ -150,7 +145,7 @@ PhonegapAndroidAudio.prototype.share = function(url, autoPlay, codec) {
                       'codec':codec.name
                   }]);   
 
-    var luri = _localUri(url);
+    var luri = Phono.util.localUri(url);
     var muteStatus = false;
     var gainValue = 50;
 
@@ -260,7 +255,7 @@ PhonegapAndroidAudio.prototype.transport = function() {
     
     var endpoint = PhonegapAndroidAudio.endpoint;
     // We've used this one, get another ready
-    _allocateEndpoint();
+    this.allocateEndpoint();
 
     return {
         name: "urn:xmpp:jingle:transports:raw-udp:1",

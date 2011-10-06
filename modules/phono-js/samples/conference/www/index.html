@@ -1,0 +1,139 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<title>Phono for Mobile Conference Demo</title> 
+	<link rel="stylesheet" href="jquery.mobile-1.0b1.min.css" />
+	<script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="jquery.mobile-1.0b1.min.js"></script>
+	<script type="text/javascript" src="jquery.phono.js"></script>
+	<script type="text/javascript" src="conference.js"></script>
+	
+	<style type="text/css">
+		.ui-bg{
+			background:url("images/page-body-bg.png")!important;
+		}
+		#participant-holder{
+			margin-top:2em;
+		}
+		#info{
+			padding:10px;
+			font-size:90%;
+			margin-top:20px;
+		}
+		.ui-input-text,    
+		.ui-select
+		{
+		    width: 100% !important;
+		    padding: 0.4em 0!important;
+		    text-indent: 10px !important; 
+		    color:#777;
+		}
+		.ui-icon-chat{
+			background-image:url("images/icon-chat.png");
+		}
+	</style>
+</head> 
+<body> 
+
+<div data-role="page" id="home" class="ui-bg">
+	<div data-role="header">
+		<a href="#settings" data-icon="gear" class="ui-btn-right">Settings</a>
+		<h1>Phono</h1>
+	</div>
+
+	<div id="home-content" data-role="content" style="display:none;">	
+		<p style="text-align:center;">
+		    <input type="text" id="conference-id-input" value=""/>
+		</p>
+		<p>
+		    <a href="#" id="conference-action-button" data-role="button" data-theme="b">Join Conference</a>
+		</p>
+		
+		<div id="participant-holder" style="display:none;">
+			<p style="font-weight:bold;">Room Participants</p>
+			
+			<ul id="participant-list" data-role="listview" data-inset="true" data-theme="g">
+				<!--
+				<li data-theme="c" data-icon="chat"><a href="#">Dave Hoff</a></li>
+				<li data-theme="c" data-icon="chat"><a href="#">Jose DeCastro</a></li>
+				<li data-theme="c" data-icon="chat"><a href="#">Neil Stratford</a></li>
+				-->
+			</ul>
+		</div>	
+	</div>
+</div><
+
+<div data-role="page" id="settings" class="ui-bg" data-add-back-btn="true">
+	<div data-role="header">
+		<h1>Settings</h1>
+	</div>
+
+	<div data-role="content">	
+		<p style="font-size:90%;">
+			Enter a display name that will appear in a conference's participant list
+		</p>
+		<p>
+		    <input type="text" id="display-name-input" value=""/>
+		</p>
+		<p>
+		    <a href="#" id="display-name-button" data-role="button" data-theme="b">Save</a>
+		</p>	
+	</div>
+</div>
+
+<div data-role="dialog" id="name-dialog">
+	<div data-role="header">
+		<h1>Display name</h1>
+	</div>
+	
+	<div data-role="content">	
+		<p style="font-size:90%;">
+			Enter a display name that will appear in the conference's participant list
+		</p>
+		<p>
+		    <input type="text" id="dialog-display-name-input" value=""/>
+		</p>
+		<p>
+		    <a href="#" id="dialog-display-name-button" data-role="button" data-theme="b">Save</a>
+		</p>	
+	</div>
+</div>
+
+<div data-role="dialog" id="send-message-dialog">
+	<div data-role="header">
+		<h1>Send</h1>
+	</div>
+	
+	<div data-role="content">	
+		<p style="font-size:90%;">
+			Direct message <strong><span id="send-dm-to"></span></strong>
+		</p>
+		<p>
+		    <textarea id="send-dm-input" rows="10" style="width:95%;"></textarea>
+		</p>
+		<p>
+		    <a href="#" id="send-dm-button" data-role="button" data-theme="b">Send Message</a>
+		</p>	
+	</div>
+</div>
+
+<div data-role="dialog" id="direct-message-dialog">
+	<div data-role="header">
+		<h1>Message</h1>
+	</div>
+	
+	<div data-role="content">	
+		<p style="font-size:90%;">
+			Direct message from <strong><span id="dm-from"></span></strong>
+		</p>
+		
+		<div id="dm-body" class="ui-body ui-body-d ui-corner-all" style="min-height:50px;"></div>
+		
+		<p>
+		    <a href="#" id="dm-reply-button" data-role="button" data-theme="b">Reply</a>
+		</p>	
+	</div>
+</div>
+
+</body>
+</html>

@@ -5,17 +5,17 @@ function PhonegapIOSAudio(phono, config, callback) {
     
     var plugin = this;
 
-    _initState(callback, plugin);
+    this.initState(callback, plugin);
 };
 
 PhonegapIOSAudio.exists = function() {
-    return (PhoneGap.exec != undefined && Phono.util.isIOS());
+    return ((typeof PhoneGap != "undefined") && Phono.util.isIOS());
 }
 
 PhonegapIOSAudio.codecs = new Array();
 PhonegapIOSAudio.endpoint = "rtp://0.0.0.0";
 
-_allocateEndpoint = function () {
+PhonegapIOSAudio.prototype.allocateEndpoint = function () {
     PhonegapIOSAudio.endpoint = "rtp://0.0.0.0";
     PhoneGap.exec("Phono.allocateEndpoint", 
                   GetFunctionName(function(result) {console.log("endpoint success: " + result);
@@ -23,9 +23,9 @@ _allocateEndpoint = function () {
                   GetFunctionName(function(result) {console.log("endpoint fail:" + result);}));
 }
 
-_initState = function(callback, plugin) {
+PhonegapIOSAudio.prototype.initState = function(callback, plugin) {
 
-    _allocateEndpoint();
+    this.allocateEndpoint();
     PhoneGap.exec("Phono.codecs", 
                   GetFunctionName(function(result) {
                       console.log("codec success: " + result);
@@ -48,11 +48,6 @@ _initState = function(callback, plugin) {
                   GetFunctionName(function(result) {console.log("codec fail:" + result);})
                  );
 };
-
-_localUri = function(fullUri) {
-    var splitUri = fullUri.split(":");
-    return splitUri[0] + ":" + splitUri[1] + ":" + splitUri[2];
-}
 
 // PhonegapIOSAudio Functions
 //
@@ -127,9 +122,11 @@ PhonegapIOSAudio.prototype.share = function(url, autoPlay, codec) {
                       'codec':codec.id,
                   });
 
-    var luri = _localUri(url);
+    var luri = Phono.util.localUri(url);
     var muteStatus = false;
     var gainValue = 50;
+    var micEnergy = 0.0;
+    var spkEnergy = 0.0;
 
     // Return a shell of an object
     return {
@@ -219,9 +216,19 @@ PhonegapIOSAudio.prototype.share = function(url, autoPlay, codec) {
    	    }
         },
         energy: function(){
+            PhoneGap.exec("Phono.energy",
+                        GetFunctionName(function(result) {
+                            console.log("energy success: " + result);
+                            var en = jQuery.parseJSON(result);
+                            micEnergy = Math.floor(Math.max((Math.LOG2E * Math.log(en[0])-4.0),0.0));
+                            spkEnergy = Math.floor(Math.max((Math.LOG2E * Math.log(en[1])-4.0),0.0));
+                            }),
+                        GetFunctionName(function(result) {console.log("energy fail:" + result);}),
+                        {'uri':luri}
+            );
             return {
-               mic: 0.0,
-               spk: 0.0
+               mic: micEnergy,
+               spk: spkEnergy
             }
         }
     }
@@ -237,7 +244,7 @@ PhonegapIOSAudio.prototype.transport = function() {
     
     var endpoint = PhonegapIOSAudio.endpoint;
     // We've used this one, get another ready
-    _allocateEndpoint();
+    this.allocateEndpoint();
 
     return {
         name: "urn:xmpp:jingle:transports:raw-udp:1",

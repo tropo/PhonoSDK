@@ -448,7 +448,7 @@
          // Inbound Call
          case "session-initiate":
          
-            call = new Call(phone, id, Direction.INBOUND);
+            call = Phono.util.loggify("Call", new Call(phone, id, Direction.INBOUND));
             call.phone = phone;
             call.remoteJid = $(iq).attr('from');
             call.initiator = jingle.attr('initiator');
@@ -562,7 +562,7 @@
       }, (config || {}));
 
       // Create and configure Call
-      var call = new Call(this, id, Direction.OUTBOUND, config);
+      var call = new Phono.util.loggify("Call", new Call(this, id, Direction.OUTBOUND, config));
       call.phone = this;
       call.remoteJid = to;
       call.initiator = this.connection.jid;
@@ -659,7 +659,7 @@
 
    Phono.registerPlugin("phone", {
       create: function(phono, config, callback) {
-         return new Phone(phono, config, callback);
+         return Phono.util.loggify("Phone", new Phone(phono, config, callback));
       }
    });
       

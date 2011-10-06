@@ -1,0 +1,46 @@
+<project name="phono-phonegap-ios" default="build">
+  
+  <property name="libphono.dir" value="libphono"/>
+  <property name="plugin.dir" value="Plugins"/>
+
+  <target name="build-libphono-iphoneos">
+        <exec executable="xCodeBuild" dir="${libphono.dir}">
+          <arg value="-sdk"/>
+          <arg value="iphoneos"/>
+        </exec>
+        <move file="target/libphono.a" tofile="target/libphono-arm.a"/>
+  </target>
+
+  <target name="build-libphono-iphonesimulator">
+        <exec executable="xCodeBuild" dir="${libphono.dir}">
+          <arg value="-sdk"/>
+          <arg value="iphonesimulator"/>
+        </exec>
+        <move file="target/libphono.a" tofile="target/libphono-i386.a"/>
+  </target>
+
+  <target name="clean-libphono">
+        <exec executable="xCodeBuild" dir="${libphono.dir}">
+          <arg value="clean"/>
+        </exec>
+  </target>
+
+  <target name="build" depends="clean,build-libphono-iphonesimulator,build-libphono-iphoneos">
+    <copy todir="target/Plugins" overwrite="true">
+      <fileset dir="${plugin.dir}"/>
+    </copy>
+    <copy todir="target" overwrite="true">
+      <fileset dir=".">
+        <include name="README" />
+      </fileset>
+    </copy>
+    <copy todir="../../target/sdk/plugins/phonegap-ios" overwrite="true">
+      <fileset dir="target"/>
+    </copy>
+  </target>
+ 
+  <target name="clean" depends="clean-libphono">
+    <delete dir="target" />
+  </target>
+
+</project>
