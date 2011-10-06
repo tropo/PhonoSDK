@@ -3,9 +3,10 @@
   <property environment="env" />
 
   <property name="lib.dir" value="lib"/>
+  <property name="srtplightlib.dir" value="../phono-phonegap-android/libs"/>
 
   <path id="classpath">
-    <fileset dir="/project2/Phono-sg/srtplight/srtplight/dist/" includes="*.jar"/>
+    <fileset dir="${srtplightlib.dir}" includes="srtplight.jar"/>
     <fileset dir="${lib.dir}" includes="**/*.jar"/>
     <fileset dir="${java.home}" includes="**/plugin.jar"/>
   </path>
@@ -20,7 +21,7 @@
     <jar destfile="target/phono.audio.jar" basedir="build/applet/classes">
       <zipfileset src="${lib.dir}/JLayer.jar"/>
       <zipfileset src="${lib.dir}/jtransforms-fft-2.3.jar"/>
-      <zipfileset src="/project2/Phono-sg/srtplight/srtplight/dist/srtplight.jar"/>
+      <zipfileset src="${srtplightlib.dir}/srtplight.jar"/>
     </jar>
 
     <signjar jar="target/phono.audio.jar"

@@ -247,9 +247,9 @@ function displayDm(jid, msg){
 
 //Load the phonegap javascript
 if (Phono.util.isIOS()) {
-    $.getScript('phonegap.0.9.5.1-ios.js');
+    $.getScript('phonegap.1.0.0-ios.js');
 }
 
 if (Phono.util.isAndroid()) {
-    $.getScript('phonegap.0.9.6-android.js',function() {PhoneGap.onDOMContentLoaded.fire();});
+    $.getScript('phonegap.1.0.0-android.js',function() {PhoneGap.onDOMContentLoaded.fire();});
 }
