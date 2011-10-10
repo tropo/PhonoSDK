@@ -1,0 +1,16 @@
+To build the phono phonegap plugin from source code, you need a working Android development environment installed and in your path.
+
+You need initialize the project by running 
+
+android update lib-project
+
+ant build 
+
+should then correctly build the libraries.
+
+The sourcecode for the srtplight libary is currently available at:
+https://github.com/steely-glint/srtplight
+
+
+
+
