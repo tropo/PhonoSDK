@@ -5,6 +5,14 @@
      tool.
      It contains the path to the SDK. It should *NOT* be checked into
      Version Control Systems. -->
+    <fail message="Please make sure you have installed the android sdk.
+          Then run: android update lib-project">
+      <condition>
+       <not>
+         <available file="local.properties" />
+       </not>
+      </condition>
+    </fail>
     <property file="local.properties" />
 
     <!-- The build.properties file can be created by you and is never touched
