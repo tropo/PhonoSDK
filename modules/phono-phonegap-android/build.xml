@@ -116,8 +116,11 @@
         </javac>
     </target>
 
-  
-  <target name="build" depends="jar" >
+  <target name="cantbuild" unless="sdk.dir" >
+	  <echo>Please make sure you have installed the android sdk.</echo>
+	  <echo>Then run: android update lib-project </echo>
+  </target>
+  <target name="canbuild" depends="jar" if="sdk.dir" >
     <copy todir="target" overwrite="true">
       <fileset dir=".">
         <include name="README" />
@@ -127,6 +130,9 @@
     <copy todir="../../target/sdk/plugins/phonegap-android" overwrite="true">
       <fileset dir="target"/>
     </copy>
+  </target>
+
+  <target name="build" depends="canbuild,cantbuild">
   </target>
 
   <target name="clean">
