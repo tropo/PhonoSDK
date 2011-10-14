@@ -246,7 +246,7 @@ _loadApplet = function(containerId, jar, callback, plugin) {
     var applet = $("<applet>")
         .attr("id", id)
         .attr("name",id)
-        .attr("code","com.phono.rtp.RTPApplet")
+        .attr("code","com.phono.applet.rtp.RTPApplet")
         .attr("archive",jar + "?rnd=" + new Date().getTime())
         .attr("width","1px")
         .attr("height","1px")
