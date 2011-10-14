@@ -236,6 +236,8 @@ public class PhonoAudioShim extends EsupPhonoAudio {
         super.stopRec();
     }
 
+
+
     /** 
      * Maintain a circular sample buffer.
      * Writing can overwrite old samples if full.
@@ -307,7 +309,7 @@ public class PhonoAudioShim extends EsupPhonoAudio {
         }
     }
 
-    static void getMixersJSON(StringBuffer sb) {
+    public static void getMixersJSON(StringBuffer sb) {
     Mixer.Info[] mixI = AudioSystem.getMixerInfo();
     sb.append("mixers").append(" : ").append(" [ \n");
     for (int i = 0; i < mixI.length; i++) {

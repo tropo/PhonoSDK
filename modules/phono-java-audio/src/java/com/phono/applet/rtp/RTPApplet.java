@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 package com.phono.applet.rtp;
 
 import com.phono.audio.AudioException;
@@ -69,7 +68,7 @@ public class RTPApplet extends Applet {
         StringBuffer bret = new StringBuffer("{\n");
         PhonoAudioShim.getMixersJSON(bret);
         bret.append("}\n");
-        _deviceList =  bret.toString();
+        _deviceList = bret.toString();
         _audio = new PhonoAudioShim();
         _codecList = new CodecList(_audio);
 
@@ -78,29 +77,33 @@ public class RTPApplet extends Applet {
         if (callback != null) {
             JSObject jso = JSObject.getWindow(this);
             try {
-            jso.call(callback, new String[]{_deviceList});
-            } catch (Throwable t){
+                jso.call(callback, new String[]{_deviceList});
+            } catch (Throwable t) {
                 Log.error(t.getMessage());
             }
         }
     }
+
     @Override
-    public void start(){
-        if (!_userClickedTrust){
+    public void start() {
+        if (!_userClickedTrust) {
             Log.error("User does not trust us. Can't continue.");
         }
     }
+
     @Override
-    public void stop(){
-            Log.debug("Applet stopped");
+    public void stop() {
+        Log.debug("Applet stopped");
     }
+
     @Override
-    public void destroy(){
-            Log.debug("Applet destroyed");
- //           if (_audio != null){
- //               _audio.destroy();
- //           }
+    public void destroy() {
+        Log.debug("Applet destroyed");
+        //           if (_audio != null){
+        //               _audio.destroy();
+        //           }
     }
+
     public String allocateEndpoint() {
         String ret = null;
         // strictly we supposedly want to actually allocate a socket here,
@@ -150,9 +153,9 @@ public class RTPApplet extends Applet {
             _endpoints.remove(e);
         }
     }
-
     // see http://download.oracle.com/javase/7/docs/api/java/security/AccessController.html
     // for doc on priv escalation
+
     public Codec[] codecs() {
         return _codecList.getCodecs();
     }
@@ -196,7 +199,8 @@ public class RTPApplet extends Applet {
         Log.verb("in share() codec = " + codec.name);
         Log.verb("in share() uri = " + uri);
         try {
-            s = new Share(uri, _audio, codec.pt, spl, spr);
+            PhonoAudioShim af = getAudio(codec);
+            s = new Share(uri, af, codec.pt, spl, spr);
             AccessController.doPrivileged(new PrivilegedAction<Void>() {
 
                 public Void run() {
@@ -275,7 +279,7 @@ public class RTPApplet extends Applet {
     public String getJSONStatus() {
         StringBuffer ret = new StringBuffer("{\n");
         ret.append("userTrust").append(" : ");
-        ret.append(_userClickedTrust?"true":"false").append(",\n");
+        ret.append(_userClickedTrust ? "true" : "false").append(",\n");
         Enumeration rat = _endpoints.elements();
         ret.append("endpoints").append(" : ");
         ret.append("[");
@@ -298,26 +302,42 @@ public class RTPApplet extends Applet {
                 Object o = signers[i];
                 if (o instanceof java.security.cert.X509Certificate) {
                     java.security.cert.X509Certificate cert =
-                        (java.security.cert.X509Certificate) o;
+                            (java.security.cert.X509Certificate) o;
                     Log.debug(cl.getName() + ": signer " + i
-                              + " = " + cert.getSubjectX500Principal().getName());
+                            + " = " + cert.getSubjectX500Principal().getName());
                 }
             }
-        }
-        else {
+        } else {
             Log.debug(cl.getName() + " is not signed (has no signers)");
         }
     }
 
-    public String getAudioDeviceList(){
+    public String getAudioDeviceList() {
         return _deviceList;
     }
 
-    public void setAudioIn(String ain){
-        if (_audio != null){
+    public void setAudioIn(String ain) {
+        if (_audio != null) {
             _audio.setAudioInName(ain);
-            Log.debug("Set audio input device preference to "+ ain);
+            Log.debug("Set audio input device preference to " + ain);
         }
     }
 
+    private PhonoAudioShim getAudio(Codec codec) {
+        if (_audio != null) {
+            try {
+                float ofreq = (_audio.getCodec(_audio.getCodec())).getSampleRate();
+                float nfreq = (_audio.getCodec(codec.iaxcn)).getSampleRate();
+                Log.debug("getting audio is "+ofreq+" = "+nfreq+ " ? "+((nfreq != ofreq)?"No":"Yes"));
+
+                if (nfreq != ofreq) {
+                    _audio.unInit();
+                }
+            } catch (IllegalStateException ok) {
+                // thats actually legit - it is an uninitialized audio
+                // so we haven't _set_ a rate yet
+            }
+        } 
+        return _audio;
+    }
 }

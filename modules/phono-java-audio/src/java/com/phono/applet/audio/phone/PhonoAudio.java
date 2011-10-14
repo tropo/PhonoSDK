@@ -108,7 +108,7 @@ public class PhonoAudio implements AudioFace {
     private int _pvadvc;
     private static float __mac_rate =  44100.0F;
     protected FloatControl pan;
-    private int _dtmfDigit;
+    private int _dtmfDigit = -1;
     private int _samplesPerFrame;
     /**
      * Creates a new instance of PhonoAudio
@@ -220,6 +220,25 @@ public class PhonoAudio implements AudioFace {
         _audioReceiver = r;
     }
 
+    synchronized public void unInit() {
+        _codec = null;
+        stopPlay();
+        stopRec();
+        _rec = null;
+        _play =null;
+        _sampleRate = 0;
+        _deep = 0;
+        _samplesPerFrame =0;
+        _bytesPerFrame =0;
+        _codecFrameSize = 0;
+        _stampedBuffer = null;
+        _encode = null;
+        _decode = null;
+        _encodedbuffPlay= null;
+        _framebuffR = null;
+        _macbuff = null;
+        Log.debug("uninit()ed audio device");
+    }
     /**
      * Actually allocate resources.
      * The constructor should not allocate any resources.
@@ -230,7 +249,7 @@ public class PhonoAudio implements AudioFace {
      *
      * @see #getCodecs()
      */
-    public void init(long codec, int latency) throws AudioException {
+    synchronized public void init(long codec, int latency) throws AudioException {
         _codec = _codecMap.get(new Long(codec));
         if (_codec == null) {
             _codec = getDefaultCodec();

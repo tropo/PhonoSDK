@@ -130,4 +130,16 @@ public class RTPAudioSession implements RTPDataSink, AudioReceiver {
         }
 
     }
+
+    public String getSent() {
+        String ret =  "0";
+        if ((_sps != null) && (_sps instanceof RTPProtocolImpl) ){
+            ((RTPProtocolImpl)_sps).getIndex();
+        }
+        return ret;
+    }
+
+    public String getRcvd() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 }

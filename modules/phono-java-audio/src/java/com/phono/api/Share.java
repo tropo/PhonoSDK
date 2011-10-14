@@ -20,15 +20,12 @@ import com.phono.audio.AudioFace;
 import com.phono.audio.phone.PhonoAudioPropNames;
 import com.phono.rtp.RTPAudioSession;
 import com.phono.srtplight.Log;
-import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class Share {
 
@@ -173,6 +170,23 @@ public class Share {
         ret = new InetSocketAddress(nearH, nearP);
         return ret;
     }
+
+    public String getSent() {
+        String ret = "0";
+        if (ras != null) {
+            ret = ras.getSent();
+        }
+        return ret;
+    }
+
+    public String getRcvd() {
+        String ret = "0";
+        if (ras != null) {
+            ret = ras.getRcvd();
+        }
+        return ret;
+    }
+
     /*
     uri,
     Play:
