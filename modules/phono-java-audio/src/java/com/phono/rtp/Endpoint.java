@@ -72,13 +72,17 @@ public class Endpoint {
     }
 
     public void getJSONStatus(StringBuffer target) {
+        target.append("{\n");
         buildJSONLine("uri", getLocalURI(), target);
         buildJSONLine("type", this.getClass().getSimpleName(),target);
         if (_share != null){
             buildJSONLine("sent", _share.getSent(),target);
             buildJSONLine("rcvd", _share.getRcvd(),target);
+            buildJSONLine("error", _share.getLastError(),target);
 
         }
+        target.append("}");
+
     }
 
     private void allocateSocket() throws SocketException {

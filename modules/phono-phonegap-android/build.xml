@@ -42,7 +42,7 @@
 
 
     <!-- Required pre-setup import -->
-    <import file="${sdk.dir}/tools/ant/pre_setup.xml" />
+    <import file="${sdk.dir}/tools/ant/pre_setup.xml" optional="yes" />
 
 
 <!-- extension targets. Uncomment the ones where you want to do custom work

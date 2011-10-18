@@ -286,11 +286,10 @@ public class RTPApplet extends Applet {
         while (rat.hasMoreElements()) {
             Endpoint r = (Endpoint) rat.nextElement();
             r.getJSONStatus(ret);
-            ret.append(",");
+            if(rat.hasMoreElements()){ ret.append(","); }
         }
         ret.append("]\n");
         ret.append("}\n");
-        // Log.debug("Phonefromhere.getCallStatus(): " + ret);
         return ret.toString();
     }
 

@@ -19,7 +19,26 @@ function JavaAudio(phono, config, callback) {
     
     // Install the applet
     plugin.$applet = _loadApplet(containerId, this.config.jar, callback, plugin);
-    
+    window.setInterval(function(){
+        var str = "Loading...";
+        var json = plugin.$applet[0].getJSONStatus();
+        if (json){
+           var mess ='ok';
+	       var statusO = eval('(' +json+ ')');
+           if (!statusO.userTrust){
+             str = "Java Applet not trusted by user - cannot continue";
+           } else {
+             eps = statusO.endpoints;
+             if (eps.length >0){
+                str = "<br/>share: "+eps[0].uri ;
+                str +=" sent " +eps[0].sent ;
+                str +=" rcvd " +eps[0].rcvd ;
+                str +=" error " +eps[0].error ;
+             }
+	       } 
+	    } 
+        $("#"+containerId).find(".appletStatus").html(str);
+    },25000); 
 };
 
 JavaAudio.exists = function() {
@@ -35,7 +54,7 @@ JavaAudio.count = 0;
 
 // Creates a new Player and will optionally begin playing
 JavaAudio.prototype.play = function(url, autoPlay) {
-    var applet = this.$applet;
+    var applet = this.$applet[0];
     var player;
     var luri = url;
     var uri = Phono.util.parseUri(url);
@@ -72,7 +91,7 @@ JavaAudio.prototype.play = function(url, autoPlay) {
 
 // Creates a new audio Share and will optionally begin playing
 JavaAudio.prototype.share = function(url, autoPlay, codec) {
-    var applet = this.$applet;
+    var applet = this.$applet[0];
     var share = applet.share(url, codec.p, autoPlay);
     return {
         // Readonly
@@ -139,7 +158,7 @@ JavaAudio.prototype.permission = function() {
 
 // Returns an object containg JINGLE transport information
 JavaAudio.prototype.transport = function() {
-    var applet = this.$applet;
+    var applet = this.$applet[0];
     var endpoint = applet.allocateEndpoint();
     
     return {
@@ -167,7 +186,7 @@ String.prototype.startsWith = function(str) {
 // Returns an array of codecs supported by this plugin
 JavaAudio.prototype.codecs = function() {
     var result = new Array();
-    var applet = this.$applet;
+    var applet = this.$applet[0];
     var codecs = applet.codecs();
     
     for (l=0; l<codecs.length; l++) {
@@ -186,16 +205,16 @@ JavaAudio.prototype.codecs = function() {
 };
 
 JavaAudio.prototype.audioIn = function(str) {
-     var applet = this.$applet;
+     var applet = this.$applet[0];
     applet.setAudioIn(str);
 }
 
 JavaAudio.prototype.audioInDevices = function(){
     var result = new Array();
 
- /*   var applet = this.$applet;
-    var jsonstr = applet.getAudioDeviceList();
-    */
+    //var applet = this.$applet;
+    //var jsonstr = applet.getAudioDeviceList();
+    
     var devs = eval ('(' +this.audioDeviceList+ ')');
     var mixers = devs.mixers;
     result.push("Let my system choose");
@@ -238,9 +257,9 @@ _loadApplet = function(containerId, jar, callback, plugin) {
     
     var callbackName = id+"Callback";
     
-    window[callbackName] = function(devJson) {plugin.audioDeviceList = devJson; t = window.setTimeout(callback(plugin),10);};
+    window[callbackName] = function(devJson) {plugin.audioDeviceList = devJson; t = window.setTimeout(function () {callback(plugin);},10);};
     //window[callbackName] = function() {
-    //                                    window.setTimeout(callback(plugin),10);
+    //                                    window.setTimeout(function () {callback(plugin)},100);
     //                                };
 
     var applet = $("<applet>")
@@ -259,7 +278,8 @@ _loadApplet = function(containerId, jar, callback, plugin) {
                 .attr("name","callback")
                 .attr("value",callbackName)
                )
-        .appendTo("#" + containerId)
+        .appendTo("#" + containerId);
+    var status = $("<div>").attr("id","appletStatus").appendTo("#" + containerId);
     
-    return applet[0];
+    return applet;
 };

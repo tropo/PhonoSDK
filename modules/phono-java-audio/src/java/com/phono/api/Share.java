@@ -187,6 +187,13 @@ public class Share {
         return ret;
     }
 
+    public String getLastError() {
+        String ret = "";
+        if (ras != null) {
+            ret = ras.getLastError();
+        }
+        return ret;    }
+
     /*
     uri,
     Play:
