@@ -35,7 +35,7 @@ JavaAudio.count = 0;
 
 // Creates a new Player and will optionally begin playing
 JavaAudio.prototype.play = function(url, autoPlay) {
-    var applet = this.$applet;
+    var applet = this.$applet[0];
     var player;
     var luri = url;
     var uri = Phono.util.parseUri(url);
@@ -72,7 +72,7 @@ JavaAudio.prototype.play = function(url, autoPlay) {
 
 // Creates a new audio Share and will optionally begin playing
 JavaAudio.prototype.share = function(url, autoPlay, codec) {
-    var applet = this.$applet;
+    var applet = this.$applet[0];
     var share = applet.share(url, codec.p, autoPlay);
     return {
         // Readonly
@@ -139,7 +139,7 @@ JavaAudio.prototype.permission = function() {
 
 // Returns an object containg JINGLE transport information
 JavaAudio.prototype.transport = function() {
-    var applet = this.$applet;
+    var applet = this.$applet[0];
     var endpoint = applet.allocateEndpoint();
     
     return {
@@ -167,7 +167,7 @@ String.prototype.startsWith = function(str) {
 // Returns an array of codecs supported by this plugin
 JavaAudio.prototype.codecs = function() {
     var result = new Array();
-    var applet = this.$applet;
+    var applet = this.$applet[0];
     var codecs = applet.codecs();
     
     for (l=0; l<codecs.length; l++) {
@@ -186,7 +186,7 @@ JavaAudio.prototype.codecs = function() {
 };
 
 JavaAudio.prototype.audioIn = function(str) {
-     var applet = this.$applet;
+     var applet = this.$applet[0];
     applet.setAudioIn(str);
 }
 
@@ -238,7 +238,10 @@ _loadApplet = function(containerId, jar, callback, plugin) {
     
     var callbackName = id+"Callback";
     
-    window[callbackName] = function(devJson) {plugin.audioDeviceList = devJson; t = window.setTimeout(callback(plugin),10);};
+    window[callbackName] = function(devJson) {
+            plugin.audioDeviceList = devJson;
+            t = window.setTimeout( function () {callback(plugin);},10);
+            };
     //window[callbackName] = function() {
     //                                    window.setTimeout(callback(plugin),10);
     //                                };
@@ -260,6 +263,8 @@ _loadApplet = function(containerId, jar, callback, plugin) {
                 .attr("value",callbackName)
                )
         .appendTo("#" + containerId)
-    
-    return applet[0];
+    // Firefox 7.0.1 seems to treat the applet object as a function
+    // which causes mayhem later on - so we return an array containing it
+    // which seems to sheild us from issue.
+    return applet; 
 };
