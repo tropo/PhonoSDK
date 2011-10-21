@@ -421,7 +421,7 @@ $(document).ready(function() {
 	return false;
     });
 
-    if(window.location.protocol != "http:" && !Phono.util.isIOS()){
+    if(window.location.protocol != "http:" && !Phono.util.isIOS() && !Phono.util.isAndroid()){
 	var errorText = "Looks like you are running this sample locally and not on a web server. To run this example, either load it from a web server or <a href='http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html' target='_blank'>edit your Flash security settings</a>.";
 	errorText += "<br/>Select \"Edit locations\" > \"Add location\" > \"Browse for folder\" and select the \"/js\" folder in the root of your download.";
 	errorText += " <a href='#' onclick='$(this).parent().slideUp();'>Close this</a>";
@@ -443,5 +443,5 @@ if (Phono.util.isIOS()) {
 }
 
 if (Phono.util.isAndroid()) {
-    $.getScript('phonegap.0.9.6-android.js',function() {PhoneGap.onDOMContentLoaded.fire();});
+    $.getScript('phonegap-1.0.0-android.js',function() {PhoneGap.onDOMContentLoaded.fire();});
 }

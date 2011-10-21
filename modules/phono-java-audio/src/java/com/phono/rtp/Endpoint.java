@@ -1,3 +1,5 @@
+package com.phono.rtp;
+
 /*
  * Copyright 2011 Voxeo Corp.
  *
@@ -15,10 +17,10 @@
  *
  */
 
-package com.phono.rtp;
 
-import com.phono.audio.Log;
+
 import com.phono.api.Share;
+import com.phono.srtplight.Log;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -27,8 +29,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class Endpoint {
 
@@ -39,7 +40,7 @@ public class Endpoint {
     public Endpoint(String uri) {
         _initialuri = uri;
     }
-    static Endpoint allocate() throws SocketException{
+    public static Endpoint allocate() throws SocketException{
         Endpoint end = new Endpoint();
         end.allocateSocket();
         return end;
@@ -71,8 +72,17 @@ public class Endpoint {
     }
 
     public void getJSONStatus(StringBuffer target) {
+        target.append("{\n");
         buildJSONLine("uri", getLocalURI(), target);
         buildJSONLine("type", this.getClass().getSimpleName(),target);
+        if (_share != null){
+            buildJSONLine("sent", _share.getSent(),target);
+            buildJSONLine("rcvd", _share.getRcvd(),target);
+            buildJSONLine("error", _share.getLastError(),target);
+
+        }
+        target.append("}");
+
     }
 
     private void allocateSocket() throws SocketException {
@@ -82,7 +92,7 @@ public class Endpoint {
         _initialuri = "rtp://"+findMyLocalIPAddress()+":"+_ds.getLocalPort() ;
     }
 
-    void setShare(Share s) {
+    public void setShare(Share s) {
         if (_share != null){
             Log.error("Duplicate share on (stopping old one) "+_initialuri);
             _share.stop();
@@ -98,6 +108,10 @@ public class Endpoint {
         s.setSocket(_ds);
 
         _share = s;
+    }
+
+    public Share getShare(){
+        return _share;
     }
 
     private String findMyLocalIPAddress() {

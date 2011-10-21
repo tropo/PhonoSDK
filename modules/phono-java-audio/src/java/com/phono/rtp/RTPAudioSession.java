@@ -17,26 +17,27 @@
 
 package com.phono.rtp;
 
-import com.phono.audio.AudioException;
-import com.phono.audio.Log;
-import com.phono.audio.phone.PhonoAudioPropNames;
-import com.phono.audio.StampedAudio;
-import com.phono.audio.codec.gsm.GSM_Base;
 import com.phono.api.CodecList;
-import java.applet.AudioClip;
+import com.phono.audio.AudioException;
+import com.phono.audio.AudioFace;
+import com.phono.audio.AudioReceiver;
+import com.phono.audio.StampedAudio;
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.Properties;
+import com.phono.srtplight.*;
 
-public class RTPAudioSession implements RTPDataSink {
+public class RTPAudioSession implements RTPDataSink, AudioReceiver {
 
     RTPProtocolFace _sps;
     int _id = 1;
-    PhonoAudioShim _audio;
-    private int _audioheld = 0;
+    AudioFace _audio;
+    private boolean _first = true;
+    int _ptype;
 
-    public RTPAudioSession(DatagramSocket near, InetSocketAddress far, int type, PhonoAudioShim a, Properties lsrtpProps, Properties rsrtpProps) {
+    public RTPAudioSession(DatagramSocket near, InetSocketAddress far, int type, AudioFace a, Properties lsrtpProps, Properties rsrtpProps) {
         if ((lsrtpProps != null) && (rsrtpProps != null)) {
             _sps = new SRTPProtocolImpl(_id++, near, far, type, lsrtpProps, rsrtpProps);
 
@@ -44,6 +45,7 @@ public class RTPAudioSession implements RTPDataSink {
             _sps = new RTPProtocolImpl(_id++, near, far, type);
         }
         _sps.setRTPDataSink(this);
+        _ptype = type;
         makePhonoAudioSrc(a);
 
     }
@@ -52,13 +54,13 @@ public class RTPAudioSession implements RTPDataSink {
         _sps.terminate();
     }
 
-    private void makePhonoAudioSrc(PhonoAudioShim a) {
+    private void makePhonoAudioSrc(AudioFace a) {
         // send side.
         _audio = a;
         try {
-            _audio.addAudioReceiver(_sps);
+            _audio.addAudioReceiver(this);
         } catch (AudioException ex) {
-            com.phono.audio.Log.error(ex.toString());
+            Log.error(ex.toString());
         }
         // receive side
 
@@ -66,89 +68,24 @@ public class RTPAudioSession implements RTPDataSink {
         _audio.startRec();
     }
 
-    public void digit(String value, int duration, boolean audible) {
-        /*
-        Event  encoding (decimal)
-        _________________________
-        0--9                0--9
-         *                     10
-        #                     11
-        A--D              12--15
-        Flash                 16
-         *
 
-        The payload format is shown in Fig. 1.
+  public void digit(String value, int duration, boolean audible) throws SocketException, IOException {
 
-        0                   1                   2                   3
-        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-        |     event     |E|R| volume    |          duration             |
-        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-         */
-        int sp = 0;
-        int end = 0;
-        int db = 3;
-        char c = value.toUpperCase().charAt(0);
-        if (c >= '0' && c <= '9') {
-            sp = (c - '0');
-        } else {
-            if (c == '#') {
-                sp = 11;
-            }
-            if (c == '*') {
-                sp = 10;
-            }
-        }
-        if ((c >= 'A') && (c <= 'D')) {
-            sp = (12 + (c - 'A'));
-        }
-        byte data[] = new byte[4];
-        int fac = (int) (_audio._sampleRate / 1000.0); // assume duration is in ms.
+        int fac = (int) (_audio.getSampleRate() / 1000.0); // assume duration is in ms.
         int dur = fac * duration;
-        /*
-        data[0] = (byte) ((0xff) & (sp | 0x80)); // set End flag
-        data[1] = 0 ; // 0db - LOUD
-        data[3] = (byte) ((0xff) & (dur));
-        data[2] = (byte) ((0xff) & (dur >> 8)) ;
-         *
-         */
-        GSM_Base.copyBits(sp, 8, data, 0);
-        GSM_Base.copyBits(end, 0, data, 8);
-        GSM_Base.copyBits(db, 6, data, 10);
-        GSM_Base.copyBits(dur, 16, data, 16);
-
-
+        Log.debug("RAS sending digit "+value+" dur ="+duration+" "+(audible?"Audible":"InAudible"));
         int stamp = fac * _audio.getOutboundTimestamp();
+        char c = value.toUpperCase().charAt(0);
 
-        _sps.sendDTMFData(data, stamp, true);
-        AudioClip a = null;
         if (audible) {
-            a = _audio.playDigit(c);
+             _audio.playDigit(c);
         }
-        // try to ensure that the time between messages is slightly less than the 
-        // selected 'duration'
-        long count = (duration / 20) - 1;
-        for (int i = 0; i < count; i++) {
-            try {
-                Thread.sleep(10);
-                _sps.sendDTMFData(data, stamp, false);// send an update
-                Thread.sleep(10);
 
-            } catch (InterruptedException ex) {
-                Log.verb(ex.getMessage());
-            }
-        }
-        //stupid ugly mess - fixed stamp on multiple packets
-        //stamp = fac * _audio.getOutboundTimestamp();
-        end = 1;
-        GSM_Base.copyBits(end, 1, data, 8);
-        _sps.sendDTMFData(data, stamp, false);
-        _sps.sendDTMFData(data, stamp, false);
-        _sps.sendDTMFData(data, stamp, false);
+        _sps.sendDigit(value, stamp, dur, duration);
 
-        if (a != null) {
-            a.stop();
+        if (audible) {
+            c = 0;
+             _audio.playDigit(c);
         }
 
 
@@ -164,17 +101,60 @@ public class RTPAudioSession implements RTPDataSink {
         //Log.debug("rcv fake stamp =" + stamp);
         sa.setStampAndBytes(data, 0, data.length, (int) stamp);
         try {
-            /*  let the audio layer decide this.
-             * in a nat situation we want to wait a while.
-             if (!_audio.isAudioUp()) {
-                _audioheld++;
-                if (_audioheld > 3) {
-                    _audio.startPlay();
-                }
-            } */
             _audio.writeStampedAudio(sa);
         } catch (AudioException ex) {
             Log.error(ex.toString());
         }
+    }
+
+
+    public void newAudioDataReady(AudioFace af, int i) {
+
+        if (_first) {
+            _sps.startrecv();
+            _first = false;
+        }
+        try {
+            StampedAudio sa = af.readStampedAudio();
+            if (sa != null) {
+                int fac = CodecList.getFac(af.getCodec());
+                _sps.sendPacket(sa.getData(), sa.getStamp() * fac, _ptype);
+                //Log.debug("send "+ sa.getStamp() * fac);
+            }
+        } catch (Exception ex) {
+            Log.error(ex.toString());
+        }
+        if (_sps.finished()) {
+            af.stopRec();
+            af.stopPlay();
+        }
+
+    }
+
+    public String getSent() {
+        String ret =  "0";
+        if ((_sps != null) && (_sps instanceof RTPProtocolImpl) ){
+            ret = ""+((RTPProtocolImpl)_sps).getIndex();
+        }
+        return ret;
+    }
+
+    public String getRcvd() {
+        String ret =  "0";
+        if ((_sps != null) && (_sps instanceof RTPProtocolImpl) ){
+            ret = ""+((RTPProtocolImpl)_sps).getSeqno();
+        }
+        return ret;
+    }
+
+    public String getLastError() {
+        String ret =  "";
+        if ((_sps != null) && (_sps instanceof RTPProtocolImpl) ){
+            Exception x =  ((RTPProtocolImpl)_sps).getNClearLastX();
+            if (x != null){
+                ret = x.getMessage();
+            }
+        }
+        return ret;
     }
 }

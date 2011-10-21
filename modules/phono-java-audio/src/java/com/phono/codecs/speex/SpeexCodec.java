@@ -17,13 +17,11 @@
 
 package com.phono.codecs.speex;
 
-import com.phono.audio.Log;
 import com.phono.audio.codec.CodecFace;
 import com.phono.audio.codec.DecoderFace;
 import com.phono.audio.codec.EncoderFace;
+import com.phono.srtplight.Log;
 import java.io.StreamCorruptedException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.xiph.speex.SpeexDecoder;
 import org.xiph.speex.SpeexEncoder;
 

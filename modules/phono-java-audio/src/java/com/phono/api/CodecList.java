@@ -17,14 +17,14 @@
 
 package com.phono.api;
 
-import com.phono.audio.Log;
+import com.phono.audio.AudioFace;
 import com.phono.audio.codec.CodecFace;
-import com.phono.rtp.PhonoAudioShim;
+import com.phono.srtplight.Log;
 import java.util.Vector;
 
 public class CodecList {
 
-    private PhonoAudioShim _audio;
+    private AudioFace _audio;
     private Codec[] _codecs;
     final public static int DTMFPAYLOADTTYPE = 101;
     private static long phonoPrefOrder[] = {
@@ -35,7 +35,7 @@ public class CodecList {
         CodecFace.AUDIO_GSM,
         CodecFace.AUDIO_G722};
 
-    public CodecList(PhonoAudioShim a) {
+    public CodecList(AudioFace a) {
         _audio = a;
         populate();
     }
@@ -46,6 +46,10 @@ public class CodecList {
         Vector cv = new Vector();
         for (int i = 0; i < iaxcodecs.length; i++) {
             CodecFace c = _audio.getCodec(iaxcodecs[i]);
+            if (c == null){
+                Log.error("Codec "+iaxcodecs[i]+" missing");
+                continue;
+            }
             Integer pt = ptLookup(iaxcodecs[i]);
             if (pt != null) {
                 Codec tc = null;

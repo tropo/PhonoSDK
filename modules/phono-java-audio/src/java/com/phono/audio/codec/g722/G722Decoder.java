@@ -24,8 +24,8 @@
 
 package com.phono.audio.codec.g722;
 
-import com.phono.audio.Log;
 import com.phono.audio.codec.*;
+import com.phono.srtplight.Log;
 
 public class G722Decoder implements DecoderFace {
 

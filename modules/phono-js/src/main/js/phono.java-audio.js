@@ -19,7 +19,26 @@ function JavaAudio(phono, config, callback) {
     
     // Install the applet
     plugin.$applet = _loadApplet(containerId, this.config.jar, callback, plugin);
-    
+    window.setInterval(function(){
+        var str = "Loading...";
+        var json = plugin.$applet[0].getJSONStatus();
+        if (json){
+           var mess ='ok';
+	       var statusO = eval('(' +json+ ')');
+           if (!statusO.userTrust){
+             str = "Java Applet not trusted by user - cannot continue";
+           } else {
+             eps = statusO.endpoints;
+             if (eps.length >0){
+                str = "<br/>share: "+eps[0].uri ;
+                str +=" sent " +eps[0].sent ;
+                str +=" rcvd " +eps[0].rcvd ;
+                str +=" error " +eps[0].error ;
+             }
+           } 
+        } 
+        // $("#"+containerId).find(".appletStatus").html(str);
+    },25000); 
 };
 
 JavaAudio.exists = function() {
@@ -193,9 +212,9 @@ JavaAudio.prototype.audioIn = function(str) {
 JavaAudio.prototype.audioInDevices = function(){
     var result = new Array();
 
- /*   var applet = this.$applet;
-    var jsonstr = applet.getAudioDeviceList();
-    */
+    //var applet = this.$applet;
+    //var jsonstr = applet.getAudioDeviceList();
+    
     var devs = eval ('(' +this.audioDeviceList+ ')');
     var mixers = devs.mixers;
     result.push("Let my system choose");
@@ -242,14 +261,10 @@ _loadApplet = function(containerId, jar, callback, plugin) {
             plugin.audioDeviceList = devJson;
             t = window.setTimeout( function () {callback(plugin);},10);
             };
-    //window[callbackName] = function() {
-    //                                    window.setTimeout(callback(plugin),10);
-    //                                };
-
     var applet = $("<applet>")
         .attr("id", id)
         .attr("name",id)
-        .attr("code","com.phono.rtp.RTPApplet")
+        .attr("code","com.phono.applet.rtp.RTPApplet")
         .attr("archive",jar + "?rnd=" + new Date().getTime())
         .attr("width","1px")
         .attr("height","1px")
