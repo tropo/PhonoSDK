@@ -3,7 +3,7 @@
   <property environment="env" />
 
   <property name="lib.dir" value="lib"/>
-  <property name="srtplightlib.dir" value="../../../srtplight/target"/>
+  <property name="srtplightlib.dir" value="lib"/>
 
   <path id="classpath">
     <fileset dir="${srtplightlib.dir}" includes="srtplight.jar"/>
