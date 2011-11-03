@@ -245,11 +245,3 @@ function displayDm(jid, msg){
 	$("#dm-body").text(msg);
 }
 
-//Load the phonegap javascript
-if (Phono.util.isIOS()) {
-    $.getScript('phonegap.1.0.0-ios.js');
-}
-
-if (Phono.util.isAndroid()) {
-    $.getScript('phonegap.1.0.0-android.js',function() {PhoneGap.onDOMContentLoaded.fire();});
-}
