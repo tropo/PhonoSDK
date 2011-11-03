@@ -8,6 +8,7 @@ This plugins allows Android applications built using PhoneGap to place High Defi
 DISCLAIMER
   - Libraries included in this release are experimental so use AT YOUR OWN RISK
   - Please do not deploy these applications to the 'App Store' until we announce the final release
+  - This version supports Phonegap 1.1.0
   
 Enough of that, let's get started...
 
@@ -18,6 +19,7 @@ Adding Phono support to an an existing PhoneGap project
    - Copy the contents of libs to your PhoneGap libs directory. This includes:
       armeab/libg722.so
       phonogap.jar
+      srtplight.jar
     
 2. Copy 'jquery.phono.js' to your PhoneGap 'www' directory and include it in your app (e.g. index.html)
 
@@ -29,3 +31,6 @@ You're now ready to use Phono as you would in a standard web application, but us
 to install your Phono instance in place of jquery's $(document).ready() .
 
 If this is your first Phono application, check out our awesome documentation here: http://phono.com/docs
+
+If this is your first phonegap project - please read phonegap/README.md
+We have bundled the necessary phonegap files in the phonegap directory.
