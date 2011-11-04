@@ -48,7 +48,9 @@ Adding Phono support to an an existing PhoneGap project
 
 You're now ready to use Phono as you would in a standard web application. 
 
-If this is your first Phonon application, check out our awesome documentation here: http://phono.com/docs
+If this is your first Phono application, check out our awesome documentation here: http://phono.com/docs
+
+If this is your first Phonegap Project - you'll need to install phonegap (we've bundled a .dmg for your convenience)
 
 
 Deploying Kitchen Sink
