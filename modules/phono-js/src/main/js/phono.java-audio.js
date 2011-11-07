@@ -215,6 +215,7 @@ JavaAudio.prototype.audioInDevices = function(){
     //var applet = this.$applet;
     //var jsonstr = applet.getAudioDeviceList();
     
+    //console.log("seeing this.audioDeviceList as "+this.audioDeviceList);
     var devs = eval ('(' +this.audioDeviceList+ ')');
     var mixers = devs.mixers;
     result.push("Let my system choose");
@@ -258,6 +259,7 @@ _loadApplet = function(containerId, jar, callback, plugin) {
     var callbackName = id+"Callback";
     
     window[callbackName] = function(devJson) {
+            //console.log("Java audio device list json is "+devJson);
             plugin.audioDeviceList = devJson;
             t = window.setTimeout( function () {callback(plugin);},10);
             };

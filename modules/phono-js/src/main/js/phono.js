@@ -28,9 +28,12 @@ var flensed={base_path:"http://s.phono.com/deps/flensed/1.0/"};
    // Initialize Fields
    this.sessionId = null;
    this.connection = new Strophe.Connection(this.config.connectionUrl);
-   
-   xmlSerializer = new XMLSerializer();
-   
+   if(navigator.appName.indexOf('Internet Explorer')>0){
+    xmlSerializer = {};
+    xmlSerializer.serializeToString = function(body) {return body.xml;};
+   } else {
+    xmlSerializer = new XMLSerializer();
+   }
    this.connection.xmlInput = function (body) {
        Phono.log.debug("[WIRE] (i) " + xmlSerializer.serializeToString(body));
    };

@@ -3,6 +3,10 @@
     logger.eventQueue = [];
     logger.initialized = false;
     $(document).ready(function() {
+        if (typeof console === "undefined" || typeof console.log === "undefined") {
+         console = {};
+         console.log = function() {};
+        }
         console.log("Phono Logger Initialized")
         logger.initialized = true;
         logger.flushEventQueue();
