@@ -34,133 +34,96 @@
 
 
 - (void) allocateEndpoint:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
-    NSString *failCallback = nil;
     NSString *uri = nil;
-    NSUInteger argc = [arguments count];
-    NSString *successCallback = [arguments objectAtIndex:0];
-    NSString *cb = nil;
-    if (argc > 1) {
-        failCallback = [arguments objectAtIndex:1];
-    } 
+    NSString *cbId = [arguments objectAtIndex:0];
     uri = [phonoAPI allocateEndpoint];
     if (uri == nil){
         uri = @"problem with phono API";
     } 
-    cb = [[uri substringToIndex:6] isEqualToString:@"rtp://"] ?successCallback:failCallback;
-    if (cb != nil) {
-        NSString *jsCB = [NSString stringWithFormat:@"%@(\"%@\")",cb,uri];
-        [self writeJavascript:jsCB];
-    }
+    BOOL res = [[uri substringToIndex:6] isEqualToString:@"rtp://"];
+
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+    NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
+    [self writeJavascript:jsCB];
 }
 
 - (void) freeEndpoint:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
-    NSString *failCallback = nil;
-    NSUInteger argc = [arguments count];
-    NSString *cb = nil;
-
-    NSString *successCallback = [arguments objectAtIndex:0];
-    if (argc > 1) {
-        failCallback = [arguments objectAtIndex:1];
-    } 
+    NSString *cbId = [arguments objectAtIndex:0];
     NSString *uri = [options objectForKey:@"uri"];
     BOOL res = [phonoAPI freeEndpoint:uri];
     if (res == NO){
         uri = @"Can't find that endpoint";
     } 
-    cb = res ?successCallback:failCallback;
-    if (cb != nil) {
-        NSString *jsCB = [NSString stringWithFormat:@"%@(\"%@\")",cb,uri];
-        [self writeJavascript:jsCB];
-    }
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+    NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
+    [self writeJavascript:jsCB];
+    
 }
 
 - (void) share:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
-    NSString *failCallback = nil;
-    NSUInteger argc = [arguments count];
     
-    NSString *successCallback = [arguments objectAtIndex:0];
-    if (argc > 1) {
-        failCallback = [arguments objectAtIndex:1];
-    } 
+    NSString *cbId = [arguments objectAtIndex:0];
+
     NSString *uri = [options objectForKey:@"uri"];
     NSString *autoplay = [options objectForKey:@"autoplay"];
     NSString *codec = [options objectForKey:@"codec"];
     NSString *luri = [phonoAPI share:uri autoplay:[autoplay isEqualToString:@"YES"] codec:codec];
-
-    NSString *cb = [[luri substringToIndex:6] isEqualToString:@"rtp://"] ?successCallback:failCallback;
-    if (cb != nil) {
-        NSString *jsCB = [NSString stringWithFormat:@"%@(\"%@\")",cb,luri];
-        [self writeJavascript:jsCB];
-    }
-}
-- (void) play:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
-    NSString *failCallback = nil;
-    NSUInteger argc = [arguments count];
     
-    NSString *successCallback = [arguments objectAtIndex:0];
-    if (argc > 1) {
-        failCallback = [arguments objectAtIndex:1];
-    } 
+    BOOL res = [[luri substringToIndex:6] isEqualToString:@"rtp://"];
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:luri];
+    NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
+    [self writeJavascript:jsCB];
+}
+
+- (void) play:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
+
+    
+    NSLog(@"in phono play ->");
+    NSString *cbId = [arguments objectAtIndex:0];
+
     NSString *uri = [options objectForKey:@"uri"];
     NSString *autoplay = [options objectForKey:@"autoplay"];
     NSString *luri = [phonoAPI play:uri autoplay:[autoplay isEqualToString:@"YES"]];
     
-    NSString *cb = [[luri substringToIndex:6] isEqualToString:@"file://"] ?successCallback:failCallback;
-    if (cb != nil) {
-        NSString *jsCB = [NSString stringWithFormat:@"%@(\"%@\")",cb,luri];
-        [self writeJavascript:jsCB];
-    }
+    BOOL res  = [[luri substringToIndex:6] isEqualToString:@"file://"];
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:luri];
+    NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
+    [self writeJavascript:jsCB];
+    
 }
 - (void) start:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
-    NSString *failCallback = nil;
-    NSUInteger argc = [arguments count];
-    NSString *cb = nil;
+
     
-    NSString *successCallback = [arguments objectAtIndex:0];
-    if (argc > 1) {
-        failCallback = [arguments objectAtIndex:1];
-    } 
+    NSString *cbId = [arguments objectAtIndex:0];
     NSString *uri = [options objectForKey:@"uri"];
     BOOL res = [phonoAPI start:uri];
     if (res == NO){
         uri = @"Can't start that endpoint";
     } 
-    cb = res ?successCallback:failCallback;
-    if (cb != nil) {
-        NSString *jsCB = [NSString stringWithFormat:@"%@(\"%@\")",cb,uri];
-        [self writeJavascript:jsCB];
-    }
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+    NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
+    [self writeJavascript:jsCB];    
 }
-- (void) stop:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
-    NSString *failCallback = nil;
-    NSUInteger argc = [arguments count];
-    NSString *cb = nil;
-    
-    NSString *successCallback = [arguments objectAtIndex:0];
-    if (argc > 1) {
-        failCallback = [arguments objectAtIndex:1];
-    } 
+
+- (void) stop:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{    
+    NSString *cbId = [arguments objectAtIndex:0];
+ 
     NSString *uri = [options objectForKey:@"uri"];
     BOOL res = [phonoAPI stop:uri];
     if (res == NO){
         uri = @"Can't stop that endpoint";
     } 
-    cb = res ?successCallback:failCallback;
-    if (cb != nil) {
-        NSString *jsCB = [NSString stringWithFormat:@"%@(\"%@\")",cb,uri];
-        [self writeJavascript:jsCB];
-    }
+
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+    NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
+    [self writeJavascript:jsCB];
 }
 
 - (void) gain:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
-    NSString *failCallback = nil;
-    NSUInteger argc = [arguments count];
-    NSString *cb = nil;
+
     
-    NSString *successCallback = [arguments objectAtIndex:0];
-    if (argc > 1) {
-        failCallback = [arguments objectAtIndex:1];
-    } 
+    NSString *cbId = [arguments objectAtIndex:0];
+
     NSString *uri = [options objectForKey:@"uri"];
     NSString *value = [options objectForKey:@"value"];
     
@@ -168,21 +131,15 @@
     if (res == NO){
         uri = @"Can't set gain on that endpoint";
     } 
-    cb = res ?successCallback:failCallback;
-    if (cb != nil) {
-        NSString *jsCB = [NSString stringWithFormat:@"%@(\"%@\")",cb,uri];
-        [self writeJavascript:jsCB];
-    }
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+    NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
+    [self writeJavascript:jsCB];
 }
+
 - (void) mute:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
-    NSString *failCallback = nil;
-    NSUInteger argc = [arguments count];
-    NSString *cb = nil;
-    
-    NSString *successCallback = [arguments objectAtIndex:0];
-    if (argc > 1) {
-        failCallback = [arguments objectAtIndex:1];
-    } 
+
+    NSString *cbId = [arguments objectAtIndex:0];
+
     NSString *uri = [options objectForKey:@"uri"];
     NSString *value = [options objectForKey:@"value"];
 
@@ -190,42 +147,30 @@
     if (res == NO){
         uri = @"Can't (un)mute that endpoint";
     } 
-    cb = res ?successCallback:failCallback;
-    if (cb != nil) {
-        NSString *jsCB = [NSString stringWithFormat:@"%@(\"%@\")",cb,uri];
-        [self writeJavascript:jsCB];
-    }
+
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+    NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
+    [self writeJavascript:jsCB];
+    
 }
 
 
 - (void) energy:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
-    NSString *failCallback = nil;
-    NSUInteger argc = [arguments count];
-    NSString *cb = nil;
-    
-    NSString *successCallback = [arguments objectAtIndex:0];
-    if (argc > 1) {
-        failCallback = [arguments objectAtIndex:1];
-    } 
+
+    NSString *cbId = [arguments objectAtIndex:0];
+
     NSString *uri = [options objectForKey:@"uri"];
     
     NSString *res = [phonoAPI energy:uri ]; 
-    cb = (res != nil) ?successCallback:failCallback;
-    if (cb != nil) {
-        NSString *jsCB = [NSString stringWithFormat:@"%@(\"%@\")",cb,res];
-        [self writeJavascript:jsCB];
-    }
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:res];
+    NSString *jsCB = ((res!=nil) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
+    [self writeJavascript:jsCB];
 }
 
 - (void) digit:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
-    NSString *failCallback = nil;
-    NSUInteger argc = [arguments count];
-    NSString *cb = nil;
     
-    NSString *successCallback = [arguments objectAtIndex:0];
-    if (argc > 1) {
-        failCallback = [arguments objectAtIndex:1];
-    } 
+    NSString *cbId = [arguments objectAtIndex:0];
+
     NSString *uri = [options objectForKey:@"uri"];
     NSString *digit = [options objectForKey:@"digit"];
     int duration = [[options objectForKey:@"duration"] intValue];
@@ -235,11 +180,11 @@
     if (res == NO){
         uri = @"Can't send digits that endpoint";
     } 
-    cb = res ?successCallback:failCallback;
-    if (cb != nil) {
-        NSString *jsCB = [NSString stringWithFormat:@"%@(\"%@\")",cb,uri];
-        [self writeJavascript:jsCB];
-    }
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+
+    NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
+    [self writeJavascript:jsCB];
+    
 }
 - (void) codecs:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
     NSString *failCallback = nil;
@@ -250,7 +195,12 @@
         failCallback = [arguments objectAtIndex:1];
     } 
     NSString * myCodecs = [phonoAPI codecs];
-    NSString *jsCB = [NSString stringWithFormat:@"%@(\'%@\')",successCallback,myCodecs];
+    
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:myCodecs];
+    
+
+    NSString * jsCB = [pluginResult toSuccessCallbackString:successCallback];
     [self writeJavascript:jsCB];
+
 }
 @end

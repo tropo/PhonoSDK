@@ -44,6 +44,8 @@ Adding Phono support to an an existing PhoneGap project
        </dict>
     </plist>
 
+5. add "app.phono.com" to the whitelist of ExternalHosts in PhoneGap.plist
+
 5. Copy 'jquery.phono.js' to your PhoneGap 'www' directory and incude it in your app (e.g. index.html)
 
 You're now ready to use Phono as you would in a standard web application. 
