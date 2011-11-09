@@ -126,7 +126,7 @@ PhonegapIOSAudio.prototype.share = function(url, autoPlay, codec) {
                   [{
                       'uri':url,
                       'autoplay': autoPlay == true ? "YES":"NO",
-                      'codec':codec.id,
+                      'codec':codec.id
                   }]);
 
     var luri = Phono.util.localUri(url);
