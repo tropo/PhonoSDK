@@ -28,12 +28,12 @@ public class CodecList {
     private Codec[] _codecs;
     final public static int DTMFPAYLOADTTYPE = 101;
     private static long phonoPrefOrder[] = {
-        /*CodecFace.AUDIO_SPEEX16,
-        CodecFace.AUDIO_SPEEX,*/
+        CodecFace.AUDIO_SPEEX16,
         CodecFace.AUDIO_ULAW,
         CodecFace.AUDIO_ALAW,
         CodecFace.AUDIO_GSM,
-        CodecFace.AUDIO_G722};
+        CodecFace.AUDIO_G722,
+        CodecFace.AUDIO_SPEEX};
 
     public CodecList(AudioFace a) {
         _audio = a;

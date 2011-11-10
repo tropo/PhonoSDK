@@ -69,7 +69,7 @@ public class RTPApplet extends Applet {
         PhonoAudioShim.getMixersJSON(bret);
         bret.append("}\n");
         _deviceList = bret.toString();
-	Log.debug("audio list is :"+_deviceList);
+	//Log.debug("audio list is :"+_deviceList);
         _audio = new PhonoAudioShim();
         _codecList = new CodecList(_audio);
 
@@ -291,7 +291,7 @@ public class RTPApplet extends Applet {
         }
         ret.append("]\n");
         ret.append("}\n");
-        Log.debug("Status is "+ret.toString());
+        //Log.debug("Status is "+ret.toString());
         return ret.toString();
     }
 
