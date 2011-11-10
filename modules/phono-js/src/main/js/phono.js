@@ -129,7 +129,7 @@ var flensed={base_path:"http://s.phono.com/deps/flensed/1.0/"};
 
    // ======================================================================
 
-   //Include=flXHR.js
+   //@Include=flXHR.js
    //@Include=strophe.js   
    //@Include=strophe.cors.js
    //@Include=phono.events.js

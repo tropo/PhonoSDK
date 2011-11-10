@@ -5,7 +5,10 @@
     $(document).ready(function() {
         if (typeof console === "undefined" || typeof console.log === "undefined") {
          console = {};
-         console.log = function() {};
+         console.log = function(mess) {
+         // last ditch loging uncomment this 
+	//		alert(mess)
+		};
         }
         console.log("Phono Logger Initialized")
         logger.initialized = true;
