@@ -71,15 +71,21 @@ public class Endpoint {
         target.append('"').append(val).append('"').append(",\n");
     }
 
+    void buildLastJSONLine(String name, String val, StringBuffer target) {
+        target.append('"').append(name).append('"').append(": ");
+        target.append('"').append(val).append('"').append("\n");
+    }
+
     public void getJSONStatus(StringBuffer target) {
         target.append("{\n");
         buildJSONLine("uri", getLocalURI(), target);
-        buildJSONLine("type", this.getClass().getSimpleName(),target);
         if (_share != null){
+            buildJSONLine("type", this.getClass().getSimpleName(),target);
             buildJSONLine("sent", _share.getSent(),target);
             buildJSONLine("rcvd", _share.getRcvd(),target);
-            buildJSONLine("error", _share.getLastError(),target);
-
+            buildLastJSONLine("error", _share.getLastError(),target);
+        }else {
+            buildLastJSONLine("type", this.getClass().getSimpleName(),target);
         }
         target.append("}");
 

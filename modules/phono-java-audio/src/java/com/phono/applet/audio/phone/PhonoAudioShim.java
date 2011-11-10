@@ -318,7 +318,7 @@ public class PhonoAudioShim extends EsupPhonoAudio {
 
       if(i>0){sb.append(",");}
       sb.append("{\n");
-      sb.append("class : ").append('"').append(mi.getClass().getName()).append('"').append("\n,");
+      sb.append("audioclass : ").append('"').append(mi.getClass().getName()).append('"').append("\n,");
       sb.append("name : ").append('"').append(mi.getName().trim()).append('"').append("\n,");
       sb.append("vendor : ").append('"').append(mi.getVendor()).append('"').append("\n,");
       Mixer m = AudioSystem.getMixer(mi);
@@ -383,7 +383,7 @@ public class PhonoAudioShim extends EsupPhonoAudio {
                 sb.append("minBuf : ").append("" + dataLineInfo.getMinBufferSize()).append("\n,");
                 sb.append("maxBuf : ").append("" + dataLineInfo.getMaxBufferSize()).append("\n,");
 
-                //getMixerLineFormatsJSON(sb, supportedFormats);
+                getMixerLineFormatsJSON(sb, supportedFormats);
                 sb.append("}\n");
 
             }
