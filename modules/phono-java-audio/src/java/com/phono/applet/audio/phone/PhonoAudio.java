@@ -255,6 +255,8 @@ public class PhonoAudio implements AudioFace {
             _codec = getDefaultCodec();
             Log.warn("Using default codec:" + _codec.getName());
         }
+        _decode = _codec.getDecoder();
+        _encode = _codec.getEncoder();
         _sampleRate = _codec.getSampleRate();
         String text = "PhonoAudio.init(): codec=" + this.getCodecString(codec) + " (" + codec + ")";
 
@@ -470,7 +472,6 @@ public class PhonoAudio implements AudioFace {
             _macbuffp = new short[ (int) (44100.0/1000.0 * _codec.getFrameInterval())];
             }*/
             DataLine.Info info = new DataLine.Info(SourceDataLine.class, pfmt, AudioSystem.NOT_SPECIFIED);
-            _decode = _codec.getDecoder();
             _encodedbuffPlay = _codecFrameSize > 0 ? new byte[_codecFrameSize] : null;
 
             int playBuffsz = _bytesPerFrame * _deep;
@@ -687,7 +688,6 @@ public class PhonoAudio implements AudioFace {
                 info = new DataLine.Info(TargetDataLine.class, recfmt);
             }
 
-            _encode = _codec.getEncoder();
             // _encodedbuffRec = new byte[_codecFrameSize];
             _framebuffR = new byte[_bytesPerFrame];
 

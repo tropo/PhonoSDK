@@ -197,8 +197,8 @@ public class RTPApplet extends Applet {
                 Log.error("srtp Props invalid format" + ex.toString());
             }
         }
-        Log.verb("in share() codec = " + codec.name);
-        Log.verb("in share() uri = " + uri);
+        Log.debug("in share() codec = " + codec.name + " rate ="+codec.rate +" pt = "+codec.pt);
+        Log.debug("in share() uri = " + uri);
         try {
             PhonoAudioShim af = getAudio(codec);
             s = new Share(uri, af, codec.pt, spl, spr);
