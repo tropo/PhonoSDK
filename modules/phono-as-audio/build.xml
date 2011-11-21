@@ -17,6 +17,7 @@
     <!-- Compile -->
     <mxmlc file="${basedir}/src/PhonoMedia.mxml" output="${basedir}/target/phono.audio.swf"> 
         <source-path path-element="${basedir}/src" /> 
+        <static-link-runtime-shared-libraries/>
     </mxmlc> 
     
     <!-- Binary -->
