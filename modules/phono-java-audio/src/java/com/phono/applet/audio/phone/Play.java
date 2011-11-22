@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 package com.phono.applet.audio.phone;
 
 import com.phono.rtp.Endpoint;
@@ -29,7 +28,7 @@ import javazoom.jl.player.AudioDevice;
 import javazoom.jl.player.FactoryRegistry;
 import javazoom.jl.player.Player;
 
-public class Play  {
+public class Play {
     /*
     uri, {we trust the mime type if it is http ? thp} start(),
     stop(), volume(value) -> value
@@ -47,12 +46,13 @@ public class Play  {
         _gain = (float) 0.5;
 
 
-            Runnable arun = new Runnable() {
-              public void run() {
-                  playRun();
-              }  
-            };
-            _playThread = new Thread(arun);
+        Runnable arun = new Runnable() {
+
+            public void run() {
+                playRun();
+            }
+        };
+        _playThread = new Thread(arun);
 
 
     }
@@ -90,18 +90,18 @@ public class Play  {
         return vad;
     }
 
-   public int volume(int value) {
-        _gain = (float) (value/100.0);
+    public int volume(int value) {
+        _gain = (float) (value / 100.0);
         return value; // for now
     }
 
     public int volume() {
-        return (int)_gain*100;
+        return (int) _gain * 100;
     }
 
     private void scale(short[] samples, int offs, int len) {
-        for (int i=offs;i < offs+len; i++){
-            samples[i] = (short)(samples[i]*_gain);
+        for (int i = offs; i < offs + len; i++) {
+            samples[i] = (short) (samples[i] * _gain);
         }
     }
 
@@ -109,19 +109,19 @@ public class Play  {
         try {
             InputStream in;
             AudioDevice dev = null;
-            while (_playThread != null){
-                if (_play != null){
+            while (_playThread != null) {
+                if (_play != null) {
                     _play.close();
                     _play = null;
                 }
-                if (dev != null){
+                if (dev != null) {
                     dev.close();
                     dev = null;
                 }
                 // this looks wasteful - but I'm assuming _every_ other layer is 
                 // caching or buffering this - so there is really no point in doing
                 // it again.
-                Log.verb("playing "+uri);
+                Log.verb("playing " + uri);
                 in = new URL(uri).openStream();
                 dev = makeAudioDevice();
 
@@ -134,25 +134,35 @@ public class Play  {
     }
 
     public void start() {
-        _playThread.start();
+        try {
+            _playThread.start();
+        } catch (Throwable t) {
+            Log.error("play.start() error" + t.getMessage());
+        }
 
     }
 
     public void stop() {
-        _play.close();
-        _playThread = null;
+        try {
+            _play.close();
+            _playThread = null;
+        } catch (Throwable t) {
+            Log.error("play.stop() error" + t.getMessage());
+        }
     }
 
-
-    
-    public static void main(String [] argv){
+    public static void main(String[] argv) {
         // test harness.
         Log.setLevel(Log.ALL);
         Play testPlay = new Play("http://s.phono.com/ringtones/Diggztone_Marimba.mp3");
         testPlay.start();
-        for (int s =0; s< 60 ; s++){
-            try {Thread.sleep(1000);} catch (InterruptedException ex) {;}
-            System.out.print("Playing "+s+"\r");
+        for (int s = 0; s < 60; s++) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                ;
+            }
+            System.out.print("Playing " + s + "\r");
         }
         System.out.println("\nDone.");
         testPlay.stop();
