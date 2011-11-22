@@ -46,6 +46,7 @@ $(document).ready(function() {
                 console.log("["+newPhonoID+"] Phono disconnected");  
             },		   
             onError: function(event) {
+                newPhonoDiv.find(".sessionId").text(event.reason);
                 console.log(event.reason);  
             },		   
 	    audio: {

@@ -1,14 +1,14 @@
 //@Include=FABridge.js
 
 // FIXME: Needed by flXHR
-var flensed={base_path:"http://s.phono.com/deps/flensed/1.0/"};
+var flensed={base_path:"//s.phono.com/deps/flensed/1.0/"};
 
 ;function Phono(config) {
 
    // Define defualt config and merge from constructor
    this.config = Phono.util.extend({
       gateway: "gw.phono.com",
-      connectionUrl: "http://app.phono.com/http-bind"
+      connectionUrl: "//app.phono.com/http-bind"
    }, config);
 
    // Bind 'on' handlers

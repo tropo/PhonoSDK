@@ -1,44 +1,68 @@
 function JavaAudio(phono, config, callback) {
+
+    if (JavaAudio.exists()){
+      // Define defualt config and merge from constructor
+      this.config = Phono.util.extend({
+          jar: "//s.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.jar"
+      }  , config);
     
-    // Define defualt config and merge from constructor
-    this.config = Phono.util.extend({
-        jar: "http://s.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.jar"
-    }, config);
+      // Bind Event Listeners
+      Phono.events.bind(this, config);
     
-    // Bind Event Listeners
-    Phono.events.bind(this, config);
+      var containerId = this.config.containerId;
     
-    var containerId = this.config.containerId;
+      // Create applet continer is user did not specify one
+      if(!containerId) {
+          this.config.containerId = containerId = _createContainer();
+      }
     
-    // Create applet continer is user did not specify one
-    if(!containerId) {
-        this.config.containerId = containerId = _createContainer();
-    }
+      var plugin = this;
     
-    var plugin = this;
-    
-    // Install the applet
-    plugin.$applet = _loadApplet(containerId, this.config.jar, callback, plugin);
-    window.setInterval(function(){
+      // Install the applet
+      plugin.$applet = _loadApplet(containerId, this.config.jar, callback, plugin);
+      window.setInterval(function(){
         var str = "Loading...";
-        var json = plugin.$applet[0].getJSONStatus();
-        if (json){
-           var mess ='ok';
-	       var statusO = eval('(' +json+ ')');
+        try { 
+         var json = plugin.$applet[0].getJSONStatus();
+         if (json){
+	   var statusO = eval('(' +json+ ')');
            if (!statusO.userTrust){
-             str = "Java Applet not trusted by user - cannot continue";
+             Phono.events.trigger(phono, "error", {
+                reason: "Java Applet not trusted by user - cannot continue"
+             });
            } else {
              eps = statusO.endpoints;
              if (eps.length >0){
-                str = "<br/>share: "+eps[0].uri ;
+                if ((eps[0].sent > 50) && (eps[0].rcvd == 0)){
+                  Phono.events.trigger(phono, "error", {
+                    reason: "Java Applet detected firewall."
+                  });
+                }
+                str = "share: "+eps[0].uri ;
                 str +=" sent " +eps[0].sent ;
                 str +=" rcvd " +eps[0].rcvd ;
                 str +=" error " +eps[0].error ;
+                Phono.log.debug("[JAVA RTP] "+str);
              }
            } 
-        } 
-        // $("#"+containerId).find(".appletStatus").html(str);
-    },25000); 
+         } else {
+          Phono.events.trigger(phono, "error", {
+            reason: "Java applet did not load."
+          });
+          Phono.log.debug("[JAVA Load errror] no status returned.");
+         }
+        } catch (e) {
+          Phono.events.trigger(phono, "error", {
+            reason: "Can not communicate with Java Applet - perhaps it did not load."
+          });
+          Phono.log.debug("[JAVA Load error] "+e);
+        }
+      },25000); 
+    } else {
+         Phono.events.trigger(phono, "error", {
+            reason: "Java not available in this browser."
+         });
+    }
 };
 
 JavaAudio.exists = function() {
@@ -267,7 +291,7 @@ _loadApplet = function(containerId, jar, callback, plugin) {
         .attr("id", id)
         .attr("name",id)
         .attr("code","com.phono.applet.rtp.RTPApplet")
-        .attr("archive",jar + "?rnd=" + new Date().getTime())
+        .attr("archive",jar)
         .attr("width","1px")
         .attr("height","1px")
         .attr("mayscript","true")

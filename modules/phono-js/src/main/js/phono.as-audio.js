@@ -2,7 +2,7 @@ function FlashAudio(phono, config, callback) {
     
     // Define defualt config and merge from constructor
     this.config = Phono.util.extend({
-        swf: "http://s.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf"
+        swf: "//s.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf"
     }, config);
     
     // Bind Event Listeners
