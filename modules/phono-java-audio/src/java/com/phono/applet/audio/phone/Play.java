@@ -21,13 +21,15 @@ import com.phono.rtp.Endpoint;
 import com.phono.srtplight.Log;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javazoom.jl.decoder.Decoder;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.AudioDevice;
 import javazoom.jl.player.FactoryRegistry;
 import javazoom.jl.player.Player;
 
-public class Play  implements Runnable {
+public class Play  {
     /*
     uri, {we trust the mime type if it is http ? thp} start(),
     stop(), volume(value) -> value
@@ -40,21 +42,19 @@ public class Play  implements Runnable {
     private float _gain;
 
     public Play(String suburi) {
-        InputStream in;
-        AudioDevice dev;
+
         uri = suburi;
         _gain = (float) 0.5;
 
-        try {
-            dev = makeAudioDevice();
-            //dev = FactoryRegistry.systemRegistry().createAudioDevice();
-            in = new URL(uri).openStream();
-            _play = new Player(in, dev);
-            _playThread = new Thread(this);
 
-        } catch (Exception ex) {
-            Log.error(ex.toString());
-        }
+            Runnable arun = new Runnable() {
+              public void run() {
+                  playRun();
+              }  
+            };
+            _playThread = new Thread(arun);
+
+
     }
 
     AudioDevice makeAudioDevice() throws JavaLayerException {
@@ -105,10 +105,30 @@ public class Play  implements Runnable {
         }
     }
 
-    public void run() {
+    public void playRun() {
         try {
-            _play.play();
-        } catch (JavaLayerException ex) {
+            InputStream in;
+            AudioDevice dev = null;
+            while (_playThread != null){
+                if (_play != null){
+                    _play.close();
+                    _play = null;
+                }
+                if (dev != null){
+                    dev.close();
+                    dev = null;
+                }
+                // this looks wasteful - but I'm assuming _every_ other layer is 
+                // caching or buffering this - so there is really no point in doing
+                // it again.
+                Log.verb("playing "+uri);
+                in = new URL(uri).openStream();
+                dev = makeAudioDevice();
+
+                _play = new Player(in, dev);
+                _play.play();
+            }
+        } catch (Exception ex) {
             Log.error(ex.toString());
         }
     }
@@ -120,7 +140,21 @@ public class Play  implements Runnable {
 
     public void stop() {
         _play.close();
+        _playThread = null;
     }
 
 
+    
+    public static void main(String [] argv){
+        // test harness.
+        Log.setLevel(Log.ALL);
+        Play testPlay = new Play("http://s.phono.com/ringtones/Diggztone_Marimba.mp3");
+        testPlay.start();
+        for (int s =0; s< 60 ; s++){
+            try {Thread.sleep(1000);} catch (InterruptedException ex) {;}
+            System.out.print("Playing "+s+"\r");
+        }
+        System.out.println("\nDone.");
+        testPlay.stop();
+    }
 }
