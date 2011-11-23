@@ -60,7 +60,7 @@ var flensed={base_path:"//s.phono.com/deps/flensed/1.0/"};
 
    
    // Global
-   Phono.version = "0.2";
+   Phono.version = "0.3";
    
    Phono.log = new PhonoLogger();
    
