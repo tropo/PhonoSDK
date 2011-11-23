@@ -67,7 +67,10 @@ package com.phono
 				player = new RtmpPlayer(queue, nc, streamName, url);
 			} else if (protocolName.toLowerCase() == "http") {
 				player = new HttpPlayer(url);
-			}
+			} else if (protocolName.toLowerCase() == "https") {
+                                player = new HttpPlayer(url);
+                        } 
+
 			if (autoStart) player.start();
 			return player;
 		}
