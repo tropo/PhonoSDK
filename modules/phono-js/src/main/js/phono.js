@@ -8,7 +8,7 @@ var flensed={base_path:"//s.phono.com/deps/flensed/1.0/"};
    // Define defualt config and merge from constructor
    this.config = Phono.util.extend({
       gateway: "gw.phono.com",
-      connectionUrl: "//app.phono.com/http-bind"
+      connectionUrl: window.location.protocol+"//app.phono.com/http-bind"
    }, config);
 
    // Bind 'on' handlers
