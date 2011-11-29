@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="600" height="300"
+			   close="handleCloseWindow();"
+			   title="Phono Test AIR Softphone">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.voxeo.phono.Call;
+			import com.voxeo.phono.Phone;
+			import com.voxeo.phono.events.CallEvent;
+			import com.voxeo.phono.events.PhoneEvent;
+			import com.voxeo.phono.impl.xmpp.jingle.JinglePhone;
+			
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.HTTPService;
+			
+			public var jPhone:JinglePhone;
+			public var call:Call;
+
+			
+			private function handleCloseWindow(): void {
+				disconnect();
+				PopUpManager.removePopUp(this);	
+			}
+			
+			public function handleIncomingCallEvent(callEvent:CallEvent): void {
+				call = callEvent.call;
+				incomingGroup.visible=true;
+				liveCallGroup.visible=false;
+				qualityGroup.visible=false;
+				controlCallBtn(false);
+				
+				changeStatus("Ringing...");
+			}
+			
+			private function changeStatus(status:String): void {
+				statusBar.text=status;
+			}
+			
+			private function disconnect(): void {
+				jPhone.disconnect();
+			}
+			
+			private function handleLogout(mouseEvent:MouseEvent): void {
+				disconnect();
+			}
+			
+			private function handleAnsweredIncomingCallEvent(mouseEvent:MouseEvent): void {
+				if (call == null) {
+					incomingGroup.visible=false;
+					liveCallGroup.visible=false;
+					qualityGroup.visible=false;
+					return;
+				}
+				call.answer();
+				incomingGroup.visible=false;
+				liveCallGroup.visible=true;
+				qualityGroup.visible=false;
+				controlCallBtn(false);
+				
+				changeStatus("Audio...");
+			}
+			
+			private function controlCallBtn(stage:Boolean): void {
+				callBtn.enabled=stage;
+			}
+			
+			private function handleAnsweredEvent(callEvent:CallEvent): void {
+				if (call == null) {
+					return;
+				}
+				liveCallGroup.visible=true;
+				incomingGroup.visible=false;
+				qualityGroup.visible=false;
+				controlCallBtn(false);
+				
+				changeStatus("Audio...");
+			}
+			
+			private function handleHangUpEvent(callEvent:CallEvent): void {
+				call = null;
+				incomingGroup.visible=false;
+				liveCallGroup.visible=false;
+				qualityGroup.visible=true;
+				controlCallBtn(true);
+				changeStatus("Call Ended...");
+			}
+			
+			private function handleRingingEvent(callEvent:CallEvent): void {
+				changeStatus("Ringing...");
+			}
+			
+			private function handleCreatedEvent(callEvent:CallEvent): void {
+				changeStatus("Searching destination...");
+			}
+			
+			private function handleErrorEvent(callEvent:CallEvent): void {
+				changeStatus("Temporarily Unavailable");
+			}
+			
+			private function createCall(mouseEvent:MouseEvent): void {
+				if (jPhone != null) {
+					var sessionId:String = jPhone.sessionId;
+					if (sessionId != null) {
+						call = jPhone.createCall();
+						call.to = sipUriTxtInput.text;
+						call.start();
+						
+						changeStatus("Connecting...");
+						call.addEventListener(CallEvent.ANSWERED, handleAnsweredEvent);
+						call.addEventListener(CallEvent.RINGING, handleRingingEvent);
+						call.addEventListener(CallEvent.HANGUP, handleHangUpEvent);
+						call.addEventListener(CallEvent.ERROR, handleErrorEvent);
+					}		
+				}
+			}
+			
+			private function handleHangup(mouseEvent:MouseEvent): void {
+//				var label:String=mouseEvent.currentTarget.label;
+				if (call != null) {
+					call.hangup();
+					call = null;
+					incomingGroup.visible=false;
+					liveCallGroup.visible=false;
+					if (mouseEvent.currentTarget == declineBtn) {
+						qualityGroup.visible=false;
+					}
+					else {
+						qualityGroup.visible=true;
+					}
+				}
+				controlCallBtn(true);
+				changeStatus("Ready to call... Session ID: " + jPhone.sessionId);
+			}
+			
+//			private function handleDecline(mouseEvent:MouseEvent): void {
+//				if (call != null) {
+//					call.hangup();
+//					call = null;
+//					incomingGroup.visible=false;
+//					liveCallGroup.visible=false;
+//					qualityGroup.visible=true;
+//				}
+//			}
+			
+//			private function httpResult1(event:ResultEvent): void {
+//				
+//			}
+			
+			private function commitQualityData(mouseEvent:MouseEvent): void {
+				trace(qualitySlider.value);
+				incomingGroup.visible=false;
+				liveCallGroup.visible=false;
+				qualityGroup.visible=false;
+				
+				var service:HTTPService=new HTTPService();
+				service.url = "http://172.21.0.91:8080/CollectPhonoQualityData/CollectQualityData";
+				service.method = "POST";
+//				service.addEventListener(ResultEvent.RESULT, httpResult1);
+				var params:URLVariables=new URLVariables();
+				params.data=qualitySlider.value.toString(10);
+				service.send(params);
+				
+				changeStatus("Ready to call... Session ID: " + jPhone.sessionId);
+			}
+		]]>
+	</fx:Script>
+	
+	<!--s:layout>
+		
+	</s:layout-->
+	
+	<s:Button id="logoutBtn" x="482" y="10" label="Log Out">
+		<s:creationComplete>
+			logoutBtn.addEventListener(MouseEvent.CLICK, handleLogout);
+		</s:creationComplete>
+	</s:Button>
+	<s:Label top="30" left="10" width="47" height="15" text="SIP URI:" textAlign="center"/>
+	<s:HGroup left="23" top="50" width="308">
+
+		<s:TextInput id="sipUriTxtInput" width="200" x="2" y="2" text="sip:3366@login.zipdx.com"></s:TextInput>
+		<s:Button id="callBtn" label="Call">
+			<s:creationComplete>
+				callBtn.addEventListener(MouseEvent.CLICK, createCall);
+			</s:creationComplete>
+		</s:Button>
+	</s:HGroup>
+	
+
+	<s:HGroup id="incomingGroup" visible="false" left="60" top="90" width="342">
+		<s:BorderContainer id="callStatusContainer" width="343" height="138" borderWeight="3"
+						   cornerRadius="26" dropShadowVisible="true" backgroundColor="0x99ff">	
+			<s:Button id="answerBtn" x="61" y="35" width="80" height="61" label="Answer"
+					  accentColor="0x006600">
+				<s:creationComplete>
+					answerBtn.addEventListener(MouseEvent.CLICK, handleAnsweredIncomingCallEvent);
+				</s:creationComplete>
+			</s:Button>
+			<s:Button id="declineBtn" x="189" y="35" width="77" height="61" label="Decline" accentColor="0xFFFFAA">
+				<s:creationComplete>
+					declineBtn.addEventListener(MouseEvent.CLICK, handleHangup);
+				</s:creationComplete>
+			</s:Button>
+			<s:Label x="15" y="10" text="Incoming Call:"/>
+		</s:BorderContainer>
+	</s:HGroup>
+	
+	<s:HGroup id="liveCallGroup" visible="false" left="60" top="90" width="342">
+		<s:BorderContainer id="liveCallStatusContainer" width="343" height="138" borderWeight="3"
+						   cornerRadius="26" dropShadowVisible="true" backgroundColor="0x99ff">	
+			<s:Button id="hangUpBtn" x="134" y="37" width="80" height="61" label="Hang up"
+					  accentColor="0x66ff99">
+				<s:creationComplete>
+					hangUpBtn.addEventListener(MouseEvent.CLICK, handleHangup);
+				</s:creationComplete>
+			</s:Button>
+			<s:Label x="15" y="10" text="Live Call:"/>
+		</s:BorderContainer>
+	</s:HGroup>
+	
+	<s:HGroup id="qualityGroup" visible="false" left="60" top="90" width="342">
+		<s:BorderContainer id="qualityContainer" width="343" height="138" borderWeight="3"
+						   cornerRadius="26" dropShadowVisible="true" backgroundColor="0x99ff">	
+			<s:Label x="15" y="10" text="How was the quality?"/>
+			<mx:HSlider id="qualitySlider" x="32" y="49" allowTrackClick="true"
+						dataTipPlacement="top" labels="['Bad','Good']" liveDragging="true"
+						maximum="100" minimum="10" snapInterval="1" tickInterval="10" value="50">
+				
+			</mx:HSlider>
+			<s:Button id="sendBtn" x="227" y="56" height="34" label="Send">
+				<s:creationComplete>
+					sendBtn.addEventListener(MouseEvent.CLICK, commitQualityData);
+				</s:creationComplete>
+			</s:Button>
+		</s:BorderContainer>
+	</s:HGroup>
+	<s:TextArea id="statusBar" x="0" y="243" width="598" height="24" text="Ready to call..." editable="false">
+		
+	</s:TextArea>
+</s:TitleWindow>

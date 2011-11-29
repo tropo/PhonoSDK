@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Simple custom MXML TitleWindow component.
+     The TitleWindowApp application displays this component. 
+     You cannot run it independently. -->
+     
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="297" height="167" close="PopUpManager.removePopUp(this);"
+			   title="Phono Test AIR Softphone">
+
+	<fx:Script>
+		<![CDATA[
+			import com.voxeo.phono.Call;
+			import com.voxeo.phono.Factory;
+			import com.voxeo.phono.Phone;
+			import com.voxeo.phono.events.CallEvent;
+			import com.voxeo.phono.events.MessageEvent;
+			import com.voxeo.phono.events.PhoneEvent;
+			import com.voxeo.phono.impl.xmpp.jingle.JingleCall;
+			import com.voxeo.phono.impl.xmpp.jingle.JinglePhone;
+			
+			import mx.controls.Alert;
+			import mx.controls.Text;
+			import mx.logging.targets.TraceTarget;
+			
+			import mx.managers.PopUpManager;
+			
+			public var jinglePhone:JinglePhone = Factory.createPhone();
+			public var call:Call;
+			
+			private function setupConnection():void {
+				jinglePhone.connect("gw.phono.com", "anon", "");
+				jinglePhone.addEventListener(PhoneEvent.CONNECTED, function(phoneEvent:PhoneEvent): void {
+//					if (sipCallTxtInput.text != "") {
+//						callBtn.enabled = true;
+//					}
+//					phono1.title = phono1.title + " " + jinglePhone.sessionId;
+				});
+//				jinglePhone.addEventListener(PhoneEvent.DISCONNECTED, popupDeactiveDialog);
+				jinglePhone.addEventListener(CallEvent.CREATED, function(callEvent:CallEvent): void {
+					Alert.show("Event generated when a new call is created, state " + callEvent.phone.state);
+				});
+				jinglePhone.addEventListener(MessageEvent.MESSAGE, function(messageEvent:MessageEvent): void {
+					Alert.show("Event generated when a new message is received...");
+				});
+			}
+			
+			private function handleLogin(mouseEvent:MouseEvent): void {
+				loginBtn.label = "Connecting......";
+				setupConnection();
+			}
+		]]>
+	</fx:Script>
+	
+    <!--fx:Script>
+        <![CDATA[       
+			import mx.managers.PopUpManager;
+			
+			import spark.components.RichText;
+	       
+            // A reference to the TextInput control in which to put the result.
+            public var loginName:RichText;
+		   
+            // Event handler for the OK button.
+            private function returnName():void {
+                loginName.text="Name entered: " + userName.text; 
+                PopUpManager.removePopUp(this);
+            }
+        ]]>
+    </fx:Script-->
+	
+	<s:layout>
+		<s:VerticalLayout horizontalAlign="center" 
+						  paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="25" />
+	</s:layout>
+
+	<s:Button id="loginBtn" width="109" height="54" label="Log In">
+		<s:creationComplete>
+			loginBtn.addEventListener(MouseEvent.CLICK, handleLogin);
+		</s:creationComplete>
+	</s:Button>
+	
+    <!--s:HGroup>
+		<s:Label text="Enter Name: "/>
+		<s:TextInput id="userName" width="100%"/>
+	</s:HGroup>
+   
+	<s:HGroup>
+        <s:Button label="OK" click="returnName();"/>
+        <s:Button label="Cancel" click="PopUpManager.removePopUp(this);"/>
+	</s:HGroup-->
+
+</s:TitleWindow>  

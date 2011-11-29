@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   initialize="showLoginWindow();" width="600" height="300" title="Phono Test AIR Softphone">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.voxeo.phono.Call;
+			import com.voxeo.phono.events.CallEvent;
+			import com.voxeo.phono.events.MessageEvent;
+			import com.voxeo.phono.events.PhoneEvent;
+			import com.voxeo.phono.impl.xmpp.jingle.JinglePhone;
+			
+			import flash.geom.Point;
+			
+			import mx.containers.TitleWindow;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			
+			import spark.components.TitleWindow;
+			
+//			private var point1:Point = new Point();
+			public var jPhone:JinglePhone;
+			
+			// Open the TitleWindow container.
+			// Cast the return value of the createPopUp() method to SimpleTitleWindowExample, the name of the component containing the TitleWindow container.
+			private function showLoginWindow(): void {
+				var login:LoginTitleWindow=LoginTitleWindow(PopUpManager.createPopUp(this, LoginTitleWindow, true) as spark.components.TitleWindow);
+				
+				// Calculate position of TitleWindow in Application's coordinates
+				jPhone=login.jinglePhone;
+				jPhone.addEventListener(PhoneEvent.CONNECTED, function(phoneEvent:PhoneEvent): void {
+					PopUpManager.removePopUp(login);
+					showLogoutWindow();
+				});
+				jPhone.addEventListener(PhoneEvent.DISCONNECTED, function(phoneEvent:PhoneEvent): void {
+					showLoginWindow();
+				});
+			}
+			
+			private function showLogoutWindow(): void {
+				var logon:LogonTitleWindow=LogonTitleWindow(PopUpManager.createPopUp(this, LogonTitleWindow, true) as spark.components.TitleWindow);
+				logon.statusBar.text=logon.statusBar.text + " Session ID: " + jPhone.sessionId;
+//				logon.title = logon.title + ": " + jPhone.sessionId;
+				logon.jPhone=this.jPhone;
+				logon.jPhone.addEventListener(CallEvent.CREATED, logon.handleIncomingCallEvent);
+				jPhone.addEventListener(PhoneEvent.DISCONNECTED, function(phoneEvent:PhoneEvent): void {
+					PopUpManager.removePopUp(logon);
+				});
+			}
+		]]>
+	</fx:Script>
+</s:WindowedApplication>
