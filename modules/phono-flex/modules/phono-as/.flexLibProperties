@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="false" version="1">
+  <includeClasses>
+    <classEntry path="com.voxeo.phono.Call"/>
+    <classEntry path="com.voxeo.phono.CallState"/>
+    <classEntry path="com.voxeo.phono.EnhancedEventDispatcher"/>
+    <classEntry path="com.voxeo.phono.Factory"/>
+    <classEntry path="com.voxeo.phono.Message"/>
+    <classEntry path="com.voxeo.phono.Phone"/>
+    <classEntry path="com.voxeo.phono.PhoneState"/>
+    <classEntry path="com.voxeo.phono.events.CallEvent"/>
+    <classEntry path="com.voxeo.phono.events.MediaEvent"/>
+    <classEntry path="com.voxeo.phono.events.MessageEvent"/>
+    <classEntry path="com.voxeo.phono.events.PhoneEvent"/>
+    <classEntry path="com.voxeo.phono.impl.Media"/>
+    <classEntry path="com.voxeo.phono.impl.Ringer"/>
+    <classEntry path="com.voxeo.phono.impl.Tones"/>
+    <classEntry path="com.voxeo.phono.impl.Utils"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.Capabilities"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.Discovery"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.Candidate"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.CustomHeader"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.DTMF"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.Description"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.IceTransport"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.Jingle"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.JingleCall"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.JingleMessage"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.Payload"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.RawTransport"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.RtmpDescription"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.RtmpTransport"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.RtpDescription"/>
+    <classEntry path="com.voxeo.phono.impl.xmpp.jingle.Transport"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

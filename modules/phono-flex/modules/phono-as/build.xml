@@ -1,0 +1,49 @@
+<project name="phono-as" default="build">
+
+  <property file="../../build.properties" />
+  <taskdef resource="flexTasks.tasks" classpath="${flextasks}"/>
+
+	<property name="build.version.full" value="dev" />
+  <property name="swc.name" value="phono-${build.version.full}.swc" />
+  
+  <target name="build">
+
+    <property name="as.sourcePath" value="${basedir}/src"/>
+    <fileset dir="${as.sourcePath}" id="as.sources">
+        <include name="**/*.as"/>
+    </fileset>
+    <pathconvert property="as.classes" pathsep=" " refid="as.sources">
+        <chainedmapper>
+              <globmapper from="*.as" to="*"/>
+              <globmapper from="${as.sourcePath}/*" to="*" handledirsep="true" />
+        </chainedmapper>
+    </pathconvert>                   
+    
+    <echo message="classes: ${as.classes}"/>
+
+  	<mkdir dir="../../target/as/lib"/>
+  	
+    <compc output="../../target/as/lib/${swc.name}" include-classes="${as.classes}"> 
+        <source-path path-element="${basedir}/src" /> 
+        <compiler.library-path append="true" dir="${basedir}/libs">
+          <include name="*.swc"/>
+        </compiler.library-path>
+        <compiler.library-path append="true" dir="${basedir}/../../target/as/lib/">
+          <include name="*.swc"/>
+        </compiler.library-path>
+    </compc>
+    
+    <copy file="../../target/as/lib/${swc.name}" tofile="../../target/dist/flash/${swc.name}" />
+    
+    <exec executable="${asdoc_bin}" failonerror="true">
+      <arg line="-source-path ${basedir}/src"/>
+      <arg line="-doc-classes com.voxeo.phono.Factory com.voxeo.phono.Phone com.voxeo.phono.Call com.voxeo.phono.Message com.voxeo.phono.events.CallEvent com.voxeo.phono.events.PhoneEvent com.voxeo.phono.events.MessageEvent com.voxeo.phono.events.MediaEvent com.voxeo.phono.CallState com.voxeo.phono.PhoneState"/>
+      <arg line="-library-path ${basedir}/../../target/as/lib "/>
+      <arg line="-exclude-dependencies=true"/>
+      <arg line="-window-title 'Phono SDK'"/>
+      <arg line="-output ${basedir}/../../target/dist/flash/docs"/>
+    </exec>    
+    
+  </target>
+  
+</project>

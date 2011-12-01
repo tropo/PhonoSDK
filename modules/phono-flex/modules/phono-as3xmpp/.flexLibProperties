@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="false" version="1">
+  <includeClasses>
+    <classEntry path="mx.collaboration.xmpp.protocol.tests.TestConfig"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.channels.SocketChannel"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.authenticators.NonSASLAuthenticator"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.xmpp_internal"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.filters.MessageTypeFilter"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.PacketFilter"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.events.AuthenticatorEvent"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.filters.PacketTypeFilter"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.packets.Packet"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.tests.TestHTTPBindingChannel"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.channels.httpbinding.StanzaParser"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.tests.FakeChannel"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.authenticators.TokenAuthenticator"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.tests.TestNonSASLAuthenticator"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.channels.httpbinding.RequestID"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.authenticators.PasswordAuthenticator"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.tests.TestSocketChannel"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.events.ChannelEvent"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.filters.QueryNamespaceFilter"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.extensions.ExtensionManager"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.packets.IQPacket"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.tests.TestJID"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.events.XMPPStreamEvent"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.tests.TestPacketCollector"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.extensions.Bind"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.packets.PresencePacket"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.filters.OrFilter"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.Channel"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.tests.authenticators.PassAuthenticator"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.Authenticator"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.packets.PacketError"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.channels.httpbinding.HTTPBindingResponse"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.channels.TLSSocketChannel"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.ChannelRegistry"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.packets.PacketExtension"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.utils.Debug"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.extensions.Authentication"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.filters.AttributeFilter"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.authenticators.SASLAuthenticator"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.tests.AllTests"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.tests.TestXMPPStream"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.tests.TestChannelRegistry"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.PacketCollector"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.filters.IDFilter"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.JID"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.packets.MessagePacket"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.events.PacketCollectorEvent"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.channels.httpbinding.HTTPBindingChannel"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.XMPPStream"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.filters.AndFilter"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.tests.TestSuiteXMPP"/>
+    <classEntry path="mx.collaboration.xmpp.protocol.extensions.ExtensionDescriptor"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

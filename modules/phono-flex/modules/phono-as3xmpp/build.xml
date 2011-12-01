@@ -1,0 +1,33 @@
+<project name="phono-as3xmpp" default="build" basedir=".">
+  
+  <property file="../../build.properties" />
+
+  <taskdef resource="flexTasks.tasks" classpath="${flextasks}"/>
+  
+  <target name="build">
+
+    <echo message="${basedir}"/>
+
+    <property name="as.sourcePath" value="${basedir}/src"/>
+    <fileset dir="${as.sourcePath}" id="as.sources">
+        <include name="**/*.as"/>
+    </fileset>
+    <pathconvert property="as.classes" pathsep=" " refid="as.sources">
+        <chainedmapper>
+              <globmapper from="*.as" to="*"/>
+              <globmapper from="${as.sourcePath}/*" to="*" handledirsep="true" />
+        </chainedmapper>
+    </pathconvert>                   
+    
+    <echo message="classes: ${as.classes}"/>
+
+    <compc output="../../target/as/lib/as3xmpp.swc" include-classes="${as.classes}"> 
+        <source-path path-element="${basedir}/src" /> 
+        <compiler.library-path append="true" dir="${basedir}/libs">
+          <include name="*.swc"/>
+        </compiler.library-path>
+    </compc> 
+    
+  </target>
+    
+</project>
