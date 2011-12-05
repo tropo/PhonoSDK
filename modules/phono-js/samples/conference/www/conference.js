@@ -105,7 +105,6 @@ $(function() {
 function connectPhono(){
 	phono = $.phono({
 	    apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
-	    gateway: "staging.phono.com",
 	    onReady: function(event) {
 	        $("#home-content").show();
 	        $.mobile.hidePageLoadingMsg();
