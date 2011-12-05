@@ -144,8 +144,10 @@ public class Play {
 
     public void stop() {
         try {
-            _play.close();
             _playThread = null;
+            if(_play != null) {
+		_play.close();
+	    }
         } catch (Throwable t) {
             Log.error("play.stop() error" + t.getMessage());
         }
