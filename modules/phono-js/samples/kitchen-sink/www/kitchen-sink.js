@@ -50,8 +50,6 @@ $(document).ready(function() {
             },		   
 	    audio: {
                 type: $('.audio-plugin').val(), // flash|java|none|auto
-                jar: "../../../plugins/audio/phono.audio.jar",
-                swf: "../../../plugins/audio/phono.audio.swf",
                 onPermissionBoxShow: function(event) {
                     console.log("["+newPhonoID+"] Flash permission box loaded"); 
                 },
