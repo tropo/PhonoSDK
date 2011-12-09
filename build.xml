@@ -2,7 +2,10 @@
 
   <property file="build.properties" />
 
-  <!-- SDK Distribution -->
+  <!-- release Distribution -->
+  <target name="release" depends="clean,build-as-audio,build-java-audio,build-phonegap-ios,build-phonegap-android,build-js,sdk">
+  </target>
+<!-- SDK Distribution -->
   <target name="sdk">
 		<mkdir dir="artifacts"/>
     <zip destfile="artifacts/PhonoSDK-${build.version}.zip">
