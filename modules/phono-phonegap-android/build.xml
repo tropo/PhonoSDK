@@ -99,7 +99,7 @@
     -->
     <!-- version-tag: custom -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
-  <target name="build" depends="-compile , -post-compile">
+  <target name="build" depends="-compile , -post-compile , release">
      <copy todir="target" overwrite="true">
       <fileset dir=".">
         <include name="README" />
