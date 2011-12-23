@@ -20,7 +20,9 @@
 @class PhonoNative;
 @interface PhonoCall : NSObject
 {
-    NSString *destination;
+    NSString *share;
+    NSString *from;
+    NSString *to;
     NSMutableDictionary *headers;
     NSString *callId;
     NSString *state;
@@ -28,6 +30,8 @@
     BOOL mute;
     int volume;
     int gain;
+    id candidate; // 
+    id payload; // opaque types for the xmpp engine to use
     PhonoNative *phono;
     void (^onRing)();
     void (^onAnswer)();
@@ -35,26 +39,33 @@
     void (^onError)();
 }
 @property(readwrite, retain) PhonoNative *phono;
+@property(readwrite, copy) id  candidate;
+@property(readwrite, copy) id  payload;
 @property(readwrite, copy) NSString *callId;
+@property(readwrite, copy) NSString *from;
+@property(readwrite, copy) NSString *to;
+@property(readwrite, copy) NSString *share;
+
 @property(nonatomic, copy) void (^onRing)();
 @property(nonatomic, copy) void (^onAnswer)();
 @property(nonatomic, copy) void (^onHangup)();
 @property(nonatomic, copy) void (^onError)();
 @property(readonly, copy) NSString *state;
+
 @property(readonly, copy) NSMutableDictionary *headers;
 @property(readwrite) BOOL hold;
 @property(readwrite) BOOL mute;
 @property(readwrite) int volume;
 @property(readwrite) int gain;
 
-
+- (id)initInbound;
 - (id)initOutbound:(NSString *) dest;
 - (id)initOutboundWithHeaders:(NSString *) dest headers:(NSDictionary *)outhead;
 
 -(void) answer; //	 When a call arrives via an incomingCall event, it can be answered by calling this function.
 -(void) hangup; //	 Hangs up an active call.
 -(void) digit:(NSString*)dtmf;
-- (void) outbound;
+-(void) outbound;
 
 /*
  answer()	 When a call arrives via an incomingCall event, it can be answered by calling this function.

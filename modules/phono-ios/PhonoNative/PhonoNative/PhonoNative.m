@@ -21,9 +21,11 @@
 #import "PhonoXMPP.h"
 #import "DDLog.h"
 #import "DDTTYLogger.h"
+#import "PhonoAPI.h"
+
 @implementation PhonoNative
 
-@synthesize apiKey,onReady,onUnready,onError,sessionID,phone,audio, pxmpp;
+@synthesize apiKey,onReady,onUnready,onError,sessionID,phone,audio, pxmpp, papi;
 
 - (id)init
 {
@@ -37,7 +39,8 @@
         [phone setPhono:self];
         messaging = pm;
         [messaging setPhono:self];
-    }    return self;
+    }    
+    return self;
 }
 
 - (id)initWithPhone:(PhonoPhone *) ph
@@ -74,6 +77,9 @@
     if (pxmpp != nil){
         [pxmpp setupStream];
         [pxmpp connect:apiKey];
+    }
+    if (papi == nil){
+        papi = [[PhonoAPI alloc] init];
     }
 }	  
 -(void) disconnect{} //	 Disconnects the Phone from the Voxeo Cloud. 

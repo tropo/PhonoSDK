@@ -19,23 +19,30 @@
 @class PhonoCall;
 @class PhonoNative;
 @interface PhonoPhone : NSObject {
+    NSString *xmppsessionID;
     PhonoNative *phono;
     BOOL tones;
     BOOL headset;
     NSString *ringTone;
     NSString *ringbackTone;
     void (^onError)(PhonoEvent *);
-    void (^onIncommingCall)(PhonoEvent *);
+    void (^onIncommingCall)(PhonoCall *);
+    PhonoCall *currentCall;
 }
 
 @property(readwrite) BOOL tones;
 @property(nonatomic, copy) void (^onReady)(PhonoEvent*);
-@property(nonatomic, copy) void (^onIncommingCall)(PhonoEvent *);
+@property(nonatomic, copy) void (^onIncommingCall)(PhonoCall *);
 @property(readwrite) BOOL headset;
+@property(readwrite, copy) NSString *xmppsessionID;
 @property(readwrite, copy) NSString *ringTone;
 @property(readwrite, assign) PhonoNative *phono;
 @property(readwrite, copy) NSString *ringbackTone;
 - (PhonoCall *)dial:(PhonoCall *)dest;
+- (void) didReceiveIncommingCall:(PhonoCall *)call;
+- (void) acceptCall:(PhonoCall *)call;
+ //	 When a call arrives via an incomingCall event, it can be answered by calling this function.
+-(void) hangupCall:(PhonoCall *)call;
 
 /*
 dial(destination, config)	 Used to make an outgoing call. This function takes two arguments: the destination, and a config object with additional parameters.

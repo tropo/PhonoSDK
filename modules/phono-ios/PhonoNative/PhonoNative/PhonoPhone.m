@@ -17,15 +17,36 @@
 
 #import "PhonoPhone.h"
 #import "PhonoCall.h"
+#import "PhonoNative.h"
+#import "PhonoXMPP.h"
 
 @implementation PhonoPhone
-@synthesize tones,onReady,onIncommingCall,headset,ringTone,ringbackTone,phono;
+@synthesize tones,onReady,onIncommingCall,headset,ringTone,ringbackTone,phono, xmppsessionID;
 
 - (PhonoCall *)dial:(PhonoCall *)dest{
     dest.phono = phono;
     [dest outbound];
     return dest;
 }
+- (void) didReceiveIncommingCall:(PhonoCall *)call{
+    if (onIncommingCall != nil) {
+        // this should be on the main queue already.....
+        onIncommingCall(call);
+    } else {
+        [self hangupCall:call];
+    }
+}
 
+- (void) acceptCall:(PhonoCall *)incall{
+    if (currentCall != nil){
+        [self hangupCall:currentCall];
+    }
+    currentCall = incall;
+    [[phono pxmpp] acceptInboundCall:incall];
+}
+//	 When a call arrives via an incomingCall event, it can be answered by calling this function.
+-(void) hangupCall:(PhonoCall *)incall{
+    
+}
 
 @end

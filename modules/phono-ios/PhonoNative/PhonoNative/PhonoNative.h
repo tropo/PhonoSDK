@@ -21,7 +21,9 @@
 #import "PhonoMessage.h"
 #import "PhonoMessaging.h"
 
+
 @class PhonoXMPP;
+@class PhonoAPI;
 
 @interface PhonoNative : NSObject {
     NSString *apiKey;
@@ -33,8 +35,11 @@
     PhonoMessaging *messaging;
     NSDictionary *audio;
     PhonoXMPP *pxmpp;
+    PhonoAPI *papi;
 }
 @property(readonly) PhonoXMPP *pxmpp;
+@property(readonly) PhonoAPI *papi;
+
 @property(readwrite, copy) NSString *apiKey;
 @property(nonatomic, copy) void (^onReady)();
 @property(nonatomic, copy) void (^onUnready)();

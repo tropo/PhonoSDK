@@ -17,10 +17,10 @@
 
 #import "PhonoCall.h"
 #import "PhonoNative.h"
-#import "PhonoXMPP.h"
+#import "PhonoPhone.h"
 
 @implementation PhonoCall
-@synthesize callId,onRing,onAnswer,onHangup,onError,state,hold,mute,volume,gain,headers,phono;
+@synthesize callId,onRing,onAnswer,onHangup,onError,state,hold,mute,volume,gain,headers,phono,payload, candidate, to ,from, share;
 
 
 - (id)initInbound
@@ -34,13 +34,13 @@
 }
 - (void) outbound{
     [headers setObject:[phono sessionID] forKey:@"PhonoSessionID"];
-    [[phono pxmpp] jingleSessionInit];
+    // do something here.....
 }
 - (id)initOutbound:(NSString *) dest
 {
     self = [super init];
     if (self) {
-        destination = dest;
+        to = dest;
         headers = [[NSMutableDictionary alloc] init];
     }
     
@@ -50,14 +50,19 @@
 {
     self = [super init];
     if (self) {
-        destination = dest;
+        to = dest;
         headers = outhead;
     }
     
     return self;
 }
 
--(void) answer{} //	 When a call arrives via an incomingCall event, it can be answered by calling this function.
--(void) hangup{} //	 Hangs up an active call.
+-(void) answer{
+    [phono.phone acceptCall:self];
+} //	 When a call arrives via an incomingCall event, it can be answered by calling this function.
+-(void) hangup{
+    [phono.phone hangupCall:self];
+} //	 Hangs up an active call.
+
 -(void) digit:(NSString*)dtmf{}
 @end
