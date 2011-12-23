@@ -7,10 +7,12 @@
 //
 
 #import "PhonoXMPP.h"
+#import "PhonoAPI.h"
+#import "PhonoNative.h"
 
 @implementation PhonoXMPP
 
-@synthesize  xmppStream, xmppReconnect;
+@synthesize  xmppStream, xmppJingle,xmppReconnect;
 
 - (id) initWithPhono:(PhonoNative *)p{
     
@@ -58,9 +60,18 @@
 	xmppReconnect = [[XMPPReconnect alloc] init];
 	
     [xmppReconnect         activate:xmppStream];
-	[xmppStream addDelegate:self delegateQueue:dispatch_get_main_queue()];
+	
+    xmppJingle = [[XMPPJingle alloc] initWithPhono:YES];
+    [xmppJingle setPayloadAttrFilter:@"[@name=\"SPEEX\" and @clockrate=\"8000\"]"];
     
-    [xmppStream setHostName:@"ec2-50-19-77-101.compute-1.amazonaws.com"];
+    [xmppJingle activate:xmppStream];
+    [xmppJingle addDelegate:self delegateQueue:dispatch_get_main_queue()];
+    
+    [xmppStream addDelegate:self delegateQueue:dispatch_get_main_queue()];
+    
+    //[xmppStream setHostName:@"ec2-50-19-77-101.compute-1.amazonaws.com"];
+    [xmppStream setHostName:@"staging.phono.com"];
+
     [xmppStream setHostPort:5222];	
 	
     
@@ -80,8 +91,8 @@
 	
 	[xmppStream release];
 	[xmppReconnect release];
-    
-	
+    [xmppJingle release];
+	xmppJingle = nil;
 	xmppStream = nil;
 	xmppReconnect = nil;
 }
@@ -123,6 +134,28 @@
     [xmppStream disconnect];
 }
 
+- (void)acceptInboundCall:(PhonoCall *)incall{
+    
+    NSString *lshare = incall.share =  [phono.papi allocateEndpoint];
+    NSArray *bits = [lshare componentsSeparatedByString:@":"];
+    // 0= 'rtp' 1 = //192.67.4.1 2 =3020
+    if (( [bits count ] == 3) 
+        && ( [(NSString *)[bits objectAtIndex:0] compare:@"rtp"] == NSOrderedSame ) ){
+        NSString *host = [(NSString *)[bits objectAtIndex:1] substringFromIndex:2];
+        NSString *port = [bits objectAtIndex:2];
+        [xmppJingle sendSessionAccept:[incall callId] to:[incall from] host:host port:port payload:[incall payload]];
+        NSString *fhost = [xmppJingle ipWithCandidate:(NSXMLElement *)[incall candidate] ];
+        NSString *fport = [xmppJingle portWithCandidate:(NSXMLElement *)[incall candidate] ];
+
+        NSString *fullshare = [NSString stringWithFormat:@"%@:%@:%@", lshare, fhost , fport];
+        
+        NSString *mycodec = [xmppJingle ptypeWithPayload:(NSXMLElement *)[incall payload] ];
+        NSLog(@" codec req is %@",mycodec );
+        [[phono papi] share:fullshare autoplay:NO codec:mycodec ]; // hack!b
+    }
+    
+}
+
 
 - (void) jingleSessionInit {
     NSError *error;
@@ -137,13 +170,29 @@
 
 - (void) sendApiKey {
     // <iq type="set" xmlns="jabber:client"><apikey xmlns="http://phono.com/apikey">C17D167F-09C6-4E4C-A3DD-2025D48BA243</apikey></iq>
-    XMPPIQ *iq = [XMPPIQ iqWithType:@"set"];
+    XMPPIQ *iq = [XMPPIQ iqWithType:@"set" ];
     NSXMLElement *xapikey = [NSXMLElement elementWithName:@"apikey" xmlns:@"http://phono.com/apikey"];
     [xapikey addChild:[NSXMLNode textWithStringValue:apiKey]];
     [iq addChild:xapikey];
     [xmppStream sendElement:iq];
 }
 
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark XMPPJingle Delegate
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- (void)xmppJingle:(XMPPJingle *)sender didReceiveIncommingAudioCall:(NSString *)sid from:(XMPPJID *)from to:(XMPPJID *)to transport:(NSXMLElement *)candidate sdp:(NSXMLElement *)payload {
+    PhonoCall * incall = [[PhonoCall alloc] initInbound];
+    [incall setPhono:phono];
+    [incall setCallId:sid];
+    [incall setPayload:payload];
+    [incall setCandidate:candidate];
+    [incall setFrom:[from full]];
+    [incall setTo:[to full]];
+    [phono.phone didReceiveIncommingCall:incall];
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,7 +244,7 @@
 
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq
 {
-	NSLog(@"Got iq %@", [iq elementID]);
+	NSLog(@"Got iq %@", [iq XMLString]);
 	
 	return NO;
 }
