@@ -291,9 +291,9 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
     // SRTP packets have a tail auth section and potentially an MKI
     paylen -= _tailIn;
     payload = alloca(paylen);
-    if (paylen != 160) {
+    /*if (paylen != 160) {
         NSLog(@"Expected 160 byte payload, got %d",paylen);
-    }
+    }*/
     int o = 0;
     while (offs - endhead < paylen) {
         payload[o++] = packet[offs++];
