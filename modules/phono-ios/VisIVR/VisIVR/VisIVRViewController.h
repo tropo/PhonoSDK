@@ -9,14 +9,16 @@
 #import <UIKit/UIKit.h>
 @class PhonoNative;
 @class PhonoCall;
+@class PhonoPhone;
 
-@interface VisIVRViewController : UIViewController
+@interface VisIVRViewController : UIViewController <UIAlertViewDelegate>
 {
     UITextField *appNum;
     UILabel *tjid;
     UILabel *status;
     UIWebView *prompt;
     PhonoNative *phono;
+    PhonoPhone *phone;
     PhonoCall *call;
 }
 
@@ -31,4 +33,5 @@
 - (IBAction)call;
 - (IBAction)hangup;
 - (IBAction)digit;
+
 @end

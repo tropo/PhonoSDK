@@ -8,6 +8,7 @@
 
 #import "VisIVRViewController.h"
 #import "PhonoNative.h"
+#import "PhonoPhone.h"
 
 @implementation VisIVRViewController
 
@@ -29,12 +30,34 @@
     [status setText:state];
 }
 
+-(void) popIncommingCallAlert:(PhonoCall *) incall{
+    call = incall;
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Incomming Call"
+                          
+                                                    message:[incall from]
+                          
+                                                   delegate:self
+                          
+                                          cancelButtonTitle:@"Ignore"
+                          
+                                          otherButtonTitles:nil];
+    [alert addButtonWithTitle:@"Accept"];
+
+    [alert show];
+    [alert release];
+}
+
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    phono = [[PhonoNative alloc] init ];
+    phone = [[PhonoPhone alloc] init];
+    phone.onIncommingCall = ^(PhonoCall * incall){
+        [self popIncommingCallAlert:incall];
+    };
+
+    phono = [[PhonoNative alloc] initWithPhone:phone ];
     phono.onReady = ^{ [self gotjId];};
 }
 
@@ -92,5 +115,21 @@
 }
 - (IBAction)hangup{}
 - (IBAction)digit{}
+
+// delegate actions
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    // don't actually care.
+    
+}
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 0){
+        // ignore
+        [call hangup];
+    } else if (buttonIndex == 1){
+        // accept incomming call
+        [call answer];
+    }
+}
+
 
 @end
