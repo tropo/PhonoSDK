@@ -191,8 +191,7 @@
     return ret;
 }
 
-- (NSString *) codecs{
-    NSString *ret = nil;
+- (NSArray *) codecArray{
     PhonoAudio *audio = [[PhonoAudio alloc] init ];
     NSArray *cs = [audio allCodecs];
     
@@ -203,7 +202,7 @@
         NSString *name = [c getName];
         NSString *rate = [name isEqualToString:@"G722"]?@"8000":[NSString stringWithFormat:@"%d",[c getRate] ];
         NSString *ptype = [NSString stringWithFormat:@"%d",[c ptype] ];
-
+        
         [co setObject: name forKey:@"name"];
         [co setObject: rate forKey:@"rate"];
         [co setObject: ptype forKey:@"ptype"];
@@ -214,7 +213,13 @@
     [co setObject: @"8000" forKey:@"rate"];
     [co setObject: @"101" forKey:@"ptype"];
     [ca addObject:co];  
+    return ca;
+}
+
+- (NSString *) codecs{
+    NSString *ret = nil;
     NSError *error = NULL;
+    NSArray *ca = [self codecArray];
     NSData *jsonData = [[CJSONSerializer serializer] serializeObject:ca error:&error];
     ret = [[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] autorelease];
     NSLog(@"codec json->\n%@", ret);
