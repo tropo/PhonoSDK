@@ -198,10 +198,12 @@ void interruptionListenerCallback (void *inUserData, UInt32  interruptionState) 
     outEnergy = energy / samples;
 
     [din release];
-    if (ostamp >= stamp){
+    long diff = (stamp -ostamp);
+
+    if ((diff < 0) && (diff > -2000)){
         NSLog(@"out of order %d > %d",ostamp , stamp);
     }
-    if ((stamp -ostamp) > 20){
+    if ((diff > 20) && (diff < 2000)) {
         NSLog(@"Missing packet ? %d -> %d",ostamp , stamp);
     }
     ostamp = stamp;
@@ -275,7 +277,7 @@ static OSStatus outRender(
     int64_t put = myself->putOut;
     if ((put - get) < inNumberFrames) {
         memset((void *) ioData->mBuffers[0].mData,0,ioData->mBuffers[0].mDataByteSize);
-        NSLog(@" No data to be sent to speaker - filling with silence %qd %qd",get,put);
+        //NSLog(@" No data to be sent to speaker - filling with silence %qd %qd",get,put);
 
     } else {
         int len = myself ->ringOutsz;
@@ -426,7 +428,7 @@ static OSStatus outRender(
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     // Do thread work here.
 	if ([NSThread isMultiThreaded]){
-		//[NSThread setThreadPriority:1.0];
+		[NSThread setThreadPriority:1.0];
         audioThread = [NSThread currentThread];
         NSLog(@"Audio thread Started");
 	}
@@ -473,18 +475,42 @@ static OSStatus outRender(
     }
 }
 - (BOOL) setCodec:(NSString *) codecname{
-    codec = [codecs objectForKey:codecname];
+    // we support 2 formats here - just an integer ptype
+    // or name:rate:ptype
+    // in the second case we will make sure we use the requested
+    // ptype on the wire even if it wasn't  the value in our
+    // codec array - speex for example.
+    // see which format we have
+    NSInteger ptype = 0;
+    NSArray *bits = [codecname componentsSeparatedByString:@":"];
+    if ([bits count] == 3){
+        NSString *nam = [bits objectAtIndex:0];
+        NSInteger rate = [[bits objectAtIndex:1] integerValue];
+        ptype = [[bits objectAtIndex:2] integerValue];
+
+        NSEnumerator *coan = [codecs objectEnumerator ];
+        id <CodecProtocol> can = nil;
+        while ((nil != (can = (id <CodecProtocol>)[coan nextObject]))){
+            if (([[can getName] compare:nam] == NSOrderedSame) && (rate == [can getRate])){
+                codec = can;
+            }
+        }
+    } else {
+        codec = [codecs objectForKey:codecname];
+        ptype = [codec ptype];
+    }
     if (codec != nil){
         int fac = [codec getRate] /1000;
         aframeLen = (frameIntervalMS * [codec getRate] )/1000; // unit is _shorts_ 
         playing = YES;
         [wire setCodecfac:fac];
-        [wire setPtype:[codec ptype]];
-
-        //[self performSelectorInBackground:@selector(spawnAudio) withObject:nil];
-        [self setupAudio];
+        [wire setPtype:ptype];
+        
+        [self performSelectorInBackground:@selector(spawnAudio) withObject:nil];
+        //[self setupAudio];
     }
-    NSLog(@"set codec to %@ at %d - res = %@",[codec getName],[codec getRate],((codec != nil)?@"Yes":@"NO"));
+    
+    NSLog(@"Using %@ to set codec to %@ at %d ptype %d - res = %@",codecname, [codec getName],[codec getRate],ptype, ((codec != nil)?@"Yes":@"NO"));
     
     return (codec != nil);
 }
