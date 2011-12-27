@@ -37,6 +37,8 @@
 @property(readwrite, copy) NSString *xmppsessionID;
 @property(readwrite, copy) NSString *ringTone;
 @property(readwrite, assign) PhonoNative *phono;
+@property(readwrite, assign) PhonoCall *currentCall;
+
 @property(readwrite, copy) NSString *ringbackTone;
 - (PhonoCall *)dial:(PhonoCall *)dest;
 - (void) didReceiveIncommingCall:(PhonoCall *)call;

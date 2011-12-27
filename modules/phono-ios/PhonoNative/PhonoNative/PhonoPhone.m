@@ -21,7 +21,7 @@
 #import "PhonoXMPP.h"
 
 @implementation PhonoPhone
-@synthesize tones,onReady,onIncommingCall,headset,ringTone,ringbackTone,phono, xmppsessionID;
+@synthesize tones,onReady,onIncommingCall,headset,ringTone,ringbackTone,phono, xmppsessionID,currentCall;
 
 - (PhonoCall *)dial:(PhonoCall *)dest{
     dest.phono = phono;
@@ -37,6 +37,8 @@
     }
 }
 
+//	 When a call arrives via an incomingCall event, it can be answered by calling this function.
+
 - (void) acceptCall:(PhonoCall *)incall{
     if (currentCall != nil){
         [self hangupCall:currentCall];
@@ -44,9 +46,11 @@
     currentCall = incall;
     [[phono pxmpp] acceptInboundCall:incall];
 }
-//	 When a call arrives via an incomingCall event, it can be answered by calling this function.
--(void) hangupCall:(PhonoCall *)incall{
-    
+
+// hangup a call
+-(void) hangupCall:(PhonoCall *)acall{
+    [[phono pxmpp] hangupCall:acall];
+    currentCall = nil;
 }
 
 @end
