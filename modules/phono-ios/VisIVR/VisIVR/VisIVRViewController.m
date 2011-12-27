@@ -113,7 +113,9 @@
     [phono.phone dial:call];
 
 }
-- (IBAction)hangup{}
+- (IBAction)hangup{
+    [call hangup];
+}
 - (IBAction)digit{}
 
 // delegate actions
