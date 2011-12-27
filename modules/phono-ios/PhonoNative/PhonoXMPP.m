@@ -9,6 +9,8 @@
 #import "PhonoXMPP.h"
 #import "PhonoAPI.h"
 #import "PhonoNative.h"
+#import "PhonoPhone.h"
+#import "PhonoCall.h"
 
 @implementation PhonoXMPP
 
@@ -61,7 +63,7 @@
 	
     [xmppReconnect         activate:xmppStream];
 	
-    xmppJingle = [[XMPPJingle alloc] initWithPhono:YES];
+    xmppJingle = [[XMPPJingle alloc] initWithPhono:NO];
     [xmppJingle setPayloadAttrFilter:@"[@name=\"SPEEX\" and @clockrate=\"8000\"]"];
     
     [xmppJingle activate:xmppStream];
@@ -69,8 +71,8 @@
     
     [xmppStream addDelegate:self delegateQueue:dispatch_get_main_queue()];
     
-    //[xmppStream setHostName:@"ec2-50-19-77-101.compute-1.amazonaws.com"];
-    [xmppStream setHostName:@"staging.phono.com"];
+    [xmppStream setHostName:@"ec2-50-19-77-101.compute-1.amazonaws.com"];
+    //[xmppStream setHostName:@"staging.phono.com"];
 
     [xmppStream setHostPort:5222];	
 	
@@ -156,6 +158,15 @@
     
 }
 
+- (void)hangupCall:(PhonoCall *)acall{
+    NSString *lshare = acall.share ;
+    [[phono papi] stop:lshare];
+    NSLog(@"stopping %@",[acall share] );
+
+    [[phono papi] freeEndpoint:lshare];
+    
+    [xmppJingle sendHangup:acall.callId to:[acall from] reason:@"success"];
+}
 
 - (void) jingleSessionInit {
     NSError *error;
@@ -194,6 +205,33 @@
     [phono.phone didReceiveIncommingCall:incall];
 }
 
+- (void)xmppJingle:(XMPPJingle *)sender
+  didReceiveResult:(NSString *)sid {
+    // should have a list of calls - but for now a choice of 1
+    PhonoCall *ccall = [phono.phone currentCall];
+    if ([[ccall callId] compare:sid] == NSOrderedSame ){
+        [[phono papi] start:[ccall share]];
+        NSLog(@"starting %@",[ccall share] );
+    }
+    
+    
+}
+- (void)xmppJingle:(XMPPJingle *)sender
+   didReceiveError:(NSString *)sid error:(NSXMLElement*)error{
+    
+}
+- (void)xmppJingle:(XMPPJingle *)sender
+didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
+    // should have a list of calls - but for now a choice of 1
+    PhonoCall *ccall = [phono.phone currentCall];
+    if ([[ccall callId] compare:sid] == NSOrderedSame ){
+        [[phono papi] stop:[ccall share]];
+        NSLog(@"stopping %@",[ccall share] );
+        if (ccall.onHangup != nil){
+            ccall.onHangup();
+        }
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark XMPPStream Delegate
@@ -230,6 +268,8 @@
 {
 	NSLog(@"Authenticated as %@", [sender myJID]) ;
     phono.sessionID = [[sender myJID] user];
+    [xmppJingle setMe:[sender myJID]];
+     
     if (phono.onReady != nil){
         dispatch_queue_t q_main = dispatch_get_main_queue();
         dispatch_async(q_main, phono.onReady);
@@ -270,7 +310,11 @@
     NSLog(@"disconnected ");
 	if (!isXmppConnected)
 	{
-		NSLog(@"Unable to connect to server. Check xmppStream.hostName");
+		NSLog(@"Unable to disconnect from server. Check xmppStream.hostName");
 	}
+    if (phono.onUnready != nil){
+        dispatch_queue_t q_main = dispatch_get_main_queue();
+        dispatch_async(q_main, phono.onUnready);
+    }
 }
 @end

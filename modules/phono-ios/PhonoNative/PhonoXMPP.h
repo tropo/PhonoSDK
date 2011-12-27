@@ -37,5 +37,7 @@
 - (void)jingleSessionInit;
 - (id) initWithPhono:(PhonoNative *)p;
 - (void)acceptInboundCall:(PhonoCall *)incall;
+- (void)hangupCall:(PhonoCall *)acall;
+
 
 @end

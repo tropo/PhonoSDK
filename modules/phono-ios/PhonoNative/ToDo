@@ -1,0 +1,7 @@
+add proper element ids
+deal with iq responses 
+start audio on ack (inbound)
+outbound - all of......
+expose codec setting
+expose speex tweeks.
+clean up on hangup (either end.)
