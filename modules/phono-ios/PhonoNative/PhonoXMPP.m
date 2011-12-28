@@ -235,6 +235,9 @@
         [ccall setPayload:payload];
         [self startMediaOnCall:ccall now:YES];
         [ccall setState:ACTIVE];
+        if (ccall.onAnswer != nil){
+            ccall.onAnswer();
+        }
     }
 }
 
