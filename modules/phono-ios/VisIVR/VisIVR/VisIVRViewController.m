@@ -104,7 +104,8 @@
 }
 - (IBAction)disconnect{}
 - (IBAction)call{
-    call = [[PhonoCall alloc] initOutbound:@"9996160714@app"];
+    //call = [[PhonoCall alloc] initOutbound:@"9996160714@app"]; 
+    call = [[PhonoCall alloc] initOutbound:@"timpanton\\40sip2sip.info@sip"];
     [self update:@"dialing"];
     call.onAnswer = ^{ [self update:@"answered"];};
     call.onError = ^{ [self update:@"error"];};
