@@ -104,7 +104,7 @@
 }
 - (IBAction)disconnect{}
 - (IBAction)call{
-    call = [[PhonoCall alloc] initOutbound:@"app:9996160714"];
+    call = [[PhonoCall alloc] initOutbound:@"9996160714@app"];
     [self update:@"dialing"];
     call.onAnswer = ^{ [self update:@"answered"];};
     call.onError = ^{ [self update:@"error"];};
@@ -116,7 +116,12 @@
 - (IBAction)hangup{
     [call hangup];
 }
-- (IBAction)digit{}
+- (IBAction)digit:(id) sender {
+    UIButton *b = (UIButton *) sender;
+    NSString *d = [[b titleLabel] text];
+    NSLog(@"Digit %@",d);
+    [call digit:d];
+}
 
 // delegate actions
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

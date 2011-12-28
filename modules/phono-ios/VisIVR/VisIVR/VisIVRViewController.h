@@ -32,6 +32,6 @@
 - (IBAction)disconnect;
 - (IBAction)call;
 - (IBAction)hangup;
-- (IBAction)digit;
+- (IBAction)digit:(id) sender ;
 
 @end
