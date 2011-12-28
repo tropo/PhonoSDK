@@ -33,7 +33,7 @@
         encoder_st = speex_encoder_init(&speex_wb_mode);
         int tmp=0;
         speex_encoder_ctl(encoder_st, SPEEX_SET_VBR, &tmp);
-        tmp=8;
+        tmp=5;
         speex_encoder_ctl(encoder_st, SPEEX_SET_QUALITY, &tmp);
         tmp=2;
         speex_encoder_ctl(encoder_st, SPEEX_SET_COMPLEXITY, &tmp);

@@ -486,6 +486,10 @@ static OSStatus outRender(
     if ([bits count] == 3){
         NSString *nam = [bits objectAtIndex:0];
         NSInteger rate = [[bits objectAtIndex:1] integerValue];
+        //  stupid 722 crap.
+        if ([nam compare:@"G722"] == NSOrderedSame) {
+            rate = 16000;
+        }
         ptype = [[bits objectAtIndex:2] integerValue];
 
         NSEnumerator *coan = [codecs objectEnumerator ];

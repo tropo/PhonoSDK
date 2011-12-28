@@ -23,8 +23,8 @@
 #import "CodecProtocol.h"
 #import <AudioToolbox/AudioToolbox.h>
 
-#define ENOUGH (320*20)
-#define MAXJITTER 40
+#define ENOUGH (320*10)
+#define MAXJITTER 20
 
 @interface PhonoAudio : NSObject {
     NSMutableDictionary * codecs;
