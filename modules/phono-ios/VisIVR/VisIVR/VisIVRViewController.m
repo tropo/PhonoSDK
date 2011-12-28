@@ -32,9 +32,10 @@
 
 -(void) popIncommingCallAlert:(PhonoCall *) incall{
     call = incall;
+    NSString *erom = [PhonoNative unescapeString:[incall from]];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Incomming Call"
                           
-                                                    message:[incall from]
+                                                    message:erom
                           
                                                    delegate:self
                           
@@ -104,8 +105,8 @@
 }
 - (IBAction)disconnect{}
 - (IBAction)call{
-    //call = [[PhonoCall alloc] initOutbound:@"9996160714@app"]; 
-    call = [[PhonoCall alloc] initOutbound:@"timpanton\\40sip2sip.info@sip"];
+    //call = [[PhonoCall alloc] initOutbound:@"9996160714" domain:@"app"]; 
+    call = [[PhonoCall alloc] initOutbound:@"timpanton@sip2sip.info" domain:@"sip"];
     [self update:@"dialing"];
     call.onAnswer = ^{ [self update:@"answered"];};
     call.onError = ^{ [self update:@"error"];};
