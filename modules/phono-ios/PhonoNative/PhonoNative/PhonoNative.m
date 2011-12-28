@@ -92,4 +92,46 @@
     return (pxmpp == nil) ? NO:[[pxmpp xmppStream] isConnected];
 }
 
+/* need to implement cmap ---
+ 
+ ' '	\20 *
+ "	\22
+ &	\26
+ '	\27
+ /	\2f
+ :	\3a
+ <	\3c
+ >	\3e
+ @	\40
+ \	\5c */
+
++ (NSString *) unescapeString:(NSString *) esc {
+    NSString *js = [esc stringByReplacingOccurrencesOfString:@"\\20" withString:@" "];
+    js = [js stringByReplacingOccurrencesOfString:@"\\22" withString:@"\""];
+    js = [js stringByReplacingOccurrencesOfString:@"\\26" withString:@"&"];
+    js = [js stringByReplacingOccurrencesOfString:@"\\27" withString:@"'"];
+    js = [js stringByReplacingOccurrencesOfString:@"\\2f" withString:@"/"];
+    js = [js stringByReplacingOccurrencesOfString:@"\\3a" withString:@":"];
+    js = [js stringByReplacingOccurrencesOfString:@"\\3c" withString:@"<"];
+    js = [js stringByReplacingOccurrencesOfString:@"\\3e" withString:@">"];
+    js = [js stringByReplacingOccurrencesOfString:@"\\40" withString:@"@"];
+    js = [js stringByReplacingOccurrencesOfString:@"\\5c" withString:@"\\"];
+    
+    return js;
+}
++ (NSString *) escapeString:(NSString *)une{ 
+    NSString *js = [une stringByReplacingOccurrencesOfString:@" " withString:@"\\20"];
+    js = [js stringByReplacingOccurrencesOfString:@"\"" withString:@"\\22"];
+    js = [js stringByReplacingOccurrencesOfString:@"&" withString:@"\\26"];
+    js = [js stringByReplacingOccurrencesOfString:@"'" withString:@"\\27"];
+    js = [js stringByReplacingOccurrencesOfString:@"/" withString:@"\\2f"];
+    js = [js stringByReplacingOccurrencesOfString:@":" withString:@"\\3a"];
+    js = [js stringByReplacingOccurrencesOfString:@"<" withString:@"\\3c"];
+    js = [js stringByReplacingOccurrencesOfString:@">" withString:@"\\3e"];
+    js = [js stringByReplacingOccurrencesOfString:@"@" withString:@"\\40"];
+    js = [js stringByReplacingOccurrencesOfString:@">" withString:@"\\5c"];
+    return js;
+}
+
+
 @end

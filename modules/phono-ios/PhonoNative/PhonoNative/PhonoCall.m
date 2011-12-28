@@ -37,21 +37,21 @@
     [headers setObject:[phono sessionID] forKey:@"PhonoSessionID"];
 }
 
-- (id)initOutbound:(NSString *) dest
+- (id)initOutbound:(NSString *) user domain:(NSString *) domain
 {
     self = [super init];
     if (self) {
-        to = dest;
+        to = [NSString stringWithFormat:@"%@@%@" , [PhonoNative escapeString:user] , domain];
         headers = [[NSMutableDictionary alloc] init];
     }
     
     return self;
 }
-- (id)initOutboundWithHeaders:(NSString *) dest headers:(NSMutableDictionary *)outhead
+- (id)initOutboundWithHeaders:(NSString *) user domain:(NSString *) domain headers:(NSMutableDictionary *)outhead
 {
     self = [super init];
     if (self) {
-        to = dest;
+        to = [NSString stringWithFormat:@"%@@%@" , [phono escapeString:user] , domain];
         headers = outhead;
     }
     

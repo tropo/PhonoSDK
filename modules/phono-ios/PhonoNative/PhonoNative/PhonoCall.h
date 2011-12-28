@@ -64,8 +64,8 @@
 @property(readwrite) int gain;
 
 - (id)initInbound;
-- (id)initOutbound:(NSString *) dest;
-- (id)initOutboundWithHeaders:(NSString *) dest headers:(NSDictionary *)outhead;
+- (id)initOutbound:(NSString *)user domain:(NSString *) domain ;
+- (id)initOutboundWithHeaders:(NSString *)user domain:(NSString *) domain headers:(NSDictionary *)outhead;
 
 -(void) answer; //	 When a call arrives via an incomingCall event, it can be answered by calling this function.
 -(void) hangup; //	 Hangs up an active call.
