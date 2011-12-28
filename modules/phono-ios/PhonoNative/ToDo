@@ -1,7 +1,18 @@
-add proper element ids
-deal with iq responses 
-start audio on ack (inbound)
-outbound - all of......
 expose codec setting
 expose speex tweeks.
 clean up on hangup (either end.)
+    audio cleanup so can be reused.
+cut latency
+cut packet mangle
+Display ringing 
+Do ringback
+Do callbacks
+
+
+messaging
+
+cleanup ui.
+Leak check.
+
+Set status(s)
+

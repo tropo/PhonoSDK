@@ -63,16 +63,16 @@
 	
     [xmppReconnect         activate:xmppStream];
 	
-    xmppJingle = [[XMPPJingle alloc] initWithPhono:NO];
-    [xmppJingle setPayloadAttrFilter:@"[@name=\"SPEEX\" and @clockrate=\"8000\"]"];
+    xmppJingle = [[XMPPJingle alloc] initWithPhono:YES];
+    [xmppJingle setPayloadAttrFilter:@"[@name=\"SPEEX\" and @clockrate=\"16000\"]"];
     
     [xmppJingle activate:xmppStream];
     [xmppJingle addDelegate:self delegateQueue:dispatch_get_main_queue()];
     
     [xmppStream addDelegate:self delegateQueue:dispatch_get_main_queue()];
     
-    [xmppStream setHostName:@"ec2-50-19-77-101.compute-1.amazonaws.com"];
-    //[xmppStream setHostName:@"staging.phono.com"];
+    //[xmppStream setHostName:@"ec2-50-19-77-101.compute-1.amazonaws.com"];
+    [xmppStream setHostName:@"gw-v3.d.phono.com"];
 
     [xmppStream setHostPort:5222];	
 	
@@ -80,6 +80,13 @@
 	// You may need to alter these settings depending on the server you're connecting to
 	allowSelfSignedCertificates = NO;
 	allowSSLHostNameMismatch = NO;
+    allAudioCodecs = [xmppJingle emptyAudioPayload];
+    NSArray * codecs = [[phono papi] codecArray];
+    for (int i=0; i< [codecs count]; i++){
+        NSDictionary *codec = [codecs objectAtIndex:i];
+        [xmppJingle addCodecToPayload:allAudioCodecs name:[codec objectForKey:@"name"] rate:[codec objectForKey:@"rate"] ptype:[codec objectForKey:@"ptype"]];
+    }
+    
 }
 
 - (void)teardownStream
@@ -136,6 +143,21 @@
     [xmppStream disconnect];
 }
 
+// used for both directions - call should have all the info.
+-(void) startMediaOnCall:(PhonoCall*) ccall now:(BOOL)now{
+    NSString *fhost = [xmppJingle ipWithCandidate:(NSXMLElement *)[ccall candidate] ];
+    NSString *fport = [xmppJingle portWithCandidate:(NSXMLElement *)[ccall candidate] ];
+    NSString *lshare = [ccall share];
+    NSString *fullshare = [NSString stringWithFormat:@"%@:%@:%@", lshare, fhost , fport];
+    
+    NSString *mycodec = [xmppJingle ptypeWithPayload:(NSXMLElement *)[ccall payload] ];
+    NSLog(@" selected codec is %@",mycodec );
+    NSLog(@" fullshare is %@",fullshare );
+    
+    [[phono papi] share:fullshare autoplay:now codec:mycodec ]; 
+    
+}
+
 - (void)acceptInboundCall:(PhonoCall *)incall{
     
     NSString *lshare = incall.share =  [phono.papi allocateEndpoint];
@@ -146,14 +168,7 @@
         NSString *host = [(NSString *)[bits objectAtIndex:1] substringFromIndex:2];
         NSString *port = [bits objectAtIndex:2];
         [xmppJingle sendSessionAccept:[incall callId] to:[incall from] host:host port:port payload:[incall payload]];
-        NSString *fhost = [xmppJingle ipWithCandidate:(NSXMLElement *)[incall candidate] ];
-        NSString *fport = [xmppJingle portWithCandidate:(NSXMLElement *)[incall candidate] ];
-
-        NSString *fullshare = [NSString stringWithFormat:@"%@:%@:%@", lshare, fhost , fport];
-        
-        NSString *mycodec = [xmppJingle ptypeWithPayload:(NSXMLElement *)[incall payload] ];
-        NSLog(@" codec req is %@",mycodec );
-        [[phono papi] share:fullshare autoplay:NO codec:mycodec ]; // hack!b
+        [self startMediaOnCall:incall now:NO];
     }
     
 }
@@ -162,20 +177,25 @@
     NSString *lshare = acall.share ;
     [[phono papi] stop:lshare];
     NSLog(@"stopping %@",[acall share] );
+    [acall setState:ENDED];
 
     [[phono papi] freeEndpoint:lshare];
     
     [xmppJingle sendHangup:acall.callId to:[acall from] reason:@"success"];
 }
 
-- (void) jingleSessionInit {
-    NSError *error;
-    NSString *sample = @"<iq type=\"set\" to=\"timpanton\\40sip2sip.info@sip\" xmlns=\"jabber:client\" id=\"8019:sendIQ\"><jingle xmlns=\"urn:xmpp:jingle:1\" action=\"session-initiate\" initiator=\"29b0c2c9-308e-4b7d-b969-16303d449298@gw114.phono.com/voxeo\" sid=\"5fa70004e001e018f8ae197e03ddb0a3\"><content creator=\"initiator\"><description xmlns=\"urn:xmpp:jingle:apps:rtp:1\"><payload-type id=\"103\" name=\"SPEEX\" clockrate=\"16000\"/><payload-type id=\"102\" name=\"SPEEX\" clockrate=\"8000\"/></description><transport xmlns=\"urn:xmpp:jingle:transports:raw-udp:1\"><candidate ip=\"192.168.0.14\" port=\"59891\" generation=\"1\"/></transport></content></jingle></iq>";
-    NSXMLElement *iiq =[[NSXMLElement alloc] initWithXMLString:sample error:&error];
-    
-    XMPPIQ *iq = [XMPPIQ iqFromElement:iiq ];
-    [xmppStream sendElement:iq];
-    
+- (void)dialCall:(PhonoCall *)acall{
+    NSString *lshare = acall.share =  [phono.papi allocateEndpoint];
+    NSArray *bits = [lshare componentsSeparatedByString:@":"];
+    // 0= 'rtp' 1 = //192.67.4.1 2 =3020
+    if (( [bits count ] == 3) 
+        && ( [(NSString *)[bits objectAtIndex:0] compare:@"rtp"] == NSOrderedSame ) ){
+        NSString *host = [(NSString *)[bits objectAtIndex:1] substringFromIndex:2];
+        NSString *port = [bits objectAtIndex:2];
+        NSString * sessionId = [xmppJingle initSessionTo:[acall to] lhost:host lport:port payloads:allAudioCodecs];
+        [acall setCallId:sessionId];
+        [acall setState:NEW];
+    }
 }
 
 
@@ -202,7 +222,20 @@
     [incall setCandidate:candidate];
     [incall setFrom:[from full]];
     [incall setTo:[to full]];
+    [incall setState:PENDING];
     [phono.phone didReceiveIncommingCall:incall];
+}
+
+
+
+- (void)xmppJingle:(XMPPJingle *)sender didReceiveAcceptForCall:(NSString *)sid from:(XMPPJID *)from to:(XMPPJID *)to transport:(NSXMLElement *)candidate sdp:(NSXMLElement *)payload {
+    PhonoCall *ccall = [phono.phone currentCall];
+    if ([[ccall callId] compare:sid] == NSOrderedSame ){
+        [ccall setCandidate:candidate];
+        [ccall setPayload:payload];
+        [self startMediaOnCall:ccall now:YES];
+        [ccall setState:ACTIVE];
+    }
 }
 
 - (void)xmppJingle:(XMPPJingle *)sender
@@ -210,8 +243,19 @@
     // should have a list of calls - but for now a choice of 1
     PhonoCall *ccall = [phono.phone currentCall];
     if ([[ccall callId] compare:sid] == NSOrderedSame ){
-        [[phono papi] start:[ccall share]];
-        NSLog(@"starting %@",[ccall share] );
+        NSInteger state = [ccall state];
+        switch (state){
+            case PENDING : {
+                [ccall setState:ACTIVE];
+                [[phono papi] start:[ccall share]];
+                NSLog(@"starting %@",[ccall share]);
+                break;
+            }
+            case NEW: {
+                [ccall setState:PENDING];
+                NSLog(@"waiting for an accept");
+            }
+        }
     }
     
     
@@ -230,6 +274,7 @@ didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
         if (ccall.onHangup != nil){
             ccall.onHangup();
         }
+        [ccall setState:ENDED];
     }
 }
 

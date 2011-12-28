@@ -24,6 +24,7 @@
 	BOOL allowSSLHostNameMismatch;
 	PhonoNative *phono;
 	BOOL isXmppConnected;
+    NSXMLElement *allAudioCodecs;
 }
 
 @property (nonatomic, readonly) XMPPStream *xmppStream;
@@ -34,7 +35,7 @@
 - (BOOL)connect:(NSString *)apiKey;
 - (void)disconnect;
 - (void)setupStream;
-- (void)jingleSessionInit;
+- (void)dialCall:(PhonoCall *)acall;
 - (id) initWithPhono:(PhonoNative *)p;
 - (void)acceptInboundCall:(PhonoCall *)incall;
 - (void)hangupCall:(PhonoCall *)acall;
