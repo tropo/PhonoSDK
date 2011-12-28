@@ -26,6 +26,11 @@
 - (PhonoCall *)dial:(PhonoCall *)dest{
     dest.phono = phono;
     [dest outbound];
+    if (currentCall != nil){
+        [self hangupCall:currentCall];
+    }    
+    currentCall = dest;
+    [[phono pxmpp] dialCall:dest];
     return dest;
 }
 - (void) didReceiveIncommingCall:(PhonoCall *)call{

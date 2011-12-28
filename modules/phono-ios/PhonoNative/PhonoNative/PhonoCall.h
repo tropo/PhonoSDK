@@ -16,6 +16,11 @@
  */
 
 #import <Foundation/Foundation.h>
+#define NEW (0)
+#define PENDING (1)
+#define ACTIVE (2)
+#define ENDED (3)
+
 @class PhonoEvent;
 @class PhonoNative;
 @interface PhonoCall : NSObject
@@ -25,7 +30,7 @@
     NSString *to;
     NSMutableDictionary *headers;
     NSString *callId;
-    NSString *state;
+    NSInteger state;
     BOOL hold;
     BOOL mute;
     int volume;
@@ -50,7 +55,7 @@
 @property(nonatomic, copy) void (^onAnswer)();
 @property(nonatomic, copy) void (^onHangup)();
 @property(nonatomic, copy) void (^onError)();
-@property(readonly, copy) NSString *state;
+@property(readwrite, atomic) NSInteger state;
 
 @property(readonly, copy) NSMutableDictionary *headers;
 @property(readwrite) BOOL hold;

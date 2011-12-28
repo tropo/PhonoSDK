@@ -71,6 +71,9 @@
 //Connects the Phone to the Voxeo Cloud.
 
 -(void) connect{
+    if (papi == nil){
+        papi = [[PhonoAPI alloc] init];
+    }
     if (pxmpp == nil){
         pxmpp = [[PhonoXMPP alloc] initWithPhono:self];
     }
@@ -78,13 +81,15 @@
         [pxmpp setupStream];
         [pxmpp connect:apiKey];
     }
-    if (papi == nil){
-        papi = [[PhonoAPI alloc] init];
-    }
+
 }	  
--(void) disconnect{} //	 Disconnects the Phone from the Voxeo Cloud. 
+-(void) disconnect{
+    if (pxmpp != nil){
+        [pxmpp disconnect];
+    }
+} //	 Disconnects the Phone from the Voxeo Cloud. 
 - (BOOL) connected{
-    return NO;
+    return (pxmpp == nil) ? NO:[[pxmpp xmppStream] isConnected];
 }
 
 @end
