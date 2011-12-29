@@ -21,7 +21,7 @@
 #import "PhonoAPI.h"
 
 @implementation PhonoCall
-@synthesize callId,onRing,onAnswer,onHangup,onError,state,hold,mute,volume,gain,headers,phono,payload, candidate, to ,from, share;
+@synthesize callId,onRing,onAnswer,onHangup,onError,state,hold,mute,volume,gain,headers,phono,payload, candidate, to ,from, share, ringing;
 
 
 - (id)initInbound
@@ -29,6 +29,7 @@
     self = [super init];
     if (self) {
         headers = [[NSMutableDictionary alloc] init];
+        state = PENDING;
     }
     
     return self;
@@ -51,7 +52,7 @@
 {
     self = [super init];
     if (self) {
-        to = [NSString stringWithFormat:@"%@@%@" , [phono escapeString:user] , domain];
+        to = [NSString stringWithFormat:@"%@@%@" , [PhonoNative escapeString:user] , domain];
         headers = outhead;
     }
     
@@ -63,6 +64,7 @@
 } //	 When a call arrives via an incomingCall event, it can be answered by calling this function.
 -(void) hangup{
     [phono.phone hangupCall:self];
+    state = ENDED;
 } //	 Hangs up an active call.
 
 -(void) digit:(NSString*)dtmf{

@@ -19,6 +19,7 @@
 #import "PhonoCall.h"
 #import "PhonoNative.h"
 #import "PhonoXMPP.h"
+#import "PhonoAPI.h"
 
 @implementation PhonoPhone
 @synthesize tones,onReady,onIncommingCall,headset,ringTone,ringbackTone,phono, xmppsessionID,currentCall;
@@ -34,8 +35,10 @@
     return dest;
 }
 - (void) didReceiveIncommingCall:(PhonoCall *)call{
+    if (ringTone != nil){
+        [[phono papi] play:ringTone autoplay:YES];
+    }
     if (onIncommingCall != nil) {
-        // this should be on the main queue already.....
         onIncommingCall(call);
     } else {
         [self hangupCall:call];
@@ -50,6 +53,9 @@
     }
     currentCall = incall;
     [[phono pxmpp] acceptInboundCall:incall];
+    if (ringTone != nil){
+        [[phono papi] stop:ringTone];
+    }
 }
 
 // hangup a call

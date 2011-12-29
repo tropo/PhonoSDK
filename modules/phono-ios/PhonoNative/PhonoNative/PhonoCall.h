@@ -33,6 +33,7 @@
     NSInteger state;
     BOOL hold;
     BOOL mute;
+    BOOL ringing;
     int volume;
     int gain;
     id candidate; // 
@@ -60,6 +61,7 @@
 @property(readonly, copy) NSMutableDictionary *headers;
 @property(readwrite) BOOL hold;
 @property(readwrite) BOOL mute;
+@property(readwrite) BOOL ringing;
 @property(readwrite) int volume;
 @property(readwrite) int gain;
 
