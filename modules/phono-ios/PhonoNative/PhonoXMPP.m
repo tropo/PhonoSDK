@@ -178,8 +178,10 @@
     [[phono papi] stop:lshare];
     NSLog(@"stopping %@",[acall share] );
     [acall setState:ENDED];
-
+    [[phono papi] stop:lshare];
     [[phono papi] freeEndpoint:lshare];
+    [phono.phone setCurrentCall:nil];
+
     
     [xmppJingle sendHangup:acall.callId to:[acall from] reason:@"success"];
 }
@@ -231,12 +233,36 @@
 - (void)xmppJingle:(XMPPJingle *)sender didReceiveAcceptForCall:(NSString *)sid from:(XMPPJID *)from to:(XMPPJID *)to transport:(NSXMLElement *)candidate sdp:(NSXMLElement *)payload {
     PhonoCall *ccall = [phono.phone currentCall];
     if ([[ccall callId] compare:sid] == NSOrderedSame ){
-        [ccall setCandidate:candidate];
-        [ccall setPayload:payload];
-        [self startMediaOnCall:ccall now:YES];
-        [ccall setState:ACTIVE];
-        if (ccall.onAnswer != nil){
-            ccall.onAnswer();
+        if (ccall.state == PENDING){
+            [ccall setCandidate:candidate];
+            [ccall setPayload:payload];
+            if(ccall.ringing){
+                [phono.papi stop:phono.phone.ringbackTone ];
+            }
+            [self startMediaOnCall:ccall now:YES];
+            [ccall setState:ACTIVE];
+            if (ccall.onAnswer != nil){
+                ccall.onAnswer();
+            }
+        } else {
+                NSLog(@"Call state mixup - call should be PENDING when accept arrives");
+            }
+    }
+}
+
+- (void)xmppJingle:(XMPPJingle *)sender didReceiveInfoForCall:(NSString *)sid from:(XMPPJID *)from to:(XMPPJID *)to info:(NSXMLNode *)info {
+    PhonoCall *ccall = [phono.phone currentCall];
+    if ([[ccall callId] compare:sid] == NSOrderedSame ){
+        if(ccall.state == PENDING) {
+            if (!ccall.ringing){
+                if (ccall.onRing != nil)  {
+                    ccall.onRing();
+                }
+                ccall.ringing = YES;
+                if (phono.phone.ringbackTone != nil){
+                    [phono.papi play:phono.phone.ringbackTone autoplay:YES];
+                }
+            }
         }
     }
 }
@@ -257,6 +283,7 @@
             case NEW: {
                 [ccall setState:PENDING];
                 NSLog(@"waiting for an accept");
+                break;
             }
         }
     }
@@ -273,6 +300,9 @@ didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
     PhonoCall *ccall = [phono.phone currentCall];
     if ([[ccall callId] compare:sid] == NSOrderedSame ){
         [[phono papi] stop:[ccall share]];
+        [[phono papi] freeEndpoint:[ccall share]];
+        [phono.phone setCurrentCall:nil];
+
         NSLog(@"stopping %@",[ccall share] );
         if (ccall.onHangup != nil){
             ccall.onHangup();
@@ -363,6 +393,12 @@ didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
     if (phono.onUnready != nil){
         dispatch_queue_t q_main = dispatch_get_main_queue();
         dispatch_async(q_main, phono.onUnready);
+    }
+    PhonoCall *ccall = [phono.phone currentCall];
+    if (ccall != nil) {
+        [[phono papi] stop:[ccall share]];
+        [[phono papi] freeEndpoint:[ccall share]];
+        [phono.phone setCurrentCall:nil];
     }
 }
 @end
