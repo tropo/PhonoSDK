@@ -57,6 +57,9 @@
     phone.onIncommingCall = ^(PhonoCall * incall){
         [self popIncommingCallAlert:incall];
     };
+    phone.ringTone = [[NSBundle mainBundle] pathForResource:@"Diggztone_Marimba" ofType:@"mp3"] ;
+    phone.ringbackTone= [[NSBundle mainBundle] pathForResource:@"ringback-uk" ofType:@"mp3"];
+
 
     phono = [[PhonoNative alloc] initWithPhone:phone ];
     phono.onReady = ^{ [self gotjId];};
@@ -105,8 +108,8 @@
 }
 - (IBAction)disconnect{}
 - (IBAction)call{
-    //call = [[PhonoCall alloc] initOutbound:@"9996160714" domain:@"app"]; 
-    call = [[PhonoCall alloc] initOutbound:@"timpanton@sip2sip.info" domain:@"sip"];
+    call = [[PhonoCall alloc] initOutbound:@"9996160714" domain:@"app"]; 
+    //call = [[PhonoCall alloc] initOutbound:@"timpanton@sip2sip.info" domain:@"sip"];
     [self update:@"dialing"];
     call.onAnswer = ^{ [self update:@"answered"];};
     call.onError = ^{ [self update:@"error"];};
