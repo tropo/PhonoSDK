@@ -95,6 +95,7 @@
     [av setDelegate:self];
     if (error){
         ret = [error localizedDescription];
+        NSLog(@"Play error on %@ of %@",uri,ret);
     } else {
         ret = [[av url] absoluteString] ;
         [players setObject: av forKey:ret];
@@ -121,6 +122,7 @@
         [ps start];
     } else {
         av = [players objectForKey:uri];
+        [av setNumberOfLoops:-1]; //repeat indefinitely
         [av play];
     }
     return (av != nil) || (ep != nil);
@@ -235,9 +237,11 @@
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)av successfully:(BOOL)flag{
+// wrong assumption here....
     NSString *uri = [[av url] absoluteString];
     [players removeObjectForKey:uri];
     NSLog(@"removing %@",uri);
+ 
 }
 @end
 
