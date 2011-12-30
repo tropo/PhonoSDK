@@ -20,12 +20,15 @@
     PhonoNative *phono;
     PhonoPhone *phone;
     PhonoCall *call;
-}
+    UITextField *outMess;
 
+}
+@property (nonatomic,retain) IBOutlet UITextField *outMess;
 @property (nonatomic,retain) IBOutlet UITextField *appNum;
 @property (nonatomic,retain) IBOutlet UILabel *tjid;
 @property (nonatomic,retain) IBOutlet UILabel *status;
 @property (nonatomic,retain) IBOutlet UIWebView *prompt;
+@property (nonatomic,retain) IBOutlet UISegmentedControl *domain;
 
 
 - (IBAction)connect;
@@ -33,5 +36,6 @@
 - (IBAction)call;
 - (IBAction)hangup;
 - (IBAction)digit:(id) sender ;
+- (IBAction)sendMess;
 
 @end

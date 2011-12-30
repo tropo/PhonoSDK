@@ -12,7 +12,7 @@
 
 @implementation VisIVRViewController
 
-@synthesize  appNum , tjid, status, prompt;
+@synthesize  appNum , tjid, status, prompt, domain, outMess;
 
 - (void)didReceiveMemoryWarning
 {
@@ -48,6 +48,21 @@
     [alert release];
 }
 
+-(void) gotMessage:(PhonoMessage *)mess{
+    // strictly test to and from here but for now.....
+    // stringByEvaluatingJavaScriptFromString in future $("#"+newCallID);
+    //NSString *html =[NSString stringWithFormat:@"<html><body>%@</body></html>",[mess body]];
+    //[prompt loadHTMLString:html baseURL:nil];
+    
+    NSString *bo = [mess body];
+    if ([bo characterAtIndex:0] == '$'){
+        NSString *res = [prompt stringByEvaluatingJavaScriptFromString:bo];
+        NSLog(@" js result %@",res);
+    } else {
+        NSString *html =[NSString stringWithFormat:@"<html><body>%@</body></html>",[mess body]];
+        [prompt loadHTMLString:html baseURL:nil];
+    }
+}
 
 - (void)viewDidLoad
 {
@@ -60,9 +75,21 @@
     phone.ringTone = [[NSBundle mainBundle] pathForResource:@"Diggztone_Marimba" ofType:@"mp3"] ;
     phone.ringbackTone= [[NSBundle mainBundle] pathForResource:@"ringback-uk" ofType:@"mp3"];
 
-
     phono = [[PhonoNative alloc] initWithPhone:phone ];
+    phono.messaging.onMessage = ^(PhonoMessage *message){
+        [self gotMessage:message];
+    };
     phono.onReady = ^{ [self gotjId];};
+    NSURL *base = [NSURL URLWithString:@"http://s.phono.com/"];
+    NSString *empty = @"<html>\
+    <head>\
+    <script src='http://code.jquery.com/jquery-1.4.2.min.js'></script>\
+    </head>\
+    <body id='body'>Empty\
+    </body>\
+    </html>";
+    
+    [prompt loadHTMLString:empty baseURL:base];
 }
 
 - (void)viewDidUnload
@@ -106,15 +133,22 @@
     [phono setApiKey:@"C17D167F-09C6-4E4C-A3DD-2025D48BA243"];
     [phono connect];
 }
-- (IBAction)disconnect{}
+- (IBAction)disconnect{
+    [phono disconnect];
+}
 - (IBAction)call{
-    call = [[PhonoCall alloc] initOutbound:@"9996160714" domain:@"app"]; 
-    //call = [[PhonoCall alloc] initOutbound:@"timpanton@sip2sip.info" domain:@"sip"];
+    NSString *user = [appNum text];
+    NSInteger m = [domain selectedSegmentIndex];
+    NSString *dom =  (m == 1)? @"sip":@"app";
+
+    call = [[[PhonoCall alloc] initOutbound:user domain:dom] retain]; 
     [self update:@"dialing"];
+    [call.headers setObject:[phono sessionID] forKey:@"x-jid"];
     call.onAnswer = ^{ [self update:@"answered"];};
     call.onError = ^{ [self update:@"error"];};
     call.onHangup = ^{ [self update:@"hangup"];};
     call.onRing = ^{ [self update:@"ring"];};
+    call.from = [NSString stringWithFormat:@"%@@gw114.phono.com",[phono sessionID]];
     [phono.phone dial:call];
 
 }
@@ -126,6 +160,28 @@
     NSString *d = [[b titleLabel] text];
     NSLog(@"Digit %@",d);
     [call digit:d];
+}
+
+- (IBAction)sendMess{
+    if (call == nil){
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Can't send message"
+                                                        message:@"You can only send messages during a call, sorry."
+                                                       delegate:nil
+                                              cancelButtonTitle:@"Cancel"
+                                              otherButtonTitles:nil];
+        
+        [alert show];
+        [alert release];
+    } else {
+        NSString *b = [outMess text];
+        PhonoMessage *m = [[PhonoMessage alloc] init];
+        [m setPhono:phono];
+        [m setBody:b];
+        [m setFrom:[call from]];
+        NSString *t = [NSString stringWithFormat:@"%@@tropo.im",[appNum text]];
+        [m setTo:t];
+        [m sendMe];
+    }
 }
 
 // delegate actions
