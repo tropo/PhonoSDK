@@ -42,7 +42,7 @@
 {
     self = [super init];
     if (self) {
-        to = [NSString stringWithFormat:@"%@@%@" , [PhonoNative escapeString:user] , domain];
+        to = [[[NSString alloc ] initWithFormat:@"%@@%@" , [PhonoNative escapeString:user] , domain] retain];
         headers = [[NSMutableDictionary alloc] init];
     }
     
@@ -52,7 +52,7 @@
 {
     self = [super init];
     if (self) {
-        to = [NSString stringWithFormat:@"%@@%@" , [PhonoNative escapeString:user] , domain];
+        to = [[[NSString alloc ] initWithFormat:@"%@@%@" , [PhonoNative escapeString:user] , domain] retain];
         headers = outhead;
     }
     

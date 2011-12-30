@@ -46,6 +46,8 @@
 @property(nonatomic, copy) void (^onError)();
 @property(readwrite, copy) NSString *sessionID;
 @property(readonly) PhonoPhone *phone;
+@property(readonly) PhonoMessaging *messaging;
+
 @property(readwrite, copy) NSDictionary *audio;
 
 - (void)connect;	 //Connects the Phone to the Voxeo Cloud. 

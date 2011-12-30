@@ -10,6 +10,9 @@
 #import "PhonoMessage.h"
 @implementation PhonoMessaging
 @synthesize phono,onMessage;
-- (void) send:(PhonoMessage *)mess {};
+- (void) send:(PhonoMessage *)mess {
+    mess.phono = [self phono];
+    [mess sendMe];
+};
 
 @end

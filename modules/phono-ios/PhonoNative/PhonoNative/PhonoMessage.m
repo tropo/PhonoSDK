@@ -7,10 +7,22 @@
 //
 
 #import "PhonoMessage.h"
+#import "PhonoXMPP.h"
 
 @implementation PhonoMessage
 @synthesize to,from,phono,body;
--(void) sendMe{}
-- (PhonoMessage *) reply:(NSString *)body {return nil;}
+-(void) sendMe{
+    PhonoXMPP *px = [phono pxmpp];
+    [px sendMessage:self];
+}
+- (PhonoMessage *) reply:(NSString *)rbody {
+    PhonoMessage * rep = [[PhonoMessage alloc] init];
+    [rep setPhono:[self phono]];
+    [rep setFrom:[self to]];
+    [rep setTo:[self from]];
+    [rep setBody:rbody];
+    [rep sendMe];
+    return rep;
+}
 
 @end
