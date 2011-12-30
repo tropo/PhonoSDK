@@ -4,8 +4,6 @@ clean up on hangup (either end.)
     audio cleanup so can be reused.
 cut latency
 cut packet mangle
-Display ringing 
-Do ringback
 Do callbacks
 
 
@@ -16,3 +14,6 @@ Leak check.
 
 Set status(s)
 
+Backgrounding 
+audio settings (change)
+test network fail.

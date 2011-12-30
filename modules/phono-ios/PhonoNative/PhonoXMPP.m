@@ -194,7 +194,21 @@
         && ( [(NSString *)[bits objectAtIndex:0] compare:@"rtp"] == NSOrderedSame ) ){
         NSString *host = [(NSString *)[bits objectAtIndex:1] substringFromIndex:2];
         NSString *port = [bits objectAtIndex:2];
-        NSString * sessionId = [xmppJingle initSessionTo:[acall to] lhost:host lport:port payloads:allAudioCodecs];
+        NSMutableArray *heads = nil;
+        if (acall.headers != nil){
+            // add the custom phono stuff here.
+            heads = [[NSMutableArray alloc] initWithCapacity:[acall.headers count]];
+            NSEnumerator *e = [acall.headers keyEnumerator];
+            NSString *k = nil;
+            while (nil != (k = [e nextObject])){
+                NSString *v = [acall.headers objectForKey:k];
+                NSXMLElement * xe = [DDXMLElement elementWithName:@"custom-header"];
+                [xe addAttributeWithName:@"name" stringValue:k];
+                [xe addAttributeWithName:@"data" stringValue:v];
+                [heads addObject:xe];
+            }
+        }
+        NSString * sessionId = [xmppJingle initSessionTo:[acall to] lhost:host lport:port payloads:allAudioCodecs custom:heads];
         [acall setCallId:sessionId];
         [acall setState:NEW];
     }
@@ -210,6 +224,19 @@
     [xmppStream sendElement:iq];
 }
 
+- (void) sendMessage:(PhonoMessage *)mess {
+/* <message xmlns="jabber:client" from="phono-weather@tropo.im/Tropo" type="chat" to="43daae43-0edc-41aa-8f45-567b22a62276@gw-v3.d.phono.com/voxeo"><body>Conditions for Silver Spring, MD at 3:58 pm EST: 45 degrees Fahrenheit. Fair</body></message>*/
+    XMPPMessage *jmessage = [[ XMPPMessage alloc] init];
+    [jmessage setXmlns:@"jabber:client"];
+    [jmessage addAttributeWithName:@"type" stringValue:@"chat"];
+    [jmessage addAttributeWithName:@"to" stringValue:[mess to]];
+    //[jmessage addAttributeWithName:@"from" stringValue:[mess from]];
+    NSXMLElement *xbody = [NSXMLElement elementWithName:@"body" stringValue:[mess body]];
+    [xbody setXmlns:@"jabber:client"];
+    [jmessage addChild:xbody];
+    NSLog(@"sending %@",[jmessage XMLString]);
+    [xmppStream sendElement:jmessage];
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -353,6 +380,9 @@ didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
         dispatch_async(q_main, phono.onReady);
     }
     [self sendApiKey];
+    XMPPPresence *presence = [XMPPPresence presence]; // type="available" is implicit
+    [[self xmppStream] sendElement:presence];
+    
 }
 
 - (void)xmppStream:(XMPPStream *)sender didNotAuthenticate:(NSXMLElement *)error
@@ -370,7 +400,15 @@ didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
 - (void)xmppStream:(XMPPStream *)sender didReceiveMessage:(XMPPMessage *)message
 {
 	NSLog(@"Got message from %@ : %@", [message from] , [[message elementForName:@"body"] stringValue]);
-    
+    PhonoMessaging *pm = [phono messaging];
+    if (pm.onMessage != nil){
+        PhonoMessage *mess = [[[PhonoMessage alloc] init] autorelease];
+        [mess setBody:[[message elementForName:@"body"] stringValue]];
+        [mess setFrom:[PhonoNative unescapeString:[message fromStr]]];
+        [mess setTo: [PhonoNative unescapeString:[message toStr]]];
+        [mess setPhono:phono];
+        pm.onMessage(mess);
+    }
 }
 
 - (void)xmppStream:(XMPPStream *)sender didReceivePresence:(XMPPPresence *)presence

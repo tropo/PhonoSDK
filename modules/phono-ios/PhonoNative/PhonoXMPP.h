@@ -39,6 +39,7 @@
 - (id) initWithPhono:(PhonoNative *)p;
 - (void)acceptInboundCall:(PhonoCall *)incall;
 - (void)hangupCall:(PhonoCall *)acall;
+- (void) sendMessage:(PhonoMessage *)mess ;
 
 
 @end
