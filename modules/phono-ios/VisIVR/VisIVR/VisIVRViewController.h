@@ -37,5 +37,6 @@
 - (IBAction)hangup;
 - (IBAction)digit:(id) sender ;
 - (IBAction)sendMess;
+- (IBAction)speaker:(id)sender;
 
 @end

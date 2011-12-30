@@ -9,6 +9,8 @@
 #import "VisIVRViewController.h"
 #import "PhonoNative.h"
 #import "PhonoPhone.h"
+#import <AudioToolbox/AudioToolbox.h>
+
 
 @implementation VisIVRViewController
 
@@ -152,6 +154,17 @@
     [phono.phone dial:call];
 
 }
+
+- (IBAction)speaker:(id)sender{
+    UISwitch *sp = (UISwitch *) sender;
+    UInt32 audioRouteOverride = [sp isOn] ? kAudioSessionOverrideAudioRoute_Speaker :kAudioSessionOverrideAudioRoute_None;
+     
+     OSStatus result =	 AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,                         
+     sizeof (audioRouteOverride),
+     &audioRouteOverride);
+     if (result) NSLog(@"ERROR AudioSessionSetProperty!");
+}
+
 - (IBAction)hangup{
     [call hangup];
 }
