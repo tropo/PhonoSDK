@@ -1,2 +1,5 @@
-/* Localized versions of Info.plist keys */
-
+{
+	UIBackgroundModes = (
+		voip,
+	);
+}
