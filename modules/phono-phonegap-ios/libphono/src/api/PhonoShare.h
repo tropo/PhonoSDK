@@ -36,6 +36,7 @@
 @property (assign,readwrite) PhonoEndpoint * endpoint;
 @property (assign,readonly) NSString *nearUri;
 @property (assign,readwrite) NSString *codec;
+@property (assign,readwrite) PhonoAudio *audio;
 
 - (id) initWithUri:(NSString *) uri;
 - (float) gain:(float) value;

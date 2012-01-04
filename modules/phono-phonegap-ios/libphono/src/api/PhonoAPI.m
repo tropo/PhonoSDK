@@ -25,10 +25,19 @@
 
 @implementation PhonoAPI
 
+- (void) setUseSpeakerForCall:(BOOL)val{
+    if(val != useSpeakerForCall){
+        [audio setSpeaker:val];
+        useSpeakerForCall = val;
+    }
+}
+
+
 - (id) init{
     self = [super init];
     endpoints = [[NSMutableDictionary alloc] init];
     players = [[NSMutableDictionary alloc] init];
+    audio = [[PhonoAudio alloc] init];
     return self;
     
 }
@@ -73,6 +82,7 @@
         [endpoints setObject:ep forKey:luri];
     }
     [ps setEndpoint:ep];
+    [ps setAudio:audio];
     [ps setCodec:[[NSString alloc] initWithString:codec ]];
     [ep setPlayer:ps];
     
@@ -119,10 +129,12 @@
     AVAudioPlayer *av = nil;
     if (ep != nil) {
         PhonoShare *ps = (PhonoShare *) [ep player];
+        [audio setSpeaker:useSpeakerForCall];
         [ps start];
     } else {
         av = [players objectForKey:uri];
         [av setNumberOfLoops:-1]; //repeat indefinitely
+        [audio setSpeaker:YES];
         [av play];
     }
     return (av != nil) || (ep != nil);
@@ -194,7 +206,6 @@
 }
 
 - (NSArray *) codecArray{
-    PhonoAudio *audio = [[PhonoAudio alloc] init ];
     NSArray *cs = [audio allCodecs];
     
     NSMutableArray *ca = [[NSMutableArray alloc] initWithCapacity:[cs count]];

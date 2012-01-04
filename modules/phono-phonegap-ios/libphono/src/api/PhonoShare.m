@@ -19,7 +19,7 @@
 
 
 @implementation PhonoShare
-@synthesize nearUri ,endpoint, codec;
+@synthesize nearUri ,endpoint, codec,audio;
 
 
 - (id) initWithUri:(NSString *) uri{
@@ -56,13 +56,10 @@
         } else {
             NSLog(@"Already have an RTP engine for %@",nearUri);  
         }
-        if (audio == nil) {
-            audio = [[PhonoAudio alloc] init ];
-            [audio setWireConsumer:rtp];
-            [rtp setRtpds:audio];
-            
-            [audio setCodec:codec]; // magically starts us up.
-        }
+        [audio setWireConsumer:rtp];
+        [rtp setRtpds:audio];            
+        [audio setCodec:codec]; // magically starts us up.
+        [audio start];
     } else {
         NSLog(@"no endpoint for %@",nearUri);
     }
@@ -82,6 +79,7 @@
 
 - (void) stop{
     [audio stop];
+    [rtp stop];
     [endpoint close];
 }
 
