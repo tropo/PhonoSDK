@@ -40,6 +40,6 @@
 - (void)acceptInboundCall:(PhonoCall *)incall;
 - (void)hangupCall:(PhonoCall *)acall;
 - (void) sendMessage:(PhonoMessage *)mess ;
-
+- (BOOL) isConnected;
 
 @end

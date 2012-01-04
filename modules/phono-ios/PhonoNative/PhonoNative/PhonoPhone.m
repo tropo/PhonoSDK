@@ -25,6 +25,9 @@
 @synthesize tones,onReady,onIncommingCall,headset,ringTone,ringbackTone,phono, xmppsessionID,currentCall;
 
 - (PhonoCall *)dial:(PhonoCall *)dest{
+    if ([[phono pxmpp] isConnected]) {
+        
+    
     dest.phono = phono;
     [dest outbound];
     if (currentCall != nil){
@@ -32,6 +35,11 @@
     }    
     currentCall = dest;
     [[phono pxmpp] dialCall:dest];
+    } else {
+        if (dest.onError != nil){
+            dest.onError(nil);
+        }
+    }
     return dest;
 }
 - (void) didReceiveIncommingCall:(PhonoCall *)call{

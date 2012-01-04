@@ -132,6 +132,11 @@
     js = [js stringByReplacingOccurrencesOfString:@">" withString:@"\\5c"];
     return js;
 }
+- (void) setUseSpeaker:(BOOL)use{
+    if (papi != nil){
+        [papi setUseSpeakerForCall:use];
+    }
+}
 
 
 @end

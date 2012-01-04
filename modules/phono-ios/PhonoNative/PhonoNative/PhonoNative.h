@@ -55,7 +55,7 @@
 - (BOOL) connected;
 - (id) initWithPhone:(PhonoPhone *) phone;
 - (id) initWithPhoneAndMessaging:(PhonoPhone *) phone messaging:(PhonoMessaging *) messaging;
-
+- (void) setUseSpeaker:(BOOL)use;
 + (NSString *) unescapeString:(NSString *) esc;
 + (NSString *) escapeString:(NSString *)une;
 

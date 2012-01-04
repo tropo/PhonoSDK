@@ -25,11 +25,16 @@
     }
     return self;
 }
-
+- (BOOL) isConnected{
+    return isXmppConnected;
+}
 - (void)setupStream
 {
-	NSAssert(xmppStream == nil, @"Method setupStream invoked multiple times");
-	
+	// NSAssert(xmppStream == nil, @"Method setupStream invoked multiple times");
+	if (xmppStream != nil){
+        return;
+    }
+    
 	// Setup xmpp stream
 	// 
 	// The XMPPStream is the base class for all activity.
@@ -178,7 +183,6 @@
     [[phono papi] stop:lshare];
     NSLog(@"stopping %@",[acall share] );
     [acall setState:ENDED];
-    [[phono papi] stop:lshare];
     [[phono papi] freeEndpoint:lshare];
     [phono.phone setCurrentCall:nil];
 
@@ -438,5 +442,6 @@ didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
         [[phono papi] freeEndpoint:[ccall share]];
         [phono.phone setCurrentCall:nil];
     }
+    isXmppConnected = NO;
 }
 @end
