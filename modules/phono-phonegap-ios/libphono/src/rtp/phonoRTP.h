@@ -36,7 +36,6 @@
     CFSocketNativeHandle ipv4Soc;
     NSThread *rcvThread;
     NSThread *listen;
-	
 	BOOL _srtp;
     int _id;
     /* we don't support assymetric codec types (we could I suppose) so this is bi */
@@ -64,7 +63,7 @@
 @property (nonatomic, assign) PhonoAudio  *rtpds;
 
 - (BOOL)start: (CFSocketRef) s ;
-
+- (void) stop;
 
 
 - (void) sendPacket:(NSData *)data stamp:(uint64_t)stamp ptype:(int) ptype;

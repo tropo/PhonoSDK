@@ -35,7 +35,7 @@
     
     char currentDigit;
     int currentDigitDuration;
-    
+    NSRunLoop* audioRunLoop;
     NSThread *audioThread;
     NSMutableData *wout;
     NSInteger aframeLen;
@@ -80,4 +80,5 @@
 - (void) mute:(BOOL)v;
 - (void) digit:(NSString*) digit duration:(int) duration;
 - (void) setWireConsumer:(id<AudioDataConsumer>)a;
+- (void) setSpeaker:(BOOL)use;
 @end

@@ -43,6 +43,7 @@ static int frameIntervalMS = 20;
     playing = NO;
     muted = NO;
     currentDigitDuration = 0;
+    [self performSelectorInBackground:@selector(spawnAudio) withObject:nil];
     return self;
 }
 
@@ -106,34 +107,8 @@ void interruptionListenerCallback (void *inUserData, UInt32  interruptionState) 
 	NSLog(@"interruptionListenerCallback");
 }
 
-- (void) audioSessionStuff{
-	OSStatus result = AudioSessionInitialize (CFRunLoopGetCurrent(), kCFRunLoopCommonModes,interruptionListenerCallback,self);
-	if (result) printf("ERROR AudioSessionInitialize!\n");
-    
-    AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange, audioRootChanged, self);
-    
-	UInt32 sessionCategory = kAudioSessionCategory_PlayAndRecord; 
-	
-    result = AudioSessionSetProperty (kAudioSessionProperty_AudioCategory, sizeof (sessionCategory),&sessionCategory);
-	if (result) printf("ERROR AudioSessionSetProperty!\n");
-    
-    
-    
-    Float64 preferredSampleRate = [codec getRate]; // try and get the hardware to resample
-    AudioSessionSetProperty(kAudioSessionProperty_PreferredHardwareSampleRate, sizeof(preferredSampleRate), &preferredSampleRate);
-    
-    Float32 preferredBufferSize = .02; // I'd like a 20ms buffer duration but I can't have one....
-    AudioSessionSetProperty(kAudioSessionProperty_PreferredHardwareIOBufferDuration, sizeof(preferredBufferSize), &preferredBufferSize);
-    
-    // *** Activate the Audio Session before asking for the "Current" properties ***
-    AudioSessionSetActive(true);
-    
-    
-    
-    
-    result =	AudioSessionSetActive (true); 
-	if (result) printf("ERROR AudioSessionSetActive!\n");
-    
+
+- (void) reportRate{
     Float64 mHWSampleRate = 0.0;
     UInt32 size = sizeof(mHWSampleRate);
     AudioSessionGetProperty(kAudioSessionProperty_CurrentHardwareSampleRate, &size, &mHWSampleRate);
@@ -144,12 +119,56 @@ void interruptionListenerCallback (void *inUserData, UInt32  interruptionState) 
     AudioSessionGetProperty(kAudioSessionProperty_CurrentHardwareIOBufferDuration, &size, &mHWBufferDuration);
     
     NSLog(@" actual HW sample rate is %f and buffer duration is %f",(float)mHWSampleRate,mHWBufferDuration);
-	/*UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker; 
-     
-     result =	 AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,                         
-     sizeof (audioRouteOverride),
-     &audioRouteOverride);
-     if (result) printf("ERROR AudioSessionSetProperty!\n"); */
+    
+}
+
+
+
+- (void) audioSessionSetSampleRate:(Float64)rate{
+    OSStatus err = AudioSessionSetProperty(kAudioSessionProperty_PreferredHardwareSampleRate, sizeof(rate), &rate);
+    if (err != 0) { NSLog(@"Error with %@ - %ld",@"kAudioSessionProperty_PreferredHardwareSampleRate ",err);}
+    Float32 preferredBufferSize = .02; // I'd like a 20ms buffer duration but I can't have one....
+    err =  AudioSessionSetProperty(kAudioSessionProperty_PreferredHardwareIOBufferDuration, sizeof(preferredBufferSize), &preferredBufferSize);
+    if (err != 0) { NSLog(@"Error with %@ - %ld",@"kAudioSessionProperty_PreferredHardwareIOBufferDuration ",err); }
+    [self reportRate];
+}
+
+- (void) setSampleRate:(int) rate{
+    AudioStreamBasicDescription asbd;
+    memset(&asbd,0,sizeof(asbd));
+    asbd.mSampleRate = rate;
+    
+    asbd.mFormatID = kAudioFormatLinearPCM;
+    asbd.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked ;
+    asbd.mFramesPerPacket =1;
+    asbd.mChannelsPerFrame = 1;
+    asbd.mBitsPerChannel = 16;
+    asbd.mBytesPerPacket = asbd.mBytesPerFrame = asbd.mChannelsPerFrame * sizeof (SInt16);
+    OSStatus err = AudioUnitSetProperty(vioUnitSpeak, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &asbd, sizeof(asbd));
+    if (err != 0) { NSLog(@"Error with %@ - %ld",@"kAudioUnitProperty_StreamFormat Speak",err); return;}
+    
+    err = AudioUnitSetProperty(vioUnitMic, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 1, &asbd, sizeof(asbd));
+    if (err != 0) { NSLog(@"Error with %@ - %ld",@"kAudioUnitProperty_StreamFormat Mic",err); return;}
+}
+
+
+- (void) audioSessionStuff{
+	OSStatus result = AudioSessionInitialize (CFRunLoopGetCurrent(), kCFRunLoopCommonModes,interruptionListenerCallback,self);
+	if (result) printf("ERROR AudioSessionInitialize!\n");
+    
+    AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange, audioRootChanged, self);
+    
+	UInt32 sessionCategory = kAudioSessionCategory_PlayAndRecord; 
+	
+    result = AudioSessionSetProperty (kAudioSessionProperty_AudioCategory, sizeof (sessionCategory),&sessionCategory);
+	if (result) printf("ERROR AudioSessionSetProperty session Category!\n");
+    
+    
+    [self audioSessionSetSampleRate:16000.0];
+
+    result =	AudioSessionSetActive (true); 
+	if (result) printf("ERROR AudioSessionSetActive!\n");
+
     
     UInt32 allowBluetoothInput = 1;
     
@@ -162,6 +181,21 @@ void interruptionListenerCallback (void *inUserData, UInt32  interruptionState) 
     
 }
 
+- (void) setSpeaker:(BOOL)use{
+    
+    UInt32 audioRouteOverride =  use?kAudioSessionOverrideAudioRoute_Speaker:kAudioSessionOverrideAudioRoute_None ;
+     
+     OSStatus result =	 AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,                         
+     sizeof (audioRouteOverride),
+     &audioRouteOverride);
+    if (result){ 
+        NSLog(@"ERROR AudioSessionSetProperty Speaker route !");
+    } else{
+        NSLog(@"set speaker to %@", use?@"yes":@"no");
+    }
+}
+
+
 
 
 - (void) consumeWireData:(NSData*)data time:(NSInteger) stamp{
@@ -169,7 +203,7 @@ void interruptionListenerCallback (void *inUserData, UInt32  interruptionState) 
         NSLog(@"Post call audio data ignored");
         return;
     }
-    NSMutableData *din = [NSMutableData dataWithLength:aframeLen*2];
+    NSMutableData *din = [[NSMutableData alloc] initWithLength:aframeLen*2];
     if (data != nil){
         if (codec != nil) {
             [codec decode:data audioData:din];
@@ -315,7 +349,6 @@ static OSStatus outRender(
 
 
 
-
 - (void) setUpAU{
     OSStatus err =0; 
     // configure audio unit here 
@@ -341,28 +374,12 @@ static OSStatus outRender(
     err = AudioComponentInstanceNew (foundIoUnitReference,&vioUnitSpeak);
     if (err != 0) { NSLog(@"Error with %@ - %ld",@"AudioComponentInstanceNew",err); return;}
     memcpy (&vioUnitMic,&vioUnitSpeak,sizeof(vioUnitSpeak));
+    
     /*err = AudioComponentInstanceNew (foundIoUnitReference,&vioUnitMic);
     if (err != 0) { NSLog(@"Error with %@ - %ld",@"AudioComponentInstanceNew",err); return;}
      */
     
-    AudioStreamBasicDescription asbd;
-    memset(&asbd,0,sizeof(asbd));
-    asbd.mSampleRate = [codec getRate];
-
-    asbd.mFormatID = kAudioFormatLinearPCM;
-    asbd.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked ;
-    asbd.mFramesPerPacket =1;
-    asbd.mChannelsPerFrame = 1;
-    asbd.mBitsPerChannel = 16;
-    asbd.mBytesPerPacket = asbd.mBytesPerFrame = asbd.mChannelsPerFrame * sizeof (SInt16);
-    err = AudioUnitSetProperty(vioUnitSpeak, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &asbd, sizeof(asbd));
-    if (err != 0) { NSLog(@"Error with %@ - %ld",@"kAudioUnitProperty_StreamFormat Speak",err); return;}
-    
-    err = AudioUnitSetProperty(vioUnitMic, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 1, &asbd, sizeof(asbd));
-    if (err != 0) { NSLog(@"Error with %@ - %ld",@"kAudioUnitProperty_StreamFormat Mic",err); return;}
-
-    
-    
+    [self setSampleRate:32000];
     
     UInt32 one = 1;
     err = AudioUnitSetProperty(vioUnitMic, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, 1, &one, sizeof(one));
@@ -382,23 +399,19 @@ static OSStatus outRender(
 
 
     
-/*    err = AudioUnitInitialize(vioUnitMic);
-    if (err != 0) { NSLog(@"Error with %@ - %ld",@"AudioUnitInitialize Mic ",err); return;}*/
-    err = AudioUnitInitialize(vioUnitSpeak);
-    if (err != 0) { NSLog(@"Error with %@ - %ld",@"AudioUnitInitialize Speak",err); return;}
-    
-/*    err = AudioOutputUnitStart(vioUnitMic);
-    if (err != 0) { NSLog(@"Error with %@ - %ld",@"AudioOutputUnitStart Mic",err); return;}*/
-    err = AudioOutputUnitStart(vioUnitSpeak);
-    if (err != 0) { NSLog(@"Error with %@ - %ld",@"AudioOutputUnitStart Speak",err); return;}
 
+    err = AudioUnitInitialize(vioUnitSpeak);
+    if (err != 0) {
+        NSLog(@"Error with %@ - %ld",@"AudioUnitInitialize Speak",err);
+        //return;
+    }
+    
 } 
 
+
 - (void) setUpSendTimer{
-    wout = [[NSMutableData  alloc] initWithCapacity:160]; // we put the wire data here before sending it. 
 	send  = [NSTimer timerWithTimeInterval:0.02 target:self selector:@selector(encodeAndSend) userInfo:nil repeats:YES];
-	NSRunLoop *crl = [NSRunLoop currentRunLoop];
-	[crl addTimer:send forMode:NSDefaultRunLoopMode];
+	[audioRunLoop addTimer:send forMode:NSDefaultRunLoopMode];
 }
 - (void) setUpRingBuffers{
     ringInsz = ENOUGH;
@@ -432,13 +445,17 @@ static OSStatus outRender(
         audioThread = [NSThread currentThread];
         NSLog(@"Audio thread Started");
 	}
+	audioRunLoop = [NSRunLoop currentRunLoop];
+    wout = [[NSMutableData  alloc] initWithCapacity:160]; // we put the wire data here before sending it. 
     [self setupAudio];
-	NSRunLoop* runLoop = [NSRunLoop currentRunLoop];
-	[runLoop run];
+	[audioRunLoop run];
     [pool release];
 	[NSThread exit];
 }
 -(void) encodeAndSend{
+    
+    if (stopped) return;
+    
     int64_t get = getIn;
     int64_t avail  = putIn - get;
    // NSLog(@"avail = %qd",avail);
@@ -509,24 +526,33 @@ static OSStatus outRender(
         playing = YES;
         [wire setCodecfac:fac];
         [wire setPtype:ptype];
-        
-        [self performSelectorInBackground:@selector(spawnAudio) withObject:nil];
-        //[self setupAudio];
+        [self audioSessionSetSampleRate:[codec  getRate]];
+        [self setSampleRate:[codec getRate]];
     }
     
     NSLog(@"Using %@ to set codec to %@ at %d ptype %d - res = %@",codecname, [codec getName],[codec getRate],ptype, ((codec != nil)?@"Yes":@"NO"));
     
     return (codec != nil);
 }
+
 - (void) start{
+    OSStatus err =0; 
+    err = AudioOutputUnitStart(vioUnitSpeak);
+    if (err != 0) { NSLog(@"Error with %@ - %ld",@"AudioOutputUnitStart Speak",err);}
     stopped = NO;
 }
+
+
 - (void) stop{
+    OSStatus err =0; 
+    
     //AudioOutputUnitStop(vioUnitMic);
-    AudioOutputUnitStop(vioUnitSpeak);
+    err =  AudioOutputUnitStop(vioUnitSpeak);
+    if (err != 0) { NSLog(@"Error with %@ - %ld",@"AudioOutputUnitStop Speak",err);}
+    
     stopped = YES;
-    [send invalidate];
 }
+
 
 - (void) mute:(BOOL)v{
     muted = v;

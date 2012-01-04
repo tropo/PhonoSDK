@@ -364,7 +364,7 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
 -(void) deliverPayload:(uint8_t *)payload length:(int)paylen  stamp:(uint64_t) stamp ssrc:(uint32_t) ssrc {
     if (rtpds != nil) {
 
-        NSData * data = [NSData dataWithBytes:payload length:paylen];
+        NSData * data = [[NSData alloc]initWithBytes:payload length:paylen];
         NSInteger clockStamp = stamp / codecfac;
         [rtpds consumeWireData:data time:clockStamp];
         [data release];
@@ -393,10 +393,10 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
 
 
 - (void)rcvLoop{
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    //NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSLog(@"in rcv thread");
     uint8_t *rcvbuff;
-    NSMutableData *rb = [NSMutableData dataWithLength:1024]; 
+    NSMutableData *rb = [[NSMutableData alloc] initWithLength:1024]; 
     NSTimeInterval ntv = 0.01;
     while (ipv4Soc > 0){
         [rb setLength:1024];
@@ -413,7 +413,7 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
         //[NSThread sleepForTimeInterval:ntv];
     }
     NSLog(@"leaving rcv thread");
-    [pool release];
+    //[pool release];
 }
 
 - (BOOL)start: (CFSocketRef) s {
@@ -566,6 +566,11 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
         [av release];
     }
     [nsd release];
+}
+
+- (void) stop{
+    close(ipv4Soc);
+    ipv4Soc = 0;
 }
 
 @end
