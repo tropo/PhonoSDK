@@ -16,6 +16,13 @@
 
 @synthesize  appNum , tjid, status, prompt, domain, outMess;
 
+NSString *_empty = @"<html>\
+<head>\
+<script src='http://code.jquery.com/jquery-1.4.2.min.js'></script>\
+</head>\
+<body id='body'>Empty\
+%@</body>\
+</html>";
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -61,7 +68,7 @@
         NSString *res = [prompt stringByEvaluatingJavaScriptFromString:bo];
         NSLog(@" js result %@",res);
     } else {
-        NSString *html =[NSString stringWithFormat:@"<html><body>%@</body></html>",[mess body]];
+        NSString *html =[NSString stringWithFormat:_empty,[mess body]];
         [prompt loadHTMLString:html baseURL:nil];
     }
 }
@@ -82,15 +89,12 @@
         [self gotMessage:message];
     };
     phono.onReady = ^{ [self gotjId];};
+    phono.onUnready = ^{ [self gotjId];};
+    phono.onError = ^{ [self update:@"error"];};
+
+
     NSURL *base = [NSURL URLWithString:@"http://s.phono.com/"];
-    NSString *empty = @"<html>\
-    <head>\
-    <script src='http://code.jquery.com/jquery-1.4.2.min.js'></script>\
-    </head>\
-    <body id='body'>Empty\
-    </body>\
-    </html>";
-    
+    NSString *empty = [NSString stringWithFormat:_empty,@""];    
     [prompt loadHTMLString:empty baseURL:base];
 }
 
@@ -142,27 +146,25 @@
     NSString *user = [appNum text];
     NSInteger m = [domain selectedSegmentIndex];
     NSString *dom =  (m == 1)? @"sip":@"app";
-
-    call = [[[PhonoCall alloc] initOutbound:user domain:dom] retain]; 
-    [self update:@"dialing"];
-    [call.headers setObject:[phono sessionID] forKey:@"x-jid"];
-    call.onAnswer = ^{ [self update:@"answered"];};
-    call.onError = ^{ [self update:@"error"];};
-    call.onHangup = ^{ [self update:@"hangup"];};
-    call.onRing = ^{ [self update:@"ring"];};
-    call.from = [NSString stringWithFormat:@"%@@gw114.phono.com",[phono sessionID]];
-    [phono.phone dial:call];
-
+    if ([phono sessionID] != nil){
+        call = [[[PhonoCall alloc] initOutbound:user domain:dom] retain]; 
+        [self update:@"dialing"];
+        [call.headers setObject:[phono sessionID] forKey:@"x-jid"];
+        call.onAnswer = ^{ [self update:@"answered"];};
+        call.onError = ^{ [self update:@"error"];};
+        call.onHangup = ^{ [self update:@"hangup"];};
+        call.onRing = ^{ [self update:@"ring"];};
+        call.from = [NSString stringWithFormat:@"%@@gw114.phono.com",[phono sessionID]];
+        [phono.phone dial:call];
+    } else {
+        [self update:@"Not connected"];
+    }
+    
 }
 
 - (IBAction)speaker:(id)sender{
     UISwitch *sp = (UISwitch *) sender;
-    UInt32 audioRouteOverride = [sp isOn] ? kAudioSessionOverrideAudioRoute_Speaker :kAudioSessionOverrideAudioRoute_None;
-     
-     OSStatus result =	 AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,                         
-     sizeof (audioRouteOverride),
-     &audioRouteOverride);
-     if (result) NSLog(@"ERROR AudioSessionSetProperty!");
+    [phono setUseSpeaker:[sp isOn]];
 }
 
 - (IBAction)hangup{
