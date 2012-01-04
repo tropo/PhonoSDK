@@ -17,7 +17,7 @@
 
 #import <Foundation/Foundation.h>
 #import "AVFoundation/AVAudioPlayer.h"
-
+@class PhonoAudio;
 /*
  v1
 allocateEndpoint() -> uri
@@ -35,8 +35,12 @@ Return an array of codecs supported by the plugin {JSON array of property object
 @interface PhonoAPI : NSObject <AVAudioPlayerDelegate> {
     NSMutableDictionary *endpoints;
     NSMutableDictionary *players;
+    PhonoAudio *audio;
+    BOOL useSpeakerForCall;
 
 }
+- (void) setUseSpeakerForCall:(BOOL)val;
+
 - (NSString *) allocateEndpoint;
 - (BOOL) freeEndpoint:(NSString *)uri;
 - (NSString *) share:(NSString *)uri autoplay:(BOOL)autoplay codec:(NSString *)codec;
