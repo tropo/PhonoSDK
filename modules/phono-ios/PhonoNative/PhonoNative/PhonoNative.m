@@ -25,7 +25,7 @@
 
 @implementation PhonoNative
 
-@synthesize apiKey,onReady,onUnready,onError,sessionID,phone,audio, pxmpp, papi, messaging;
+@synthesize apiKey,onReady,onUnready,onError,sessionID,phone, pxmpp, papi, messaging, myJID;
 
 - (id)init
 {
@@ -66,6 +66,32 @@
     }
     
     return self;
+}
+
+- (void) setAudio:(NSDictionary *)naudio{
+    audio = naudio;
+    NSMutableString *filt = [[NSMutableString alloc] initWithString:@"["];
+    NSEnumerator * e = [audio keyEnumerator];
+    NSString *k = nil;
+    BOOL first = YES;
+    while (nil != (k = [e nextObject])){
+        if ([k characterAtIndex:0] == '@'){
+            if (first){
+                first = NO;
+            } else {
+                [filt appendString:@" and "];
+            }
+            NSString * v = [ audio objectForKey:k];
+            [filt appendFormat:@"%@=\"%@\"",k,v];
+        }
+    }
+    [filt appendString:@"]"];
+    NSLog(@"setting Attribute filter to %@",filt);
+    [pxmpp.xmppJingle setPayloadAttrFilter:filt];
+}
+
+- (NSDictionary *) getAudio{
+    return audio;
 }
 
 //Connects the Phone to the Voxeo Cloud.
@@ -137,8 +163,32 @@
         [papi setUseSpeakerForCall:use];
     }
 }
+
+// some possible codec configs....
+
+- (NSDictionary *) lowBWPrefs{
+    NSDictionary * ret = [[NSDictionary alloc] initWithObjectsAndKeys:@"SPEEX",@"@name",@"8000",@"@clockrate", nil];
+    return ret;
+}
+
+- (NSDictionary *) hiBWPrefs{
+    NSDictionary * ret = [[NSDictionary alloc] initWithObjectsAndKeys:@"SPEEX",@"@name",@"16000",@"@clockrate", nil];
+    return ret;
+}
+
+- (NSDictionary *) telBWPrefs{
+    NSDictionary * ret = [[NSDictionary alloc] initWithObjectsAndKeys:@"ULAW",@"@name",@"8000",@"@clockrate", nil];
+    return ret;
+}
+
+- (NSDictionary *) ulBWPrefs{
+    NSDictionary * ret = [[NSDictionary alloc] initWithObjectsAndKeys:@"G722",@"@name",@"8000",@"@clockrate", nil];
+    return ret;
+}
+
 - (NSDictionary *) guessCodecPrefs{
-    NSTimeInterval rtt = 250.0;
+    NSDictionary *ret = nil;
+    NSTimeInterval rtt = 0.5;
     // edge gave me 570 ms RTT
     // wifi 150 ms
     // 3g is 300ms
@@ -146,7 +196,14 @@
     if (pxmpp != nil) {
         rtt = [pxmpp.xmppJingle rtt];
     }
-    return nil;
+    if (rtt < 0.1) {
+        ret = [self ulBWPrefs];
+    } else if ( rtt < 0.3) {
+        ret = [self hiBWPrefs];
+    } else if (rtt < 0.6) {
+        ret = [self lowBWPrefs];
+    }
+    return ret;
 }
 
 @end

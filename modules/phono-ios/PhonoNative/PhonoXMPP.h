@@ -25,6 +25,7 @@
 	PhonoNative *phono;
 	BOOL isXmppConnected;
     NSXMLElement *allAudioCodecs;
+    NSString *readyID;
 }
 
 @property (nonatomic, readonly) XMPPStream *xmppStream;

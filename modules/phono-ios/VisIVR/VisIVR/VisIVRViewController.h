@@ -16,6 +16,8 @@
     UITextField *appNum;
     UILabel *tjid;
     UILabel *status;
+    UILabel *codec;
+
     UIWebView *prompt;
     PhonoNative *phono;
     PhonoPhone *phone;
@@ -29,7 +31,7 @@
 @property (nonatomic,retain) IBOutlet UILabel *status;
 @property (nonatomic,retain) IBOutlet UIWebView *prompt;
 @property (nonatomic,retain) IBOutlet UISegmentedControl *domain;
-
+@property (nonatomic,retain) IBOutlet UILabel *codec;
 
 - (IBAction)connect;
 - (IBAction)disconnect;

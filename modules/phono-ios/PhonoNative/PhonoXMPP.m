@@ -69,7 +69,7 @@
     [xmppReconnect         activate:xmppStream];
 	
     xmppJingle = [[XMPPJingle alloc] initWithPhono:YES];
-    [xmppJingle setPayloadAttrFilter:@"[@name=\"G722\" and @clockrate=\"8000\"]"];
+    [xmppJingle setPayloadAttrFilter:@"[@name=\"ULAW\" and @clockrate=\"8000\"]"]; // default value.
     
     [xmppJingle activate:xmppStream];
     [xmppJingle addDelegate:self delegateQueue:dispatch_get_main_queue()];
@@ -158,6 +158,7 @@
     NSString *mycodec = [xmppJingle ptypeWithPayload:(NSXMLElement *)[ccall payload] ];
     NSLog(@" selected codec is %@",mycodec );
     NSLog(@" fullshare is %@",fullshare );
+    [ccall setCodecInd:mycodec];
     
     [[phono papi] share:fullshare autoplay:now codec:mycodec ]; 
     
@@ -222,7 +223,8 @@
 - (void) sendApiKey {
     // <iq type="set" xmlns="jabber:client"><apikey xmlns="http://phono.com/apikey">C17D167F-09C6-4E4C-A3DD-2025D48BA243</apikey></iq>
     XMPPIQ *iq = [XMPPIQ iqWithType:@"set" ];
-    [iq addAttributeWithName:@"id" stringValue:[xmppJingle mkIdElement]];
+    readyID = [[NSString alloc ] initWithString:[xmppJingle mkIdElement]];
+    [iq addAttributeWithName:@"id" stringValue:readyID];
     NSXMLElement *xapikey = [NSXMLElement elementWithName:@"apikey" xmlns:@"http://phono.com/apikey"];
     [xapikey addChild:[NSXMLNode textWithStringValue:apiKey]];
     [iq addChild:xapikey];
@@ -378,12 +380,8 @@ didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
 {
 	NSLog(@"Authenticated as %@", [sender myJID]) ;
     phono.sessionID = [[sender myJID] user];
+    phono.myJID = [[sender myJID] full];
     [xmppJingle setMe:[sender myJID]];
-     
-    if (phono.onReady != nil){
-        dispatch_queue_t q_main = dispatch_get_main_queue();
-        dispatch_async(q_main, phono.onReady);
-    }
     [self sendApiKey];
     XMPPPresence *presence = [XMPPPresence presence]; // type="available" is implicit
     [[self xmppStream] sendElement:presence];
@@ -398,7 +396,14 @@ didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq
 {
 	NSLog(@"Got iq %@", [iq XMLString]);
-	
+    if ([iq isResultIQ] && ([readyID compare:[iq elementID] ] == NSOrderedSame)){
+        if (phono.onReady != nil){
+            dispatch_queue_t q_main = dispatch_get_main_queue();
+            dispatch_async(q_main, phono.onReady);
+            [readyID release];
+            readyID = nil;
+        }
+    }
 	return NO;
 }
 

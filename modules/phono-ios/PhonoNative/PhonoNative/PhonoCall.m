@@ -21,7 +21,7 @@
 #import "PhonoAPI.h"
 
 @implementation PhonoCall
-@synthesize callId,onRing,onAnswer,onHangup,onError,state,hold,mute,volume,gain,headers,phono,payload, candidate, to ,from, share, ringing;
+@synthesize callId,onRing,onAnswer,onHangup,onError,state,hold,mute,volume,gain,headers,phono,payload, candidate, to ,from, share, ringing,codecInd;
 
 
 - (id)initInbound

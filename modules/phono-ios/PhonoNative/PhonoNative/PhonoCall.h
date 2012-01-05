@@ -30,6 +30,8 @@
     NSString *to;
     NSMutableDictionary *headers;
     NSString *callId;
+    NSString *codecInd;
+
     NSInteger state;
     BOOL hold;
     BOOL mute;
@@ -51,6 +53,7 @@
 @property(readwrite, copy) NSString *from;
 @property(readwrite, copy) NSString *to;
 @property(readwrite, copy) NSString *share;
+@property(readwrite, copy) NSString *codecInd;
 
 @property(nonatomic, copy) void (^onRing)();
 @property(nonatomic, copy) void (^onAnswer)();

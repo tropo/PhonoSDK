@@ -31,6 +31,8 @@
     void (^onUnready)();
     void (^onError)();
     NSString *sessionID;
+    NSString *myJID;
+
     PhonoPhone *phone;
     PhonoMessaging *messaging;
     NSDictionary *audio;
@@ -45,10 +47,11 @@
 @property(nonatomic, copy) void (^onUnready)();
 @property(nonatomic, copy) void (^onError)();
 @property(readwrite, copy) NSString *sessionID;
+@property(readwrite, copy) NSString *myJID;
 @property(readonly) PhonoPhone *phone;
 @property(readonly) PhonoMessaging *messaging;
 
-@property(readwrite, copy) NSDictionary *audio;
+@property(assign,getter=getAudio) NSDictionary *audio;
 
 - (void)connect;	 //Connects the Phone to the Voxeo Cloud. 
 - (void)disconnect; //	 Disconnects the Phone from the Voxeo Cloud. 
@@ -56,6 +59,8 @@
 - (id) initWithPhone:(PhonoPhone *) phone;
 - (id) initWithPhoneAndMessaging:(PhonoPhone *) phone messaging:(PhonoMessaging *) messaging;
 - (void) setUseSpeaker:(BOOL)use;
+- (NSDictionary *) guessCodecPrefs;
+
 + (NSString *) unescapeString:(NSString *) esc;
 + (NSString *) escapeString:(NSString *)une;
 

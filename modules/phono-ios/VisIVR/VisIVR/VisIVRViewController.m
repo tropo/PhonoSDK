@@ -14,7 +14,7 @@
 
 @implementation VisIVRViewController
 
-@synthesize  appNum , tjid, status, prompt, domain, outMess;
+@synthesize  appNum , tjid, status, prompt, domain, outMess, codec;
 
 NSString *_empty = @"<html>\
 <head>\
@@ -33,10 +33,15 @@ NSString *_empty = @"<html>\
 
 - (void) gotjId{
     [tjid setText:[phono sessionID]];
+    NSDictionary *cprefs = [phono guessCodecPrefs];
+    if (cprefs != nil) {
+        [phono setAudio:cprefs]; // or make up your own.
+    }
 }
 
 - (void) update:(NSString *) state {
     [status setText:state];
+    [codec setText:[call codecInd]];
 }
 
 -(void) popIncommingCallAlert:(PhonoCall *) incall{
