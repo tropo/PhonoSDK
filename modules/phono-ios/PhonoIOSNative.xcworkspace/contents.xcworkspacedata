@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:VisIVR/VisIVR.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:../../../../steely-glint/XMPPFramework/Xcode/iPhoneXMPP/iPhoneXMPP.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:../phono-phonegap-ios/libphono/libphono.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:PhonoNative/PhonoNative.xcodeproj">
+   </FileRef>
+</Workspace>
