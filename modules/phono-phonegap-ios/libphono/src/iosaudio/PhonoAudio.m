@@ -537,6 +537,10 @@ static OSStatus outRender(
 
 - (void) start{
     OSStatus err =0; 
+    memset(inslop,0,sizeof(inslop));
+    memset(ringIn,0,sizeof(ringIn));
+    memset(ringOut,0,sizeof(ringOut));
+
     err = AudioOutputUnitStart(vioUnitSpeak);
     if (err != 0) { NSLog(@"Error with %@ - %ld",@"AudioOutputUnitStart Speak",err);}
     stopped = NO;
