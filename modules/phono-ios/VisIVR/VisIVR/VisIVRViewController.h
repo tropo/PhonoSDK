@@ -11,7 +11,7 @@
 @class PhonoCall;
 @class PhonoPhone;
 
-@interface VisIVRViewController : UIViewController <UIAlertViewDelegate>
+@interface VisIVRViewController : UIViewController <UIAlertViewDelegate, UITextFieldDelegate> 
 {
     UITextField *appNum;
     UILabel *tjid;
@@ -23,7 +23,8 @@
     PhonoPhone *phone;
     PhonoCall *call;
     UITextField *outMess;
-
+    UIScrollView *scrollView;
+    UITextField *activeField;
 }
 @property (nonatomic,retain) IBOutlet UITextField *outMess;
 @property (nonatomic,retain) IBOutlet UITextField *appNum;
@@ -33,7 +34,7 @@
 @property (nonatomic,retain) IBOutlet UISegmentedControl *domain;
 @property (nonatomic,retain) IBOutlet UILabel *codec;
 @property (nonatomic,retain) IBOutlet UISwitch * speakerSw;;
-
+@property (nonatomic,retain) IBOutlet UIScrollView *scrollView;
 - (IBAction)connect;
 - (IBAction)disconnect;
 - (IBAction)call;
