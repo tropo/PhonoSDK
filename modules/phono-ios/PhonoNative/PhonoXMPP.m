@@ -14,7 +14,7 @@
 
 @implementation PhonoXMPP
 
-@synthesize  xmppStream, xmppJingle,xmppReconnect;
+@synthesize  xmppStream, xmppJingle,xmppReconnect,rtt;
 
 - (id) initWithPhono:(PhonoNative *)p{
     
@@ -393,10 +393,19 @@ didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
 	NSLog(@"Not Authenticated because %@", [error XMLString]);
 }
 
+- (void) calculateRTT:(NSString *)thenS{
+    NSTimeInterval then = [thenS doubleValue]; 
+    NSDate *now = [NSDate date];
+    NSTimeInterval fpnow = [now timeIntervalSince1970];
+    rtt = fpnow - then;
+    NSLog(@"RTT is %g",rtt);
+}
+
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq
 {
 	NSLog(@"Got iq %@", [iq XMLString]);
-    if ([iq isResultIQ] && ([readyID compare:[iq elementID] ] == NSOrderedSame)){
+    if ([iq isResultIQ] && (readyID != nil) && ([readyID compare:[iq elementID] ] == NSOrderedSame)){
+        [self calculateRTT:[iq elementID]];
         if (phono.onReady != nil){
             dispatch_queue_t q_main = dispatch_get_main_queue();
             dispatch_async(q_main, phono.onReady);

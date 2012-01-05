@@ -70,24 +70,28 @@
 
 - (void) setAudio:(NSDictionary *)naudio{
     audio = naudio;
-    NSMutableString *filt = [[NSMutableString alloc] initWithString:@"["];
-    NSEnumerator * e = [audio keyEnumerator];
-    NSString *k = nil;
-    BOOL first = YES;
-    while (nil != (k = [e nextObject])){
-        if ([k characterAtIndex:0] == '@'){
-            if (first){
-                first = NO;
-            } else {
-                [filt appendString:@" and "];
+    if ((phone.currentCall == nil) || ( phone.currentCall.state != PENDING)){
+        NSMutableString *filt = [[NSMutableString alloc] initWithString:@"["];
+        NSEnumerator * e = [audio keyEnumerator];
+        NSString *k = nil;
+        BOOL first = YES;
+        while (nil != (k = [e nextObject])){
+            if ([k characterAtIndex:0] == '@'){
+                if (first){
+                    first = NO;
+                } else {
+                    [filt appendString:@" and "];
+                }
+                NSString * v = [ audio objectForKey:k];
+                [filt appendFormat:@"%@=\"%@\"",k,v];
             }
-            NSString * v = [ audio objectForKey:k];
-            [filt appendFormat:@"%@=\"%@\"",k,v];
         }
+        [filt appendString:@"]"];
+        NSLog(@"setting Attribute filter to %@",filt);
+        [pxmpp.xmppJingle setPayloadAttrFilter:filt];
+    } else {
+        NSLog(@"ignore bandwidth changes while PENDING");
     }
-    [filt appendString:@"]"];
-    NSLog(@"setting Attribute filter to %@",filt);
-    [pxmpp.xmppJingle setPayloadAttrFilter:filt];
 }
 
 - (NSDictionary *) getAudio{
@@ -194,7 +198,7 @@
     // 3g is 300ms
     
     if (pxmpp != nil) {
-        rtt = [pxmpp.xmppJingle rtt];
+        rtt = [pxmpp rtt];
     }
     if (rtt < 0.1) {
         ret = [self ulBWPrefs];

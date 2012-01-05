@@ -26,11 +26,14 @@
 	BOOL isXmppConnected;
     NSXMLElement *allAudioCodecs;
     NSString *readyID;
+    NSTimeInterval rtt;
+
 }
 
 @property (nonatomic, readonly) XMPPStream *xmppStream;
 @property (nonatomic, readonly) XMPPReconnect *xmppReconnect;
 @property (nonatomic, readonly) XMPPJingle *xmppJingle;
+@property (readonly) NSTimeInterval rtt;
 
 
 - (BOOL)connect:(NSString *)apiKey;

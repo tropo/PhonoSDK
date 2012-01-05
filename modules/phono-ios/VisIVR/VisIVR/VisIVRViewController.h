@@ -17,7 +17,7 @@
     UILabel *tjid;
     UILabel *status;
     UILabel *codec;
-
+    UISwitch * speakerSw;
     UIWebView *prompt;
     PhonoNative *phono;
     PhonoPhone *phone;
@@ -32,6 +32,7 @@
 @property (nonatomic,retain) IBOutlet UIWebView *prompt;
 @property (nonatomic,retain) IBOutlet UISegmentedControl *domain;
 @property (nonatomic,retain) IBOutlet UILabel *codec;
+@property (nonatomic,retain) IBOutlet UISwitch * speakerSw;;
 
 - (IBAction)connect;
 - (IBAction)disconnect;

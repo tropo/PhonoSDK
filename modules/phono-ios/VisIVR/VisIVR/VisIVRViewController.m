@@ -14,7 +14,7 @@
 
 @implementation VisIVRViewController
 
-@synthesize  appNum , tjid, status, prompt, domain, outMess, codec;
+@synthesize  appNum , tjid, status, prompt, domain, outMess, codec, speakerSw;
 
 NSString *_empty = @"<html>\
 <head>\
@@ -33,6 +33,9 @@ NSString *_empty = @"<html>\
 
 - (void) gotjId{
     [tjid setText:[phono sessionID]];
+    if (speakerSw != nil) {
+        [phono setUseSpeaker:[speakerSw isOn]];
+    }
     NSDictionary *cprefs = [phono guessCodecPrefs];
     if (cprefs != nil) {
         [phono setAudio:cprefs]; // or make up your own.
