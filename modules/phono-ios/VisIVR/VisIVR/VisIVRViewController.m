@@ -162,7 +162,7 @@ NSString *_empty = @"<html>\
         call.onError = ^{ [self update:@"error"];};
         call.onHangup = ^{ [self update:@"hangup"];};
         call.onRing = ^{ [self update:@"ring"];};
-        call.from = [NSString stringWithFormat:@"%@@gw114.phono.com",[phono sessionID]];
+        call.from = [NSString stringWithString:[phono sessionID]];
         [phono.phone dial:call];
     } else {
         [self update:@"Not connected"];

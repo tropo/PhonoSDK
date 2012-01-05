@@ -326,7 +326,11 @@
 }
 - (void)xmppJingle:(XMPPJingle *)sender
    didReceiveError:(NSString *)sid error:(NSXMLElement*)error{
-    
+    NSLog(@"got error");
+    if (phono.onError != nil){
+        phono.onError();
+    }
+
 }
 - (void)xmppJingle:(XMPPJingle *)sender
 didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
@@ -379,7 +383,7 @@ didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
 - (void)xmppStreamDidAuthenticate:(XMPPStream *)sender
 {
 	NSLog(@"Authenticated as %@", [sender myJID]) ;
-    phono.sessionID = [[sender myJID] user];
+    phono.sessionID = [[sender myJID] bare];
     phono.myJID = [[sender myJID] full];
     [xmppJingle setMe:[sender myJID]];
     [self sendApiKey];
