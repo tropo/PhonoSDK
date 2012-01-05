@@ -69,7 +69,7 @@
     [xmppReconnect         activate:xmppStream];
 	
     xmppJingle = [[XMPPJingle alloc] initWithPhono:YES];
-    [xmppJingle setPayloadAttrFilter:@"[@name=\"SPEEX\" and @clockrate=\"16000\"]"];
+    [xmppJingle setPayloadAttrFilter:@"[@name=\"G722\" and @clockrate=\"8000\"]"];
     
     [xmppJingle activate:xmppStream];
     [xmppJingle addDelegate:self delegateQueue:dispatch_get_main_queue()];
@@ -222,6 +222,7 @@
 - (void) sendApiKey {
     // <iq type="set" xmlns="jabber:client"><apikey xmlns="http://phono.com/apikey">C17D167F-09C6-4E4C-A3DD-2025D48BA243</apikey></iq>
     XMPPIQ *iq = [XMPPIQ iqWithType:@"set" ];
+    [iq addAttributeWithName:@"id" stringValue:[xmppJingle mkIdElement]];
     NSXMLElement *xapikey = [NSXMLElement elementWithName:@"apikey" xmlns:@"http://phono.com/apikey"];
     [xapikey addChild:[NSXMLNode textWithStringValue:apiKey]];
     [iq addChild:xapikey];

@@ -137,6 +137,16 @@
         [papi setUseSpeakerForCall:use];
     }
 }
-
+- (NSDictionary *) guessCodecPrefs{
+    NSTimeInterval rtt = 250.0;
+    // edge gave me 570 ms RTT
+    // wifi 150 ms
+    // 3g is 300ms
+    
+    if (pxmpp != nil) {
+        rtt = [pxmpp.xmppJingle rtt];
+    }
+    return nil;
+}
 
 @end
