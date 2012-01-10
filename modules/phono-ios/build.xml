@@ -1,0 +1,64 @@
+<project name="phono-ios" default="build">
+<taskdef resource="org/eclipse/jgit/ant/ant-tasks.properties">
+       <classpath>
+         <pathelement location="jgit/jgit.jar"/>
+         <pathelement location="jgit/org.eclipse.jgit.ant.jar"/>
+         <pathelement location="jgit/jsch-0.1.45.jar"/>
+       </classpath>
+</taskdef>
+  
+  <property name="PhonoNative.dir" value="PhonoNative"/>
+  <property name="header.dir" value="PhonoNative/PhonoNative"/>
+
+  <target name="build-PhonoNative-iphoneos">
+        <exec executable="xCodeBuild" dir="${PhonoNative.dir}">
+          <arg value="-sdk"/>
+          <arg value="iphoneos"/>
+        </exec>
+        <move file="PhonoNative/build/Release-iphoneos/libPhonoNative.a" tofile="target/PhonoNative-arm.a"/>
+  </target>
+
+  <target name="build-PhonoNative-iphonesimulator">
+        <exec executable="xCodeBuild" dir="${PhonoNative.dir}">
+          <arg value="-sdk"/>
+          <arg value="iphonesimulator"/>
+        </exec>
+        <move file="PhonoNative/build/Release-iphonesimulator/libPhonoNative.a" tofile="target/PhonoNative-i386.a"/>
+  </target>
+
+  <target name="clean-PhonoNative">
+        <exec executable="xCodeBuild" dir="${PhonoNative.dir}">
+          <arg value="clean"/>
+        </exec>
+  </target>
+
+  <property name="xmppdirectory" value="3rdParty/XMPPFramework"/>
+  <property name="xmppgit" value="https://github.com/steely-glint/XMPPFramework.git"/>
+
+  <target name="clone.check">
+    <condition property="xmppdir.exists">
+      <available file="${xmppdirectory}" type="dir"/>
+    </condition>
+  </target>
+  <target name="cloneXMPPFramework" depends="clone.check" 
+    unless="xmppdir.exists">
+	<git-clone uri="${xmppgit}" dest="${xmppdirectory}" />
+  </target>
+  <target name="build" depends="clean,cloneXMPPFramework,build-PhonoNative-iphonesimulator,build-PhonoNative-iphoneos">
+    <copy todir="target/Headers" overwrite="true">
+      <fileset dir="${header.dir}" includes="*.h"/>
+    </copy>
+    <copy todir="target" overwrite="true">
+      <fileset dir=".">
+        <include name="README" />
+      </fileset>
+    </copy>
+    <copy todir="../../target/sdk/plugins/native-ios" overwrite="true">
+      <fileset dir="target"/>
+    </copy>
+  </target>
+ 
+  <target name="clean" depends="clean-PhonoNative">
+    <delete dir="target" />
+  </target>
+</project>
