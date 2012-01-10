@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2213336D14BB09B700E54999 /* libphono-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2213336C14BB09B700E54999 /* libphono-i386.a */; };
 		22230A6F149A31E000AEF013 /* PhonoXMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 22230A6D149A31E000AEF013 /* PhonoXMPP.h */; };
 		22230A70149A31E000AEF013 /* PhonoXMPP.m in Sources */ = {isa = PBXBuildFile; fileRef = 22230A6E149A31E000AEF013 /* PhonoXMPP.m */; };
 		22230B34149A337100AEF013 /* DDList.h in Headers */ = {isa = PBXBuildFile; fileRef = 22230A77149A337100AEF013 /* DDList.h */; };
@@ -118,6 +119,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2213336C14BB09B700E54999 /* libphono-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libphono-i386.a"; path = "../../phono-phonegap-ios/target/libphono-i386.a"; sourceTree = "<group>"; };
 		221BD7C714A4D8B500E3972C /* ToDo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ToDo; sourceTree = "<group>"; };
 		22230A6D149A31E000AEF013 /* PhonoXMPP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhonoXMPP.h; sourceTree = "<group>"; };
 		22230A6E149A31E000AEF013 /* PhonoXMPP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhonoXMPP.m; sourceTree = "<group>"; };
@@ -238,6 +240,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2213336D14BB09B700E54999 /* libphono-i386.a in Frameworks */,
 				22230BD8149A356000AEF013 /* libidn.a in Frameworks */,
 				223A1D7E149777E80019A5E3 /* Foundation.framework in Frameworks */,
 			);
@@ -266,7 +269,7 @@
 				22230A76149A337100AEF013 /* Vendor */,
 			);
 			name = XMPP;
-			path = ../VisIVR;
+			path = .;
 			sourceTree = "<group>";
 		};
 		22230A72149A337100AEF013 /* Utilities */ = {
@@ -291,7 +294,7 @@
 				22230A87149A337100AEF013 /* XMPPXFacebookPlatformAuthentication.m */,
 			);
 			name = Utilities;
-			path = "../../../../../steely-glint/XMPPFramework/Utilities";
+			path = ../3rdParty/XMPPFramework/Utilities;
 			sourceTree = "<group>";
 		};
 		22230A73149A337100AEF013 /* Extensions */ = {
@@ -308,7 +311,7 @@
 				22230A96149A337100AEF013 /* XEP-0203 */,
 			);
 			name = Extensions;
-			path = "../../../../../steely-glint/XMPPFramework/Extensions";
+			path = ../3rdParty/XMPPFramework/Extensions;
 			sourceTree = "<group>";
 		};
 		22230A74149A337100AEF013 /* Core */ = {
@@ -336,7 +339,7 @@
 				22230B0D149A337100AEF013 /* XMPPStream.m */,
 			);
 			name = Core;
-			path = "../../../../../steely-glint/XMPPFramework/Core";
+			path = ../3rdParty/XMPPFramework/Core;
 			sourceTree = "<group>";
 		};
 		22230A75149A337100AEF013 /* Categories */ = {
@@ -350,7 +353,7 @@
 				22230B13149A337100AEF013 /* NSXMLElement+XMPP.m */,
 			);
 			name = Categories;
-			path = "../../../../../steely-glint/XMPPFramework/Categories";
+			path = ../3rdParty/XMPPFramework/Categories;
 			sourceTree = "<group>";
 		};
 		22230A76149A337100AEF013 /* Vendor */ = {
@@ -455,7 +458,7 @@
 				22230B1B149A337100AEF013 /* stringprep.h */,
 			);
 			name = libidn;
-			path = "../../../../../steely-glint/XMPPFramework/Vendor/libidn";
+			path = ../3rdParty/XMPPFramework/Vendor/libidn;
 			sourceTree = "<group>";
 		};
 		22230B15149A337100AEF013 /* KissXML */ = {
@@ -472,7 +475,7 @@
 				22230B24149A337100AEF013 /* Private */,
 			);
 			name = KissXML;
-			path = "../../../../../steely-glint/XMPPFramework/Vendor/KissXML";
+			path = ../3rdParty/XMPPFramework/Vendor/KissXML;
 			sourceTree = "<group>";
 		};
 		22230B16149A337100AEF013 /* CocoaAsyncSocket */ = {
@@ -482,7 +485,7 @@
 				22230B29149A337100AEF013 /* GCDAsyncSocket.m */,
 			);
 			name = CocoaAsyncSocket;
-			path = "../../../../../steely-glint/XMPPFramework/Vendor/CocoaAsyncSocket";
+			path = ../3rdParty/XMPPFramework/Vendor/CocoaAsyncSocket;
 			sourceTree = "<group>";
 		};
 		22230B17149A337100AEF013 /* CocoaLumberjack */ = {
@@ -500,7 +503,7 @@
 				22230B33149A337100AEF013 /* DDTTYLogger.m */,
 			);
 			name = CocoaLumberjack;
-			path = "../../../../../steely-glint/XMPPFramework/Vendor/CocoaLumberjack";
+			path = ../3rdParty/XMPPFramework/Vendor/CocoaLumberjack;
 			sourceTree = "<group>";
 		};
 		22230B1C149A337100AEF013 /* Categories */ = {
@@ -523,6 +526,7 @@
 		223A1D6F149777E70019A5E3 = {
 			isa = PBXGroup;
 			children = (
+				2213336C14BB09B700E54999 /* libphono-i386.a */,
 				22230A71149A337100AEF013 /* XMPP */,
 				22230A6B149A311900AEF013 /* PhonoXMPP */,
 				223A1D7F149777E80019A5E3 /* PhonoNative */,
@@ -774,7 +778,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"/project2/github/phono/PhonoSDK/modules/phono-phonegap-ios/libphono/src",
+					"../../phono-phonegap-ios/libphono/src",
 					/usr/include/libxml2,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
@@ -794,7 +798,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"/project2/github/phono/PhonoSDK/modules/phono-phonegap-ios/libphono/src",
+					"../../phono-phonegap-ios/libphono/src",
 					/usr/include/libxml2,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
@@ -809,9 +813,11 @@
 				DSTROOT = /tmp/PhonoNative.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PhonoNative/PhonoNative-Prefix.pch";
+				GENERATE_MASTER_OBJECT_FILE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../steely-glint/XMPPFramework/Vendor/libidn\"",
+					"\"$(SRCROOT)/../3rdParty/XMPPFramework/Vendor/libidn\"",
+					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -825,9 +831,11 @@
 				DSTROOT = /tmp/PhonoNative.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PhonoNative/PhonoNative-Prefix.pch";
+				GENERATE_MASTER_OBJECT_FILE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../steely-glint/XMPPFramework/Vendor/libidn\"",
+					"\"$(SRCROOT)/../3rdParty/XMPPFramework/Vendor/libidn\"",
+					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

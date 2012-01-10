@@ -22,15 +22,6 @@
 		22230A61149A0ACB00AEF013 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A60149A0ACB00AEF013 /* CoreLocation.framework */; };
 		22230A63149A0AE000AEF013 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A62149A0AE000AEF013 /* SystemConfiguration.framework */; };
 		22230A65149A0AEE00AEF013 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A64149A0AEE00AEF013 /* CoreData.framework */; };
-		22230BDA149A3C7000AEF013 /* libPhonoNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230BD9149A3C7000AEF013 /* libPhonoNative.a */; };
-		22230BF3149A4E8000AEF013 /* NSData+XMPP.m in Sources */ = {isa = PBXBuildFile; fileRef = 22230BEE149A4E8000AEF013 /* NSData+XMPP.m */; };
-		22230BF4149A4E8000AEF013 /* NSNumber+XMPP.m in Sources */ = {isa = PBXBuildFile; fileRef = 22230BF0149A4E8000AEF013 /* NSNumber+XMPP.m */; };
-		22230BF5149A4E8000AEF013 /* NSXMLElement+XMPP.m in Sources */ = {isa = PBXBuildFile; fileRef = 22230BF2149A4E8000AEF013 /* NSXMLElement+XMPP.m */; };
-		22230C03149A4EAE00AEF013 /* NSString+DDXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 22230C01149A4EAE00AEF013 /* NSString+DDXML.m */; };
-		22230C04149A4EAE00AEF013 /* DDXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 22230BFA149A4EAE00AEF013 /* DDXMLDocument.m */; };
-		22230C05149A4EAE00AEF013 /* DDXMLElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 22230BFC149A4EAE00AEF013 /* DDXMLElement.m */; };
-		22230C06149A4EAE00AEF013 /* DDXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 22230BFE149A4EAE00AEF013 /* DDXMLNode.m */; };
-		229AD0E814A3AC0A008C656D /* libphono.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0E714A3AC0A008C656D /* libphono.a */; };
 		229AD0EB14A3AC3A008C656D /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EA14A3AC3A008C656D /* AudioToolbox.framework */; };
 		229AD0ED14A3AC41008C656D /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EC14A3AC41008C656D /* CoreAudio.framework */; };
 		229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EE14A3AC59008C656D /* Security.framework */; };
@@ -46,6 +37,8 @@
 		22D926AD14AC96A100F9D295 /* Diggztone_Vibe.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D926A214AC96A100F9D295 /* Diggztone_Vibe.mp3 */; };
 		22D926AE14AC96A100F9D295 /* ringback-uk.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D926A314AC96A100F9D295 /* ringback-uk.mp3 */; };
 		22D926AF14AC96A100F9D295 /* ringback-us.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D926A414AC96A100F9D295 /* ringback-us.mp3 */; };
+		22E45A4514B76B9200EF7CD6 /* PhonoNative-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E45A4314B76B9200EF7CD6 /* PhonoNative-i386.a */; };
+		22F126BF14B75A6D00E2FB89 /* Headers in Resources */ = {isa = PBXBuildFile; fileRef = 22F126BE14B75A6D00E2FB89 /* Headers */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -69,24 +62,6 @@
 		22230A60149A0ACB00AEF013 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		22230A62149A0AE000AEF013 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		22230A64149A0AEE00AEF013 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		22230BD9149A3C7000AEF013 /* libPhonoNative.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPhonoNative.a; path = "../../../../../../../Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-fwgatndlforwdvbsvsptpfmsppil/Build/Products/Debug-iphoneos/libPhonoNative.a"; sourceTree = "<group>"; };
-		22230BED149A4E8000AEF013 /* NSData+XMPP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+XMPP.h"; sourceTree = "<group>"; };
-		22230BEE149A4E8000AEF013 /* NSData+XMPP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+XMPP.m"; sourceTree = "<group>"; };
-		22230BEF149A4E8000AEF013 /* NSNumber+XMPP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNumber+XMPP.h"; sourceTree = "<group>"; };
-		22230BF0149A4E8000AEF013 /* NSNumber+XMPP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNumber+XMPP.m"; sourceTree = "<group>"; };
-		22230BF1149A4E8000AEF013 /* NSXMLElement+XMPP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSXMLElement+XMPP.h"; sourceTree = "<group>"; };
-		22230BF2149A4E8000AEF013 /* NSXMLElement+XMPP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSXMLElement+XMPP.m"; sourceTree = "<group>"; };
-		22230BF8149A4EAE00AEF013 /* DDXML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDXML.h; sourceTree = "<group>"; };
-		22230BF9149A4EAE00AEF013 /* DDXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDXMLDocument.h; sourceTree = "<group>"; };
-		22230BFA149A4EAE00AEF013 /* DDXMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDXMLDocument.m; sourceTree = "<group>"; };
-		22230BFB149A4EAE00AEF013 /* DDXMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDXMLElement.h; sourceTree = "<group>"; };
-		22230BFC149A4EAE00AEF013 /* DDXMLElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDXMLElement.m; sourceTree = "<group>"; };
-		22230BFD149A4EAE00AEF013 /* DDXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDXMLNode.h; sourceTree = "<group>"; };
-		22230BFE149A4EAE00AEF013 /* DDXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDXMLNode.m; sourceTree = "<group>"; };
-		22230C00149A4EAE00AEF013 /* NSString+DDXML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+DDXML.h"; sourceTree = "<group>"; };
-		22230C01149A4EAE00AEF013 /* NSString+DDXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+DDXML.m"; sourceTree = "<group>"; };
-		22230C02149A4EAE00AEF013 /* DDXMLPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDXMLPrivate.h; sourceTree = "<group>"; };
-		229AD0E714A3AC0A008C656D /* libphono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libphono.a; path = "../../phono-phonegap-ios/libphono/build/Release-iphoneos/libphono.a"; sourceTree = "<group>"; };
 		229AD0EA14A3AC3A008C656D /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		229AD0EC14A3AC41008C656D /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		229AD0EE14A3AC59008C656D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -102,6 +77,8 @@
 		22D926A214AC96A100F9D295 /* Diggztone_Vibe.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_Vibe.mp3; sourceTree = "<group>"; };
 		22D926A314AC96A100F9D295 /* ringback-uk.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "ringback-uk.mp3"; sourceTree = "<group>"; };
 		22D926A414AC96A100F9D295 /* ringback-us.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "ringback-us.mp3"; sourceTree = "<group>"; };
+		22E45A4314B76B9200EF7CD6 /* PhonoNative-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "PhonoNative-i386.a"; path = "../target/PhonoNative-i386.a"; sourceTree = "<group>"; };
+		22F126BE14B75A6D00E2FB89 /* Headers */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Headers; path = ../../target/Headers; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,8 +91,7 @@
 				229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */,
 				229AD0ED14A3AC41008C656D /* CoreAudio.framework in Frameworks */,
 				229AD0EB14A3AC3A008C656D /* AudioToolbox.framework in Frameworks */,
-				229AD0E814A3AC0A008C656D /* libphono.a in Frameworks */,
-				22230BDA149A3C7000AEF013 /* libPhonoNative.a in Frameworks */,
+				22E45A4514B76B9200EF7CD6 /* PhonoNative-i386.a in Frameworks */,
 				22230A65149A0AEE00AEF013 /* CoreData.framework in Frameworks */,
 				22230A63149A0AE000AEF013 /* SystemConfiguration.framework in Frameworks */,
 				22230A61149A0ACB00AEF013 /* CoreLocation.framework in Frameworks */,
@@ -133,13 +109,12 @@
 		2223083D1499E05400AEF013 = {
 			isa = PBXGroup;
 			children = (
+				22E45A4314B76B9200EF7CD6 /* PhonoNative-i386.a */,
 				221BD7BE14A49A4900E3972C /* CoreFoundation.framework */,
 				229AD0F014A3AC81008C656D /* AVFoundation.framework */,
 				229AD0EE14A3AC59008C656D /* Security.framework */,
 				229AD0EC14A3AC41008C656D /* CoreAudio.framework */,
 				229AD0EA14A3AC3A008C656D /* AudioToolbox.framework */,
-				229AD0E714A3AC0A008C656D /* libphono.a */,
-				22230BD9149A3C7000AEF013 /* libPhonoNative.a */,
 				22230A64149A0AEE00AEF013 /* CoreData.framework */,
 				22230A62149A0AE000AEF013 /* SystemConfiguration.framework */,
 				22230A60149A0ACB00AEF013 /* CoreLocation.framework */,
@@ -172,14 +147,13 @@
 		222308521499E05400AEF013 /* VisIVR */ = {
 			isa = PBXGroup;
 			children = (
+				22F126BE14B75A6D00E2FB89 /* Headers */,
 				2223085B1499E05400AEF013 /* VisIVRAppDelegate.h */,
 				2223085C1499E05400AEF013 /* VisIVRAppDelegate.m */,
 				2223085E1499E05400AEF013 /* VisIVRViewController.h */,
 				2223085F1499E05400AEF013 /* VisIVRViewController.m */,
 				222308611499E05400AEF013 /* VisIVRViewController_iPhone.xib */,
 				222308641499E05400AEF013 /* VisIVRViewController_iPad.xib */,
-				22230BF6149A4EAE00AEF013 /* KissXML */,
-				22230BEC149A4E8000AEF013 /* Categories */,
 				222308531499E05400AEF013 /* Supporting Files */,
 			);
 			path = VisIVR;
@@ -196,54 +170,6 @@
 				2223085A1499E05400AEF013 /* VisIVR-Prefix.pch */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		22230BEC149A4E8000AEF013 /* Categories */ = {
-			isa = PBXGroup;
-			children = (
-				22230BED149A4E8000AEF013 /* NSData+XMPP.h */,
-				22230BEE149A4E8000AEF013 /* NSData+XMPP.m */,
-				22230BEF149A4E8000AEF013 /* NSNumber+XMPP.h */,
-				22230BF0149A4E8000AEF013 /* NSNumber+XMPP.m */,
-				22230BF1149A4E8000AEF013 /* NSXMLElement+XMPP.h */,
-				22230BF2149A4E8000AEF013 /* NSXMLElement+XMPP.m */,
-			);
-			name = Categories;
-			path = "../../../../../steely-glint/XMPPFramework/Categories";
-			sourceTree = SOURCE_ROOT;
-		};
-		22230BF6149A4EAE00AEF013 /* KissXML */ = {
-			isa = PBXGroup;
-			children = (
-				22230BF7149A4EAE00AEF013 /* Categories */,
-				22230BF8149A4EAE00AEF013 /* DDXML.h */,
-				22230BF9149A4EAE00AEF013 /* DDXMLDocument.h */,
-				22230BFA149A4EAE00AEF013 /* DDXMLDocument.m */,
-				22230BFB149A4EAE00AEF013 /* DDXMLElement.h */,
-				22230BFC149A4EAE00AEF013 /* DDXMLElement.m */,
-				22230BFD149A4EAE00AEF013 /* DDXMLNode.h */,
-				22230BFE149A4EAE00AEF013 /* DDXMLNode.m */,
-				22230BFF149A4EAE00AEF013 /* Private */,
-			);
-			name = KissXML;
-			path = "../../../../../steely-glint/XMPPFramework/Vendor/KissXML";
-			sourceTree = SOURCE_ROOT;
-		};
-		22230BF7149A4EAE00AEF013 /* Categories */ = {
-			isa = PBXGroup;
-			children = (
-				22230C00149A4EAE00AEF013 /* NSString+DDXML.h */,
-				22230C01149A4EAE00AEF013 /* NSString+DDXML.m */,
-			);
-			path = Categories;
-			sourceTree = "<group>";
-		};
-		22230BFF149A4EAE00AEF013 /* Private */ = {
-			isa = PBXGroup;
-			children = (
-				22230C02149A4EAE00AEF013 /* DDXMLPrivate.h */,
-			);
-			path = Private;
 			sourceTree = "<group>";
 		};
 		22D2E8F814ADC868000C4786 /* www */ = {
@@ -336,6 +262,7 @@
 				22D926AD14AC96A100F9D295 /* Diggztone_Vibe.mp3 in Resources */,
 				22D926AE14AC96A100F9D295 /* ringback-uk.mp3 in Resources */,
 				22D926AF14AC96A100F9D295 /* ringback-us.mp3 in Resources */,
+				22F126BF14B75A6D00E2FB89 /* Headers in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -349,13 +276,6 @@
 				222308591499E05400AEF013 /* main.m in Sources */,
 				2223085D1499E05400AEF013 /* VisIVRAppDelegate.m in Sources */,
 				222308601499E05400AEF013 /* VisIVRViewController.m in Sources */,
-				22230BF3149A4E8000AEF013 /* NSData+XMPP.m in Sources */,
-				22230BF4149A4E8000AEF013 /* NSNumber+XMPP.m in Sources */,
-				22230BF5149A4E8000AEF013 /* NSXMLElement+XMPP.m in Sources */,
-				22230C03149A4EAE00AEF013 /* NSString+DDXML.m in Sources */,
-				22230C04149A4EAE00AEF013 /* DDXMLDocument.m in Sources */,
-				22230C05149A4EAE00AEF013 /* DDXMLElement.m in Sources */,
-				22230C06149A4EAE00AEF013 /* DDXMLNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -409,8 +329,11 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
-				OTHER_LDFLAGS = "-lxml2";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lxml2",
+				);
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "35DD292E-531A-43E6-BE8B-5152B5DE843D";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -430,9 +353,12 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				OTHER_LDFLAGS = "-lxml2";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lxml2",
+				);
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "35DD292E-531A-43E6-BE8B-5152B5DE843D";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -446,16 +372,21 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "VisIVR/VisIVR-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					"/project2/github/phono/PhonoSDK/modules/phono-ios/PhonoNative/PhonoNative",
+					"../PhonoNative/PhonoNative",
 					/usr/include/libxml2,
 				);
 				INFOPLIST_FILE = "VisIVR/VisIVR-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../steely-glint/XMPPFramework/Vendor/libidn\"",
-					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-fwgatndlforwdvbsvsptpfmsppil/Build/Products/Debug-iphoneos\"",
+					"\"$(SRCROOT)/../3rdParty/XMPPFramework/Vendor/libidn\"",
+					"\"$(SRCROOT)/../target\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
+					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lxml2",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -468,16 +399,21 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "VisIVR/VisIVR-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					"/project2/github/phono/PhonoSDK/modules/phono-ios/PhonoNative/PhonoNative",
+					"../PhonoNative/PhonoNative",
 					/usr/include/libxml2,
 				);
 				INFOPLIST_FILE = "VisIVR/VisIVR-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../steely-glint/XMPPFramework/Vendor/libidn\"",
-					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-fwgatndlforwdvbsvsptpfmsppil/Build/Products/Debug-iphoneos\"",
+					"\"$(SRCROOT)/../3rdParty/XMPPFramework/Vendor/libidn\"",
+					"\"$(SRCROOT)/../target\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
+					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lxml2",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
