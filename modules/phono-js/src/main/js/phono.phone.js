@@ -589,7 +589,7 @@
          call.remoteJid = Phono.util.escapeXmppNode(to.substr(4)) + "@app";
       }
       else if(to.match("^tel:")) {
-         call.remoteJid = "9991475834@app";
+         call.remoteJid = "9996182316@app";
          call.headers.push({
             name: "x-numbertodial",
             value: to.substr(4)
@@ -598,7 +598,7 @@
       else {
          var number = to.replace(/[\(\)\-\.\ ]/g, '');
          if(number.match(/^\+?\d+$/)) {
-            call.remoteJid = "9991475834@app";
+            call.remoteJid = "9996182316@app";
             call.headers.push({
                name: "x-numbertodial",
                value: number
