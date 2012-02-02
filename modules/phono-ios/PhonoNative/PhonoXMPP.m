@@ -68,7 +68,7 @@
 	
     [xmppReconnect         activate:xmppStream];
 	
-    xmppJingle = [[XMPPJingle alloc] initWithPhono:YES];
+    xmppJingle = [[XMPPJingle alloc] initWithPhono:NO];
     [xmppJingle setPayloadAttrFilter:@"[@name=\"ULAW\" and @clockrate=\"8000\"]"]; // default value.
     
     [xmppJingle activate:xmppStream];
@@ -77,9 +77,10 @@
     [xmppStream addDelegate:self delegateQueue:dispatch_get_main_queue()];
     
     //[xmppStream setHostName:@"ec2-50-19-77-101.compute-1.amazonaws.com"];
-    [xmppStream setHostName:@"gw-v3.d.phono.com"];
+    [xmppStream setHostName:@"app-phono-com-1412939140.us-east-1.elb.amazonaws.com"];
 
     [xmppStream setHostPort:5222];	
+    
 	
     
 	// You may need to alter these settings depending on the server you're connecting to
@@ -124,7 +125,7 @@
 	// uncomment the section below to hard code a JID and password.
 	//
 	// Replace me with the proper JID and password:
-	NSString *myJID = @"anon@phono.com/voxeo";
+	NSString *myJID = @"anon@gw-v3.d.phono.com/voxeo";
 	NSString *myPassword = @"";
     
 	if (myJID == nil || myPassword == nil) {
@@ -182,6 +183,9 @@
 - (void)hangupCall:(PhonoCall *)acall{
     NSString *lshare = acall.share ;
     [[phono papi] stop:lshare];
+    if(acall.ringing){
+        [[phono papi] stop:phono.phone.ringbackTone ];
+    }
     NSLog(@"stopping %@",[acall share] );
     [acall setState:ENDED];
     [[phono papi] freeEndpoint:lshare];
@@ -281,6 +285,8 @@
         } else {
                 NSLog(@"Call state mixup - call should be PENDING when accept arrives");
             }
+    } else {
+        NSLog(@"got accept for call %@ that isn't current one %@",[ccall callId], sid);
     }
 }
 
