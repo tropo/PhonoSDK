@@ -65,9 +65,13 @@
 	// There's a bunch more information in the XMPPReconnect header file.
 	
 	xmppReconnect = [[XMPPReconnect alloc] init];
-	
     [xmppReconnect         activate:xmppStream];
-	
+    
+    xmppAPing = [[XMPPAutoPing alloc ] init];
+    [xmppAPing setPingInterval:30.0];
+    [xmppAPing activate:xmppStream];
+    
+    
     xmppJingle = [[XMPPJingle alloc] initWithPhono:NO];
     [xmppJingle setPayloadAttrFilter:@"[@name=\"ULAW\" and @clockrate=\"8000\"]"]; // default value.
     

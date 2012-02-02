@@ -11,6 +11,7 @@
 #import "XMPPFramework.h"
 #import "XMPPReconnect.h"
 #import "XMPPJingle.h"
+#import "XMPPAutoPing.h"
 #import "PhonoNative.h"
 
 @interface PhonoXMPP : NSObject <XMPPStreamDelegate , XMPPJingleDelegate>
@@ -18,7 +19,7 @@
     XMPPStream *xmppStream;
 	XMPPReconnect *xmppReconnect;
     XMPPJingle *xmppJingle;
-    
+    XMPPAutoPing *xmppAPing;
 	NSString *apiKey;
 	BOOL allowSelfSignedCertificates;
 	BOOL allowSSLHostNameMismatch;
