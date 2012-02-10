@@ -198,6 +198,12 @@ NSString *_empty = @"<html>\
     [call digit:d];
 }
 
+- (IBAction)mute:(id) sender {
+    UISwitch *s = (UISwitch *) sender;
+    BOOL d = [s isOn];
+    [call setMute:d];
+}
+
 - (IBAction)sendMess{
     if (call == nil){
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Can't send message"

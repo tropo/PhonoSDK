@@ -42,5 +42,6 @@
 - (IBAction)digit:(id) sender ;
 - (IBAction)sendMess;
 - (IBAction)speaker:(id)sender;
+- (IBAction)mute:(id) sender;
 
 @end
