@@ -21,8 +21,19 @@
 #import "PhonoAPI.h"
 
 @implementation PhonoCall
-@synthesize callId,onRing,onAnswer,onHangup,onError,state,hold,mute,volume,gain,headers,phono,payload, candidate, to ,from, share, ringing,codecInd;
+@synthesize callId,onRing,onAnswer,onHangup,onError,state,hold,volume,gain,headers,phono,payload, candidate, to ,from, share, ringing,codecInd;
 
+@dynamic mute;
+
+- (void) setMute:(BOOL)mutev {
+    mute = mutev;
+    if (state == ACTIVE){
+        [phono.papi mute:share value:mute];
+    }
+}
+- (BOOL) getMute{
+    return mute;
+}
 
 - (id)initInbound
 {
