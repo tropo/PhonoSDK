@@ -81,8 +81,8 @@
     [xmppStream addDelegate:self delegateQueue:dispatch_get_main_queue()];
     
     //[xmppStream setHostName:@"ec2-50-19-77-101.compute-1.amazonaws.com"];
-    [xmppStream setHostName:@"app-phono-com-1412939140.us-east-1.elb.amazonaws.com"];
-
+    //[xmppStream setHostName:@"app-phono-com-1412939140.us-east-1.elb.amazonaws.com"]; http://haproxy1-ext.voxeolabs.net/http-bind
+    [xmppStream setHostName:@"app.phono.com"];
     [xmppStream setHostPort:5222];	
     
 	
