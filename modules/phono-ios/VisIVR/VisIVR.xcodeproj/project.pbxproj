@@ -22,7 +22,8 @@
 		22230A61149A0ACB00AEF013 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A60149A0ACB00AEF013 /* CoreLocation.framework */; };
 		22230A63149A0AE000AEF013 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A62149A0AE000AEF013 /* SystemConfiguration.framework */; };
 		22230A65149A0AEE00AEF013 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A64149A0AEE00AEF013 /* CoreData.framework */; };
-		2290FA9D14D9B0A300548035 /* libPhonoNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2290FA9C14D9B0A300548035 /* libPhonoNative.a */; };
+		222DF78614EA7DDB00A2B986 /* PhonoNative-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 222DF78514EA7DDB00A2B986 /* PhonoNative-i386.a */; };
+		222DF78814EA7E1400A2B986 /* libphono-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 222DF78714EA7E1400A2B986 /* libphono-i386.a */; };
 		229AD0EB14A3AC3A008C656D /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EA14A3AC3A008C656D /* AudioToolbox.framework */; };
 		229AD0ED14A3AC41008C656D /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EC14A3AC41008C656D /* CoreAudio.framework */; };
 		229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EE14A3AC59008C656D /* Security.framework */; };
@@ -62,7 +63,8 @@
 		22230A60149A0ACB00AEF013 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		22230A62149A0AE000AEF013 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		22230A64149A0AEE00AEF013 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		2290FA9C14D9B0A300548035 /* libPhonoNative.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPhonoNative.a; path = "../../../../../../../Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-azfjbduhvcpnhpgtnwxnjqpdejhw/Build/Products/Debug-iphoneos/libPhonoNative.a"; sourceTree = "<group>"; };
+		222DF78514EA7DDB00A2B986 /* PhonoNative-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "PhonoNative-i386.a"; path = "../target/PhonoNative-i386.a"; sourceTree = "<group>"; };
+		222DF78714EA7E1400A2B986 /* libphono-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libphono-i386.a"; path = "../../phono-phonegap-ios/target/libphono-i386.a"; sourceTree = "<group>"; };
 		229AD0EA14A3AC3A008C656D /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		229AD0EC14A3AC41008C656D /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		229AD0EE14A3AC59008C656D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -86,6 +88,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				222DF78814EA7E1400A2B986 /* libphono-i386.a in Frameworks */,
+				222DF78614EA7DDB00A2B986 /* PhonoNative-i386.a in Frameworks */,
 				221BD7BF14A49A4900E3972C /* CoreFoundation.framework in Frameworks */,
 				229AD0F114A3AC81008C656D /* AVFoundation.framework in Frameworks */,
 				229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */,
@@ -99,7 +103,6 @@
 				2223084D1499E05400AEF013 /* UIKit.framework in Frameworks */,
 				2223084F1499E05400AEF013 /* Foundation.framework in Frameworks */,
 				222308511499E05400AEF013 /* CoreGraphics.framework in Frameworks */,
-				2290FA9D14D9B0A300548035 /* libPhonoNative.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,7 +112,8 @@
 		2223083D1499E05400AEF013 = {
 			isa = PBXGroup;
 			children = (
-				2290FA9C14D9B0A300548035 /* libPhonoNative.a */,
+				222DF78714EA7E1400A2B986 /* libphono-i386.a */,
+				222DF78514EA7DDB00A2B986 /* PhonoNative-i386.a */,
 				221BD7BE14A49A4900E3972C /* CoreFoundation.framework */,
 				229AD0F014A3AC81008C656D /* AVFoundation.framework */,
 				229AD0EE14A3AC59008C656D /* Security.framework */,
@@ -384,6 +388,7 @@
 					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-azfjbduhvcpnhpgtnwxnjqpdejhw/Build/Products/Debug-iphoneos\"",
+					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-azfjbduhvcpnhpgtnwxnjqpdejhw/Build/Products/Debug-iphonesimulator\"",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -412,6 +417,7 @@
 					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-azfjbduhvcpnhpgtnwxnjqpdejhw/Build/Products/Debug-iphoneos\"",
+					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-azfjbduhvcpnhpgtnwxnjqpdejhw/Build/Products/Debug-iphonesimulator\"",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
