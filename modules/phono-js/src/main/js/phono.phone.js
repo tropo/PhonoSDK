@@ -348,7 +348,7 @@
           var codecId = $(this).attr('id');
           $.each(call.config.codecs(Phono.util.filterWideband(call.audioLayer.codecs(),call.phone.wideband())), function() {
              if ((this.name == codecName && this.rate == codecRate && this.name != "telephone-event") || (parseInt(this.id) < 90 && this.id == codecId)) {
-                 if (codec == null) codec = this;
+                 if (codec == null) codec = {id: codecId , name:this.name,  rate: this.rate, p: this.p};
                  return false;
             } 
          });

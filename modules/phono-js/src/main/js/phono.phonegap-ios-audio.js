@@ -118,6 +118,7 @@ PhonegapIOSAudio.prototype.play = function(url, autoPlay) {
 // Creates a new audio Share and will optionally begin playing
 PhonegapIOSAudio.prototype.share = function(url, autoPlay, codec) {
 
+    var codecD = ""+codec.name+":"+codec.rate+":"+codec.id;
     // Get PhoneGap to create the share
     PhoneGap.exec( 
                   function(result) {console.log("share success: " + result);},
@@ -126,7 +127,7 @@ PhonegapIOSAudio.prototype.share = function(url, autoPlay, codec) {
                   [{
                       'uri':url,
                       'autoplay': autoPlay == true ? "YES":"NO",
-                      'codec':codec.id
+                      'codec':codecD
                   }]);
 
     var luri = Phono.util.localUri(url);
