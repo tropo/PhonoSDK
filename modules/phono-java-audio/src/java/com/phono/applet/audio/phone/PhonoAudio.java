@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 package com.phono.applet.audio.phone;
 
 import com.phono.audio.AudioException;
@@ -36,6 +35,7 @@ import com.phono.audio.NetStatsFace;
 import com.phono.audio.phone.PhonoAudioPropNames;
 import com.phono.audio.phone.StampedAudioImpl;
 import com.phono.srtplight.Log;
+import java.nio.ByteBuffer;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -92,7 +92,6 @@ public class PhonoAudio implements AudioFace {
     public float _sampleRate;
     // protected AudioFormat _cdmono;
     protected AudioFormat _bestMacFormat;
-
     private short[] _macbuffp;
     // a circular buffer for StampedAudio, read from the mic
     private StampedAudio[] _stampedBuffer;
@@ -106,16 +105,17 @@ public class PhonoAudio implements AudioFace {
     protected CodecFace _defaultCodec;
     private int _pvadhvc;
     private int _pvadvc;
-    private static float __mac_rate =  44100.0F;
+    private static float __mac_rate = 44100.0F;
     protected FloatControl pan;
     private int _dtmfDigit = -1;
     private int _samplesPerFrame;
+
     /**
      * Creates a new instance of PhonoAudio
      */
     public PhonoAudio() {
         //_cdmono = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100.0F, 16, 1, 2, 44100.0F, true);
-        _bestMacFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, __mac_rate, 16, 1, 2, __mac_rate , true);
+        _bestMacFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, __mac_rate, 16, 1, 2, __mac_rate, true);
         _codecMap = new LinkedHashMap<Long, CodecFace>();
         fillCodecMap();
 
@@ -225,20 +225,21 @@ public class PhonoAudio implements AudioFace {
         stopPlay();
         stopRec();
         _rec = null;
-        _play =null;
+        _play = null;
         _sampleRate = 0;
         _deep = 0;
-        _samplesPerFrame =0;
-        _bytesPerFrame =0;
+        _samplesPerFrame = 0;
+        _bytesPerFrame = 0;
         _codecFrameSize = 0;
         _stampedBuffer = null;
         _encode = null;
         _decode = null;
-        _encodedbuffPlay= null;
+        _encodedbuffPlay = null;
         _framebuffR = null;
         _macbuff = null;
         Log.debug("uninit()ed audio device");
     }
+
     /**
      * Actually allocate resources.
      * The constructor should not allocate any resources.
@@ -445,14 +446,16 @@ public class PhonoAudio implements AudioFace {
         for (int i = 0; i < out.length; i++) {
             energy = energy + (Math.abs(out[i]));
         }
-         int ld = _dtmfDigit;
-                if ( ld >= 0) {
-                    long k = _pframes * _samplesPerFrame;
-                    if ((_pframes % 5) == 0) Log.debug("bleep "+_dtmfDigit);
-                    for (int j = 0; j < out.length; j++) {
-                        out[j] = (short) (getDigitSample(ld, j+k, _sampleRate) + out[j] / 2);
-                    }
-                }
+        int ld = _dtmfDigit;
+        if (ld >= 0) {
+            long k = _pframes * _samplesPerFrame;
+            if ((_pframes % 5) == 0) {
+                Log.debug("bleep " + _dtmfDigit);
+            }
+            for (int j = 0; j < out.length; j++) {
+                out[j] = (short) (getDigitSample(ld, j + k, _sampleRate) + out[j] / 2);
+            }
+        }
         _outEnergy = energy / out.length;
         return out;
     }
@@ -490,7 +493,7 @@ public class PhonoAudio implements AudioFace {
                     for (int i = 0; i < c.length; i++) {
                         Control control = c[i];
                         Type type = control.getType();
-                        if ("Pan".equals(type.toString())){
+                        if ("Pan".equals(type.toString())) {
                             pan = (FloatControl) control;
                         }
                         Log.debug("  _play control: " + control + ", type=" + type.toString() + ", " + type.getClass().getName());
@@ -542,7 +545,7 @@ public class PhonoAudio implements AudioFace {
             short[] sframe = _decode.decode_frame(ebuff);
             int dlen = 0;
             if (sframe != null) {
-                int trimmed =0;
+                int trimmed = 0;
                 short[] eframe = effectOut(sframe);
                 if (_macbuffp != null) {
                     eframe = upsample(eframe, _macbuffp);
@@ -563,15 +566,15 @@ public class PhonoAudio implements AudioFace {
                 int plink = _play.write(framebuffP, 0, dlen);
                 /* don't do this EXPERIMENT
                 if ((_play.getBufferSize() - av) < dlen) {
-                    // if the buffer is empty, pad it out a bit with the last bit
-                    _play.write(framebuffP, dlen - _cutsz, _cutsz);
-                    trimmed = _cutsz;
+                // if the buffer is empty, pad it out a bit with the last bit
+                _play.write(framebuffP, dlen - _cutsz, _cutsz);
+                trimmed = _cutsz;
                 }
-                */
-                trim(trimmed/2);
+                 */
+                trim(trimmed / 2);
 
-            // record this play (speaker) sound
-            // _playF.write(framebuffP, 0, dlen);
+                // record this play (speaker) sound
+                // _playF.write(framebuffP, 0, dlen);
             }
 
             _pframes++;
@@ -675,14 +678,14 @@ public class PhonoAudio implements AudioFace {
             // macs won't give you 8k slin
             if ("mac os x".equals(_osname)) {
                 recfmt = _bestMacFormat;
-                int mbpf = _bytesPerFrame * (int)recfmt.getFrameRate() / (int)_sampleRate;
+                int mbpf = _bytesPerFrame * (int) recfmt.getFrameRate() / (int) _sampleRate;
                 recBuffsz = mbpf * _deep;
                 _macbuff = new byte[mbpf];
             }
             Log.verb("PhonoAudio.initMic(): audioFormat = " + recfmt);
             DataLine.Info info = null;
 
-            if (m == null){
+            if (m == null) {
                 info = new DataLine.Info(TargetDataLine.class, recfmt, AudioSystem.NOT_SPECIFIED);
             } else {
                 info = new DataLine.Info(TargetDataLine.class, recfmt);
@@ -692,7 +695,7 @@ public class PhonoAudio implements AudioFace {
             _framebuffR = new byte[_bytesPerFrame];
 
             try {
-                _rec = (TargetDataLine) ( (m== null) ? AudioSystem.getLine(info): m.getLine(info)) ;
+                _rec = (TargetDataLine) ((m == null) ? AudioSystem.getLine(info) : m.getLine(info));
                 _rec.open(recfmt, recBuffsz);
                 Control[] c = _rec.getControls();
                 if (c.length > 0) {
@@ -720,7 +723,7 @@ public class PhonoAudio implements AudioFace {
     protected void initMic() throws AudioException {
         initMic(null);
     }
-    
+
     public int getOutboundTimestamp() {
         return (int) (this.getTime() - _timestampRecStart);
     }
@@ -783,8 +786,45 @@ public class PhonoAudio implements AudioFace {
         return more;
     }
 
-    // very dumb downsample for the Mac
+// down sampler using byte buffer
     void downsample(byte[] in, byte[] out) {
+        int curr = 0;
+        int cnt = 0;
+        int val = 0;
+        int x = 0;
+        int olen = out.length / 2;
+        int ilen = in.length / 2;
+        int framesz = olen;
+        ByteBuffer inb = ByteBuffer.wrap(in);
+        ByteBuffer outb = ByteBuffer.wrap(out);
+        for (int i = 0; i < ilen; i++) {
+            // walk through the input data
+            x = ((i * olen) / ilen);
+            // see which slot it maps to in the output
+            if (x != curr) {
+                // if this is a new x, deal with the old one
+                val /= cnt; // scale the value by the count that mapped
+                // now stick it in the outputbuffer
+                outb.putShort(x*2, (short) val);
+                // and reset state, ready to move on
+                curr = x;
+                cnt = 0;
+                val = 0;
+            }
+            // add this sample to the current total
+            val += inb.getShort(i*2);
+            cnt++; // keep a count of samples added
+        }
+        // and clean up the end case
+        if ((cnt != 0) && ((curr + 1) < framesz)) {
+            val /= cnt;
+            outb.putShort(x*2, (short) val);
+        }
+
+    }
+    // very dumb downsample for the Mac
+
+    void downsampleO(byte[] in, byte[] out) {
         int curr = 0;
         int cnt = 0;
         int val = 0;
@@ -888,11 +928,19 @@ public class PhonoAudio implements AudioFace {
                 Runnable runnable = new Runnable() {
 
                     public void run() {
+                        // little pre-nap to try and make sure audio is ahead.
+                        try {
+                            Thread.sleep(getFrameInterval());
+                        } catch (InterruptedException ex) {
+                            Log.debug("PhonoAudio.startRec(): InterruptedException: " + ex.getMessage());
+                        }
                         while (_recThread != null) {
                             boolean more = readMic();
                             try {
                                 long nap = getFrameInterval();
-                                if (more) nap -=1;
+                                if (more) {
+                                    nap -= 1;
+                                }
                                 Thread.sleep(nap);
                             } catch (InterruptedException ex) {
                                 Log.debug("PhonoAudio.startRec(): InterruptedException: " + ex.getMessage());
@@ -932,7 +980,7 @@ public class PhonoAudio implements AudioFace {
     public void destroy() {
         boolean closeLine = true;
         /*if (_osname.startsWith("mac")) {
-            closeLine = false;
+        closeLine = false;
         }*/
         stopRec();
         stopPlay();
@@ -1026,12 +1074,13 @@ public class PhonoAudio implements AudioFace {
         }
         return doVAD;
     }
-    protected void trim(int numberOfSamplesRemovedOrAdded){
+
+    protected void trim(int numberOfSamplesRemovedOrAdded) {
         // do nothing here, but echo cans want to know
     }
 
     public double getSampleRate() {
-       return this._sampleRate;
+        return this._sampleRate;
     }
     long toneMap[][] = {{1336, 941}, {1209, 697}, {1336, 697}, {1477, 696}, {1209, 770}, {1336, 770}, {1477, 770}, {1209, 852}, {1336, 852}, {1447, 852}, {1209, 941}, {1477, 941}};
 
@@ -1040,10 +1089,11 @@ public class PhonoAudio implements AudioFace {
         double n2 = (2 * Math.PI) * toneMap[digit][1] / rate;
         return (short) (((Math.sin(position * n1) + Math.sin(position * n2)) / 4) * Short.MAX_VALUE);
     }
+
     public void playDigit(char c) {
         String valid = "0123456789#*";
         _dtmfDigit = valid.indexOf(c);
-        Log.debug("DtmfDigit is "+_dtmfDigit);
+        Log.debug("DtmfDigit is " + _dtmfDigit);
     }
 
     public void setMicGain(float f) {

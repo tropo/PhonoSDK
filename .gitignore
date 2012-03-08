@@ -2,3 +2,4 @@ target
 artifacts
 BIN
 xcuserdata
+/modules/phono-java-audio/nbproject/private/
