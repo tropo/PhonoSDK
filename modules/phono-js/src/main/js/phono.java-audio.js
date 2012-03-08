@@ -116,7 +116,10 @@ JavaAudio.prototype.play = function(url, autoPlay) {
 // Creates a new audio Share and will optionally begin playing
 JavaAudio.prototype.share = function(url, autoPlay, codec) {
     var applet = this.$applet[0];
-    var share = applet.share(url, codec.p, autoPlay);
+
+    Phono.log.debug("[JAVA share codec ] "+codec.p.pt +" id = "+codec.id);
+    var acodec = applet.mkCodec(codec.p, codec.id);
+    var share = applet.share(url, acodec, autoPlay);
     return {
         // Readonly
         url: function() {
