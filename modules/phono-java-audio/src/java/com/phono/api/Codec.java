@@ -24,7 +24,7 @@ public class Codec {
     final public int rate;
     final public int ptime;
     final public long iaxcn;
-    Codec(int pt_,String name_,int rate_,int ptime_, long iaxcn_){
+    public Codec(int pt_,String name_,int rate_,int ptime_, long iaxcn_){
         pt = pt_;
         name = name_;
         rate = rate_;

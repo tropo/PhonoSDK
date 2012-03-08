@@ -161,6 +161,11 @@ public class RTPApplet extends Applet {
         return _codecList.getCodecs();
     }
 
+    public Codec mkCodec(Codec c, int ptype){
+        Codec ret = new Codec(ptype,c.name,c.rate,c.ptime, c.iaxcn);
+        return ret;
+    }
+    
     public Share share(String uri, final Codec codec, boolean autoStart) {
         return share(uri, codec, autoStart, null, null);
     }
