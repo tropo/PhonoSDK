@@ -165,8 +165,8 @@ public class PhonoAudio implements AudioFace {
     }
 
     public long getTime() {
-        long time = _countFrames * this.getFrameInterval();
-        //long time = System.currentTimeMillis();
+        //long time = _countFrames * this.getFrameInterval();
+        long time = System.currentTimeMillis();
         return time;
     }
 
