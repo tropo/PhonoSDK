@@ -48,8 +48,8 @@ public class SpeexCodec implements CodecFace, EncoderFace, DecoderFace {
                 +" encoder configured with rate ="+_spxe.getEncoder().getSamplingRate()
                 +" Quality ="+q
                 +" compexity = "+_spxe.getEncoder().getComplexity()
-                +" packet size = "+_spxe.getEncoder().getEncodedFrameSize()
-                +" bitrate = "+_spxe.getEncoder().getBitRate());
+                +" packet size = "+_spxe.getEncoder().getEncodedFrameSize()/8
+                +" bitrate = "+_spxe.getEncoder().getBitRate()/1024.0);
         _spxd = new SpeexDecoder();
         _spxd.init(_speexmode, _sampleRate, 1, false);// _mode, _sampleRate, _channels, false);
         _aframesz = wide ? 320 : 160; // number of shorts in an audio frame;
