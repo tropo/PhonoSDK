@@ -44,10 +44,12 @@ public class SpeexCodec implements CodecFace, EncoderFace, DecoderFace {
         int q = 9;
         _spxe.init(_speexmode, q, _sampleRate, 1);// _mode, _quality, _sampleRate, _channels);
         _spxe.getEncoder().setComplexity(5);
-        Log.debug("Speex "+ (_spxe.getEncoder().getMode()== 1?"Wideband ":"Narrowband ")
+        Log.debug("Speex mode "+ _spxe.getEncoder().getMode()
                 +" encoder configured with rate ="+_spxe.getEncoder().getSamplingRate()
                 +" Quality ="+q
-                +" compexity = "+_spxe.getEncoder().getComplexity());
+                +" compexity = "+_spxe.getEncoder().getComplexity()
+                +" packet size = "+_spxe.getEncoder().getEncodedFrameSize()
+                +" bitrate = "+_spxe.getEncoder().getBitRate());
         _spxd = new SpeexDecoder();
         _spxd.init(_speexmode, _sampleRate, 1, false);// _mode, _sampleRate, _channels, false);
         _aframesz = wide ? 320 : 160; // number of shorts in an audio frame;
