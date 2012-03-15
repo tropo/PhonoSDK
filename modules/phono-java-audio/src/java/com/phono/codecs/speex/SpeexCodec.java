@@ -41,9 +41,9 @@ public class SpeexCodec implements CodecFace, EncoderFace, DecoderFace {
         _iaxcn = wide ? CodecFace.AUDIO_SPEEX16 : CodecFace.AUDIO_SPEEX;
         _name = wide ? "SPEEX" : "SPEEX";
         _spxe = new SpeexEncoder();
-        int q = 9;
+        int q = wide ? 7:3 ;
         _spxe.init(_speexmode, q, _sampleRate, 1);// _mode, _quality, _sampleRate, _channels);
-        _spxe.getEncoder().setComplexity(5);
+        _spxe.getEncoder().setComplexity(2);
         Log.debug("Speex mode "+ _spxe.getEncoder().getMode()
                 +" encoder configured with rate ="+_spxe.getEncoder().getSamplingRate()
                 +" Quality ="+q

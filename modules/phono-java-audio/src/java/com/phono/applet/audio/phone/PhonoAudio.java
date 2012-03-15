@@ -805,20 +805,20 @@ public class PhonoAudio implements AudioFace {
                 // if this is a new x, deal with the old one
                 val /= cnt; // scale the value by the count that mapped
                 // now stick it in the outputbuffer
-                outb.putShort(x*2, (short) val);
+                outb.putShort(x * 2, (short) val);
                 // and reset state, ready to move on
                 curr = x;
                 cnt = 0;
                 val = 0;
             }
             // add this sample to the current total
-            val += inb.getShort(i*2);
+            val += inb.getShort(i * 2);
             cnt++; // keep a count of samples added
         }
         // and clean up the end case
         if ((cnt != 0) && ((curr + 1) < framesz)) {
             val /= cnt;
-            outb.putShort(x*2, (short) val);
+            outb.putShort(x * 2, (short) val);
         }
 
     }
@@ -929,15 +929,22 @@ public class PhonoAudio implements AudioFace {
 
                     public void run() {
                         // little pre-nap to try and make sure audio is ahead.
+                        /* seems to cause single processor machines to go ugly.
                         try {
-                            Thread.sleep(getFrameInterval());
+                        Thread.sleep(getFrameInterval());
                         } catch (InterruptedException ex) {
-                            Log.debug("PhonoAudio.startRec(): InterruptedException: " + ex.getMessage());
-                        }
+                        Log.debug("PhonoAudio.startRec(): InterruptedException: " + ex.getMessage());
+                        }*/
                         while (_recThread != null) {
+                            long then = System.currentTimeMillis();
                             boolean more = readMic();
                             try {
                                 long nap = getFrameInterval();
+                                long now = System.currentTimeMillis();
+                                nap -= (now - then);
+                                if (nap < 5) {
+                                    nap = 5;
+                                }
                                 if (more) {
                                     nap -= 1;
                                 }

@@ -116,10 +116,11 @@ public class RTPAudioSession implements RTPDataSink, AudioReceiver {
         }
         try {
             StampedAudio sa = af.readStampedAudio();
-            if (sa != null) {
+            while (sa != null) {
                 int fac = CodecList.getFac(af.getCodec());
                 _sps.sendPacket(sa.getData(), sa.getStamp() * fac, _ptype);
                 //Log.debug("send "+ sa.getStamp() * fac);
+                sa = af.readStampedAudio();
             }
         } catch (Exception ex) {
             Log.error(ex.toString());
