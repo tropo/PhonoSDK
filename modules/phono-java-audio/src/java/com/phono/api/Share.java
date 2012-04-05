@@ -81,7 +81,9 @@ public class Share {
 
             public Void run() {
                 audio.stopRec();
-                ras.halt();
+                if (ras != null) {
+                    ras.halt();
+                }
                 audio.stopPlay();
                 return null; // nothing to return
             }
