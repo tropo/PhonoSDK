@@ -96,7 +96,7 @@ var flensed={base_path:"//s.phono.com/deps/flensed/1.0/"};
                  || status === Strophe.Status.AUTHFAIL) {
             phono.handleError();
           }
-      });
+      },50);
    };
 
    Phono.prototype.disconnect = function() {
