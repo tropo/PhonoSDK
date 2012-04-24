@@ -40,6 +40,7 @@ package com.phono.impl
 		    _rx.bufferTime = 0;
                 else
                     _rx.bufferTime = 0.01;
+		trace("play("+_streamName+")");
 		_rx.play(_streamName);
 		_volume = _rx.soundTransform.volume;
 	    }

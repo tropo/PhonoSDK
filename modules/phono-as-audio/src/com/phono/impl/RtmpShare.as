@@ -85,6 +85,7 @@ package com.phono.impl
 		    //_tx.bufferTime = 0;
 		    _tx.client = this;
 		    _tx.attachAudio(_mic);
+			trace("publish("+_streamName+")");
 		    _tx.publish(_streamName);
 		    
 		    if (_suppress) {						

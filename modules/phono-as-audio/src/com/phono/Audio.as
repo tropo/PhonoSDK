@@ -6,18 +6,18 @@ package com.phono
     
     import flash.events.*;
     import flash.media.Microphone;
-    import flash.media.MicrophoneEnhancedMode;    
+    import flash.media.MicrophoneEnhancedMode;
     import flash.media.MicrophoneEnhancedOptions;
     import flash.net.NetConnection;
     import flash.net.NetStream;
     import flash.net.ObjectEncoding;
     import flash.net.Responder;
+    import flash.system.Capabilities;
     import flash.system.Security;
     import flash.system.SecurityPanel;
     import flash.utils.Dictionary;
     import flash.utils.Timer;
     import flash.utils.setTimeout;
-    import flash.system.Capabilities;
     
     import mx.controls.Alert;
     
@@ -29,6 +29,8 @@ package com.phono
 	
 	private var _ncDict:Dictionary = new Dictionary(); // rtmpUri -> NC		
 	private var _waitQs:Dictionary = new Dictionary(); // rtmpUri -> Array of functions to call
+	private var _cirrusNc:NetConnection;
+	private var _cirrusUri:String;
 	
 	public function Audio()
 	{	
@@ -50,6 +52,7 @@ package com.phono
                 _mic = Microphone.getMicrophone();
             }
             _mic.addEventListener(StatusEvent.STATUS, onMicStatus);	
+			//doConnect("rtmfp://phono-fms1-ext.voxeolabs.net/phono");
             trace("Flash Audio()");
 	}		
 	
@@ -65,20 +68,25 @@ package com.phono
 	    return "http://voxeo.com/gordon/apps/rtmp";
 	}
 
-        public function connect(url:String, callback:Function):void
+        public function doCirrusConnect(url:String):Boolean
         {
-            // Connect to the given network connection url and invoke the callback
-            // on success or failure
-            var rtmpUri:String = getRtmpUri(url);
-            _waitQs[rtmpUri].push(callback);
-	    var nc:NetConnection = getNetConnection(rtmpUri);
+            // Connect to the given network connection url			
+			var nc:NetConnection = getNetConnection(url);
+			_cirrusNc = nc;
+			_cirrusUri = url;
+			return true;
         }
 
         public function nearID(url:String):String
         {
-            var rtmpUri:String = getRtmpUri(url);
-            var nc:NetConnection = getNetConnection(rtmpUri);
-            return nc.nearID;
+            var nc:NetConnection = getNetConnection(url);
+			var nearID:String;
+			try {
+				nearID = nc.nearID;
+			} catch (e:Error) {
+				nearID = "";
+			}
+            return nearID;
         }
 	
 	public function get codecs():Array
@@ -89,16 +97,27 @@ package com.phono
 	    return cds;
 	}
 	
-	public function play(url:String, autoStart:Boolean, peerID:String=NetStream.CONNECT_TO_FMS):Player
+	public function play(url:String, autoStart:Boolean, peerID:String=NetStream.CONNECT_TO_FMS, video:Boolean=false):Player
 	{
 	    var player:Player = null
 	    var protocolName:String = getProtocolName(url);
 	    if (protocolName.toLowerCase() == "rtmp"
                 || protocolName.toLowerCase() == "rtmfp"
                 || protocolName.toLowerCase() == "rtmpt") {
-		var streamName:String = getStreamName(url);	
-		var rtmpUri:String = getRtmpUri(url);
-		var nc:NetConnection = getNetConnection(rtmpUri);
+		var streamName:String;
+		var rtmpUri:String;
+		
+		var nc:NetConnection;
+		if (peerID == NetStream.CONNECT_TO_FMS) {
+			streamName = getStreamName(url);	
+			rtmpUri = getRtmpUri(url);
+			nc = getNetConnection(rtmpUri);			
+		}
+		else {
+			nc = _cirrusNc;
+			streamName = nc.nearID;	
+			rtmpUri = _cirrusUri;
+		}
 		
 		var queue:Array = _waitQs[rtmpUri]
 		player = new RtmpPlayer(_hasEC, queue, nc, streamName, url, peerID);
@@ -109,7 +128,7 @@ package com.phono
 	    return player;
 	}
 	
-	public function share(url:String, autoStart:Boolean, codecId:String="97", codecName:String="SPEEX", codecRate:String="16000", suppress:Boolean=true, direct:Boolean=false):Share
+	public function share(url:String, autoStart:Boolean, codecId:String="97", codecName:String="SPEEX", codecRate:String="16000", suppress:Boolean=true, peerID:String="", video:Boolean=false):Share
 	{
 	    // Force an open request for microphone permisson if we don't already have it - 
 	    // Flash will automatically open the box, so we need to be ready
@@ -124,9 +143,22 @@ package com.phono
 	    var protocolName:String = getProtocolName(url);
 	    if (protocolName.toLowerCase() == "rtmp" || protocolName.toLowerCase() == "rtmfp"
             || protocolName.toLowerCase() == "rtmpt") {
-		var streamName:String = getStreamName(url);	
-		var rtmpUri:String = getRtmpUri(url);
-		var nc:NetConnection = getNetConnection(rtmpUri);
+		var nc:NetConnection;
+		var streamName:String;
+		var rtmpUri:String;
+		var direct:Boolean;
+		if (peerID == "") {
+			direct = false;
+			rtmpUri = getRtmpUri(url);
+			nc = getNetConnection(rtmpUri);
+			streamName = getStreamName(url);	
+		}
+		else {
+			direct = true;
+			nc = _cirrusNc;
+			rtmpUri = _cirrusUri;
+			streamName = peerID;
+		}
 		
 		var queue:Array = _waitQs[rtmpUri]
 		var share:Share = new RtmpShare(_hasEC, queue, nc, streamName, codec, url, _mic, suppress, direct);
@@ -204,6 +236,7 @@ package com.phono
 		nc.addEventListener(NetStatusEvent.NET_STATUS, 
 				    function(event:NetStatusEvent):void
 				    {
+						trace("NetStatusEvent:" + event.info.code);
 					switch (event.info.code)
 					{
 					case "NetConnection.Connect.Success":
