@@ -271,7 +271,7 @@ PhonegapAndroidAudio.prototype.transport = function() {
             t.find('candidate').each(function () {
                 fullUri = endpoint + ":" + $(this).attr('ip') + ":" + $(this).attr('port');
             });
-            return fullUri;
+            return {input: fullUri, output: fullUri};
         }
     }
 };

@@ -200,9 +200,9 @@ JavaAudio.prototype.transport = function() {
         processTransport: function(t) {
             var fullUri;
             t.find('candidate').each(function () {
-                fullUri = endpoint + ":" + $(this).attr('ip') + ":" + $(this).attr('port') + "|" + endpoint + ":" + $(this).attr('ip') + ":" + $(this).attr('port');
+                fullUri = endpoint + ":" + $(this).attr('ip') + ":" + $(this).attr('port');
             });
-            return fullUri;
+            return {input:fullUri, output:fullUri};
         }
     }
 };
