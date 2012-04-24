@@ -67,8 +67,8 @@
       // Bind Event Listeners
       Phono.events.bind(this, config);
       
-      this.ringer = this.audioLayer.play(phone.ringTone()); 
-      this.ringback = this.audioLayer.play(phone.ringbackTone());
+       this.ringer = this.audioLayer.play({uri:phone.ringTone()}); 
+       this.ringback = this.audioLayer.play({uri:phone.ringbackTone()});
       if (this.audioLayer.audioIn){
          this.audioLayer.audioIn(phone.audioInput());
       }
@@ -124,11 +124,11 @@
            }).up();           
        });
 
-       this.transport.buildTransport(partial.up());
-       
-      this.connection.sendIQ(jingleIq, function (iq) {
-         call.state = CallState.PROGRESS;
-      });
+       this.transport.buildTransport("offer", partial.up(), function() {
+           call.connection.sendIQ(jingleIq, function (iq) {
+               call.state = CallState.PROGRESS;
+           });
+       });
    };
    
    Call.prototype.accept = function() {
@@ -185,14 +185,14 @@
                }).up();           
            }
        });
-       
-       this.transport.buildTransport(partial.up());
-       
-       this.connection.sendIQ(jingleIq, function (iq) {
-           call.state = CallState.CONNECTED;
-           Phono.events.trigger(call, "answer");
-           if (call.ringer != null) call.ringer.stop();
-           call.startAudio();
+
+       this.transport.buildTransport("answer", partial.up(), function(){
+           call.connection.sendIQ(jingleIq, function (iq) {
+               call.state = CallState.CONNECTED;
+               Phono.events.trigger(call, "answer");
+               if (call.ringer != null) call.ringer.stop();
+               call.startAudio();
+           });
        });
        
    };
@@ -356,19 +356,18 @@
       
       // No matching codec
       if (!codec) {
-          Phono.log.error("No matching codec");
-          return null;
+          Phono.log.error("No matching jingle codec (not a problem if using WebRTC)");
       }
        
       // Find a matching media transport
       var foundTransport = false;
       $(iq).find('transport').each(function () {
           if (call.transport.name == $(this).attr('xmlns') && foundTransport == false) {
-              var uri = call.transport.processTransport($(this));      
-              if (uri != undefined) {
+              var transport = call.transport.processTransport($(this));      
+              if (transport != undefined) {
                   call.bindAudio({
-                      input: call.audioLayer.play(uri, false),
-                      output: call.audioLayer.share(uri, false, codec)
+                      input: call.audioLayer.play(transport.input, false),
+                      output: call.audioLayer.share(transport.output, false, codec)
                   });
                   foundTransport = true;
               } else {
@@ -460,7 +459,12 @@
             call.codec = call.negotiate(iq);
             if(call.codec == null) {
                Phono.log.warn("Failed to negotiate incoming call", iq);
-               return true;
+               call.codec = {
+                   id: 1,
+                   name: "webrtc-ulaw",
+                   rate: 8000,
+                   p: 20
+               };
             }
             
             // Get incoming headers
@@ -483,7 +487,7 @@
             Phono.events.trigger(this, "incomingCall", {
                call: call
             });
-
+          
             // Get microphone permission if we are going to need it
             if(!audioLayer.permission()) {
                 Phono.events.trigger(audioLayer, "permissionBoxShow");
@@ -497,8 +501,13 @@
             // Negotiate SDP
             call.codec = call.negotiate(iq);
             if(call.codec == null) {
-               Phono.log.warn("Failed to negotiate outbound call", iq);
-               return true;
+                Phono.log.warn("Failed to negotiate outbound call", iq);
+                call.codec = {
+                    id: 1,
+                    name: "webrtc-ulaw",
+                    rate: 8000,
+                    p: 20
+                };
             }
 
             call.state = CallState.CONNECTED;
@@ -544,7 +553,8 @@
       this.connection.send(
          $iq({
             type: "result", 
-            id: $(iq).attr('id')
+             id: $(iq).attr('id'),
+             to:call.remoteJid
          })
       );
       
@@ -605,7 +615,7 @@
             });
          }
          else if(to.indexOf("@") > 0) {
-            call.remoteJid = Phono.util.escapeXmppNode(to) + "@sip";
+             call.remoteJid = to;
          }
       }
    };

@@ -2,7 +2,11 @@ function FlashAudio(phono, config, callback) {
     
     // Define defualt config and merge from constructor
     this.config = Phono.util.extend({
-        swf: "//s.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf"
+        protocol: "rtmfp",
+        swf: "//s.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf",
+        cirrus: "rtmfp://phono-fms1-ext.voxeolabs.net/phono",
+        direct: true,
+        video: false
     }, config);
     
     // Bind Event Listeners
@@ -36,6 +40,9 @@ function FlashAudio(phono, config, callback) {
             Phono.events.trigger(plugin, eventName);
         });
         callback(plugin);
+        if (plugin.config.direct) {
+            window.setTimeout(10, plugin.$flash.doCirrusConnect(plugin.config.cirrus));
+        }
     });
     
     wmodeSetting = "opaque";
@@ -48,7 +55,7 @@ function FlashAudio(phono, config, callback) {
     flashembed(containerId, 
                {
                    id:containerId + "id",
-                   src:this.config.swf,
+                   src:this.config.swf + "?rnd=" + new Date().getTime(),
                    wmode:wmodeSetting
                }, 
                {
@@ -77,7 +84,8 @@ FlashAudio.prototype.permission = function() {
 };
 
 // Creates a new Player and will optionally begin playing
-FlashAudio.prototype.play = function(url, autoPlay) {
+FlashAudio.prototype.play = function(transport, autoPlay) {
+    url = transport.uri.replace("protocol",this.config.protocol);
     var luri = url;
     var uri = Phono.util.parseUri(url);
     
@@ -88,7 +96,12 @@ FlashAudio.prototype.play = function(url, autoPlay) {
         luri = location.protocol+"://"+location.authority+location.directoryPath+url;
     }
     
-    var player = this.$flash.play(luri, autoPlay);
+    var player;
+    if (this.config.direct == true && transport.peerID != undefined && this.config.cirrus != undefined) {
+        Phono.log.info("Direct media play with peer " + transport.peerID);
+        player = this.$flash.play(luri, autoPlay, transport.peerID, this.config.video);
+    }
+    else player = this.$flash.play(luri, autoPlay);
     return {
         url: function() {
             return player.getUrl();
@@ -111,8 +124,15 @@ FlashAudio.prototype.play = function(url, autoPlay) {
 };
 
 // Creates a new audio Share and will optionally begin playing
-FlashAudio.prototype.share = function(url, autoPlay, codec) {
-    var share = this.$flash.share(url, autoPlay, codec.id, codec.name, codec.rate);
+FlashAudio.prototype.share = function(transport, autoPlay, codec) {
+    var url = transport.uri.replace("protocol",this.config.protocol);
+    var direct = false;
+    var peerID = "";
+    if (this.config.direct == true && transport.peerID != undefined && this.config.cirrus != undefined) { 
+        peerID = transport.peerID;
+        Phono.log.info("Direct media share with peer " + transport.peerID);
+    }
+    var share = this.$flash.share(url, autoPlay, codec.id, codec.name, codec.rate, true, peerID, this.config.video);
     return {
         // Readonly
         url: function() {
@@ -172,18 +192,42 @@ FlashAudio.prototype.share = function(url, autoPlay, codec) {
 
 // Returns an object containg JINGLE transport information
 FlashAudio.prototype.transport = function() {
+    var $flash = this.$flash;
+    var config = this.config;
+    var cirrus = this.config.cirrus;
     return {
         name: this.$flash.getTransport(),
         description: this.$flash.getDescription(),
-        buildTransport: function(j) {
-            j.c('transport',{xmlns:this.name});
+        buildTransport: function(direction, j, callback) {
+            var nearID = "";
+            if (config.direct) {
+                nearID = $flash.nearID(cirrus);
+            }
+            if (nearID != "") {
+                j.c('transport',{xmlns:this.name, peerID:nearID});
+            } else {
+                j.c('transport',{xmlns:this.name});
+            }
+            callback();
         },
         processTransport: function(t) {
-            var fullUri;
+            var pID = t.attr('peerid');
+            var transport;
+            // If we have a Peer ID, and no other transport, fake one
+            if (pID != undefined)
+                transport = {input: {uri: "rtmfp://invalid/invalid",
+                                     peerID: pID},   
+                             output: {uri: "rtmfp://invalid/invalid",
+                                      peerID: pID}
+                            };
             t.find('candidate').each(function () {
-                fullUri = $(this).attr('rtmpUri') + "/" + $(this).attr('playName');
+                transport = { input: {uri: $(this).attr('rtmpUri') + "/" + $(this).attr('playName'),
+                                      peerID: pID},   
+                              output: {uri: $(this).attr('rtmpUri') + "/" + $(this).attr('publishName'),
+                                       peerID: pID}
+                            };
             });
-            return fullUri;
+            return transport;
         }
     }
 };
