@@ -595,6 +595,9 @@
       if(to.match("^sip:") || to.match("^sips:")) {
          call.remoteJid = Phono.util.escapeXmppNode(to.substr(4)) + "@sip";
       }
+      else if(to.match("^xmpp:")) {
+         call.remoteJid = to.substr(5); 
+      }
       else if(to.match("^app:")) {
          call.remoteJid = Phono.util.escapeXmppNode(to.substr(4)) + "@app";
       }
@@ -615,7 +618,7 @@
             });
          }
          else if(to.indexOf("@") > 0) {
-             call.remoteJid = to;
+             call.remoteJid = Phono.util.escapeXmppNode(to) + "@sip";
          }
       }
    };
