@@ -15,7 +15,7 @@
     <mkdir dir="target" />
     
     <!-- Compile -->
-    <mxmlc target-player="10.3" 
+    <mxmlc target-player="11.1" 
            swf-version="12"
            file="${basedir}/src/PhonoMedia.mxml" 
            output="${basedir}/target/phono.audio.swf"> 
