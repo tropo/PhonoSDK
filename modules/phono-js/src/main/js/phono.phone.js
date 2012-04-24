@@ -357,6 +357,13 @@
       // No matching codec
       if (!codec) {
           Phono.log.error("No matching jingle codec (not a problem if using WebRTC)");
+          // Voodoo up a temporary codec as a placeholder
+          codec = {
+              id: 1,
+              name: "webrtc-ulaw",
+              rate: 8000,
+              p: 20
+          };
       }
        
       // Find a matching media transport
@@ -459,12 +466,6 @@
             call.codec = call.negotiate(iq);
             if(call.codec == null) {
                Phono.log.warn("Failed to negotiate incoming call", iq);
-               call.codec = {
-                   id: 1,
-                   name: "webrtc-ulaw",
-                   rate: 8000,
-                   p: 20
-               };
             }
             
             // Get incoming headers
@@ -502,12 +503,6 @@
             call.codec = call.negotiate(iq);
             if(call.codec == null) {
                 Phono.log.warn("Failed to negotiate outbound call", iq);
-                call.codec = {
-                    id: 1,
-                    name: "webrtc-ulaw",
-                    rate: 8000,
-                    p: 20
-                };
             }
 
             call.state = CallState.CONNECTED;
