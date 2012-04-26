@@ -2334,6 +2334,14 @@ Strophe.Connection.prototype = {
             // setup timeout handler
             this._disconnectTimeout = this._addSysTimedHandler(
                 30000, this._onDisconnectTimeout.bind(this));
+                
+            // remove all of the requests
+            if (this._requests.length > 0) {
+            	for (var i=0; i<this._requests.length; i++) {
+        			this._removeRequest(this._requests[i]);
+            	}
+        	}
+                
             this._sendTerminate();
         }
     },
