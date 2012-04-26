@@ -260,11 +260,12 @@ PhonegapAndroidAudio.prototype.transport = function() {
     return {
         name: "urn:xmpp:jingle:transports:raw-udp:1",
         description: "urn:xmpp:jingle:apps:rtp:1",
-        buildTransport: function(j) {
+        buildTransport: function(direction, j, callback) {
             console.log("buildTransport: " + endpoint);
             var uri = Phono.util.parseUri(endpoint);
             j.c('transport',{xmlns:"urn:xmpp:jingle:transports:raw-udp:1"})
                 .c('candidate',{ip:uri.domain, port:uri.port, generation:"1"});
+            callback();
         },
         processTransport: function(t) {
             var fullUri;
