@@ -18,7 +18,7 @@ package com.voxeo.phono.impl.xmpp.jingle
 			this.element = element;
 			
 			var descNs:Namespace = new Namespace( NAMESPACE_URI );
-			for each (var p:XML in element["payload-type"]) {
+			for each (var p:XML in element.descNs::["payload-type"]) {
 				var payload:Payload = new Payload();
 				payload.processExtension(p);
 				payloads.push(payload);
@@ -37,7 +37,7 @@ package com.voxeo.phono.impl.xmpp.jingle
             	var p:XML = payloads[id].toXML();
             	x.appendChild(p);
             }	
-			
+
 			return x;
 		}						
 	}

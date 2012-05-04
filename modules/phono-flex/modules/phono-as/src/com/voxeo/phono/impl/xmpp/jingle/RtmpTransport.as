@@ -20,7 +20,7 @@ package com.voxeo.phono.impl.xmpp.jingle
 			
 			var rawNs:Namespace = new Namespace( NAMESPACE_URI );
 			
-			for each (var c:XML in element.candidate) {
+			for each (var c:XML in element.rawNs::candidate) {
 				var candidate:Candidate = new Candidate();
 				candidate.processExtension(c);
 				candidates[candidate.id] = candidate;
@@ -36,7 +36,7 @@ package com.voxeo.phono.impl.xmpp.jingle
             {
                 x.candidate = candidates[id].toXML();
             }	
-			
+
 			return x;
 		}						
 	}
