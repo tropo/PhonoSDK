@@ -36,20 +36,24 @@ $(document).ready(function() {
         var directP2P = false;
         var connectionUrl = "//app.phono.com/http-bind";
         var dialString = "sip:3366@login.zipdx.com";
+        var chatString = "en2fr@bot.talk.google.com";
         var gw = "gw-v3.d.phono.com";
 
         // Do we have URL parameters to override here?
         if (audioType == "auto" && urlParam("audio") != undefined) audioType = urlParam("audio");
         if (urlParam("connectionUrl") != undefined) connectionUrl = urlParam("connectionUrl");
         if (urlParam("dial") != undefined) dialString = urlParam("dial");
+        if (urlParam("chat") != undefined) chatString = urlParam("chat");
 
         console.log("audioType = " + audioType);
         console.log("dialString = " + dialString);
+        console.log("charString = " + chatString);
 
 	newPhonoDiv.attr("id",newPhonoID).appendTo('.phonoHldr').show();
 	newPhonoDiv.find(".phonoID").text(newPhonoID+":");
         newPhonoDiv.find(".audioType").text(audioType);
         newPhonoDiv.find(".callTo").val(dialString);
+        newPhonoDiv.find(".chatTo").val(chatString);
 
         var audio = audioType;
 
@@ -66,7 +70,12 @@ $(document).ready(function() {
 
             onReady: function(event) {
                 var baseUrl = window.location.href.substring(0, window.location.href.indexOf('?'));
-                newPhonoDiv.find(".sessionId").html("<a class='sessionId' target='_blank' href='" + baseUrl + "?audio=" + audioType + "&connectionUrl=" + connectionUrl + "&dial=sip:" + this.sessionId + "'>" + this.sessionId + "</a>");
+                newPhonoDiv.find(".sessionId").html("<a class='sessionId' target='_blank' href='" + 
+                                                    baseUrl + "?audio=" + audioType 
+                                                    + "&connectionUrl=" + connectionUrl 
+                                                    + "&dial=sip:" + this.sessionId 
+                                                    + "&chat=" + this.sessionId + "'>" 
+                                                    + this.sessionId + "</a>");
                 newPhonoDiv.find(".phoneControl").show();
 
                 if (this.audio.audioInDevices){
