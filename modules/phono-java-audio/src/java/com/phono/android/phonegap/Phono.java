@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 package com.phono.android.phonegap;
 
 import com.phono.srtplight.LogFace;
@@ -153,6 +152,8 @@ public class Phono extends Plugin {
     //                  'uri' -> "rtp://localipaddress:localport:remoteipaddress:remoteport"
     //                  'autoplay' -> "YES" , if the share should start immediately
     //                  'codec' -> "ULAW" , or other supported codec from the list returned by codecs
+    or a list codec.name+":"+codec.rate+":"+codec.id
+
      */
 
     boolean share(JSONObject options, JSONObject reply) throws JSONException {
@@ -170,11 +171,31 @@ public class Phono extends Plugin {
         }
         Codec cod = null;
         if (codec != null) {
-            Codec[] cs = _codecList.getCodecs();
-            for (int i = 0; i < cs.length; i++) {
-                if (codec.equals(cs[i].name)) {
-                    cod = cs[i];
-                    break;
+            if (codec.contains(":")) {
+                // we have the 'new' style where we get the name:rate:ptype
+                String clist[] = codec.split(":");
+                if (clist.length == 3) {
+                    // parse it
+                    String cname = clist[0];
+                    int crate = Integer.parseInt(clist[1]);
+                    int ptype = Integer.parseInt(clist[2]);
+                    // find the same name'd one
+                    Codec[] cs = _codecList.getCodecs();
+                    for (int i = 0; i < cs.length; i++) {
+                        if (cname.equals(cs[i].name) && (cs[i].rate == crate)) {
+                            // and create a new one with the correct Ptype
+                            cod = new Codec(ptype,cs[i].name,cs[i].rate,cs[i].ptime, cs[i].iaxcn);
+                            break;
+                        }
+                    }
+                }
+            } else {
+                Codec[] cs = _codecList.getCodecs();
+                for (int i = 0; i < cs.length; i++) {
+                    if (codec.equals(cs[i].name)) {
+                        cod = cs[i];
+                        break;
+                    }
                 }
             }
         }
@@ -433,7 +454,7 @@ public class Phono extends Plugin {
             Share s = e.getShare();
             if (s != null) {
                 int dur = Integer.parseInt(duration);
-                boolean aud = audible.toUpperCase().equals("YES")||audible.toUpperCase().equals("TRUE") ;
+                boolean aud = audible.toUpperCase().equals("YES") || audible.toUpperCase().equals("TRUE");
                 s.digit(digit, dur, aud);
                 res = true;
             }

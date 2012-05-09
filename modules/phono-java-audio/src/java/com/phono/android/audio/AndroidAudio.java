@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 package com.phono.android.audio;
 
 import java.util.ArrayList;
@@ -35,6 +34,7 @@ import com.phono.audio.codec.alaw.ALaw_Codec;
 import com.phono.audio.codec.g722.G722Codec;
 import com.phono.audio.codec.g722.NativeG722Codec;
 import com.phono.audio.phone.StampedAudioImpl;
+import com.phono.codecs.speex.SpeexCodec;
 import com.phono.srtplight.Log;
 
 public class AndroidAudio implements AudioFace {
@@ -124,11 +124,13 @@ public class AndroidAudio implements AudioFace {
             short[] effectOut(short[] out) {
                 short[] ret = super.effectOut(out);
                 int ld = _dtmfDigit;
-                if ( ld >= 0) {
+                if (ld >= 0) {
                     long k = _speakerFrames * samplesPerFrame;
-                    if ((_speakerFrames % 5) == 0) Log.debug("bleep "+_dtmfDigit);
+                    if ((_speakerFrames % 5) == 0) {
+                        Log.debug("bleep " + _dtmfDigit);
+                    }
                     for (int j = 0; j < ret.length; j++) {
-                        ret[j] = (short) (getDigitSample(ld, j+k, _sampleRate) + ret[j] / 2);
+                        ret[j] = (short) (getDigitSample(ld, j + k, _sampleRate) + ret[j] / 2);
                     }
                 }
                 return ret;
@@ -477,6 +479,19 @@ public class AndroidAudio implements AudioFace {
         ULaw_Codec ulawCodec = new ULaw_Codec();
         _codecMap.put(new Long(ulawCodec.getCodec()), ulawCodec);
         /*
+        SpeexCodec speexCodec = new SpeexCodec(true) {
+            @Override
+            protected int getCompexity(boolean wide) {
+                return 0;
+            }
+            @Override
+            protected int getQuality(boolean wide) {
+                return 2;
+            }
+        };
+        _codecMap.put(speexCodec.getCodec(), speexCodec);
+         */
+        /*
         ALaw_Codec alawCodec = new ALaw_Codec();
         _codecMap.put(new Long(alawCodec.getCodec()), alawCodec);
         GSM_Codec gsmCodec = new GSM_Codec();
@@ -517,7 +532,7 @@ public class AndroidAudio implements AudioFace {
     public void playDigit(char c) {
         String valid = "0123456789#*";
         _dtmfDigit = valid.indexOf(c);
-        Log.debug("DtmfDigit is "+_dtmfDigit);
+        Log.debug("DtmfDigit is " + _dtmfDigit);
     }
 
     public void setVolume(double d) {
