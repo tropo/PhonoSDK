@@ -76,6 +76,7 @@ package com.voxeo.phono.impl.xmpp.jingle
 			var rtmpNs:Namespace = new Namespace(RtmpTransport.NAMESPACE_URI);
 			var dtmfNs:Namespace = new Namespace(DTMF.NAMESPACE_URI);
 			var headerNs:Namespace = new Namespace(CustomHeader.NAMESPACE_URI);
+			default xml namespace = jingleNs;
 			
 			trace("Jingle: processExtension:" + element);
 			
@@ -154,13 +155,16 @@ package com.voxeo.phono.impl.xmpp.jingle
 			
 		override public function toXML():XML
 		{
-			var x:XML = <jingle></jingle>
-			x.@xmlns = NAMESPACE_URI;
+			var x:XML = <jingle></jingle>;
+			var jingleNs:Namespace = new Namespace(NAMESPACE_URI);
+			default xml namespace = jingleNs;
+			x.setNamespace(jingleNs);
+//			x.@xmlns = NAMESPACE_URI;
 			if (action != "") x.@action = action;
 			if (initiator != "") x.@initiator = initiator;
 			if (sid != "") x.@sid = sid;
 			if (content_creator != "") {
-				var c:XML = <content></content>
+				var c:XML = <content></content>;
 				c.@creator = content_creator;
 				c.@name = content_name;	
 				c.@senders = content_senders;

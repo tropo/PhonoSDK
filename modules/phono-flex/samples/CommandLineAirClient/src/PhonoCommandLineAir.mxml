@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx" initialize="initLogging()" addedToStage="addedToStageHandler(event)" invoke="invokeHandler(event)" closing="closingHandler(event)" creationComplete="initLogging()">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.voxeo.phono.Call;
+			import com.voxeo.phono.Factory;
+			import com.voxeo.phono.Phone;
+			import com.voxeo.phono.events.CallEvent;
+			import com.voxeo.phono.events.MessageEvent;
+			import com.voxeo.phono.events.PhoneEvent;
+			import com.voxeo.phono.impl.xmpp.jingle.JinglePhone;
+			
+			import flash.net.dns.AAAARecord;
+			import flash.utils.clearTimeout;
+			import flash.utils.setInterval;
+			import flash.utils.setTimeout;
+			
+			import mx.collaboration.xmpp.protocol.extensions.Bind;
+			import mx.collections.ArrayCollection;
+			import mx.core.Window;
+			import mx.logging.*;
+			import mx.logging.targets.*;
+			
+			[Bindable]
+			public var jinglePhone:JinglePhone = Factory.createPhone();
+			public var call:Call;
+			
+			[Bindable]
+			private var gateway:String;
+			[Bindable]
+			private var preDialDelay: Number = 0;
+			[Bindable]
+			private var dialUri:String;
+			[Bindable]
+			private var postIncomingAnswerDelay:Number = 0;
+			[Bindable]
+			private var preHangupDelay:Number = -2;
+			[Bindable]
+			private var disconnectStream:Boolean = false;
+//			[Bindable]
+//			private var postOutgoingHangupDelay:Number = -1;
+			
+			[Bindable]
+			public var myData:ArrayCollection;
+			
+			private var preDialProcess:uint;
+			private var postIncomingAnswerProcess:uint;
+			private var hangupProcess:uint;
+			
+			private function initLogging():void {
+				// Create a target
+				var logTarget:TraceTarget = new TraceTarget();
+				
+				// Log only messages for the classes in the mx.rpc.* and mx.messaging packages.
+				logTarget.filters=["mx.rpc.*", "mx.messaging.*", "com.voxeo.*"];
+				
+				// Log all log levels.
+				logTarget.level = LogEventLevel.ALL;
+				
+				// Add date, time, category, and log level to the output.
+				logTarget.includeDate = true;
+				logTarget.includeTime = true;
+				logTarget.includeCategory = true;
+				logTarget.includeLevel = true;
+				
+				// Begin logging.
+				Log.addTarget(logTarget);
+			}
+			
+			protected function invokeHandler(event:InvokeEvent):void
+			{	
+				var arguments:Array = event.arguments;
+				for (var i:int=0; i<arguments.length; i++) {
+					var temp:String = arguments[i];
+					var tempIndex:int = temp.search("=");
+					var key:String = temp.substring(0, tempIndex);
+					var value:String = temp.substring(tempIndex+1);
+					if (key == "gateway") {
+						gateway = value;
+						trace("gateway: " + gateway);
+					}
+					else if (key == "pre-dial-delay") {
+						preDialDelay = Number(value);
+						if (preDialDelay > 0) {
+							preDialDelay = preDialDelay * 1000;
+						}
+					}
+					else if (key == "dial-uri") {
+						dialUri = value;
+						trace("dialUri: " + dialUri);
+					}
+					else if (key == "post-incoming-answer-delay") {
+						postIncomingAnswerDelay = Number(value);
+						if (postIncomingAnswerDelay > 0) {
+							postIncomingAnswerDelay = postIncomingAnswerDelay * 1000;
+						}
+					}
+					else if (key == "pre-hangup-delay") {
+						preHangupDelay = Number(value);
+						if (preHangupDelay > 0) {
+							preHangupDelay = preHangupDelay * 1000;
+						}
+					}
+					else if (key == "disconnect") {
+						disconnectStream = Boolean(value);
+					}
+				}
+				if (gateway == "") {
+					trace("Gateway or is empty.");
+					return;
+				}
+				if(loaderInfo.hasOwnProperty("uncaughtErrorEvents")){
+					IEventDispatcher(loaderInfo["uncaughtErrorEvents"]).addEventListener("uncaughtError", function(e:*):void {
+						e.preventDefault();
+						var s:String;
+						
+						if (e.error is Error)
+						{
+							var error:Error = e.error as Error;
+							s = "Uncaught Error: " + error.errorID + ", " + error.name + ", " + error.message;
+						}
+						else
+						{
+							var errorEvent:ErrorEvent = e.error as ErrorEvent;
+							s = "Uncaught ErrorEvent: " + errorEvent.text;
+						}
+						
+						trace("Uncaught Error: ", s);
+					});
+				}
+				createConnection(this.gateway, "", "");
+			}
+			
+			protected function createConnection(gateway:String, username:String, password:String): void {
+				try
+				{
+					jinglePhone.connect(gateway, username, password);
+					jinglePhone.addEventListener(PhoneEvent.CONNECTED, function(phoneEvent:PhoneEvent): void {
+						trace("\nSESSION-ID: " + phoneEvent.phone.sessionId + "\n");
+						
+						if (dialUri != null && dialUri.length > 0) {
+							trace("PRE-DIAL-DELAY: ", preDialDelay, "\n");
+							if (preDialDelay == 0) {
+								createCall(phoneEvent);
+							} else {
+								preDialProcess = setTimeout(function(): void {
+									try {
+										createCall(phoneEvent);
+									} catch (err: Error) {
+										Log.getLogger("com.voxeo.phono.sample").info("createCallDelayFunction error occurred...");
+									}
+								}, preDialDelay, "");
+							}
+						} else {
+							phoneEvent.phone.addEventListener(CallEvent.CREATED, handleIncomingAnswerEvent);
+						}
+					});
+					
+					jinglePhone.addEventListener(PhoneEvent.ERROR, function(event:PhoneEvent): void {
+						trace(event.reason);
+						event.stopPropagation();
+						if (jinglePhone.connected) {
+							jinglePhone.disconnect();
+						}
+					});
+					
+					jinglePhone.addEventListener(PhoneEvent.REASON_SOCKET, function(event:PhoneEvent): void {
+						trace(event.reason);
+						event.stopPropagation();
+						if (jinglePhone.connected) {
+							jinglePhone.disconnect();
+						}
+					});
+					
+					jinglePhone.addEventListener(PhoneEvent.DISCONNECTED, function(event:PhoneEvent): void {
+						trace("PHONE DISCONNECT CLOSE WINDOWS");
+						NativeApplication.nativeApplication.exit();
+					});
+				}
+				catch(event:Event) 
+				{
+					trace(event.stopPropagation());
+					event.stopPropagation();
+					if(jinglePhone.connected) {
+						jinglePhone.disconnect();
+					}
+				} catch (err:Error) {
+					Log.getLogger("com.voxeo.phono.sample").info(err.getStackTrace());
+					trace(err.getStackTrace());
+					if (jinglePhone.connected) {
+						jinglePhone.disconnect();
+					}
+					clearTimeout(preDialProcess);
+					clearTimeout(hangupProcess);
+					clearTimeout(postIncomingAnswerProcess);
+					this.close();
+				}
+			}
+			
+			protected function createCall(phoneEvent:PhoneEvent): void {
+				try {
+						try {
+							call = phoneEvent.phone.dial(dialUri);
+						} catch (err:Error) {
+							trace(err.getStackTrace());
+							Log.getLogger("com.voxeo.phono.sample").info(err.getStackTrace());
+							if (phoneEvent.phone.connected) {
+								phoneEvent.phone.disconnect();
+							}
+							clearTimeout(preDialProcess);
+							clearTimeout(hangupProcess);
+						}
+						
+						phoneEvent.phone.addEventListener(CallEvent.RINGING, handleRingingEvent);
+//						call.addEventListener(CallEvent.RINGING, handleRingingEvent);
+//						call.addEventListener(CallEvent.ANSWERED, handleOutgoingAnswerEvent);
+						phoneEvent.phone.addEventListener(CallEvent.ANSWERED, handleOutgoingAnswerEvent);
+						// After hangup should be disconnect
+						phoneEvent.phone.addEventListener(CallEvent.HANGUP, function(callEvent:CallEvent): void {
+							disconnect(callEvent, null);
+//						call.addEventListener(CallEvent.HANGUP, function(callEvent:CallEvent): void {
+//							disconnect(callEvent, null);
+						});
+						call.addEventListener(CallEvent.ERROR, handleCallErrorEvent);
+				} catch (err: Error) {
+					Log.getLogger("com.voxeo.phono.sample").info(err.getStackTrace());
+					trace(err.getStackTrace());
+					if (jinglePhone.connected) {
+						jinglePhone.disconnect();
+					}
+					clearTimeout(preDialProcess);
+					clearTimeout(hangupProcess);
+				}
+			}
+			
+			protected function handleRingingEvent(callEvent:CallEvent): void {
+				trace("Outbound Call RINGING.........");
+				if (preHangupDelay == -1) {
+					callEvent.call.hangup();
+					trace("Outbound Call HANGUP......");
+				}
+			}
+			
+			protected function handleOutgoingAnswerEvent(callEvent:CallEvent): void {
+				trace("\nHandle outbound call PRE-HANGUP-DELAY: ", preHangupDelay);
+				if (preHangupDelay >= 0) {
+					hangupProcess = setTimeout(handleHangupEvent, preHangupDelay, callEvent);
+				}
+			}
+			
+			protected function handleIncomingAnswerEvent(callEvent:CallEvent): void {
+				try {
+					trace("Handle incoming call POST-INCOMING-ANSWER-DELAY: ", postIncomingAnswerDelay);
+					if (postIncomingAnswerDelay == -1) {
+						handleHangupEvent(callEvent);
+					}
+					else {
+						postIncomingAnswerProcess = setTimeout(function(): void {
+							callEvent.call.answer();
+						}, postIncomingAnswerDelay, "");
+						if (preHangupDelay != -1) {
+							callEvent.phone.addEventListener(CallEvent.ANSWERED, function(callEvent:CallEvent): void {
+								hangupProcess = setTimeout(handleHangupEvent, preHangupDelay, callEvent);
+							});
+//							callEvent.call.addEventListener(CallEvent.ANSWERED, function(callEvent:CallEvent): void {
+//								hangupProcess = setTimeout(handleHangupEvent, preHangupDelay, callEvent);
+//							});
+						}
+					}
+					callEvent.call.addEventListener(CallEvent.HANGUP, function(callEvent:CallEvent): void {
+						disconnect(callEvent, null);
+					});
+				} catch (err:Error) {
+					trace(err.getStackTrace());
+					disconnect(callEvent, err);
+				}
+			}
+			
+			protected function handleCallErrorEvent(callEvent:CallEvent): void {
+				try {
+					Log.getLogger("com.voxeo.prism").info("Handle Call Error Event: ", callEvent.reason);
+					callEvent.stopImmediatePropagation();
+					callEvent.stopPropagation();
+					callEvent.phone.disconnect();
+					this.close();
+				} catch (err:Error) {
+					trace(err.getStackTrace());
+					disconnect(callEvent, err);
+				}
+			}
+			
+			protected function handleHangupEvent(callEvent:CallEvent): void {
+				try {
+					if (disconnectStream) {
+						if (callEvent.phone == null) {
+							trace("call event phone is null......");
+							return;
+						}
+						callEvent.phone.disconnect();
+						trace("Force to disconnect stream");
+					}
+					else {
+						Log.getLogger("com.voxeo.prism").info("Call hang up......");
+						callEvent.call.hangup();
+						trace("Hangup Call......");
+					}
+				} catch (err:Error) {
+					trace(err.getStackTrace());
+					disconnect(callEvent, err);
+				}
+			}
+			
+			protected function disconnect(callEvent:CallEvent, err:Error):void {
+				if (err != null) {
+					trace(err.getStackTrace());
+					Log.getLogger("com.voxeo.prism").info(err.getStackTrace());
+				}
+				try {
+					if (callEvent.phone != null && callEvent.phone.connected) {
+						callEvent.phone.disconnect();
+					}
+//					clearTimeout(preDialProcess);
+//					clearTimeout(hangupProcess);
+//					clearTimeout(postIncomingAnswerProcess);
+					} catch (err:Error) {
+						trace(err.getStackTrace());
+					}
+				
+				closingHandler(callEvent);
+//				trace("DONE...Close Windows...");
+//				NativeApplication.nativeApplication.exit();
+			}
+			
+			protected function closingHandler(event:Event):void
+			{
+				try {
+					clearTimeout(preDialProcess);
+					clearTimeout(hangupProcess);
+					clearTimeout(postIncomingAnswerProcess);
+					if (jinglePhone.connected) {
+						jinglePhone.disconnect();
+					}
+					
+					trace("DONE...Close Windows...");
+					NativeApplication.nativeApplication.exit();
+				} catch (err:Error) {
+					trace(err.getStackTrace());
+				}
+			}
+			
+			protected function addedToStageHandler(event:Event):void
+			{
+				if (loaderInfo.hasOwnProperty("uncaughtErrorEvents")) {
+					IEventDispatcher(loaderInfo["uncaughtErrorEvents"]).addEventListener("uncaughtError", uncaughtErrorHandler);
+				}
+			}
+			
+			private function uncaughtErrorHandler(e:*):void{
+				closingHandler(e);
+				e.preventDefault();
+				
+				var s:String;
+				
+				if (e.error is Error) {
+					var error:Error = e.error as Error;
+					s = "Uncaught Error: " + error. errorID + "," + error.name + ", " + error.message;
+				}
+				else {
+					var errorEvent:ErrorEvent = error as ErrorEvent;
+					s = "Uncaught ErrorEvent: " + errorEvent.text;
+				}
+				
+				trace("Uncaught Error Event: ", s);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<!--s:TextArea id="logText" left="10" right="10" top="105" bottom="10" /-->
+</s:WindowedApplication>

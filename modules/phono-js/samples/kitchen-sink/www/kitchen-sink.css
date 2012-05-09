@@ -21,10 +21,18 @@
 	font-weight: bold;
 }
 .phonoHeader .phonoID{
-	padding-right:10px;
+	padding-right:2px;
 }
 .phonoHeader .sessionID{
 	color:#5F5F5F;
+}
+.phonoHeader .audioType{
+        padding-right:5px;
+	color:#5F5F5F;
+}
+a.sessionId {
+	text-decoration:none;
+	color:#aa1937;
 }
 a.closePhono, a.closeChat{
 	position:absolute;

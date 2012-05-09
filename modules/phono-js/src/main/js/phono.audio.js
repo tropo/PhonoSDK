@@ -3,6 +3,7 @@
     //@Include=phono.java-audio.js
     //@Include=phono.phonegap-ios-audio.js
     //@Include=phono.phonegap-android-audio.js
+    //@Include=phono.webrtc-audio.js
 
     Phono.registerPlugin("audio", {
         
@@ -23,6 +24,9 @@
                 
             } else if (config.type === "flash") {
                 return Phono.util.loggify("FlashAudio", new FlashAudio(phono, config, callback));
+
+            } else if (config.type === "webrtc") {
+                return Phono.util.loggify("WebRTCAudio", new WebRTCAudio(phono, config, callback));
                 
             } else if (config.type === "none") {
                 window.setTimeout(callback,10);
@@ -40,6 +44,9 @@
                     console.log("Detected Android"); 
                     return Phono.util.loggify("PhonegapAndroidAudio", new PhonegapAndroidAudio(phono, config, callback));
                     
+                } else if (WebRTCAudio.exists()) { 
+                    console.log("Detected WebRTC");
+                    return Phono.util.loggify("WebRTCAudio", new WebRTCAudio(phono, config, callback));
                 } else { 
                     console.log("Detected Flash"); 
                     return Phono.util.loggify("FlashAudio", new FlashAudio(phono, config, callback));

@@ -20,22 +20,53 @@ $(document).ready(function() {
 
     var phonos={}, calls={}, chats={};
     
+    function urlParam(name){
+	var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+	if (!results) { return undefined; }
+	return results[1] || undefined;
+    }
+
     function createNewPhono(){
 	//Clone a phono div
 	var phonoCtr = ($(".phono").size() + 1) - 1;
 	var newPhonoID = "Phono" + phonoCtr;
 	var firstPhono = $('.phono').first()
 	var newPhonoDiv = firstPhono.clone()
+        var audioType = $('.audio-plugin').val();
+        var directP2P = false;
+        var connectionUrl = "//app.phono.com/http-bind";
+        var dialString = "sip:3366@login.zipdx.com";
+        var gw = "gw-v3.d.phono.com";
+
+        // Do we have URL parameters to override here?
+        if (audioType == "auto" && urlParam("audio") != undefined) audioType = urlParam("audio");
+        if (urlParam("connectionUrl") != undefined) connectionUrl = urlParam("connectionUrl");
+        if (urlParam("dial") != undefined) dialString = urlParam("dial");
+
+        console.log("audioType = " + audioType);
+        console.log("dialString = " + dialString);
+
 	newPhonoDiv.attr("id",newPhonoID).appendTo('.phonoHldr').show();
-	newPhonoDiv.find(".phonoID").text(newPhonoID);
-	
-	var newPhonoDiv = $("#"+newPhonoID);
+	newPhonoDiv.find(".phonoID").text(newPhonoID+":");
+        newPhonoDiv.find(".audioType").text(audioType);
+        newPhonoDiv.find(".callTo").val(dialString);
+
+        var audio = audioType;
+
+        if (audioType == "panda") {
+            gw = "gw-v4.d.phono.com";
+            audio = "flash";
+            directP2P = true;
+        }
 
 	phonos[newPhonoID] = $.phono({
 	    apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
-	    
+            connectionUrl:connectionUrl,
+            gateway:gw,
+
             onReady: function(event) {
-                newPhonoDiv.find(".sessionId").text(this.sessionId);
+                var baseUrl = window.location.href.substring(0, window.location.href.indexOf('?'));
+                newPhonoDiv.find(".sessionId").html("<a class='sessionId' target='_blank' href='" + baseUrl + "?audio=" + audioType + "&connectionUrl=" + connectionUrl + "&dial=sip:" + this.sessionId + "'>" + this.sessionId + "</a>");
                 newPhonoDiv.find(".phoneControl").show();
 
                 if (this.audio.audioInDevices){
@@ -66,9 +97,10 @@ $(document).ready(function() {
                 console.log(event.reason);  
             },		   
 	    audio: {
-                type: $('.audio-plugin').val(), // flash|java|none|auto
+                type: audio,
                 jar: "../../../plugins/audio/phono.audio.jar",
                 swf: "../../../plugins/audio/phono.audio.swf",
+                direct: directP2P,
                 onPermissionBoxShow: function(event) {
                     console.log("["+newPhonoID+"] Flash permission box loaded"); 
                 },
