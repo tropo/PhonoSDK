@@ -38,11 +38,11 @@
    		<div class="phono" style="display:none;">
    		 	<div class="phonoHeader">
    		 		<a href="#" title="Remove" class="closePhono"></a>
-   		 		<span class="phonoIDLabel phonoID"></span> <span class="phonoIDLabel">Session Id:</span> <span class="sessionId"><img style="margin-left:10px;" align="absmiddle" src="images/spinner.gif"/></span>
+   		 		<span class="phonoIDLabel phonoID"></span><span class="audioType"></span><span class="phonoIDLabel">Session Id:</span> <span class="sessionId"><img style="margin-left:10px;" align="absmiddle" src="images/spinner.gif"/></span>
    		 	</div>
    		 	<div class="phoneControl"> 
    		 	    <div class="inputs">
-   		 	    	<input type="text" class="callTo pretty" value="sip:3366@login.zipdx.com"/>
+   		 	    	<input type="text" class="callTo pretty" value=""/>
    		 	    	<input type="button" class="call" value="Call"/>
 					<span class="inputDivider">or</span>
    		 	    	<input type="text" class="chatTo pretty" value="en2fr@bot.talk.google.com"/>
@@ -155,8 +155,10 @@
                   &nbsp;using
    		  <select class="audio-plugin">
                     <option value="auto">Auto</option>
-                    <option value="flash">Flash</option>
+                    <option value="flash">Flash (standard)</option>
+                    <option value="panda">Flash (panda)</option>
    		    <option value="java">Java</option>
+   		    <option value="webrtc">WebRTC</option>
    		    <option value="none">None</option>
    		  </select>
                   &nbsp;for audio
