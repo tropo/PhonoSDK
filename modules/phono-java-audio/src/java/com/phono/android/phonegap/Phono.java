@@ -16,14 +16,15 @@
  */
 package com.phono.android.phonegap;
 
+import android.content.Context;
 import com.phono.srtplight.LogFace;
 import java.net.SocketException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.phonegap.api.Plugin;
-import com.phonegap.api.PluginResult;
-import com.phonegap.api.PluginResult.Status;
+import org.apache.cordova.api.Plugin;
+import org.apache.cordova.api.PluginResult;
+import org.apache.cordova.api.PluginResult.Status;
 import com.phono.android.rtp.DroidPhonoAudioShim;
 import com.phono.api.Codec;
 import com.phono.api.CodecList;
@@ -56,6 +57,9 @@ public class Phono extends Plugin {
     public static final String MUTE = "mute";
     public static final String ALLOCATEENDPOINT = "allocateEndpoint";
     public static final String FREEENDPOINT = "freeEndpoint";
+    public static final String ENERGY = "energy";
+
+
     // now option names
     public static final String URI = "uri";
     public static final String AUTOPLAY = "autoplay";
@@ -388,6 +392,23 @@ public class Phono extends Plugin {
         return res;
     }
 
+
+    boolean energy(JSONObject options, JSONObject joret) throws JSONException {
+        boolean res = false;
+        String uri = options.getString(URI);
+
+        if (uri != null) {
+            Endpoint e = (Endpoint) _endpoints.get(uri);
+            Share s = e.getShare();
+            if (s != null) {
+                double energy[] = s.energy();
+                joret.put("mic", energy[0]);
+                joret.put("spk", energy[1]);
+                res = true;
+            }
+        }
+        return res;
+    }
     boolean volume(JSONObject options, JSONObject reply) throws JSONException {
         boolean res = false;
         String uri = options.getString(URI);
@@ -509,6 +530,8 @@ public class Phono extends Plugin {
                 status = play(options, joret);
             } else if (MUTE.equals(action)) {
                 status = mute(options, joret);
+            } else if (ENERGY.equals(action)) {
+                status = energy(options, joret);
             } else if (GAIN.equals(action)) {
                 status = gain(options, joret);
             } else if (DIGIT.equals(action)) {
@@ -554,4 +577,6 @@ public class Phono extends Plugin {
             }
         };
     }
+
+
 }

@@ -99,7 +99,7 @@
     -->
     <!-- version-tag: custom -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
-  <target name="build" depends="-compile , -post-compile">
+  <target name="buildlib" depends="-compile , -post-compile">
      <copy todir="target" overwrite="true">
       <fileset dir=".">
         <include name="README" />
@@ -112,5 +112,12 @@
     <copy todir="../../target/sdk/plugins/phonegap-android" overwrite="true">
       <fileset dir="target"/>
     </copy>
+  </target>
+    <target name="build-sample" depends="buildlib">
+                <ant target="build" dir="samples/kitchen-sink" inheritAll="false">
+                </ant>
+  </target>
+  <target name="build" depends="buildlib , build-sample">
+	<echo> Built. </echo>   
   </target>
 </project>

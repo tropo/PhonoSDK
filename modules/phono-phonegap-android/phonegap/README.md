@@ -1,79 +1,95 @@
-PhoneGap implementation for Google Android
-==========================================
+Cordova Android
+===
+
+Cordova Android is an Android application library that allows for Cordova based projects to be built for the Android Platform. Cordova based applications are, at the core, an application written with web technology: HTML, CSS and JavaScript. 
+
+Apache Cordova is an effort undergoing incubation at The Apache
+Software Foundation (ASF), sponsored by the Apache Incubator project.
+Incubation is required of all newly accepted projects until a further
+review indicates that the infrastructure, communications, and decision
+making process have stabilized in a manner consistent with other
+successful ASF projects. While incubation status is not necessarily
+a reflection of the completeness or stability of the code, it does
+indicate that the project has yet to be fully endorsed by the ASF.
+
+Requires
+---
+
+- Java JDK 1.5
+- Apache ANT
+- Android SDK [http://developer.android.com](http://developer.android.com)
 
 
-Install SDK + PhoneGap
-----------------------
-1. Download and install Eclipse Classic
-2. Download and install Android SDK
-3. Download and install ADT Plugin
-4. Download the latest copy of PhoneGap and extract its contents. We will be working with the Android directory.
+Building
+---
+
+To create your cordova.jar, run in the framework directory:
+
+    android update project -p . -t android-15
+    ant jar
 
 
-Setup New Project
------------------
-1. Launch Eclipse, then under the File menu select New > Android Project
-2. In the root directory of the project, create two new directories:
-	- /libs
-	- /assets/www
-3. Copy phonegap-1.1.0.js from your PhoneGap download earlier to /assets/www
-4. Copy phonegap-1.1.0.jar from your PhoneGap download earlier to /libs
-5. Copy xml folder from your PhoneGap download earlier to /res 
-6. Make a few adjustments too the project's main Java file found in the src folder in Eclipse:
-	- Change the class's extend from Activity to DroidGap
-	- Replace the setContentView() line with super.loadUrl("file:///android_asset/www/index.html");
-	- Add import com.phonegap.*;
-	- Remove import android.app.Activity;
-You might experience an error here, where Eclipse can't find phonegap-1.1.0.jar. In this case, right click on the /libs folder and go to Build Paths/ > Configure Build Paths. Then, in the Libraries tab, add phonegap-1.1.0.jar to the Project. If Eclipse is being temperamental, you might need to refresh (F5) the project once again.
-		
-7. Right click on AndroidManifest.xml and select Open With > Text Editor
-8. Paste the following permissions under versionName:
+Cordova Android Developer Tools
+---
 
-        <supports-screens
-                android:largeScreens="true"
-                android:normalScreens="true"
-                android:smallScreens="true"
-                android:resizeable="true"
-                android:anyDensity="true"
-                />
-        <uses-permission android:name="android.permission.CAMERA" />
-        <uses-permission android:name="android.permission.VIBRATE" />
-        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-        <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-        <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-        <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-        <uses-permission android:name="android.permission.INTERNET" />
-        <uses-permission android:name="android.permission.RECEIVE_SMS" />
-        <uses-permission android:name="android.permission.RECORD_AUDIO" />
-        <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-        <uses-permission android:name="android.permission.READ_CONTACTS" />
-        <uses-permission android:name="android.permission.WRITE_CONTACTS" />   
-        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />  
-        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+The Cordova developer tooling is split between general tooling and project level tooling. 
 
-9. Add android:configChanges="orientation|keyboardHidden" to the activity tag in AndroidManifest.
+General Commands
 
-10. Now create and open a new file named index.html in the /assets/www directory. Paste the following code:
-	
-		<!DOCTYPE HTML>
-		<html>
-			<head>
-				<title>PhoneGap</title>
-				<script type="text/javascript" charset="utf-8" src="phonegap-1.0.0.js"></script>
-			</head>
-			<body>
-				<h1>Hello World</h1>
-			</body>
-		</html>
+    ./bin/create [path package activity] ... create the ./example app or a cordova android project
+    ./bin/bench ............................ generate a bench proj
+    ./bin/autotest ......................... test the cli tools
+    ./bin/test ............................. run mobile-spec
 
-11.  A. Deploy to Simulator
-	- Right click the project and go to <strong>Run As</strong> and click <strong>Android Application</strong></li>
-	- Eclipse will ask you to select an appropriate AVD. If there isn't one, then you'll need to create it.</li>
+Project Commands
+
+These commands live in a generated Cordova Android project.
+
+    ./cordovap/debug [path] ..................... install to first device
+    ./cordova/emulate .......................... start avd (emulator) named default
+    ./cordova/log .............................. starts logcat
+
+Running the Example Project
+---
+
+Start avd (emulator) named `default`:
+
+    ./bin/emulate
+
+Create the example project and build it to the first device:
+
+    ./bin/create
+    cd example
+    ./cordova/debug
+
+Start adb logcat (console.log calls output here):
+
+    ./cordova/log
+
+Running the [callback/callback-test](http://github.com/callback/callback-test) tests:
+---
+
+    ./bin/test
+
+Creating a new Cordova Android Project
+---
+
+    ./bin/create ~/Desktop/myapp com.phonegap.special MyApp
+
+Importing a Cordova Android Project into Eclipse
+----
+
+1. File > New > Project...
+2. Android > Android Project
+3. Create project from existing source (point to the generated app found in tmp/android)
+4. Right click on libs/cordova.jar and add to build path
+5. Right click on the project root: Run as > Run Configurations
+6. Click on the Target tab and select Manual (this way you can choose the emulator or device to build to)
 
 
-11.  B. Deploy to Device
-	- Make sure USB debugging is enabled on your device and plug it into your system. (Settings > Applications > Development)
-	- Right click the project and go to Run As and click Android Application		
+Further Reading
+---
 
-11. Done!
-	- You can also checkout more detailed version of this guide http://PhoneGap.com/start
+- [http://developer.android.com](http://developer.android.com)
+- [http://docs.phonegap.com](http://docs.phonegap.com)
+- [http://wiki.phonegap.com](http://wiki.phonegap.com)

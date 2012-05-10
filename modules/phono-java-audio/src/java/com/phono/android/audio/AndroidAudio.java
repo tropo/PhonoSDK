@@ -490,13 +490,13 @@ public class AndroidAudio implements AudioFace {
             }
         };
         _codecMap.put(speexCodec.getCodec(), speexCodec);
-         */
-        /*
+        
+
         ALaw_Codec alawCodec = new ALaw_Codec();
-        _codecMap.put(new Long(alawCodec.getCodec()), alawCodec);
+        _codecMap.put(new Long(alawCodec.getCodec()), alawCodec); 
         GSM_Codec gsmCodec = new GSM_Codec();
         _codecMap.put(new Long(gsmCodec.getCodec()), gsmCodec);
-         */
+        */
 
         _defaultCodec = ulawCodec;
 

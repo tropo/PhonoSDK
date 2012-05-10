@@ -34,7 +34,7 @@ $(document).ready(function() {
 	var newPhonoDiv = firstPhono.clone()
         var audioType = $('.audio-plugin').val();
         var directP2P = false;
-        var connectionUrl = "//app.phono.com/http-bind";
+        var connectionUrl = "http://app.phono.com/http-bind";
         var dialString = "sip:3366@login.zipdx.com";
         var chatString = "en2fr@bot.talk.google.com";
         var gw = "gw-v3.d.phono.com";
@@ -489,9 +489,6 @@ $(document).ready(function() {
 	    .prependTo("body");
     }
 
-    //Create a phono when the sample is loaded
     createNewPhono();
-
-    
 });
 

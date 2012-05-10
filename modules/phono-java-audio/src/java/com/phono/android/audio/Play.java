@@ -20,7 +20,7 @@ package com.phono.android.audio;
 
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
-import com.phonegap.api.PhonegapActivity;
+import org.apache.cordova.api.CordovaInterface;
 import com.phono.rtp.Endpoint;
 import com.phono.srtplight.Log;
 
@@ -36,7 +36,7 @@ public class Play extends Endpoint implements OnPreparedListener {
     boolean _prepared = false;
     final static String FILE = "file://";
 
-    public Play(String uri, PhonegapActivity ctx) throws Exception {
+    public Play(String uri, CordovaInterface ctx) throws Exception {
         super(uri);
         _uri = uri;
         _mp = new MediaPlayer();

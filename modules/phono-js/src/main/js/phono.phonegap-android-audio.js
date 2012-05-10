@@ -150,6 +150,9 @@ PhonegapAndroidAudio.prototype.share = function(url, autoPlay, codec) {
     var luri = Phono.util.localUri(url);
     var muteStatus = false;
     var gainValue = 50;
+    var micEnergy = 0.0;
+    var spkEnergy = 0.0;
+
 
     // Return a shell of an object
     return {
@@ -239,9 +242,22 @@ PhonegapAndroidAudio.prototype.share = function(url, autoPlay, codec) {
    	    }
         },
         energy: function(){
+            PhoneGap.exec(
+                        function(result) {
+                            console.log("energy success: " + result);
+                            var en = jQuery.parseJSON(result);
+                            if(en != null) {
+                              micEnergy = Math.floor(Math.max((Math.LOG2E * Math.log(en.mic)-4.0),0.0));
+                              spkEnergy = Math.floor(Math.max((Math.LOG2E * Math.log(en.spk)-4.0),0.0)); 
+			    }
+                          },
+                        function(result) {console.log("energy fail:" + result);},
+                        "PhonogapAudio","energy",
+                        [{'uri':luri}]
+            );
             return {
-               mic: 0.0,
-               spk: 0.0
+               mic: micEnergy,
+               spk: spkEnergy
             }
         }
     }

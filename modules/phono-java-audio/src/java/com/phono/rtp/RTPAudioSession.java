@@ -123,7 +123,7 @@ public class RTPAudioSession implements RTPDataSink, AudioReceiver {
                 sa = af.readStampedAudio();
             }
         } catch (Exception ex) {
-            Log.error(ex.toString());
+            //Log.error(ex.toString());
         }
         if (_sps.finished()) {
             af.stopRec();
