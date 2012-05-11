@@ -73,8 +73,8 @@ PhonegapAndroidAudio.prototype.initState = function(callback, plugin) {
 // =============================================================================================
 
 // Creates a new Player and will optionally begin playing
-PhonegapAndroidAudio.prototype.play = function(url, autoPlay) {
-    
+PhonegapAndroidAudio.prototype.play = function(transport, autoPlay) {
+    var url = transport.uri;
     var luri = url;
     var uri = Phono.util.parseUri(url);
 

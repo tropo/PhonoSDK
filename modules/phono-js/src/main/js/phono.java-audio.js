@@ -77,7 +77,8 @@ JavaAudio.count = 0;
 // =============================================================================================
 
 // Creates a new Player and will optionally begin playing
-JavaAudio.prototype.play = function(url, autoPlay) {
+JavaAudio.prototype.play = function(transport, autoPlay) {
+    var url = transport.uri;
     var applet = this.$applet[0];
     var player;
     var luri = url;
