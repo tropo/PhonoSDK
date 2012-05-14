@@ -116,8 +116,8 @@ PhonegapIOSAudio.prototype.play = function(transport, autoPlay) {
 };
 
 // Creates a new audio Share and will optionally begin playing
-PhonegapIOSAudio.prototype.share = function(url, autoPlay, codec) {
-
+PhonegapIOSAudio.prototype.share = function(transport, autoPlay, codec) {
+    var url = transport.uri;
     var codecD = ""+codec.name+":"+codec.rate+":"+codec.id;
     // Get PhoneGap to create the share
     PhoneGap.exec( 
@@ -275,7 +275,7 @@ PhonegapIOSAudio.prototype.transport = function() {
             t.find('candidate').each(function () {
                 fullUri = endpoint + ":" + $(this).attr('ip') + ":" + $(this).attr('port');
             });
-            return {input:fullUri, output:fullUri};
+            return {input:{uri:fullUri}, output:{uri:fullUri}};
         }
     }
 };

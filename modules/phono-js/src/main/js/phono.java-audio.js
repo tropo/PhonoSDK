@@ -115,7 +115,8 @@ JavaAudio.prototype.play = function(transport, autoPlay) {
 };
 
 // Creates a new audio Share and will optionally begin playing
-JavaAudio.prototype.share = function(url, autoPlay, codec) {
+JavaAudio.prototype.share = function(transport, autoPlay, codec) {
+    var url = transport.uri;
     var applet = this.$applet[0];
 
     Phono.log.debug("[JAVA share codec ] "+codec.p.pt +" id = "+codec.id);
@@ -203,7 +204,7 @@ JavaAudio.prototype.transport = function() {
             t.find('candidate').each(function () {
                 fullUri = endpoint + ":" + $(this).attr('ip') + ":" + $(this).attr('port');
             });
-            return {input:fullUri, output:fullUri};
+            return {input:{uri:fullUri}, output:{uri:fullUri}};
         }
     }
 };
