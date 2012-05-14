@@ -16,13 +16,15 @@
  */
 
 #import <Foundation/Foundation.h>
-#ifdef PHONEGAP_FRAMEWORK
-#import <PhoneGap/PGPlugin.h>
+#ifdef CORDOVA_FRAMEWORK
+#import <Cordova/CDVPlugin.h>
+#import <Cordova/CDVURLProtocol.h>
 #else
-#import "PGPlugin.h"
+#import "CDVPlugin.h"
+#import "CDVURLProtocol.h"
 #endif
 
-@interface Phono : PGPlugin {
+@interface Phono : CDVPlugin {
     id phonoAPI;
 }
 
