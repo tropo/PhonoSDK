@@ -21,12 +21,12 @@
 
 @implementation Phono
 
--(PGPlugin*) initWithWebView:(UIWebView*)theWebView{
+-(CDVPlugin*) initWithWebView:(UIWebView*)theWebView{
     self = (id) [super initWithWebView:theWebView];
     phonoAPI = [[PhonoAPI alloc] init];
     return self;
 }
--(PGPlugin*) initWithWebView:(UIWebView*)theWebView settings:(NSDictionary*)classSettings{
+-(CDVPlugin*) initWithWebView:(UIWebView*)theWebView settings:(NSDictionary*)classSettings{
     self = (id) [super initWithWebView:theWebView settings:classSettings];
     phonoAPI = [[PhonoAPI alloc] init];
     return self; 
@@ -42,7 +42,7 @@
     } 
     BOOL res = [[uri substringToIndex:6] isEqualToString:@"rtp://"];
 
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:uri];
     NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
     [self writeJavascript:jsCB];
 }
@@ -54,7 +54,7 @@
     if (res == NO){
         uri = @"Can't find that endpoint";
     } 
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:uri];
     NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
     [self writeJavascript:jsCB];
     
@@ -70,7 +70,7 @@
     NSString *luri = [phonoAPI share:uri autoplay:[autoplay isEqualToString:@"YES"] codec:codec];
     
     BOOL res = [[luri substringToIndex:6] isEqualToString:@"rtp://"];
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:luri];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:luri];
     NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
     [self writeJavascript:jsCB];
 }
@@ -86,7 +86,7 @@
     NSString *luri = [phonoAPI play:uri autoplay:[autoplay isEqualToString:@"YES"]];
     
     BOOL res  = [[luri substringToIndex:6] isEqualToString:@"file://"];
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:luri];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:luri];
     NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
     [self writeJavascript:jsCB];
     
@@ -100,7 +100,7 @@
     if (res == NO){
         uri = @"Can't start that endpoint";
     } 
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:uri];
     NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
     [self writeJavascript:jsCB];    
 }
@@ -114,7 +114,7 @@
         uri = @"Can't stop that endpoint";
     } 
 
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:uri];
     NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
     [self writeJavascript:jsCB];
 }
@@ -131,7 +131,7 @@
     if (res == NO){
         uri = @"Can't set gain on that endpoint";
     } 
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:uri];
     NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
     [self writeJavascript:jsCB];
 }
@@ -148,7 +148,7 @@
         uri = @"Can't (un)mute that endpoint";
     } 
 
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:uri];
     NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
     [self writeJavascript:jsCB];
     
@@ -162,7 +162,7 @@
     NSString *uri = [options objectForKey:@"uri"];
     
     NSString *res = [phonoAPI energy:uri ]; 
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:res];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:res];
     NSString *jsCB = ((res!=nil) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
     [self writeJavascript:jsCB];
 }
@@ -180,7 +180,7 @@
     if (res == NO){
         uri = @"Can't send digits that endpoint";
     } 
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:uri];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:uri];
 
     NSString *jsCB = ((res==YES) ?[pluginResult toSuccessCallbackString:cbId]:[pluginResult toErrorCallbackString:cbId]);
     [self writeJavascript:jsCB];
@@ -196,7 +196,7 @@
     } 
     NSString * myCodecs = [phonoAPI codecs];
     
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsString:myCodecs];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:myCodecs];
     
 
     NSString * jsCB = [pluginResult toSuccessCallbackString:successCallback];
