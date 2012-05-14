@@ -176,15 +176,11 @@
            .c('content', {creator:"initiator"})
            .c('description', {xmlns:this.transport.description})
        
-       Phono.util.each(this.config.codecs(Phono.util.filterWideband(this.audioLayer.codecs(),this.phone.wideband())), function() {
-           if ((this.id == call.codec.id && this.rate == call.codec.rate) || this.name == "telephone-event") {
-               partial = partial.c('payload-type', {
-                   id: this.id,
-                   name: this.name,
-                   clockrate: this.rate
-               }).up();           
-           }
-       });
+       partial = partial.c('payload-type', {
+           id: call.codec.id,
+           name: call.codec.name,
+           clockrate: call.codec.rate
+       }).up();           
 
        this.transport.buildTransport("answer", partial.up(), function(){
            call.connection.sendIQ(jingleIq, function (iq) {
