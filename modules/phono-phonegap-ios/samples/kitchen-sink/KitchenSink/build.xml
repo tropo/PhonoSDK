@@ -1,0 +1,52 @@
+<project name="phono-phonegap-ios-kitchensink" default="build">
+    <target name="pre-build">
+     <copy todir="Plugins" overwrite="true">
+      <fileset dir="../../../../../target/sdk/plugins/phonegap-ios/Plugins/">
+      </fileset>
+     </copy>
+     <copy todir="Resources/www" overwrite="true">
+      <fileset dir="../../../../../target/sdk/samples/kitchen-sink/www">
+      </fileset>
+     </copy>
+     <xslt in="Resources/www/index.html" out="Resources/www/mobile.html"
+      style="addcord.xsl">
+     </xslt>
+     <delete file="Resources/www/index.html"/>
+    </target>
+  
+  <property name="ksphono.dir" value=".."/>
+
+  <target name="build-ksphono-iphonesimulator">
+        <exec executable="xCodeBuild" dir="${ksphono.dir}">
+          <arg value="-sdk"/>
+          <arg value="iphonesimulator"/>
+        </exec>
+        <!--move file="target/libphono.a" tofile="target/libphono-i386.a"/-->
+  </target>
+
+  <target name="clean-ksphono">
+        <exec executable="xCodeBuild" dir="${ksphono.dir}">
+          <arg value="clean"/>
+        </exec>
+  </target>
+
+  <target name="build" depends="clean,pre-build,build-ksphono-iphonesimulator">
+    <!--
+<copy todir="target/Plugins" overwrite="true">
+      <fileset dir="${plugin.dir}"/>
+    </copy>
+    <copy todir="target" overwrite="true">
+      <fileset dir=".">
+        <include name="README" />
+      </fileset>
+    </copy>
+    <copy todir="../../target/sdk/plugins/phonegap-ios" overwrite="true">
+      <fileset dir="target"/>
+    </copy>
+-->
+  </target>
+ 
+  <target name="clean" depends="clean-ksphono">
+    <delete dir="target" />
+  </target>
+</project>
