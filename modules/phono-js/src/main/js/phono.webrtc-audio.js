@@ -65,7 +65,8 @@ WebRTCAudio.count = 0;
 // =============================================================================================
 
 // Creates a new Player and will optionally begin playing
-WebRTCAudio.prototype.play = function(url, autoPlay) {
+WebRTCAudio.prototype.play = function(transport, autoPlay) {
+    var url = transport.uri;
     var luri = url;
     var audioPlayer = null;
     
@@ -94,7 +95,8 @@ WebRTCAudio.prototype.play = function(url, autoPlay) {
 };
 
 // Creates a new audio Share and will optionally begin playing
-WebRTCAudio.prototype.share = function(url, autoPlay, codec) {
+WebRTCAudio.prototype.share = function(transport, autoPlay, codec) {
+    var url = transport.uri;
     var share;
     var localStream;  
 
@@ -267,7 +269,7 @@ WebRTCAudio.prototype.transport = function() {
                 // We are having an outbound call answered (must already have a PeerConnection)
                 WebRTCAudio.pc.processSignalingMessage(message);
             }
-            return "webrtc|webrtc";
+            return {input:{uri:"webrtc"}, output:{uri:"webrtc"}};
         }
     }
 };
