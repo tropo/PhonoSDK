@@ -1,14 +1,16 @@
 Phono PhoneGap Android Plugin - Adding the power of Phono to mobile devices
 ===========================================================================
 
-The Phono PhoneGap plugin adds the power of Phono (http://phono.com) to mobile app using the PhonGap application framework.
+The Phono PhoneGap plugin adds the power of Phono (http://phono.com) to mobile app using the PhoneGap application framework.
 
 This plugins allows Android applications built using PhoneGap to place High Definition (wideband) voice calls and instant messages using our simple unified API (http://phono.com/docs).
 
 DISCLAIMER
   - Libraries included in this release are experimental so use AT YOUR OWN RISK
-  - Please do not deploy these applications to the 'App Store' until we announce the final release
-  - This version supports Phonegap 1.1.0
+  - Please do not deploy these applications to 'Play' or other appstores until we announce the final release
+
+  - This version supports Phonegap (aka Cordova) 1.7
+  - This version has been tested on android 2.3.6 on a galaxy Y Duo 
   
 Enough of that, let's get started...
 
@@ -23,8 +25,12 @@ Adding Phono support to an an existing PhoneGap project
     
 2. Copy 'jquery.phono.js' to your PhoneGap 'www' directory and include it in your app (e.g. index.html)
 
-3. For phonegap 1.0 and up you need to add the following to your res/xml/plugins.xml 
+3. Add the following to your res/xml/plugins.xml 
    <plugin name="PhonogapAudio" value="com.phono.android.phonegap.Phono"/>
+
+4. In res/xml/cordova.xml give access to the phono gateways :
+    <access origin="http://phono.com" subdomains="true"/>
+    <access origin="http://voxeolabs.net" subdomains="true"/>
 
 
 You're now ready to use Phono as you would in a standard web application, but use phonegap's 'deviceready' callback
@@ -34,3 +40,6 @@ If this is your first Phono application, check out our awesome documentation her
 
 If this is your first phonegap project - please read phonegap/README.md
 We have bundled the necessary phonegap files in the phonegap directory.
+
+Also bundled is a pre-built kitchen sink app see artifacts/sdk/samples/mobile/
+

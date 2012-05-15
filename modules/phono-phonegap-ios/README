@@ -1,9 +1,9 @@
-Phono PhoneGap Plugin - Adding the power of Phono to mobile devices
+Phono Cordova Plugin - Adding the power of Phono to mobile devices
 ===================================================================
 
-The Phono PhoneGap plugin adds the power of Phono (http://phono.com) to mobile app using the PhonGap application framework.
+The Phono Cordova plugin adds the power of Phono (http://phono.com) to mobile app using the PhoneGap application framework.
 
-This plugins allows iOS applications built using PhoneGap to place High Definition (wideband) voice calls and instant messages using our simple unified API (http://phono.com/docs).
+This plugins allows iOS applications built using Cordova to place High Definition (wideband) voice calls and instant messages using our simple unified API (http://phono.com/docs).
 
 DISCLAIMER
   - Libraries included in this release are experimental so use AT YOUR OWN RISK
@@ -12,7 +12,7 @@ DISCLAIMER
 Enough of that, let's get started...
 
 
-Adding Phono support to an an existing PhoneGap project
+Adding Phono support to an an existing Cordova project
 -------------------------------------------------------
 
 1. Add the Phono Plugin
@@ -28,7 +28,7 @@ Adding Phono support to an an existing PhoneGap project
     - From the "Build Phases" panel select "Link Binary With Libraries"
     - Click the "+" and add scroll to add the "Security.framework" library set
 
-4. Modify PhoneGap.plist (located in the Supporting Files folder of your project) to include the Phono plugin:
+4. Modify Cordova.plist (located in the Supporting Files folder of your project) to include the Phono plugin:
 
     <plist version="1.0">
        <dict>
@@ -44,9 +44,22 @@ Adding Phono support to an an existing PhoneGap project
        </dict>
     </plist>
 
-5. add "app.phono.com" to the whitelist of ExternalHosts in PhoneGap.plist
+5. add "app.phono.com" to the whitelist of ExternalHosts in Cordova.plist
 
-5. Copy 'jquery.phono.js' to your PhoneGap 'www' directory and incude it in your app (e.g. index.html)
+6. Copy 'jquery.phono.js' to your Cordova 'www' directory and incude it in your app (e.g. index.html)
+
+7. You need to ensure that Phono does not start until after Cordova is ready.
+Here's some sample code:
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    // PhoneGap is loaded and it is now safe to make calls PhoneGap methods
+    //
+    function onDeviceReady() {
+	$.getScript("kitchen-sink.js", function(data, textStatus, jqxhr) {
+   		console.log('Loaded the kitchen-sink.js');
+        });
+    }
+
 
 You're now ready to use Phono as you would in a standard web application. 
 
@@ -62,7 +75,7 @@ The Kitchen Sink is a demo Phono application that can run either in the browser 
 
 To deploy the Kitchen Sink app to your iOS device:
 
-1. Create a standard PhoneGap project and follow the instructions above to get Phono bundlesin your app
+1. Create a standard Cordova project and follow the instructions above to get Phono bundlesin your app
 
 2. Add the Kitchen Sink 'www' directory
       - From the "Build Phases" panel select "Copy Bundle Resources"
@@ -71,3 +84,6 @@ To deploy the Kitchen Sink app to your iOS device:
       - Select "Create folder references for any added folders."
       
 3. Build and deploy the project to your device or iOS emulator
+
+There is a pre-built app (for the iphone simulator) in sdk/samples/mobile/
+

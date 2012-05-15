@@ -26,6 +26,7 @@
   </target>
 
   <target name="buildlib" depends="clean,build-libphono-iphonesimulator,build-libphono-iphoneos">
+    <copy todir="target" file="Cordova-1.7.0.dmg" overwrite="true"/>
     <copy todir="target/Plugins" overwrite="true">
       <fileset dir="${plugin.dir}"/>
     </copy>
