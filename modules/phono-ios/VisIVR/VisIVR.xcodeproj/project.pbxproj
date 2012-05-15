@@ -22,8 +22,8 @@
 		22230A61149A0ACB00AEF013 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A60149A0ACB00AEF013 /* CoreLocation.framework */; };
 		22230A63149A0AE000AEF013 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A62149A0AE000AEF013 /* SystemConfiguration.framework */; };
 		22230A65149A0AEE00AEF013 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A64149A0AEE00AEF013 /* CoreData.framework */; };
-		222DF78614EA7DDB00A2B986 /* PhonoNative-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 222DF78514EA7DDB00A2B986 /* PhonoNative-i386.a */; };
-		222DF78814EA7E1400A2B986 /* libphono-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 222DF78714EA7E1400A2B986 /* libphono-i386.a */; };
+		223AC7E415625E31000B0865 /* PhonoNative-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 222DF78514EA7DDB00A2B986 /* PhonoNative-i386.a */; };
+		223AC7E515625E7A000B0865 /* libphono-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 222DF78714EA7E1400A2B986 /* libphono-i386.a */; };
 		229AD0EB14A3AC3A008C656D /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EA14A3AC3A008C656D /* AudioToolbox.framework */; };
 		229AD0ED14A3AC41008C656D /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EC14A3AC41008C656D /* CoreAudio.framework */; };
 		229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EE14A3AC59008C656D /* Security.framework */; };
@@ -65,6 +65,8 @@
 		22230A64149A0AEE00AEF013 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		222DF78514EA7DDB00A2B986 /* PhonoNative-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "PhonoNative-i386.a"; path = "../target/PhonoNative-i386.a"; sourceTree = "<group>"; };
 		222DF78714EA7E1400A2B986 /* libphono-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libphono-i386.a"; path = "../../phono-phonegap-ios/target/libphono-i386.a"; sourceTree = "<group>"; };
+		223AC7DC156259CD000B0865 /* PhonoNative-arm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "PhonoNative-arm.a"; path = "../target/PhonoNative-arm.a"; sourceTree = "<group>"; };
+		223AC7DE156259E6000B0865 /* libphono-arm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libphono-arm.a"; path = "../../phono-phonegap-ios/target/libphono-arm.a"; sourceTree = "<group>"; };
 		229AD0EA14A3AC3A008C656D /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		229AD0EC14A3AC41008C656D /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		229AD0EE14A3AC59008C656D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -88,8 +90,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				222DF78814EA7E1400A2B986 /* libphono-i386.a in Frameworks */,
-				222DF78614EA7DDB00A2B986 /* PhonoNative-i386.a in Frameworks */,
+				223AC7E515625E7A000B0865 /* libphono-i386.a in Frameworks */,
+				223AC7E415625E31000B0865 /* PhonoNative-i386.a in Frameworks */,
 				221BD7BF14A49A4900E3972C /* CoreFoundation.framework in Frameworks */,
 				229AD0F114A3AC81008C656D /* AVFoundation.framework in Frameworks */,
 				229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */,
@@ -112,6 +114,8 @@
 		2223083D1499E05400AEF013 = {
 			isa = PBXGroup;
 			children = (
+				223AC7DE156259E6000B0865 /* libphono-arm.a */,
+				223AC7DC156259CD000B0865 /* PhonoNative-arm.a */,
 				222DF78714EA7E1400A2B986 /* libphono-i386.a */,
 				222DF78514EA7DDB00A2B986 /* PhonoNative-i386.a */,
 				221BD7BE14A49A4900E3972C /* CoreFoundation.framework */,
@@ -318,7 +322,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ruth Panton (L4F2UK5L8B)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -338,7 +342,7 @@
 					"-ObjC",
 					"-lxml2",
 				);
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "192215ED-F73B-4D9D-9221-A028A0196C35";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -349,7 +353,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ruth Panton (L4F2UK5L8B)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -363,7 +367,7 @@
 					"-ObjC",
 					"-lxml2",
 				);
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "192215ED-F73B-4D9D-9221-A028A0196C35";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

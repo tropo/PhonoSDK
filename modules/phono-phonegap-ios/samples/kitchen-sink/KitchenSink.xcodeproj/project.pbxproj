@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		223AC7E315625DDD000B0865 /* libphono-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2254A55915614364008EC48E /* libphono-i386.a */; };
 		2254A4FA15613DE2008EC48E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2254A4F915613DE2008EC48E /* Foundation.framework */; };
 		2254A4FC15613DE2008EC48E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2254A4FB15613DE2008EC48E /* UIKit.framework */; };
 		2254A4FE15613DE2008EC48E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2254A4FD15613DE2008EC48E /* CoreGraphics.framework */; };
@@ -41,10 +42,10 @@
 		2254A55615614338008EC48E /* Plugins/Phono.m in Sources */ = {isa = PBXBuildFile; fileRef = 2254A55415614338008EC48E /* Plugins/Phono.m */; };
 		2254A55815614354008EC48E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2254A55715614354008EC48E /* Security.framework */; };
 		22961B6115617A81006586A3 /* www in Resources */ = {isa = PBXBuildFile; fileRef = 22961B6015617A81006586A3 /* www */; };
-		22961B6215617AEF006586A3 /* libphono-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2254A55915614364008EC48E /* libphono-i386.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		223AC7D11562507B000B0865 /* libphono-arm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libphono-arm.a"; path = "../../target/libphono-arm.a"; sourceTree = "<group>"; };
 		2254A4F515613DE2008EC48E /* KitchenSink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KitchenSink.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2254A4F915613DE2008EC48E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2254A4FB15613DE2008EC48E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -95,7 +96,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22961B6215617AEF006586A3 /* libphono-i386.a in Frameworks */,
+				223AC7E315625DDD000B0865 /* libphono-i386.a in Frameworks */,
 				2254A55815614354008EC48E /* Security.framework in Frameworks */,
 				2254A4FA15613DE2008EC48E /* Foundation.framework in Frameworks */,
 				2254A4FC15613DE2008EC48E /* UIKit.framework in Frameworks */,
@@ -127,6 +128,7 @@
 		2254A4E715613DE2008EC48E = {
 			isa = PBXGroup;
 			children = (
+				223AC7D11562507B000B0865 /* libphono-arm.a */,
 				2254A55915614364008EC48E /* libphono-i386.a */,
 				2254A55715614354008EC48E /* Security.framework */,
 				2254A51315613DE2008EC48E /* KitchenSink */,
@@ -457,7 +459,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -477,7 +479,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -487,6 +489,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = /Users/Shared/Cordova/Frameworks;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -522,6 +525,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = /Users/Shared/Cordova/Frameworks;
