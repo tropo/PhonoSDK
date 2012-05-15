@@ -153,7 +153,7 @@
           call.state = CallState.RINGING;
           Phono.events.trigger(call, "ring");
       });
-      
+
    };
    
    Call.prototype.answer = function() {
@@ -181,6 +181,16 @@
            name: call.codec.name,
            clockrate: call.codec.rate
        }).up();           
+
+       $.each(call.audioLayer.codecs(), function() {
+           if (this.name == "telephone-event") {
+               partial = partial.c('payload-type', {
+                   id: this.id,
+                   name: this.name,
+                   clockrate: this.rate
+               }).up();     
+           } 
+       });
 
        this.transport.buildTransport("answer", partial.up(), function(){
            call.connection.sendIQ(jingleIq, function (iq) {
