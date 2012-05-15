@@ -770,6 +770,7 @@
 		ED5BF07C13B493CB00AA022F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = Voxeo;
 			};
 			buildConfigurationList = ED5BF07F13B493CB00AA022F /* Build configuration list for PBXProject "libphono" */;
@@ -916,6 +917,7 @@
 				DSTROOT = /tmp/phono.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "src/phono-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = "";
 				New_Setting = "";
 				ONLY_ACTIVE_ARCH = NO;
@@ -935,6 +937,7 @@
 				DSTROOT = /tmp/phono.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "src/phono-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = "";
 				New_Setting = "";
 				ONLY_ACTIVE_ARCH = NO;
