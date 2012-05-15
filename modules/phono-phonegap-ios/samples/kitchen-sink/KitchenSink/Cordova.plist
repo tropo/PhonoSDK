@@ -22,6 +22,8 @@
 	<false/>
 	<key>ExternalHosts</key>
 	<array>
+		<string>panda-dev1-ext.qa.voxeolabs.net:8080</string>
+		<string>panda-dev1-ext.qa.voxeolabs.net</string>
 		<string>app.phono.com</string>
 	</array>
 	<key>Plugins</key>

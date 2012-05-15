@@ -101,5 +101,6 @@
     <import file="${sdk.dir}/tools/ant/build.xml" />
       <target name="build" depends="debug">
         <echo> Built kitchen sink. </echo>
+     <copy file="bin/DefaultCordovaActivity-debug.apk" todir="../../../../target/sdk/samples/mobile" overwrite="true"/>
   </target> 
 </project>

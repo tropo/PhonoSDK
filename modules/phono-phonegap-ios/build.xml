@@ -25,7 +25,7 @@
         </exec>
   </target>
 
-  <target name="build" depends="clean,build-libphono-iphonesimulator,build-libphono-iphoneos">
+  <target name="buildlib" depends="clean,build-libphono-iphonesimulator,build-libphono-iphoneos">
     <copy todir="target/Plugins" overwrite="true">
       <fileset dir="${plugin.dir}"/>
     </copy>
@@ -38,6 +38,15 @@
       <fileset dir="target"/>
     </copy>
   </target>
+  <target name="build-sample" depends="buildlib">
+      <ant target="build" dir="samples/kitchen-sink/KitchenSink" inheritAll="false">
+</ant>
+  </target>
+
+  <target name="build" depends="buildlib , build-sample">
+        <echo> Built. </echo>
+  </target>
+
  
   <target name="clean" depends="clean-libphono">
     <delete dir="target" />

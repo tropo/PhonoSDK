@@ -21,7 +21,7 @@
           <arg value="-sdk"/>
           <arg value="iphonesimulator"/>
         </exec>
-        <!--move file="target/libphono.a" tofile="target/libphono-i386.a"/-->
+
   </target>
 
   <target name="clean-ksphono">
@@ -31,19 +31,10 @@
   </target>
 
   <target name="build" depends="clean,pre-build,build-ksphono-iphonesimulator">
-    <!--
-<copy todir="target/Plugins" overwrite="true">
-      <fileset dir="${plugin.dir}"/>
-    </copy>
-    <copy todir="target" overwrite="true">
-      <fileset dir=".">
-        <include name="README" />
+    <copy todir="../../../../../target/sdk/samples/mobile" overwrite="true">
+      <fileset dir="../build/Release-iphonesimulator">
       </fileset>
     </copy>
-    <copy todir="../../target/sdk/plugins/phonegap-ios" overwrite="true">
-      <fileset dir="target"/>
-    </copy>
--->
   </target>
  
   <target name="clean" depends="clean-ksphono">
