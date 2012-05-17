@@ -38,6 +38,10 @@ $(document).ready(function() {
         var dialString = "sip:3366@login.zipdx.com";
         var chatString = "en2fr@bot.talk.google.com";
         var gw = "gw-v3.d.phono.com";
+        
+        if (connectionUrl.indexOf("file:") == 0){
+             connectionUrl = "https://app.phono.com/http-bind";
+        }
 
         // Do we have URL parameters to override here?
         if (audioType == "auto" && urlParam("audio") != undefined) audioType = urlParam("audio");

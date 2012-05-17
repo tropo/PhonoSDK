@@ -13,7 +13,7 @@ public class DefaultCordovaActivity extends DroidGap
         AudioManager audiomanager = (AudioManager) getSystemService(AUDIO_SERVICE);
         audiomanager.setSpeakerphoneOn(true);
         super.onCreate(savedInstanceState);
-        super.loadUrl("file:///android_asset/www/mobile.html?dial=app:9996160714&connectionUrl=http://panda-dev1-ext.qa.voxeolabs.net:8080/prism_bosh&gateway=gw-v4.d.phono.com");
+        super.loadUrl("file:///android_asset/www/mobile.html");
 
     }
 }

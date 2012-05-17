@@ -10,6 +10,9 @@ var flensed={base_path:"//s.phono.com/deps/flensed/1.0/"};
       gateway: "gw.phono.com",
       connectionUrl: window.location.protocol+"//app.phono.com/http-bind"
    }, config);
+   if (this.config.connectionUrl.indexOf("file:")==0){
+      this.config.connectionUrl = "https://app.phono.com/http-bind";
+   }
 
    // Bind 'on' handlers
    Phono.events.bind(this, config);
