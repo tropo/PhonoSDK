@@ -1,0 +1,7 @@
+You can use this project to get started with Phono on android.
+1) install the Android SDK
+2) in this directory run 
+	${ANDROIDSDK}/tools/android update project -p . -n KitchenSink
+3) plug in your device
+4) run ant debug install
+5) start the DefaultCordovaActivity app
