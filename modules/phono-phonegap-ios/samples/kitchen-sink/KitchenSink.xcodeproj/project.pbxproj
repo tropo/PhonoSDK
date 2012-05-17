@@ -45,7 +45,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		223AC7D11562507B000B0865 /* libphono-arm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libphono-arm.a"; path = "../../target/libphono-arm.a"; sourceTree = "<group>"; };
+		223AC7D11562507B000B0865 /* libphono-arm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libphono-arm.a"; path = "KitchenSink/libs/libphono-arm.a"; sourceTree = "<group>"; };
 		2254A4F515613DE2008EC48E /* KitchenSink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KitchenSink.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2254A4F915613DE2008EC48E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2254A4FB15613DE2008EC48E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -87,7 +87,7 @@
 		2254A55415614338008EC48E /* Plugins/Phono.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Plugins/Phono.m; sourceTree = "<group>"; };
 		2254A55515614338008EC48E /* Plugins/PhonoAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Plugins/PhonoAPI.h; sourceTree = "<group>"; };
 		2254A55715614354008EC48E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		2254A55915614364008EC48E /* libphono-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libphono-i386.a"; path = "../../target/libphono-i386.a"; sourceTree = "<group>"; };
+		2254A55915614364008EC48E /* libphono-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libphono-i386.a"; path = "KitchenSink/libs/libphono-i386.a"; sourceTree = "<group>"; };
 		22961B6015617A81006586A3 /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; name = www; path = Resources/www; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -504,6 +504,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../target\"",
 					"\"$(SRCROOT)/../../target\"",
+                                        "\"$(SRCROOT)/KitchenSink/libs\"",
 				);
 				OTHER_LDFLAGS = (
 					"-weak_framework",
@@ -540,6 +541,8 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../target\"",
 					"\"$(SRCROOT)/../../target\"",
+                                        "\"$(SRCROOT)/KitchenSink/libs\"",
+
 				);
 				OTHER_LDFLAGS = (
 					"-weak_framework",

@@ -11,9 +11,25 @@ DISCLAIMER
   
 Enough of that, let's get started...
 
+Pre-requisites:
 
-Adding Phono support to an an existing Cordova project
+An intel Mac - ideally running Lion
+Xcode 4.2 or higher installed
+Cordova 1.7 installed
+
+Deploying Kitchen Sink
+-----------------------
+
+The Kitchen Sink is a demo Phono application that can run either in the browser or in Cordova. 
+
+An iOS copy of the Kitchen Sink app can be found in sdk/samples/mobile
+If you open KitchenSink.xcodeproj project in Xcode, and click Run you should have a working kitchen sink in your iOS simulator (or on a real device if you set that as the target).
+(Note - the audio in the iOS simulator is pretty good, but the echo canceller on the real devices is significantly better)
+
+
+Adding Phono support to your own existing Cordova project
 -------------------------------------------------------
+0. Open your Cordova project in XCode
 
 1. Add the Phono Plugin
     - Right click on 'Plugins', "Add Files To..." 
@@ -61,29 +77,8 @@ Here's some sample code:
     }
 
 
-You're now ready to use Phono as you would in a standard web application. 
 
 If this is your first Phono application, check out our awesome documentation here: http://phono.com/docs
 
-If this is your first Phonegap Project - you'll need to install phonegap (we've bundled a .dmg for your convenience)
 
-
-Deploying Kitchen Sink
------------------------
-
-The Kitchen Sink is a demo Phono application that can run either in the browser or in PhonGap. 
-
-To deploy the Kitchen Sink app to your iOS device:
-
-1. Create a standard Cordova project and follow the instructions above to get Phono bundlesin your app
-
-2. Add the Kitchen Sink 'www' directory
-      - From the "Build Phases" panel select "Copy Bundle Resources"
-      - Click the "+" and select "Add Other..."
-      - Link the Kitchen Sink web files by adding samples/kitchen-sink/www
-      - Select "Create folder references for any added folders."
-      
-3. Build and deploy the project to your device or iOS emulator
-
-There is a pre-built app (for the iphone simulator) in sdk/samples/mobile/
 
