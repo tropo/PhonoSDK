@@ -3,7 +3,10 @@
      <copy todir="Plugins" overwrite="true">
       <fileset dir="../../../../../target/sdk/plugins/phonegap-ios/Plugins/">
       </fileset>
-     </copy>
+     </copy> 
+
+     <copy file="../../../target/libphono-i386.a" todir="libs"/>
+     <copy file="../../../target/libphono-arm.a" todir="libs"/>
      <copy todir="Resources/www" overwrite="true">
       <fileset dir="../../../../../target/sdk/samples/kitchen-sink/www">
       </fileset>
@@ -32,7 +35,7 @@
 
   <target name="build" depends="clean,pre-build,build-ksphono-iphonesimulator">
     <copy todir="../../../../../target/sdk/samples/mobile" overwrite="true">
-      <fileset dir="../build/Release-iphonesimulator">
+      <fileset dir="../">
       </fileset>
     </copy>
   </target>
