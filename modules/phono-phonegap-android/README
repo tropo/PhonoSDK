@@ -14,6 +14,11 @@ DISCLAIMER
   
 Enough of that, let's get started...
 
+Trying out the KitchenSink Demo app
+-----------------------------------
+We have included a complete 'flat-pack' demo of the 
+kitchen sink app see /sdk/samples/mobile/kitchen-sink
+
 Adding Phono support to an an existing PhoneGap project
 -------------------------------------------------------
 
@@ -38,8 +43,9 @@ to install your Phono instance in place of jquery's $(document).ready() .
 
 If this is your first Phono application, check out our awesome documentation here: http://phono.com/docs
 
+Note that the audio quality on the android emulator is poor, so please do any audio testing on a real device.
+
 If this is your first phonegap project - please read phonegap/README.md
 We have bundled the necessary phonegap files in the phonegap directory.
 
-Also bundled is a pre-built kitchen sink app see artifacts/sdk/samples/mobile/
 
