@@ -57,6 +57,7 @@
      </copy>
     </target>
     <target name="-pre-compile">
+     <mkdir dir="${source.dir}"/>
      <echo>copy from ${realsource.dir} to ${source.dir} </echo>
      <echo>excluding java/com/phono/applet/** </echo>
      <copy todir="${source.dir}" overwrite="true">
