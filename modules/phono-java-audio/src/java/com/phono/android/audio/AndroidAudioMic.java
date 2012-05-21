@@ -88,7 +88,9 @@ public class AndroidAudioMic implements Runnable {
                  * I set it to 8000K!
                  * Need to check this!
                  */
-                _mic = new AudioRecord(AudioSource.MIC, sampleRate,
+                // try and take advantage of an echo can if there is one.
+                int micdevice = (android.os.Build.VERSION.SDK_INT >= 11) ? 7 : AudioSource.MIC;
+                _mic = new AudioRecord(micdevice, sampleRate,
                         AudioFormat.CHANNEL_IN_MONO,
                         AndroidAudio.ENCODING_FORMAT, recBuffSizeBytes);
                 if (_mic.getState() != AudioRecord.STATE_INITIALIZED) {
