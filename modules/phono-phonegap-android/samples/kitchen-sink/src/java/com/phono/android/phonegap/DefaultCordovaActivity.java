@@ -10,10 +10,15 @@ public class DefaultCordovaActivity extends DroidGap
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        AudioManager audiomanager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        audiomanager.setSpeakerphoneOn(true);
         super.onCreate(savedInstanceState);
         super.loadUrl("file:///android_asset/www/mobile.html");
+	AudioManager aM = (AudioManager) getSystemService(AUDIO_SERVICE);
+	int mode = (android.os.Build.VERSION.SDK_INT >= 11)?3:aM.MODE_IN_CALL ;
+        aM.setMode(mode);
+	aM.setBluetoothScoOn(false);
+	aM.setBluetoothA2dpOn(false);
+	aM.setWiredHeadsetOn(false);
+	aM.setSpeakerphoneOn(true);
 
     }
 }

@@ -248,6 +248,10 @@ public class AndroidAudio implements AudioFace {
     @Override
     public void addAudioReceiver(AudioReceiver r) throws AudioException {
         _audioReceiver = r;
+        if ((android.os.Build.VERSION.SDK_INT >= 14) &&
+            (r instanceof com.phono.rtp.RTPAudioSession )){
+            ((com.phono.rtp.RTPAudioSession) r).setDpRealloc(true);
+        }
     }
 
     /**

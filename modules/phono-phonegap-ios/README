@@ -15,7 +15,8 @@ Pre-requisites:
 
 An intel Mac - ideally running Lion
 Xcode 4.2 or higher installed
-Cordova 1.7 installed
+Cordova 1.7 installed (We've included a copy of the Cordova-1.7.0.dmg in this directory or you can download it from the phonegap site
+currently at http://phonegap.com/download )
 
 Deploying Kitchen Sink
 -----------------------

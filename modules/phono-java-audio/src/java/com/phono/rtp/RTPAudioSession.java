@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 package com.phono.rtp;
 
 import com.phono.api.CodecList;
@@ -32,22 +31,32 @@ import com.phono.srtplight.*;
 public class RTPAudioSession implements RTPDataSink, AudioReceiver {
 
     RTPProtocolFace _sps;
-    int _id = 1;
+    protected int _id = 1;
     AudioFace _audio;
     private boolean _first = true;
     int _ptype;
 
     public RTPAudioSession(DatagramSocket near, InetSocketAddress far, int type, AudioFace a, Properties lsrtpProps, Properties rsrtpProps) {
-        if ((lsrtpProps != null) && (rsrtpProps != null)) {
-            _sps = new SRTPProtocolImpl(_id++, near, far, type, lsrtpProps, rsrtpProps);
-
-        } else {
-            _sps = new RTPProtocolImpl(_id++, near, far, type);
-        }
+        _sps = mkSps(near, far, type, a, lsrtpProps, rsrtpProps);
         _sps.setRTPDataSink(this);
         _ptype = type;
         makePhonoAudioSrc(a);
 
+    }
+    public void setDpRealloc(boolean v){
+        if (_sps != null){
+            _sps.setRealloc(v);
+        }
+    }
+    protected RTPProtocolFace mkSps(DatagramSocket near, InetSocketAddress far, int type, AudioFace a, Properties lsrtpProps, Properties rsrtpProps) {
+        RTPProtocolFace sps = null;
+        if ((lsrtpProps != null) && (rsrtpProps != null)) {
+            sps = new SRTPProtocolImpl(_id++, near, far, type, lsrtpProps, rsrtpProps);
+
+        } else {
+            sps = new RTPProtocolImpl(_id++, near, far, type);
+        }
+        return sps;
     }
 
     public void halt() {
@@ -68,30 +77,29 @@ public class RTPAudioSession implements RTPDataSink, AudioReceiver {
         _audio.startRec();
     }
 
-
-  public void digit(String value, int duration, boolean audible) throws SocketException, IOException {
+    public void digit(String value, int duration, boolean audible) throws SocketException, IOException {
 
         int fac = (int) (_audio.getSampleRate() / 1000.0); // assume duration is in ms.
         int dur = fac * duration;
-        Log.debug("RAS sending digit "+value+" dur ="+duration+" "+(audible?"Audible":"InAudible"));
+        Log.debug("RAS sending digit " + value + " dur =" + duration + " " + (audible ? "Audible" : "InAudible"));
         int stamp = fac * _audio.getOutboundTimestamp();
         char c = value.toUpperCase().charAt(0);
 
         if (audible) {
-             _audio.playDigit(c);
+            _audio.playDigit(c);
         }
 
         _sps.sendDigit(value, stamp, dur, duration);
 
         if (audible) {
             c = 0;
-             _audio.playDigit(c);
+            _audio.playDigit(c);
         }
 
 
     }
 
-    public void dataPacketReceived(byte[] data, long stamp , long index) {
+    public void dataPacketReceived(byte[] data, long stamp, long index) {
         // Log.debug("stamp: " + stamp);
         StampedAudio sa = _audio.getCleanStampedAudio();
         /* broken timestamps so make up stamp from index */
@@ -106,7 +114,6 @@ public class RTPAudioSession implements RTPDataSink, AudioReceiver {
             Log.error(ex.toString());
         }
     }
-
 
     public void newAudioDataReady(AudioFace af, int i) {
 
@@ -133,26 +140,26 @@ public class RTPAudioSession implements RTPDataSink, AudioReceiver {
     }
 
     public String getSent() {
-        String ret =  "0";
-        if ((_sps != null) && (_sps instanceof RTPProtocolImpl) ){
-            ret = ""+((RTPProtocolImpl)_sps).getIndex();
+        String ret = "0";
+        if ((_sps != null) && (_sps instanceof RTPProtocolImpl)) {
+            ret = "" + ((RTPProtocolImpl) _sps).getIndex();
         }
         return ret;
     }
 
     public String getRcvd() {
-        String ret =  "0";
-        if ((_sps != null) && (_sps instanceof RTPProtocolImpl) ){
-            ret = ""+((RTPProtocolImpl)_sps).getSeqno();
+        String ret = "0";
+        if ((_sps != null) && (_sps instanceof RTPProtocolImpl)) {
+            ret = "" + ((RTPProtocolImpl) _sps).getSeqno();
         }
         return ret;
     }
 
     public String getLastError() {
-        String ret =  "";
-        if ((_sps != null) && (_sps instanceof RTPProtocolImpl) ){
-            Exception x =  ((RTPProtocolImpl)_sps).getNClearLastX();
-            if (x != null){
+        String ret = "";
+        if ((_sps != null) && (_sps instanceof RTPProtocolImpl)) {
+            Exception x = ((RTPProtocolImpl) _sps).getNClearLastX();
+            if (x != null) {
                 ret = x.getMessage();
             }
         }
