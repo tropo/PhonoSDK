@@ -36,6 +36,9 @@ import com.phono.audio.codec.g722.NativeG722Codec;
 import com.phono.audio.phone.StampedAudioImpl;
 import com.phono.codecs.speex.SpeexCodec;
 import com.phono.srtplight.Log;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 
 public class AndroidAudio implements AudioFace {
 
@@ -57,8 +60,26 @@ public class AndroidAudio implements AudioFace {
     private ArrayList<StampedAudio> _cleanAudioList;
     public int _sampleRate;
     private int _dtmfDigit = -1;
+    private int _cpucount;
+
+    int countCpus() {
+        int ret = 1; // default
+        try {
+            File f = new File("/sys/devices/system/cpu/present");
+            BufferedReader r = new BufferedReader(new FileReader(f));
+            String line = r.readLine();
+            Log.debug("present =" + line);
+            ret = 1 + line.charAt(line.length() - 1) - '0';
+
+        } catch (Throwable t) {
+            Log.warn("error trying to count cpus " + t.getMessage());
+        }
+        Log.debug("cpus =" + ret);
+        return ret;
+    }
 
     public AndroidAudio() {
+        _cpucount = countCpus();
         _codecMap = new LinkedHashMap<Long, CodecFace>();
         fillCodecMap();
         _audioProperties = new Properties();
@@ -248,8 +269,8 @@ public class AndroidAudio implements AudioFace {
     @Override
     public void addAudioReceiver(AudioReceiver r) throws AudioException {
         _audioReceiver = r;
-        if ((android.os.Build.VERSION.SDK_INT >= 14) &&
-            (r instanceof com.phono.rtp.RTPAudioSession )){
+        if ((android.os.Build.VERSION.SDK_INT >= 14)
+                && (r instanceof com.phono.rtp.RTPAudioSession)) {
             ((com.phono.rtp.RTPAudioSession) r).setDpRealloc(true);
         }
     }
@@ -482,25 +503,25 @@ public class AndroidAudio implements AudioFace {
 
         ULaw_Codec ulawCodec = new ULaw_Codec();
         _codecMap.put(new Long(ulawCodec.getCodec()), ulawCodec);
-        /*
-        SpeexCodec speexCodec = new SpeexCodec(true) {
-            @Override
-            protected int getCompexity(boolean wide) {
-                return 0;
-            }
-            @Override
-            protected int getQuality(boolean wide) {
-                return 2;
-            }
-        };
-        _codecMap.put(speexCodec.getCodec(), speexCodec);
-        
+        if (_cpucount > 1) {
+            SpeexCodec speexCodec = new SpeexCodec(true) {
 
-        ALaw_Codec alawCodec = new ALaw_Codec();
-        _codecMap.put(new Long(alawCodec.getCodec()), alawCodec); 
-        GSM_Codec gsmCodec = new GSM_Codec();
-        _codecMap.put(new Long(gsmCodec.getCodec()), gsmCodec);
-        */
+                @Override
+                protected int getCompexity(boolean wide) {
+                    return 0;
+                }
+
+                @Override
+                protected int getQuality(boolean wide) {
+                    return 2;
+                }
+            };
+            _codecMap.put(speexCodec.getCodec(), speexCodec);
+            ALaw_Codec alawCodec = new ALaw_Codec();
+            _codecMap.put(new Long(alawCodec.getCodec()), alawCodec);
+            GSM_Codec gsmCodec = new GSM_Codec();
+            _codecMap.put(new Long(gsmCodec.getCodec()), gsmCodec);
+        }
 
         _defaultCodec = ulawCodec;
 

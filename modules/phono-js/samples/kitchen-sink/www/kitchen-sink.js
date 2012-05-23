@@ -35,12 +35,13 @@ $(document).ready(function() {
         var audioType = $('.audio-plugin').val();
         var directP2P = false;
         var connectionUrl = window.location.protocol+"//app.phono.com/http-bind";
-        var dialString = "sip:3366@login.zipdx.com";
+        var dialString = "app:9996160714";
         var chatString = "en2fr@bot.talk.google.com";
         var gw = "gw-v3.d.phono.com";
         
         if (connectionUrl.indexOf("file:") == 0){
-             connectionUrl = "https://app.phono.com/http-bind";
+            connectionUrl = "http://panda-dev1-ext.qa.voxeolabs.net:8080/prism_bosh";
+            //connectionUrl = "http://app.phono.com/http-bind";
         }
 
         // Do we have URL parameters to override here?
