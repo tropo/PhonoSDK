@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 package com.phono.android.audio;
 
 import android.media.AudioFormat;
@@ -26,15 +25,13 @@ import com.phono.audio.StampedAudio;
 import com.phono.srtplight.Log;
 
 public class AndroidAudioMic implements Runnable {
+
     @SuppressWarnings("unused")
     private AndroidAudio _audio;
-
     // Codec related
     private EncoderFace _encoder;
-
     // in milliseconds
     private long _timestampRecStart;
-
     // mic related
     private AudioRecord _mic = null;
     private short _micFramebuff[];
@@ -49,7 +46,7 @@ public class AndroidAudioMic implements Runnable {
     }
 
     synchronized protected boolean initMic(int sampleRate, int bytesPerFrame) {
-        boolean isOK = true;      
+        boolean isOK = true;
         if (_mic == null) {
             // Will this work? In the emulator only 8k works!
             int micBufferSizeBytes = AudioRecord.getMinBufferSize(sampleRate,
@@ -57,24 +54,24 @@ public class AndroidAudioMic implements Runnable {
 
             Log.debug(
                     this.getClass().getSimpleName()
-                            + ".init(): minMicBufferSizeBytes (1)="
-                            + micBufferSizeBytes);
+                    + ".init(): minMicBufferSizeBytes (1)="
+                    + micBufferSizeBytes);
 
             if (micBufferSizeBytes < bytesPerFrame) {
                 micBufferSizeBytes = bytesPerFrame;
             }
 
-            int mdeep = 2 + (micBufferSizeBytes/bytesPerFrame);
+            int mdeep = 2 + (micBufferSizeBytes / bytesPerFrame);
 
-            mdeep = Math.max(mdeep,4);
-            
+            mdeep = Math.max(mdeep, 4);
+
             int recBuffSizeBytes = bytesPerFrame * mdeep;
-            _micFramebuff = new short[bytesPerFrame/2];
+            _micFramebuff = new short[bytesPerFrame / 2];
 
             Log.info(
                     this.getClass().getSimpleName() + ".initMic(): sampleRate="
-                            + sampleRate + ", bytesPerFrame=" + bytesPerFrame
-                            + ", recBuffsz=" + recBuffSizeBytes + ", ");
+                    + sampleRate + ", bytesPerFrame=" + bytesPerFrame
+                    + ", recBuffsz=" + recBuffSizeBytes + ", ");
             try {
                 /*
                  * make sure you add to AndroidManifest.xml:
@@ -104,8 +101,6 @@ public class AndroidAudioMic implements Runnable {
         return isOK;
     }
 
-
-
     protected int getOutboundTimestamp() {
         return (int) _countFrames * _audio.getFrameInterval();
     }
@@ -114,15 +109,15 @@ public class AndroidAudioMic implements Runnable {
         if (_mic != null && _mic.getState() == AudioRecord.STATE_INITIALIZED) {
             Log.debug(
                     this.getClass().getSimpleName()
-                            + ".startRec(): starting mic");
+                    + ".startRec(): starting mic");
             _mic.startRecording();
             resetTimestampRecStart();
             _countFrames = 0;
 
             Log.debug(
                     this.getClass().getSimpleName() + ".startRec(): state="
-                            + _mic.getState() + ", recordingState="
-                            + _mic.getRecordingState());
+                    + _mic.getState() + ", recordingState="
+                    + _mic.getRecordingState());
 
             if (_me == null) {
                 _me = new Thread(this, "mic");
@@ -130,23 +125,22 @@ public class AndroidAudioMic implements Runnable {
                 _me.start();
                 Log.debug(
                         this.getClass().getSimpleName()
-                                + ".startRec(): micThread started ");
+                        + ".startRec(): micThread started ");
             }
         } else {
             Log.error(
                     this.getClass().getSimpleName()
-                            + ".startRec(): Failed to initialise microphone.");
+                    + ".startRec(): Failed to initialise microphone.");
         }
     }
 
     protected void stopRec() {
         if ((_mic != null) && (_mic.getState() == AudioRecord.STATE_INITIALIZED)) {
-            if (_mic.getRecordingState() != AudioRecord.RECORDSTATE_STOPPED){
+            if (_mic.getRecordingState() != AudioRecord.RECORDSTATE_STOPPED) {
                 _mic.stop();
             }
-            Log
-                    .debug(this.getClass().getSimpleName()
-                            + ".stopRec(): mic stopped");
+            Log.debug(this.getClass().getSimpleName()
+                    + ".stopRec(): mic stopped");
         }
 
         if (_me != null) {
@@ -156,12 +150,12 @@ public class AndroidAudioMic implements Runnable {
                 tmic.join(1000);
                 Log.debug(
                         this.getClass().getSimpleName()
-                                + ".stopRec(): micThread stoppped");
+                        + ".stopRec(): micThread stoppped");
             } catch (InterruptedException ex) {
                 Log.debug(
                         this.getClass().getSimpleName()
-                                + ".stopRec(): InterruptedException: "
-                                + ex.getMessage());
+                        + ".stopRec(): InterruptedException: "
+                        + ex.getMessage());
             }
         }
     }
@@ -183,16 +177,21 @@ public class AndroidAudioMic implements Runnable {
     public void run() {
         //android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
         //_mic.startRecording();
+        long ftime = _audio.getFrameInterval();
         while (_me != null) {
+            long then = getTime();
             readMic();
-            
-              try {
-                  Thread.sleep(10);
-              } catch (InterruptedException ex) {
-                  Log.verb(this.getClass().getSimpleName() +
-             ".run(): InterruptedException: " + ex.getMessage());
-              }
-             
+            long now = getTime();
+            long interval = (then + ftime) - now;
+            if (interval > 2) {
+                try {
+                    Thread.sleep(interval);
+                } catch (InterruptedException ex) {
+                    Log.verb(this.getClass().getSimpleName()
+                            + ".run(): InterruptedException: " + ex.getMessage());
+                }
+            }
+
         }
     }
 
@@ -205,8 +204,8 @@ public class AndroidAudioMic implements Runnable {
             int bufferRead = _mic.read(_micFramebuff, 0, _micFramebuff.length);
             Log.verb(
                     this.getClass().getSimpleName()
-                            + ".readMic(): length=" + _micFramebuff.length
-                            + ", bufferRead=" + bufferRead);
+                    + ".readMic(): length=" + _micFramebuff.length
+                    + ", bufferRead=" + bufferRead);
 
             short[] sframe = _micFramebuff;
             short[] seframe = effectIn(sframe);
@@ -218,14 +217,14 @@ public class AndroidAudioMic implements Runnable {
             //    Log.debug("encode took "+ diff);
             //}
             if (tbuff != null) {
-                    stampedAudio = _audio.getCleanStampedAudio();
-                    stampedAudio.setStampAndBytes(tbuff, 0, tbuff.length,
-                            timestamp);
-                    _audio.saveReadStampedAudio(stampedAudio);
+                stampedAudio = _audio.getCleanStampedAudio();
+                stampedAudio.setStampAndBytes(tbuff, 0, tbuff.length,
+                        timestamp);
+                _audio.saveReadStampedAudio(stampedAudio);
 
                 _countFrames++;
             }
-            
+
         }
         return stampedAudio;
     }
@@ -234,20 +233,21 @@ public class AndroidAudioMic implements Runnable {
     protected short[] effectIn(short[] in) {
         double energy = 0;
         for (int i = 0; i < in.length; i++) {
-            in[i] =(short) ( in[i] * _gain);
+            in[i] = (short) (in[i] * _gain);
             energy = energy + (Math.abs(in[i]));
         }
         _inEnergy = energy / in.length;
         return in;
     }
 
-    void setGain(float g){
+    void setGain(float g) {
         _gain = g;
     }
     /*
      * TODO: bit of a problem: first call to this method comes too late for the
      * first new/accept, etc frames
      */
+
     private void resetTimestampRecStart() {
         // convert from micro to milli seconds
         _timestampRecStart = getTime();

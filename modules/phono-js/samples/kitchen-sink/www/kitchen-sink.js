@@ -1,11 +1,11 @@
 /* Kitchen Sink */
 $(document).ready(function() {
-    /* use code like this to sepcifiy a particular codec.
+    /* use code like this to sepcifiy a particular codec. */
      Phono.util.filterWideband = function(offer, wideband) {
         var codecs = new Array();
         Phono.util.each(offer, function() {
             if (!wideband) {
-                if (this.name.toUpperCase() == "SPEEX" && this.rate == "8000") {
+                if (this.name.toUpperCase() == "G722" && this.rate == "8000") {
                     codecs.push(this);
                 } else if (this.name == "telephone-event"){
                     codecs.push(this);
@@ -16,7 +16,7 @@ $(document).ready(function() {
         });
         return codecs;
     };   
-   */ 
+   /**/ 
 
     var phonos={}, calls={}, chats={};
     

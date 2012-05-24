@@ -34,6 +34,7 @@ import com.phono.audio.codec.alaw.ALaw_Codec;
 import com.phono.audio.codec.g722.G722Codec;
 import com.phono.audio.codec.g722.NativeG722Codec;
 import com.phono.audio.phone.StampedAudioImpl;
+import com.phono.codecs.speex.NativeSpeexCodec;
 import com.phono.codecs.speex.SpeexCodec;
 import com.phono.srtplight.Log;
 import java.io.BufferedReader;
@@ -490,6 +491,17 @@ public class AndroidAudio implements AudioFace {
 
     protected void fillCodecMap() {
         // add all the supported Codecs, in the order of preference
+        NativeSpeexCodec natspeex = null;
+        
+         try {
+            natspeex = new NativeSpeexCodec();
+            _codecMap.put(new Long(natspeex.getCodec()), natspeex);
+
+            Log.debug("fillCodecMap: " + "got native speex codec");
+
+        } catch (Throwable thrown) {
+            Log.debug("fillCodecMap: " + "didn't get speex native " + thrown.getMessage());
+        }
         try {
             NativeG722Codec g722Codec = new NativeG722Codec();
             _codecMap.put(new Long(g722Codec.getCodec()), g722Codec);
@@ -503,22 +515,27 @@ public class AndroidAudio implements AudioFace {
 
         ULaw_Codec ulawCodec = new ULaw_Codec();
         _codecMap.put(new Long(ulawCodec.getCodec()), ulawCodec);
+
         if (_cpucount > 1) {
-            SpeexCodec speexCodec = new SpeexCodec(true) {
+            // if they have 2 cpus it is worth a shot at speex in java
+            if (natspeex == null) {
+                SpeexCodec speexCodec = new SpeexCodec(true) {
 
-                @Override
-                protected int getCompexity(boolean wide) {
-                    return 0;
-                }
+                    @Override
+                    protected int getCompexity(boolean wide) {
+                        return 0;
+                    }
 
-                @Override
-                protected int getQuality(boolean wide) {
-                    return 2;
-                }
-            };
-            _codecMap.put(speexCodec.getCodec(), speexCodec);
+                    @Override
+                    protected int getQuality(boolean wide) {
+                        return 2;
+                    }
+                };
+                _codecMap.put(speexCodec.getCodec(), speexCodec);
+            }
             ALaw_Codec alawCodec = new ALaw_Codec();
             _codecMap.put(new Long(alawCodec.getCodec()), alawCodec);
+            // if they have 2 cpus it is worth a shot at gsm in java
             GSM_Codec gsmCodec = new GSM_Codec();
             _codecMap.put(new Long(gsmCodec.getCodec()), gsmCodec);
         }
