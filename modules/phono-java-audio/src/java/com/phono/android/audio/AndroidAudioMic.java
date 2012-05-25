@@ -179,17 +179,13 @@ public class AndroidAudioMic implements Runnable {
         //_mic.startRecording();
         long ftime = _audio.getFrameInterval();
         while (_me != null) {
-            long then = getTime();
             readMic();
-            long now = getTime();
-            long interval = (then + ftime) - now;
-            if (interval > 2) {
-                try {
-                    Thread.sleep(interval);
-                } catch (InterruptedException ex) {
-                    Log.verb(this.getClass().getSimpleName()
-                            + ".run(): InterruptedException: " + ex.getMessage());
-                }
+
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ex) {
+                Log.verb(this.getClass().getSimpleName()
+                        + ".run(): InterruptedException: " + ex.getMessage());
             }
 
         }

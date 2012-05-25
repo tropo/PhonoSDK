@@ -44,7 +44,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_phono_codecs_speex_NativeSpeexCodec_initCo
         speex_encoder_ctl(co->encoder_st, SPEEX_SET_VBR, &tmp);
         tmp=5;
         speex_encoder_ctl(co->encoder_st, SPEEX_SET_QUALITY, &tmp);
-        tmp=2;
+        tmp=1;
         speex_encoder_ctl(co->encoder_st, SPEEX_SET_COMPLEXITY, &tmp);
         tmp = 16000;
         speex_encoder_ctl(co->encoder_st,SPEEX_SET_SAMPLING_RATE,&tmp);
