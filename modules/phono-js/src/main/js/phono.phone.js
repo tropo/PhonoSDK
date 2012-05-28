@@ -99,9 +99,9 @@
       
       if (call.state != CallState.INITIAL) return;
        
-      var jingleIq = $iq({type:"set", to:call.remoteJid});
+      var initiateIq = $iq({type:"set", to:call.remoteJid});
       
-      var jingle = jingleIq.c('jingle', {
+      var initiate = initiateIq.c('jingle', {
          xmlns: Strophe.NS.JINGLE,
          action: "session-initiate",
          initiator: call.initiator,
@@ -109,26 +109,47 @@
       });
                      
       $(call.headers).each(function() {
-         jingle.c("custom-header", {name:this.name, data:this.value}).up();
+         initiate.c("custom-header", {name:this.name, data:this.value}).up();
       });
              
-       var partial = jingle
+       var partialInitiate = initiate
            .c('content', {creator:"initiator"})
            .c('description', {xmlns:this.transport.description})
        
        Phono.util.each(this.config.codecs(Phono.util.filterWideband(this.audioLayer.codecs(),this.phone.wideband())), function() {
-           partial = partial.c('payload-type', {
+           partialInitiate = partialInitiate.c('payload-type', {
                id: this.id,
                name: this.name,
                clockrate: this.rate
            }).up();           
        });
 
-       this.transport.buildTransport("offer", partial.up(), function() {
-           call.connection.sendIQ(jingleIq, function (iq) {
-               call.state = CallState.PROGRESS;
-           });
+       var updateIq = $iq({type:"set", to:call.remoteJid});
+       
+       var update = updateIq.c('jingle', {
+           xmlns: Strophe.NS.JINGLE,
+           action: "transport-accept",
+           initiator: call.initiator,
+           sid: call.id
        });
+       
+       var partialUpdate = update
+           .c('content', {creator:"initiator"})
+           .c('description', {xmlns:this.transport.description})
+       
+       this.transport.buildTransport("offer", partialInitiate.up(), 
+                                     function() {
+                                         call.connection.sendIQ(initiateIq, function (iq) {
+                                             call.state = CallState.PROGRESS;
+                                         });
+                                     },
+                                     partialUpdate.up(),
+                                     function() {
+                                         call.connection.sendIQ(updateIq, function (iq) {
+                                         });   
+                                     }
+                                    );
+
    };
    
    Call.prototype.accept = function() {
@@ -163,44 +184,62 @@
       if (call.state != CallState.RINGING 
       && call.state != CallState.PROGRESS) return;
 
-       var jingleIq = $iq({type:"set", to:call.remoteJid});
+       var acceptIq = $iq({type:"set", to:call.remoteJid});
       
-       var jingle = jingleIq.c('jingle', {
+       var accept = acceptIq.c('jingle', {
            xmlns: Strophe.NS.JINGLE,
            action: "session-accept",
            initiator: call.initiator,
            sid: call.id
        });
        
-       var partial = jingle
+       var partialAccept = accept
            .c('content', {creator:"initiator"})
            .c('description', {xmlns:this.transport.description})
        
-       partial = partial.c('payload-type', {
+       parialAccept = partialAccept.c('payload-type', {
            id: call.codec.id,
            name: call.codec.name,
            clockrate: call.codec.rate
        }).up();           
 
-       $.each(call.audioLayer.codecs(), function() {
+       $.each((call.audioLayer.codecs()), function() {
            if (this.name == "telephone-event") {
-               partial = partial.c('payload-type', {
+               partialAccept = partialAccept.c('payload-type', {
                    id: this.id,
                    name: this.name,
                    clockrate: this.rate
                }).up();     
            } 
        });
-
-       this.transport.buildTransport("answer", partial.up(), function(){
-           call.connection.sendIQ(jingleIq, function (iq) {
-               call.state = CallState.CONNECTED;
-               Phono.events.trigger(call, "answer");
-               if (call.ringer != null) call.ringer.stop();
-               call.startAudio();
-           });
+       
+       var updateIq = $iq({type:"set", to:call.remoteJid});
+      
+       var update = updateIq.c('jingle', {
+           xmlns: Strophe.NS.JINGLE,
+           action: "transport-replace",
+           initiator: call.initiator,
+           sid: call.id
        });
        
+       var partialUpdate = update
+           .c('content', {creator:"initiator"})
+           .c('description', {xmlns:this.transport.description})
+
+       this.transport.buildTransport("answer", partialAccept.up(), 
+                                     function(){
+                                         call.connection.sendIQ(acceptIq, function (iq) {
+                                             call.state = CallState.CONNECTED;
+                                             Phono.events.trigger(call, "answer");
+                                             if (call.ringer != null) call.ringer.stop();
+                                             call.startAudio();
+                                         });
+                                     },
+                                     partialUpdate.up(),
+                                     function() {
+                                         call.connection.sendIQ(updateIq, function (iq) {
+                                         });   
+                                     });
    };
 
    Call.prototype.bindAudio = function(binding) {
@@ -522,6 +561,12 @@
             // Fire answer event
             Phono.events.trigger(call, "answer")
             
+            break;
+
+         // Transport information update
+         case "transport-replace":
+         case "transport-accept":
+            call.transport.processTransport($(iq));
             break;
 
          // Hangup
