@@ -10,7 +10,9 @@ DISCLAIMER
   - Please do not deploy these applications to 'Play' or other appstores until we announce the final release
 
   - This version supports Phonegap (aka Cordova) 1.7
-  - This version has been tested on android 2.3.6 on a galaxy Y Duo 
+  - This version has been tested on android 3.2 on the Samsung galaxy Tab 7.0 plus.
+  - We also tested on android 2.3.6 on a galaxy Y Duo and found an android bug which causes random disconnects - users of 2.3.6 and below beware!
+
   
 Enough of that, let's get started...
 
