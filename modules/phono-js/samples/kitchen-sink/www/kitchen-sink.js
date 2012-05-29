@@ -61,6 +61,8 @@ $(document).ready(function() {
         newPhonoDiv.find(".chatTo").val(chatString);
 
         var audio = audioType;
+        var protocol = "sip:";
+        if (audioType == "webrtc") protocol = "xmpp:";
 
         if (audioType == "panda") {
             gw = "gw-v4.d.phono.com";
@@ -78,7 +80,7 @@ $(document).ready(function() {
                 newPhonoDiv.find(".sessionId").html("<a class='sessionId' target='_blank' href='" + 
                                                     baseUrl + "?audio=" + audioType 
                                                     + "&connectionUrl=" + connectionUrl 
-                                                    + "&dial=sip:" + this.sessionId 
+                                                    + "&dial=" + protocol + this.sessionId 
                                                     + "&chat=" + this.sessionId + "'>" 
                                                     + this.sessionId + "</a>");
                 newPhonoDiv.find(".phoneControl").show();
