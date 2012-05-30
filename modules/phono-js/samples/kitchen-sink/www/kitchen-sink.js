@@ -40,7 +40,7 @@ $(document).ready(function() {
         var gw = "gw-v3.d.phono.com";
         
         if (connectionUrl.indexOf("file:") == 0){
-            connectionUrl = "http://panda-dev1-ext.qa.voxeolabs.net:8080/prism_bosh";
+            connectionUrl = "http://panda-dev2-ext.qa.voxeolabs.net:8080/prism_bosh";
             //connectionUrl = "http://app.phono.com/http-bind";
         }
 
