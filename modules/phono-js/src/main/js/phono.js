@@ -30,6 +30,7 @@ var flensed={base_path:"//s.phono.com/deps/flensed/1.0/"};
    
    // Initialize Fields
    this.sessionId = null;
+   Phono.log.debug("ConnectionUrl: " + this.config.connectionUrl);
    this.connection = new Strophe.Connection(this.config.connectionUrl);
    if(navigator.appName.indexOf('Internet Explorer')>0){
     xmlSerializer = {};
