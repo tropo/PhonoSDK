@@ -197,7 +197,7 @@
            .c('content', {creator:"initiator"})
            .c('description', {xmlns:this.transport.description})
        
-       parialAccept = partialAccept.c('payload-type', {
+       partialAccept = partialAccept.c('payload-type', {
            id: call.codec.id,
            name: call.codec.name,
            clockrate: call.codec.rate
