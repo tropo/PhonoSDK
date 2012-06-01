@@ -195,7 +195,7 @@
        
        var partialAccept = accept
            .c('content', {creator:"initiator"})
-           .c('description', {xmlns:this.transport.description})
+           .c('description', {xmlns:this.transport.description});
        
        partialAccept = partialAccept.c('payload-type', {
            id: call.codec.id,
