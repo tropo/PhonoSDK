@@ -29,6 +29,7 @@ function WebRTCAudio(phono, config, callback) {
     WebRTCAudio.localVideo = document.getElementById(this.config.localContainerId);
 
     try { 
+        console.log("Request access to local media, use new syntax");
         navigator.webkitGetUserMedia(this.config.media, 
                                      function(stream) {
                                          WebRTCAudio.localStream = stream;
@@ -42,7 +43,6 @@ function WebRTCAudio(phono, config, callback) {
                                          console.log("Failed to get access to local media. Error code was " + error.code);
                                          alert("Failed to get access to local media. Error code was " + error.code + ".");   
                                      });
-        console.log("Requested access to local media.");
     } catch (e) {
         console.log("getUserMedia error, try old syntax");
         navigator.webkitGetUserMedia("video,audio", 
@@ -130,6 +130,8 @@ WebRTCAudio.prototype.share = function(transport, autoPlay, codec) {
             if (WebRTCAudio.pc != null) {
                 WebRTCAudio.pc.close();
                 WebRTCAudio.pc = null;
+                WebRTCAudio.offer = null;
+                WebRTCAudio.answer = null;
             } 
             WebRTCAudio.remoteVideo.style.opacity = 0;
         },
@@ -177,6 +179,10 @@ WebRTCAudio.prototype.transport = function() {
         buildTransport: function(direction, j, callback, u, updateCallback) {
             if (direction == "answer") {
                 // We are the result of an inbound call, so provide answer
+                if (WebRTCAudio.pc != null) {
+                    WebRTCAudio.pc.close();
+                    WebRTCAudio.pc = null;
+                }
                 WebRTCAudio.pc = new WebRTCAudio.peerConnection(WebRTCAudio.stun,
                                                           function(message) {
                                                               console.log("C->S SDP: " + message);
@@ -205,10 +211,25 @@ WebRTCAudio.prototype.transport = function() {
                                                                   callback();
                                                               } else if (roap['messageType'] == "OFFER") {
                                                                   // Oh no, here we go
-                                                                  WebRTCAudio.offer = message;
-                                                                  u.c('transport',{xmlns:"http://phono.com/webrtc/transport"})
-                                                                      .c('roap',Base64.encode(WebRTCAudio.offer));
-                                                                  updateCallback();
+                                                                  if (WebRTCAudio.offer.indexOf("video") != -1) {
+                                                                      WebRTCAudio.offer = message;
+                                                                      u.c('transport',{xmlns:"http://phono.com/webrtc/transport"})
+                                                                          .c('roap',Base64.encode(WebRTCAudio.offer));
+                                                                      updateCallback();
+                                                                  } else {
+                                                                      // This is an audio only call, lets lie
+                                                                      roapAnswer = jQuery.parseJSON(WebRTCAudio.offer.substring(4,message.length));
+                                                                      fakeAnswer = "SDP\n{\n\"answererSessionId\":\"" +
+                                                                      roap['answererSessionId'] + "\",\n" +
+                                                                      "\"messageType\":\"ANSWER\",\n" +
+                                                                      "\"offererSessionId\":\"" +
+                                                                      roap['offererSessionId'] + "\",\n" +
+                                                                          "\"seq\":2,\n" +
+                                                                          "\"sdp\":\"" + roapAnswer['sdp']
+                                                                          + "\"}";
+                                                                      console.log("H->C SDP: " + fakeAnswer);
+                                                                      WebRTCAudio.pc.processSignalingMessage(fakeAnswer);
+                                                                  }
                                                               } else {
                                                                   console.log("Recieved unexpected ROAP: " + message);
                                                               }
