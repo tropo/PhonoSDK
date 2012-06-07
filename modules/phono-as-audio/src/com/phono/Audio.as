@@ -26,7 +26,6 @@ package com.phono
 	private var _mic:Microphone; // Internal mic handle for permission checking
         private var _hasEC:Boolean = false; // Are we on a flash player with a working EC
 	private var _boxOpen:Boolean = false;
-	
 	private var _ncDict:Dictionary = new Dictionary(); // rtmpUri -> NC		
 	private var _waitQs:Dictionary = new Dictionary(); // rtmpUri -> Array of functions to call
 	private var _cirrusNc:NetConnection;
@@ -35,24 +34,25 @@ package com.phono
 	public function Audio()
 	{	
             // Detect version
-            var version:Number = Number(Capabilities.version.split(" ")[1].split(",")[0] + "." + Capabilities.version.split(" ")[1].split(",")[1]);
+            var version:Number = Number(Capabilities.version.split(" ")[1].split(",")[0] + "." 
+                                        + Capabilities.version.split(" ")[1].split(",")[1]);
+            
             if (version >= 10.3) _hasEC = true;
-
+            
             if (_hasEC)
             {
 	        _mic = Microphone.getEnhancedMicrophone();
-                
                 var enhancedOptions:MicrophoneEnhancedOptions = new MicrophoneEnhancedOptions();
                 enhancedOptions.autoGain = false;
-                //enhancedOptions.mode = MicrophoneEnhancedMode.HALF_DUPLEX;
                 _mic.enhancedOptions = enhancedOptions;		
 	    }
             else
             {
                 _mic = Microphone.getMicrophone();
             }
+        
             _mic.addEventListener(StatusEvent.STATUS, onMicStatus);	
-			//doConnect("rtmfp://phono-fms1-ext.voxeolabs.net/phono");
+            
             trace("Flash Audio()");
 	}		
 	
@@ -71,21 +71,21 @@ package com.phono
         public function doCirrusConnect(url:String):Boolean
         {
             // Connect to the given network connection url			
-			var nc:NetConnection = getNetConnection(url);
-			_cirrusNc = nc;
-			_cirrusUri = url;
-			return true;
+            var nc:NetConnection = getNetConnection(url);
+	    _cirrusNc = nc;
+	    _cirrusUri = url;
+	    return true;
         }
-
+        
         public function nearID(url:String):String
         {
             var nc:NetConnection = getNetConnection(url);
-			var nearID:String;
-			try {
-				nearID = nc.nearID;
-			} catch (e:Error) {
-				nearID = "";
-			}
+	    var nearID:String;
+	    try {
+		nearID = nc.nearID;
+	    } catch (e:Error) {
+		nearID = "";
+	    }
             return nearID;
         }
 	
@@ -109,14 +109,14 @@ package com.phono
 		
 		var nc:NetConnection;
 		if (peerID == NetStream.CONNECT_TO_FMS) {
-			streamName = getStreamName(url);	
-			rtmpUri = getRtmpUri(url);
-			nc = getNetConnection(rtmpUri);			
+		    streamName = getStreamName(url);	
+		    rtmpUri = getRtmpUri(url);
+		    nc = getNetConnection(rtmpUri);			
 		}
 		else {
-			nc = _cirrusNc;
-			streamName = nc.nearID;	
-			rtmpUri = _cirrusUri;
+		    nc = _cirrusNc;
+		    streamName = nc.nearID;	
+		    rtmpUri = _cirrusUri;
 		}
 		
 		var queue:Array = _waitQs[rtmpUri]
@@ -142,22 +142,22 @@ package com.phono
 	    
 	    var protocolName:String = getProtocolName(url);
 	    if (protocolName.toLowerCase() == "rtmp" || protocolName.toLowerCase() == "rtmfp"
-            || protocolName.toLowerCase() == "rtmpt") {
+                || protocolName.toLowerCase() == "rtmpt") {
 		var nc:NetConnection;
 		var streamName:String;
 		var rtmpUri:String;
 		var direct:Boolean;
 		if (peerID == "") {
-			direct = false;
-			rtmpUri = getRtmpUri(url);
-			nc = getNetConnection(rtmpUri);
-			streamName = getStreamName(url);	
+		    direct = false;
+		    rtmpUri = getRtmpUri(url);
+		    nc = getNetConnection(rtmpUri);
+		    streamName = getStreamName(url);	
 		}
 		else {
-			direct = true;
-			nc = _cirrusNc;
-			rtmpUri = _cirrusUri;
-			streamName = peerID;
+		    direct = true;
+		    nc = _cirrusNc;
+		    rtmpUri = _cirrusUri;
+		    streamName = peerID;
 		}
 		
 		var queue:Array = _waitQs[rtmpUri]
@@ -236,7 +236,7 @@ package com.phono
 		nc.addEventListener(NetStatusEvent.NET_STATUS, 
 				    function(event:NetStatusEvent):void
 				    {
-						trace("NetStatusEvent:" + event.info.code);
+					trace("NetStatusEvent:" + event.info.code);
 					switch (event.info.code)
 					{
 					case "NetConnection.Connect.Success":
@@ -246,6 +246,26 @@ package com.phono
 					    }	
 					    delete _waitQs[rtmpUri];
 					    break;
+                                        case "NetConnection.Connect.Closed":
+                                            dispatchEvent(new MediaEvent(MediaEvent.ERROR,null,
+                                                                         "Flash NetConnection Closed (network problem?)"));
+                                            break;
+                                        case "NetConnection.Connect.Failed":
+                                            dispatchEvent(new MediaEvent(MediaEvent.ERROR,null,
+                                                                         "Flash NetConnection Failed (firewall problem?)"));
+                                            break;
+                                        case "NetConnection.Connect.Rejected":
+                                            dispatchEvent(new MediaEvent(MediaEvent.ERROR,null,
+                                                                         "Flash NetConnection Rejected (server error?)"));
+                                            break;
+                                        case "NetStream.Connect.Failed":
+                                            dispatchEvent(new MediaEvent(MediaEvent.ERROR,null,
+                                                                         "Flash NetStream Connect Failed (firewall problem?)"));
+                                            break;
+                                        case "NetStream.Connect.Rjected":
+                                            dispatchEvent(new MediaEvent(MediaEvent.ERROR,null,
+                                                                         "Flash NetStream Connect Rejected (server error?)"));
+                                            break;
 					}
 				    });
 		nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onNCSecurityError);    
@@ -283,12 +303,12 @@ package com.phono
 	
 	internal function onNCSecurityError(event:SecurityErrorEvent):void
 	{
-	    dispatchEvent( new MediaEvent(MediaEvent.ERROR) );
+	    dispatchEvent( new MediaEvent(MediaEvent.ERROR, null, "Flash Security Error (server error?)") );
 	}
 	
 	internal function onNCAsyncError(event:AsyncErrorEvent):void 
 	{
-	    dispatchEvent( new MediaEvent(MediaEvent.ERROR) );
+	    dispatchEvent( new MediaEvent(MediaEvent.ERROR, null, "Flash Async Error (server error?)") );
 	}
 	
 	public function onBWDone():void
