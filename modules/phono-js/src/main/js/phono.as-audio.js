@@ -37,14 +37,21 @@ function FlashAudio(phono, config, callback) {
         plugin.$flash = this.create("Wrapper").getAudio();
         plugin.$flash.addEventListener(null, function(event) {
             var eventName = (event.getType()+"");
-            Phono.events.trigger(plugin, eventName);
+            Phono.events.trigger(plugin, eventName, {
+                reason: event.getReason()
+            });
+            if (eventName == "mediaError") {
+                Phono.events.trigger(phono, "error", {
+                    reason: event.getReason()
+                });
+            }
         });
         callback(plugin);
         if (plugin.config.direct) {
             window.setTimeout(10, plugin.$flash.doCirrusConnect(plugin.config.cirrus));
         }
     });
-    
+
     wmodeSetting = "opaque";
     
     if ((navigator.appVersion.indexOf("X11")!=-1) || (navigator.appVersion.indexOf("Linux")!=-1) || (jQuery.browser.opera)) {
@@ -247,7 +254,7 @@ FlashAudio.prototype.codecs = function() {
 };
 
 // Creates a DIV to hold the Flash movie if one was not specified by the user
-FlashAudio.prototype.createContainer = function() {
+FlashAudio.prototype.createContainer = function(phono) {
     
     var flashDiv = $("<div>")
       	.attr("id","_phono-audio-flash" + (FlashAudio.count++))
