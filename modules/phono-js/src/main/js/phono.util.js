@@ -250,6 +250,34 @@
             str += " ";
         }
         return str;
+    },
+    srtpProps: function(tag, crypto, keyparams, sessionparams, required) {
+        var props = "";
+        if (crypto != undefined) {
+            props = props + "crypto-suite=" + "'" + crypto +"' \n";
+        }
+        if (tag != undefined) {
+            props = props + "tag=" + "'" + tag + "' \n";
+        }
+        if (keyparams != undefined) {
+            props = props + "key-params=" + "'" + keyparams +"' \n";
+        }
+        if (sessionparams != undefined) {
+            props = props + "session-params=" + "'" + sessionprams +"' \n";
+        }
+        if (required != undefined) {
+            props = props + "required=" + "'" + required +"' \n";
+        }
+        return props;
+    },
+    genKey: function(bytes) {
+        // Generate bytes random bytes, then base64 encode and return as a string
+        var key = "";
+        var i;
+        for (i=0;i<bytes; i++) {
+            key = key + String.fromCharCode(Math.random() * 256);
+        }
+        return Base64.encode(key);
     }
 };
 

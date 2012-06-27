@@ -1,4 +1,5 @@
 function PhonegapAndroidAudio(phono, config, callback) {
+    this.type = "phonegap-android";
     
     // Bind Event Listeners
     Phono.events.bind(this, config);
