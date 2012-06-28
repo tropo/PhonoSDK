@@ -88,6 +88,14 @@
 							<select class="audio-input">
 							</select>
                                                 </div>
+						<div class="setting">
+							Security:<br/>
+							<select class="security-option">
+                                                          <option value="optional">Optional</option>
+                                                          <option value="mandatory">Mandatory</option>
+                                                          <option value="disabled">Disabled</option>
+							</select>
+                                                </div>
    		 				<br class="clearfix"/>
    		 			</div>
    		 		</div>
@@ -97,6 +105,7 @@
    		 			<div class="callHeader">
    		 				<span class="callID"></span>
    		 				<span class="callDetail"></span>
+                                                <span class="callSecure"></span>
                                                 <span class="callCodec"></span>
                                                 <span class="callMicEnergy"></span>
                                                 <span class="callSpkEnergy"></span>
@@ -155,7 +164,8 @@
                     <option value="flash">Flash (standard)</option>
                     <option value="panda">Flash (panda)</option>
    		    <option value="java">Java</option>
-   		    <option value="webrtc">WebRTC</option>
+   		    <option value="webrtc">WebRTC (ROAP)</option>
+   		    <option value="jsep">WebRTC (JSEP)</option>
    		    <option value="none">None</option>
    		  </select>
                   &#160;for audio
