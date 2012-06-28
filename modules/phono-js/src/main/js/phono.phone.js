@@ -62,7 +62,7 @@
       this.srtpPropsr = undefined;
       this.srtpPropsl = undefined;
 
-      if (this._security != "disabled" && this.transport.description == "urn:xmpp:jingle:apps:rtp:1") {
+      if (this._security != "disabled" && this.transport.supportsSRTP == true) {
           // Set up some local SRTP crypto parameters
           this.tag = "1";
           this.crypto = "AES_CM_128_HMAC_SHA1_80";
@@ -139,7 +139,7 @@
        // Add our crypto
        var required = "0";
        if (call._security == "mandatory") required = "1";
-       if (call._security != "disabled" && this.transport.description == "urn:xmpp:jingle:apps:rtp:1") {
+       if (call._security != "disabled" && this.transport.supportsSRTP == true) {
            partialInitiate = partialInitiate.c('encryption', {required: required}).c('crypto', {
                tag: call.tag,
                'crypto-suite': call.crypto,
@@ -237,11 +237,13 @@
        });
 
        // Add our crypto
-       partialAccept = partialAccept.c('encryption').c('crypto', {
-           tag: call.tag,
-           'crypto-suite': call.crypto,
-           'key-params': call.keyparams
-       }).up();    
+       if (call.srtpPropsl != undefined && call.srtpPropsr != undefined) {
+           partialAccept = partialAccept.c('encryption').c('crypto', {
+               tag: call.tag,
+               'crypto-suite': call.crypto,
+               'key-params': call.keyparams
+           }).up();    
+       }
        
        var updateIq = $iq({type:"set", to:call.remoteJid});
       
@@ -457,7 +459,7 @@
       }
 
       // Check to see if we have crypto, we only support AES_CM_128_HMAC_SHA1_80
-      if (call._security != "disabled" && this.transport.description == "urn:xmpp:jingle:apps:rtp:1") {
+      if (call._security != "disabled" && this.transport.supportsSRTP == true) {
            description.find('crypto').each(function () {
                if ($(this).attr('crypto-suite') == call.crypto) {
                    call.srtpPropsr = Phono.util.srtpProps($(this).attr('tag'), 
@@ -492,6 +494,7 @@
           }
       });
 
+      // Belt and braces
       if (call._security == "mandatory" && call.output.secure() == false) {
           // We must fail the call, remote end did not agree on crypto
           Phono.log.error("Security error, share not secure when mandatory specified");
@@ -578,6 +581,8 @@
             // Register Call
             phone.calls[call.id] = call;
 
+            call.state = CallState.PROGRESS;
+          
             // Negotiate SDP
             call.codec = call.negotiate(iq);
             if(call.codec == null) {
@@ -599,7 +604,6 @@
             if (call.ringer != null) call.ringer.start();
             
             // Auto accept the call (i.e. send ringing)
-            call.state = CallState.PROGRESS;
             call.accept();
 
             // Fire imcoming call event
