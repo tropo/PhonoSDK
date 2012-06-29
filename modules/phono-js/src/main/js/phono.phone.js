@@ -30,7 +30,7 @@
       this.phone = phone;
       this.phono = phone.phono;
       this.audioLayer = this.phono.audio;
-      this.transport = this.audioLayer.transport();
+      this.transport = this.audioLayer.transport(config);
       this.connection = this.phono.connection;
       
       this.config = Phono.util.extend({
@@ -79,8 +79,8 @@
       // Bind Event Listeners
       Phono.events.bind(this, config);
       
-       this.ringer = this.audioLayer.play({uri:phone.ringTone()}); 
-       this.ringback = this.audioLayer.play({uri:phone.ringbackTone()});
+      this.ringer = this.audioLayer.play({uri:phone.ringTone()}); 
+      this.ringback = this.audioLayer.play({uri:phone.ringbackTone()});
       if (this.audioLayer.audioIn){
          this.audioLayer.audioIn(phone.audioInput());
       }
@@ -481,7 +481,7 @@
       var foundTransport = false;
       $(iq).find('transport').each(function () {
           if (call.transport.name == $(this).attr('xmlns') && foundTransport == false) {
-              var transport = call.transport.processTransport($(this));      
+              var transport = call.transport.processTransport($(this), false);      
               if (transport != undefined) {
                   call.bindAudio({
                       input: call.audioLayer.play(transport.input, false),
@@ -645,7 +645,7 @@
          // Transport information update
          case "transport-replace":
          case "transport-accept":
-            call.transport.processTransport($(iq));
+          call.transport.processTransport($(iq), true);
             break;
 
          // Hangup
