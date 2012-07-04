@@ -78,14 +78,20 @@
             NSRange range = [line rangeOfString:@"key-params="];
             if (range.length > 0 && range.location == 0){
                 // gotcha.
+                NSLog(@"found key-params");
                 NSString *val = [line substringFromIndex:(range.length+range.location)];
+                val = [val stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
                 NSString *deq = [val stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"'"]];
                 NSRange ir = [deq rangeOfString:@"inline:"];
                 if (ir.length > 0 && ir.location == 0){
                     // may have | sep components
-                    NSArray *bits =  [props componentsSeparatedByString:@"|"];
+                    NSString *postinline = [deq  substringFromIndex:(ir.length+ir.location)];
+                    NSLog(@"found inline splitting %@",postinline);
+
+                    NSArray *bits =  [postinline componentsSeparatedByString:@"|"];
                     if ([bits count] > 0){
                         ret = [bits objectAtIndex:0];
+                        NSLog(@"returning %@ as mkey",ret);
                     }
                 }
                 break;

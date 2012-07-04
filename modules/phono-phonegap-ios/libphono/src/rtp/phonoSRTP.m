@@ -86,13 +86,26 @@ void srtpEventFunc(srtp_event_data_t *data){
         // only one we support for now....
         NSLog(@"Doing an SRTP init for %@:%d",farHost,farPort );
         NSData *d = [Base64 decode:master]; // may need to allocate....
-        spol.ssrc.type = ssrc_specific;
-        spol.ssrc.value = (uint32_t) _csrcid;
-        crypto_policy_set_aes_cm_128_hmac_sha1_80(&spol.rtp);
-        crypto_policy_set_aes_cm_128_hmac_sha1_80(&spol.rtcp);
-        spol.key = (uint8_t *)[d bytes];
-        spol.next = 0;
-        err_status_t  err = srtp_create(&session,  &spol);
+
+        if ((d == NULL) ||[d length] != 30) {
+            NSLog(@"problem decoding base 64 string -> %@",master);
+            NSLog(@"results in %d byte key/salt",[d length]);
+        }
+        spolO.ssrc.type = ssrc_specific;
+        spolO.ssrc.value = (uint32_t) _csrcid;
+        NSLog(@"set context to %8x", (uint32_t)_csrcid);
+
+        crypto_policy_set_aes_cm_128_hmac_sha1_80(&spolO.rtp);
+        crypto_policy_set_aes_cm_128_hmac_sha1_80(&spolO.rtcp);
+        int klen = [d length];
+
+        spolO.key = calloc(klen,1);
+        [d getBytes:spolO.key length:klen];
+        if (spolO.key == NULL){
+            NSLog(@"Null key ?!?");
+        }
+        spolO.next = 0;
+        err_status_t  err = srtp_create(&session,  &spolO);
         if (err != err_status_ok) {
             NSLog(@"srtp_create error was %@",srtp_errs[err]);
         } else {
@@ -114,17 +127,37 @@ void srtpEventFunc(srtp_event_data_t *data){
         err_status_t  err = srtp_protect(session, payload, &len);
         if (err != err_status_ok) {
             NSLog(@"srtp_protect error was %@",srtp_errs[err]);
+            bzero(payload,paylen);
         }
     }
     
 }
+
+-(void) syncChanged:(uint64_t) sync {
+    if (_sync ==0) {
+        memcpy(&spolI,&spolO,sizeof(srtp_policy_t));
+        spolI.ssrc.value = (uint32_t) sync;
+        spolI.next = NULL;
+        err_status_t  err = srtp_add_stream(session, &spolI);
+        if (err != err_status_ok) {
+            NSLog(@"srtp_add_stream inbound error was %@",srtp_errs[err]);
+        } else {
+            NSLog(@"added srtp stream for inbound %8x",(uint32_t)sync);
+        }
+    }
+    [super syncChanged:sync];
+}
+
 - (void) unprotect:(uint8_t *)payload length:(int)paylen{
     int len = paylen ;
     if (_srtp == YES){
-        
         err_status_t  err = srtp_unprotect(session, payload, &len);
         if (err != err_status_ok) {
             NSLog(@"srtp_unprotect error was %@",srtp_errs[err]);
+            bzero(payload,len);
+            if (err == err_status_no_ctx) {
+                NSLog(@"want context of %8x", (uint32_t)_csrcid);
+            }
         }
     }
 }

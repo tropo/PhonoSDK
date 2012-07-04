@@ -30,12 +30,12 @@ static int frameIntervalMS = 20;
     [super init];
     
     codecs = [[NSMutableDictionary alloc] init];
-    id <CodecProtocol> ulaw = [[UlawCodec alloc] init];
+/*    id <CodecProtocol> ulaw = [[UlawCodec alloc] init];
     [codecs setObject:ulaw forKey:[NSString stringWithFormat:@"%d",[ulaw ptype]]];
     id <CodecProtocol> gsm = [[GSM610Codec alloc] init];
     [codecs setObject:gsm forKey:[NSString stringWithFormat:@"%d",[gsm ptype]]];
     id <CodecProtocol> g722 = [[G722Codec alloc] init];
-    [codecs setObject:g722 forKey:[NSString stringWithFormat:@"%d",[g722 ptype]]];
+    [codecs setObject:g722 forKey:[NSString stringWithFormat:@"%d",[g722 ptype]]]; */
     id <CodecProtocol> speex8 = [[SpeexCodec alloc] initWide:NO];
     [codecs setObject:speex8 forKey:[NSString stringWithFormat:@"%d",[speex8 ptype]]];
     id <CodecProtocol> speex16 = [[SpeexCodec alloc] initWide:YES];

@@ -207,7 +207,6 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
     for (i = 0; i < dlen ; i++) {
         payload[i + RTPHEAD] = datp[i];
     }
-    //[self appendAuth:payload offs:(RTPHEAD+i)];
     [self protect:payload length:payload_length];
     int e = send(ipv4Soc,payload,payload_length,0);
     if (firstSent == nil) {
@@ -262,7 +261,7 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
     char seqno = 0;
     long stamp = 0;
     long tstamp = 0;
-    int sync = 0;
+    uint32_t sync = 0;
     
     if (plen < 12) {
         NSLog(@"Packet too short. RTP must be >12 bytes");
@@ -310,7 +309,7 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
         [self syncChanged:sync];
     }
     _index = [self getIndex:seqno];
-    [self updateCounters:seqno];
+    NSLog(@"ctxt is %8x",sync);
     [self unprotect:packet length:plen];
     paylen -= _tailIn;
     payload = alloca(paylen);
@@ -376,14 +375,6 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
     }
 }
 
-- (void) appendAuth:(uint8_t *) payload offs:(int)length  {
-    // nothing to do in rtp
-}
-
-- (void) updateCounters:(uint16_t) seqno {
-
-    
-}
 
 -(void) syncChanged:(uint64_t) sync {
     if (_sync == 0) {
