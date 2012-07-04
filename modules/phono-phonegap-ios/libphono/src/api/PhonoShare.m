@@ -21,7 +21,7 @@
 
 
 @implementation PhonoShare
-@synthesize nearUri ,endpoint, codec,audio, srtpType,masterKey ;
+@synthesize nearUri ,endpoint, codec,audio, srtpType,masterKeyL, masterKeyR ;
 
 
 - (id) initWithUri:(NSString *) uri{
@@ -53,7 +53,7 @@
         if (rtp == nil) {
             if(srtpType != nil){
                 NSLog(@"Allocing an SRTP engine for %@ with %@ cypher suite",nearUri,srtpType);  
-                rtp = [[phonoSRTP alloc] initWithTypeAndKey:srtpType key:masterKey];
+                rtp = [[phonoSRTP alloc] initWithTypeAndKey:srtpType keyL:masterKeyL keyR:masterKeyR ];
             } else {
                 NSLog(@"Allocing an RTP engine for %@ ",nearUri);  
                 rtp = [[phonoRTP alloc] init];

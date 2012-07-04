@@ -309,7 +309,6 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
         [self syncChanged:sync];
     }
     _index = [self getIndex:seqno];
-    NSLog(@"ctxt is %8x",sync);
     [self unprotect:packet length:plen];
     paylen -= _tailIn;
     payload = alloca(paylen);

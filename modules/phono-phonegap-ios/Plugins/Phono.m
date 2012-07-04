@@ -127,9 +127,13 @@
     NSString *codec = [options objectForKey:@"codec"];
     NSString *srtpPropsl = [options objectForKey:@"srtpPropsl"];
     NSString *srtpPropsr = [options objectForKey:@"srtpPropsr"];
-    NSString *mkey = [self findKey:srtpPropsl];
+    NSString *mkeyL = [self findKey:srtpPropsl];
     NSString *sType =[self findSuite:srtpPropsl];
-    NSString *luri = [phonoAPI share:uri autoplay:[autoplay isEqualToString:@"YES"] codec:codec srtpType:sType srtpKey:mkey];
+    NSString *mkeyR = [self findKey:srtpPropsr];
+    NSString *sTypeR =[self findSuite:srtpPropsr];
+    
+
+    NSString *luri = [phonoAPI share:uri autoplay:[autoplay isEqualToString:@"YES"] codec:codec srtpType:sType srtpKeyL:mkeyL srtpKeyR:mkeyR];
     
     BOOL res = [[luri substringToIndex:6] isEqualToString:@"rtp://"];
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:luri];

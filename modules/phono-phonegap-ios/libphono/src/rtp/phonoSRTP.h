@@ -11,8 +11,8 @@
 
 @interface phonoSRTP : phonoRTP {
     srtp_t session;
-    srtp_policy_t spolO;
-    srtp_policy_t spolI;
+    srtp_policy_t spolL;
+    srtp_policy_t spolR;
 }
-- (id) initWithTypeAndKey:(NSString *)ktype key:(NSString *) master;
+- (id) initWithTypeAndKey:(NSString *)ktype keyL:(NSString *) masterL keyR:(NSString *) masterR;
 @end
