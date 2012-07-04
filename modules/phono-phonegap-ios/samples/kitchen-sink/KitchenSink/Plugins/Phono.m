@@ -59,6 +59,58 @@
     [self writeJavascript:jsCB];
     
 }
+/*
+ [self findKey:srtpPropsl];
+ [self findSuite:srtpPropsl];
+ implement these vs 
+ String sdp = "required='1' \n"
+ + "crypto-suite='AES_CM_128_HMAC_SHA1_80' \n"
+ + "key-params='inline:d0RmdmcmVCspeEc3QGZiNWpVLFJhQX1cfHAwJSoj' \n"
+ + "session-params='KDR=0' \n"
+ + "tag='1' \n";
+ */
+
+- (NSString *) findKey:(NSString*) props {
+    NSString * ret = nil;
+    if (props != nil){
+        NSArray *lines = [props componentsSeparatedByString:@"\n"];
+        for (NSString *line in lines) {
+            NSRange range = [line rangeOfString:@"key-params="];
+            if (range.length > 0 && range.location == 0){
+                // gotcha.
+                NSString *val = [line substringFromIndex:(range.length+range.location)];
+                NSString *deq = [val stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"'"]];
+                NSRange ir = [deq rangeOfString:@"inline:"];
+                if (ir.length > 0 && ir.location == 0){
+                    // may have | sep components
+                    NSArray *bits =  [props componentsSeparatedByString:@"|"];
+                    if ([bits count] > 0){
+                        ret = [bits objectAtIndex:0];
+                    }
+                }
+                break;
+            }
+        }
+    }
+    return ret;
+}
+
+- (NSString *) findSuite:(NSString*) props {
+    NSString * ret = nil;
+    if (props != nil){
+        NSArray *lines = [props componentsSeparatedByString:@"\n"];
+        for (NSString *line in lines) {
+            NSRange range = [line rangeOfString:@"crypto-suite="];
+            if (range.length > 0 && range.location == 0){
+                // gotcha.
+                NSString *val = [line substringFromIndex:(range.length+range.location)];
+                ret = [val stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"'"]];
+                break;
+            }
+        }
+    }
+    return ret;
+}
 
 - (void) share:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options{
     
@@ -67,7 +119,11 @@
     NSString *uri = [options objectForKey:@"uri"];
     NSString *autoplay = [options objectForKey:@"autoplay"];
     NSString *codec = [options objectForKey:@"codec"];
-    NSString *luri = [phonoAPI share:uri autoplay:[autoplay isEqualToString:@"YES"] codec:codec];
+    NSString *srtpPropsl = [options objectForKey:@"srtpPropsl"];
+    NSString *srtpPropsr = [options objectForKey:@"srtpPropsr"];
+    NSString *mkey = [self findKey:srtpPropsl];
+    NSString *sType =[self findSuite:srtpPropsl];
+    NSString *luri = [phonoAPI share:uri autoplay:[autoplay isEqualToString:@"YES"] codec:codec srtpType:sType srtpKey:mkey];
     
     BOOL res = [[luri substringToIndex:6] isEqualToString:@"rtp://"];
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:luri];

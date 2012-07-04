@@ -16,10 +16,12 @@
  */
 
 #import "PhonoShare.h"
+#import "phonoSRTP.h"
+
 
 
 @implementation PhonoShare
-@synthesize nearUri ,endpoint, codec,audio;
+@synthesize nearUri ,endpoint, codec,audio, srtpType,masterKey ;
 
 
 - (id) initWithUri:(NSString *) uri{
@@ -49,7 +51,13 @@
     
     if (endpoint != nil){
         if (rtp == nil) {
-            rtp = [[phonoRTP alloc] init];
+            if(srtpType != nil){
+                NSLog(@"Allocing an SRTP engine for %@ with %@ cypher suite",nearUri,srtpType);  
+                rtp = [[phonoSRTP alloc] initWithTypeAndKey:srtpType key:masterKey];
+            } else {
+                NSLog(@"Allocing an RTP engine for %@ ",nearUri);  
+                rtp = [[phonoRTP alloc] init];
+            }
             [rtp setFarHost:rhost];
             [rtp setFarPort:rport];
             [rtp start:[endpoint sock]];

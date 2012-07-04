@@ -7,7 +7,13 @@
 //
 
 #import "phonoRTP.h"
+#import "../libsrtp/include/srtp.h"
 
-@interface phonoSRTP : phonoRTP
-
+@interface phonoSRTP : phonoRTP {
+    srtp_t session;
+    srtp_policy_t spol;
+    crypto_policy_t cpol;
+    ssrc_t ssrcS;
+}
+- (id) initWithTypeAndKey:(NSString *)ktype key:(NSString *) master;
 @end

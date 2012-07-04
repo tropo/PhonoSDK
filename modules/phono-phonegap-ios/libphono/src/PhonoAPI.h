@@ -43,7 +43,7 @@ Return an array of codecs supported by the plugin {JSON array of property object
 
 - (NSString *) allocateEndpoint;
 - (BOOL) freeEndpoint:(NSString *)uri;
-- (NSString *) share:(NSString *)uri autoplay:(BOOL)autoplay codec:(NSString *)codec;
+- (NSString *) share:(NSString *)uri autoplay:(BOOL)autoplay codec:(NSString *)codec srtpType:(NSString *)srtpType srtpKey:(NSString *)srtpKey;
 - (NSString *) play:(NSString *)uri autoplay:(BOOL)autoplay;
 - (NSString *) codecs;
 - (NSArray *) codecArray;

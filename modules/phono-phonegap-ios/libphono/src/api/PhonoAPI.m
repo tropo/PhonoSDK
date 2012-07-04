@@ -71,9 +71,11 @@
  * @param codec Selected codec.
  * @return
  */
-- (NSString *) share:(NSString *)uri autoplay:(BOOL)autoplay codec:(NSString *)codec{
+- (NSString *) share:(NSString *)uri autoplay:(BOOL)autoplay codec:(NSString *)codec srtpType:(NSString *)srtpType srtpKey:(NSString *)srtpKey{
     PhonoShare *ps = [[PhonoShare alloc] initWithUri:uri];
     NSString *luri = [ps nearUri]; 
+    [ps setSrtpType:srtpType];
+    [ps setMasterKey:srtpKey];
     PhonoEndpoint *ep = [endpoints objectForKey:luri];
     if (ep == nil){
         NSLog(@"Can't find local endpoint %@ creating it",luri );

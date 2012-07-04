@@ -30,11 +30,16 @@
     NSInteger rport;
     phonoRTP *rtp;
     PhonoAudio *audio;
+    NSString *srtpType;
+    NSString *masterKey;
     
 }
 
 @property (assign,readwrite) PhonoEndpoint * endpoint;
 @property (assign,readonly) NSString *nearUri;
+@property (assign,readwrite) NSString *srtpType;
+@property (assign,readwrite) NSString *masterKey;
+
 @property (assign,readwrite) NSString *codec;
 @property (assign,readwrite) PhonoAudio *audio;
 
