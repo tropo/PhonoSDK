@@ -74,9 +74,9 @@
 - (NSString *) share:(NSString *)uri autoplay:(BOOL)autoplay codec:(NSString *)codec srtpType:(NSString *)srtpType srtpKeyL:(NSString *)srtpKeyL srtpKeyR:(NSString *)srtpKeyR{
     PhonoShare *ps = [[PhonoShare alloc] initWithUri:uri];
     NSString *luri = [ps nearUri]; 
-    [ps setSrtpType:srtpType];
-    [ps setMasterKeyL:srtpKeyL];
-    [ps setMasterKeyR:srtpKeyR];
+    [ps setSrtpType:[[NSString alloc] initWithString:srtpType]];
+    [ps setMasterKeyL:[[NSString alloc] initWithString:srtpKeyL]];
+    [ps setMasterKeyR:[[NSString alloc] initWithString:srtpKeyR]];
 
     PhonoEndpoint *ep = [endpoints objectForKey:luri];
     if (ep == nil){

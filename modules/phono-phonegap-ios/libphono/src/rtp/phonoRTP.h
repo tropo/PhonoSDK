@@ -70,7 +70,6 @@
 - (void) sendPacket:(NSData *)data stamp:(uint64_t)stamp ptype:(int) ptype;
 - (BOOL) sendPacket:(NSData *)data stamp:(uint64_t)stamp ptype:(int) ptype marker:(BOOL)marker;
 - (void) deliverPayload:(uint8_t *)payload length:(int)paylen  stamp:(uint64_t) stamp ssrc:(uint32_t) ssrc;
-- (void) updateCounters:(uint16_t) seqno ;
 -(void) syncChanged:(uint64_t) sync ;
 - (void) consumeAudioData:(NSData*)data time:(NSInteger)stamp;
 - (void) digit:(NSString*) digit duration:(int) duration audible:(BOOL)audible;

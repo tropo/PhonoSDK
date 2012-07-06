@@ -42,6 +42,7 @@ static NSString *  srtp_errs[] = {
 + (void) initialize {
     if ([self class] == [phonoSRTP class]) {
         srtp_init();
+        NSLog(@"initing SRTP lib");
     }
     // Initialization for this class and any subclasses
 }
@@ -94,7 +95,7 @@ void srtpEventFunc(srtp_event_data_t *data){
     crypto_policy_set_aes_cm_128_hmac_sha1_80(&(pol->rtcp));
     int klen = [d length];
     
-    pol->key = calloc(klen,1);
+    pol->key = crypto_alloc(klen);
     [d getBytes:pol->key length:klen];
     if (pol->key == NULL){
         NSLog(@"Null key ?!?");
