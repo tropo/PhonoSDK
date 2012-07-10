@@ -178,7 +178,7 @@
         && ( [(NSString *)[bits objectAtIndex:0] compare:@"rtp"] == NSOrderedSame ) ){
         NSString *host = [(NSString *)[bits objectAtIndex:1] substringFromIndex:2];
         NSString *port = [bits objectAtIndex:2];
-        [xmppJingle sendSessionAccept:[incall callId] to:[incall from] host:host port:port payload:[incall payload]];
+        [xmppJingle sendSessionAccept:[incall callId] to:[incall from] host:host port:port payload:[incall payload] cryptos:nil];
         [self startMediaOnCall:incall now:NO];
     }
     
@@ -221,7 +221,7 @@
                 [heads addObject:xe];
             }
         }
-        NSString * sessionId = [xmppJingle initSessionTo:[acall to] lhost:host lport:port payloads:allAudioCodecs custom:heads];
+        NSString * sessionId = [xmppJingle initSessionTo:[acall to] lhost:host lport:port payloads:allAudioCodecs custom:heads cryptoRequired:0 cryptoLines:nil];
         [acall setCallId:sessionId];
         [acall setState:NEW];
     }
@@ -258,7 +258,7 @@
 #pragma mark XMPPJingle Delegate
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)xmppJingle:(XMPPJingle *)sender didReceiveIncommingAudioCall:(NSString *)sid from:(XMPPJID *)from to:(XMPPJID *)to transport:(NSXMLElement *)candidate sdp:(NSXMLElement *)payload {
+- (void)xmppJingle:(XMPPJingle *)sender didReceiveIncommingAudioCall:(NSString *)sid from:(XMPPJID *)from to:(XMPPJID *)to transport:(NSXMLElement *)candidate sdp:(NSXMLElement *)payload cryptoRequired:(NSString *) creqI cryptoElements:(NSArray *)cels {
     PhonoCall * incall = [[PhonoCall alloc] initInbound];
     [incall setPhono:phono];
     [incall setCallId:sid];
@@ -272,7 +272,7 @@
 
 
 
-- (void)xmppJingle:(XMPPJingle *)sender didReceiveAcceptForCall:(NSString *)sid from:(XMPPJID *)from to:(XMPPJID *)to transport:(NSXMLElement *)candidate sdp:(NSXMLElement *)payload {
+- (void)xmppJingle:(XMPPJingle *)sender didReceiveAcceptForCall:(NSString *)sid from:(XMPPJID *)from to:(XMPPJID *)to transport:(NSXMLElement *)candidate sdp:(NSXMLElement *)payload cryptoRequired:(NSString *) creqI cryptoElements:(NSArray *)cels  {
     PhonoCall *ccall = [phono.phone currentCall];
     if ([[ccall callId] compare:sid] == NSOrderedSame ){
         if (ccall.state == PENDING){
