@@ -37,7 +37,7 @@ $(document).ready(function() {
         var connectionUrl = window.location.protocol+"//app.phono.com/http-bind";
         var dialString = "sip:3366@login.zipdx.com";
         var chatString = "en2fr@bot.talk.google.com";
-        var gw = "gw-v3.d.phono.com";
+        var gw = "gw-v4.d.phono.com";
         
         if (connectionUrl.indexOf("file:") == 0){
             connectionUrl = "http://app.phono.com/http-bind";
@@ -62,6 +62,12 @@ $(document).ready(function() {
         var audio = audioType;
         var protocol = "sip:";
         if (audioType == "webrtc") protocol = "xmpp:";
+
+        if (audioType == "flash") {
+            gw = "gw-v3.d.phono.com";
+            audio = "flash";
+            directP2P = false;
+        }
 
         if (audioType == "panda") {
             gw = "gw-v4.d.phono.com";
