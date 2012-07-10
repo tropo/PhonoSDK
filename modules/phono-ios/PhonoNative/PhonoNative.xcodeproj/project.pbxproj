@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		221C4AE315AAE8D500312106 /* libphono.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 221C4AE215AAE8D500312106 /* libphono.a */; };
 		22230A6F149A31E000AEF013 /* PhonoXMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 22230A6D149A31E000AEF013 /* PhonoXMPP.h */; };
 		22230A70149A31E000AEF013 /* PhonoXMPP.m in Sources */ = {isa = PBXBuildFile; fileRef = 22230A6E149A31E000AEF013 /* PhonoXMPP.m */; };
 		22230B34149A337100AEF013 /* DDList.h in Headers */ = {isa = PBXBuildFile; fileRef = 22230A77149A337100AEF013 /* DDList.h */; };
@@ -113,13 +114,13 @@
 		223A1DD41498B6CC0019A5E3 /* PhonoMessaging.m in Sources */ = {isa = PBXBuildFile; fileRef = 223A1DD21498B6CC0019A5E3 /* PhonoMessaging.m */; };
 		223A1DD71498C2E10019A5E3 /* PhonoMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 223A1DD51498C2E10019A5E3 /* PhonoMessage.h */; };
 		223A1DD81498C2E10019A5E3 /* PhonoMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 223A1DD61498C2E10019A5E3 /* PhonoMessage.m */; };
-		2290FAA014D9B13900548035 /* libphono.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2290FA9F14D9B13900548035 /* libphono.a */; };
 		229B9A1614A0E1AA00E632FA /* XMPPJingle.h in Headers */ = {isa = PBXBuildFile; fileRef = 229B9A1414A0E1AA00E632FA /* XMPPJingle.h */; };
 		229B9A1714A0E1AA00E632FA /* XMPPJingle.m in Sources */ = {isa = PBXBuildFile; fileRef = 229B9A1514A0E1AA00E632FA /* XMPPJingle.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		221BD7C714A4D8B500E3972C /* ToDo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ToDo; sourceTree = "<group>"; };
+		221C4AE215AAE8D500312106 /* libphono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libphono.a; path = "../../phono-phonegap-ios/target/libphono.a"; sourceTree = "<group>"; };
 		22230A6D149A31E000AEF013 /* PhonoXMPP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhonoXMPP.h; sourceTree = "<group>"; };
 		22230A6E149A31E000AEF013 /* PhonoXMPP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhonoXMPP.m; sourceTree = "<group>"; };
 		22230A77149A337100AEF013 /* DDList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDList.h; sourceTree = "<group>"; };
@@ -230,7 +231,6 @@
 		223A1DD21498B6CC0019A5E3 /* PhonoMessaging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhonoMessaging.m; sourceTree = "<group>"; };
 		223A1DD51498C2E10019A5E3 /* PhonoMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhonoMessage.h; sourceTree = "<group>"; };
 		223A1DD61498C2E10019A5E3 /* PhonoMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhonoMessage.m; sourceTree = "<group>"; };
-		2290FA9F14D9B13900548035 /* libphono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libphono.a; path = "../../phono-phonegap-ios/libphono/build/Release-iphoneos/libphono.a"; sourceTree = "<group>"; };
 		229B9A1414A0E1AA00E632FA /* XMPPJingle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XMPPJingle.h; path = "XEP-0166/XMPPJingle.h"; sourceTree = "<group>"; };
 		229B9A1514A0E1AA00E632FA /* XMPPJingle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XMPPJingle.m; path = "XEP-0166/XMPPJingle.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -240,9 +240,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				221C4AE315AAE8D500312106 /* libphono.a in Frameworks */,
 				22230BD8149A356000AEF013 /* libidn.a in Frameworks */,
 				223A1D7E149777E80019A5E3 /* Foundation.framework in Frameworks */,
-				2290FAA014D9B13900548035 /* libphono.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -526,7 +526,7 @@
 		223A1D6F149777E70019A5E3 = {
 			isa = PBXGroup;
 			children = (
-				2290FA9F14D9B13900548035 /* libphono.a */,
+				221C4AE215AAE8D500312106 /* libphono.a */,
 				22230A71149A337100AEF013 /* XMPP */,
 				22230A6B149A311900AEF013 /* PhonoXMPP */,
 				223A1D7F149777E80019A5E3 /* PhonoNative */,
@@ -679,7 +679,7 @@
 		223A1D71149777E70019A5E3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = "Westhhawk Ltd";
 			};
 			buildConfigurationList = 223A1D74149777E70019A5E3 /* Build configuration list for PBXProject "PhonoNative" */;
@@ -767,7 +767,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -781,6 +781,7 @@
 					"../../phono-phonegap-ios/libphono/src",
 					/usr/include/libxml2,
 				);
+				INSTALL_PATH = ../target;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				SDKROOT = iphoneos;
 			};
@@ -801,6 +802,7 @@
 					"../../phono-phonegap-ios/libphono/src",
 					/usr/include/libxml2,
 				);
+				INSTALL_PATH = ../target;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -814,11 +816,13 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PhonoNative/PhonoNative-Prefix.pch";
 				GENERATE_MASTER_OBJECT_FILE = YES;
+				INSTALL_PATH = ../target;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../3rdParty/XMPPFramework/Vendor/libidn\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
+					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-eudjhdpvcvdpzxauxxfifkmkdqsv/Build/Products/Debug-iphoneos\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -833,11 +837,13 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PhonoNative/PhonoNative-Prefix.pch";
 				GENERATE_MASTER_OBJECT_FILE = YES;
+				INSTALL_PATH = ../target;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../3rdParty/XMPPFramework/Vendor/libidn\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
+					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-eudjhdpvcvdpzxauxxfifkmkdqsv/Build/Products/Debug-iphoneos\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -21,9 +21,17 @@
 #import "PhonoAudio.h"
 #import "CJSONSerializer.h"
 #import "CodecProtocol.h"
+#import "Base64.h"
+#import <Security/Security.h>
 
 
 @implementation PhonoAPI
+
++ (NSString *) mkKey{
+    uint8_t * kb = alloca(30);
+    SecRandomCopyBytes (kSecRandomDefault,30,kb);
+    return [Base64 encode:kb length:30];
+}
 
 - (void) setUseSpeakerForCall:(BOOL)val{
     if(val != useSpeakerForCall){
@@ -73,10 +81,16 @@
  */
 - (NSString *) share:(NSString *)uri autoplay:(BOOL)autoplay codec:(NSString *)codec srtpType:(NSString *)srtpType srtpKeyL:(NSString *)srtpKeyL srtpKeyR:(NSString *)srtpKeyR{
     PhonoShare *ps = [[PhonoShare alloc] initWithUri:uri];
-    NSString *luri = [ps nearUri]; 
-    [ps setSrtpType:[[NSString alloc] initWithString:srtpType]];
-    [ps setMasterKeyL:[[NSString alloc] initWithString:srtpKeyL]];
-    [ps setMasterKeyR:[[NSString alloc] initWithString:srtpKeyR]];
+    NSString *luri = [ps nearUri];
+    if (srtpType != nil) {
+        [ps setSrtpType:[[NSString alloc] initWithString:srtpType]];
+    }
+    if (srtpKeyL != nil) {
+        [ps setMasterKeyL:[[NSString alloc] initWithString:srtpKeyL]];
+    }
+    if (srtpKeyR != nil) {
+        [ps setMasterKeyR:[[NSString alloc] initWithString:srtpKeyR]];
+    }
 
     PhonoEndpoint *ep = [endpoints objectForKey:luri];
     if (ep == nil){
@@ -223,7 +237,11 @@
         [co setObject: name forKey:@"name"];
         [co setObject: rate forKey:@"rate"];
         [co setObject: ptype forKey:@"ptype"];
-        [ca addObject:co];
+        if (([name isEqualToString:@"SPEEX"]) &&  ([c getRate] == 16000)){
+            [ca insertObject:co atIndex:0];
+        } else {
+            [ca addObject:co];
+        }
     } 
     NSMutableDictionary * co = [[NSMutableDictionary alloc] init];
     [co setObject: @"telephone-event" forKey:@"name"];

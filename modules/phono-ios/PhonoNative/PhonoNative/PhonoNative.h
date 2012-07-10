@@ -60,6 +60,7 @@
 - (id) initWithPhoneAndMessaging:(PhonoPhone *) phone messaging:(PhonoMessaging *) messaging;
 - (void) setUseSpeaker:(BOOL)use;
 - (NSDictionary *) guessCodecPrefs;
+- (NSDictionary *) lowBWPrefs;
 
 + (NSString *) unescapeString:(NSString *) esc;
 + (NSString *) escapeString:(NSString *)une;

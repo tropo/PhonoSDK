@@ -22,12 +22,11 @@
 		22230A61149A0ACB00AEF013 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A60149A0ACB00AEF013 /* CoreLocation.framework */; };
 		22230A63149A0AE000AEF013 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A62149A0AE000AEF013 /* SystemConfiguration.framework */; };
 		22230A65149A0AEE00AEF013 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A64149A0AEE00AEF013 /* CoreData.framework */; };
-		223AC7E415625E31000B0865 /* PhonoNative-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 222DF78514EA7DDB00A2B986 /* PhonoNative-i386.a */; };
-		223AC7E515625E7A000B0865 /* libphono-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 222DF78714EA7E1400A2B986 /* libphono-i386.a */; };
 		229AD0EB14A3AC3A008C656D /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EA14A3AC3A008C656D /* AudioToolbox.framework */; };
 		229AD0ED14A3AC41008C656D /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EC14A3AC41008C656D /* CoreAudio.framework */; };
 		229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EE14A3AC59008C656D /* Security.framework */; };
 		229AD0F114A3AC81008C656D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0F014A3AC81008C656D /* AVFoundation.framework */; };
+		22CA6D2B15A74FE6002C7314 /* PhonoNative-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22CA6D2A15A74FE6002C7314 /* PhonoNative-i386.a */; };
 		22D926A514AC96A100F9D295 /* Diggztone_Agent94.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269A14AC96A100F9D295 /* Diggztone_Agent94.mp3 */; };
 		22D926A614AC96A100F9D295 /* Diggztone_AngryBirds.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269B14AC96A100F9D295 /* Diggztone_AngryBirds.mp3 */; };
 		22D926A714AC96A100F9D295 /* Diggztone_Countdown.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269C14AC96A100F9D295 /* Diggztone_Countdown.mp3 */; };
@@ -63,14 +62,11 @@
 		22230A60149A0ACB00AEF013 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		22230A62149A0AE000AEF013 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		22230A64149A0AEE00AEF013 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		222DF78514EA7DDB00A2B986 /* PhonoNative-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "PhonoNative-i386.a"; path = "../target/PhonoNative-i386.a"; sourceTree = "<group>"; };
-		222DF78714EA7E1400A2B986 /* libphono-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libphono-i386.a"; path = "../../phono-phonegap-ios/target/libphono-i386.a"; sourceTree = "<group>"; };
-		223AC7DC156259CD000B0865 /* PhonoNative-arm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "PhonoNative-arm.a"; path = "../target/PhonoNative-arm.a"; sourceTree = "<group>"; };
-		223AC7DE156259E6000B0865 /* libphono-arm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libphono-arm.a"; path = "../../phono-phonegap-ios/target/libphono-arm.a"; sourceTree = "<group>"; };
 		229AD0EA14A3AC3A008C656D /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		229AD0EC14A3AC41008C656D /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		229AD0EE14A3AC59008C656D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		229AD0F014A3AC81008C656D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		22CA6D2A15A74FE6002C7314 /* PhonoNative-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "PhonoNative-i386.a"; path = "../target/PhonoNative-i386.a"; sourceTree = "<group>"; };
 		22D9269A14AC96A100F9D295 /* Diggztone_Agent94.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_Agent94.mp3; sourceTree = "<group>"; };
 		22D9269B14AC96A100F9D295 /* Diggztone_AngryBirds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_AngryBirds.mp3; sourceTree = "<group>"; };
 		22D9269C14AC96A100F9D295 /* Diggztone_Countdown.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_Countdown.mp3; sourceTree = "<group>"; };
@@ -90,8 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				223AC7E515625E7A000B0865 /* libphono-i386.a in Frameworks */,
-				223AC7E415625E31000B0865 /* PhonoNative-i386.a in Frameworks */,
+				22CA6D2B15A74FE6002C7314 /* PhonoNative-i386.a in Frameworks */,
 				221BD7BF14A49A4900E3972C /* CoreFoundation.framework in Frameworks */,
 				229AD0F114A3AC81008C656D /* AVFoundation.framework in Frameworks */,
 				229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */,
@@ -114,10 +109,7 @@
 		2223083D1499E05400AEF013 = {
 			isa = PBXGroup;
 			children = (
-				223AC7DE156259E6000B0865 /* libphono-arm.a */,
-				223AC7DC156259CD000B0865 /* PhonoNative-arm.a */,
-				222DF78714EA7E1400A2B986 /* libphono-i386.a */,
-				222DF78514EA7DDB00A2B986 /* PhonoNative-i386.a */,
+				22CA6D2A15A74FE6002C7314 /* PhonoNative-i386.a */,
 				221BD7BE14A49A4900E3972C /* CoreFoundation.framework */,
 				229AD0F014A3AC81008C656D /* AVFoundation.framework */,
 				229AD0EE14A3AC59008C656D /* Security.framework */,

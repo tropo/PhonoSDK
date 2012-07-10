@@ -218,7 +218,7 @@ void interruptionListenerCallback (void *inUserData, UInt32  interruptionState) 
     int64_t put = putOut;
     if (firstOut) {
         firstOut = NO;
-        put += (MAXJITTER *16) ; // in effect insert some blank frames ahead of real data
+        put += ((MAXJITTER * aframeLen)/frameIntervalMS) ; // in effect insert some blank frames ahead of real data
     }
     int off = 0;
     NSInteger samples = aframeLen;

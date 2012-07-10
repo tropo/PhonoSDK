@@ -48,7 +48,7 @@ NSString *_empty = @"<html>\
     if (speakerSw != nil) {
         [phono setUseSpeaker:[speakerSw isOn]];
     }
-    NSDictionary *cprefs = [phono guessCodecPrefs];
+    NSDictionary *cprefs = [phono lowBWPrefs];
     if (cprefs != nil) {
         [phono setAudio:cprefs]; // or make up your own.
     }

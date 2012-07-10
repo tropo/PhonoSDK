@@ -82,7 +82,9 @@
     
     //[xmppStream setHostName:@"ec2-50-19-77-101.compute-1.amazonaws.com"];
     //[xmppStream setHostName:@"app-phono-com-1412939140.us-east-1.elb.amazonaws.com"]; http://haproxy1-ext.voxeolabs.net/http-bind
-    [xmppStream setHostName:@"app.phono.com"];
+    //[xmppStream setHostName:@"app.phono.com"];
+    [xmppStream setHostName:@"phono-srtp-ext.qa.voxeolabs.net"];
+
     [xmppStream setHostPort:5222];	
     
 	
@@ -164,8 +166,8 @@
     NSLog(@" selected codec is %@",mycodec );
     NSLog(@" fullshare is %@",fullshare );
     [ccall setCodecInd:mycodec];
-    
-    [[phono papi] share:fullshare autoplay:now codec:mycodec ]; 
+    // srtpType:(NSString *)srtpType srtpKeyL:(NSString *)srtpKeyL srtpKeyR:(NSString *)srtpKeyR;
+    [[phono papi] share:fullshare autoplay:now codec:mycodec srtpType:[ccall srtpType] srtpKeyL:[ccall srtpKeyL]  srtpKeyR:[ccall srtpKeyR] ]; 
     
 }
 
@@ -178,7 +180,16 @@
         && ( [(NSString *)[bits objectAtIndex:0] compare:@"rtp"] == NSOrderedSame ) ){
         NSString *host = [(NSString *)[bits objectAtIndex:1] substringFromIndex:2];
         NSString *port = [bits objectAtIndex:2];
-        [xmppJingle sendSessionAccept:[incall callId] to:[incall from] host:host port:port payload:[incall payload]];
+        NSMutableArray * cryptoLines = [NSMutableArray arrayWithCapacity:1];
+
+        if (([incall srtpKeyR] != nil) && ([incall srtpType] != nil)){
+            [incall setSrtpKeyL:[[NSString alloc ] initWithString:[PhonoAPI mkKey]]];
+            NSMutableDictionary *ctags = [[NSMutableDictionary alloc] initWithCapacity:2];
+            [ctags setValue:[incall srtpType] forKey:@"crypto-suite" ];
+            [ctags setValue:[NSString stringWithFormat:@"inline:%@",[incall srtpKeyL]] forKey:@"key-params"];
+            [cryptoLines addObject:ctags];
+        }
+        [xmppJingle sendSessionAccept:[incall callId] to:[incall from] host:host port:port payload:[incall payload] cryptos:cryptoLines];
         [self startMediaOnCall:incall now:NO];
     }
     
@@ -221,12 +232,46 @@
                 [heads addObject:xe];
             }
         }
-        NSString * sessionId = [xmppJingle initSessionTo:[acall to] lhost:host lport:port payloads:allAudioCodecs custom:heads];
+        NSInteger reqCrypt = 0;
+        if ([acall secure]){
+            reqCrypt = 1;
+        }
+        NSMutableArray * cryptoLines = [NSMutableArray arrayWithCapacity:1];
+
+        if (([acall srtpKeyL] != nil) && ([acall srtpType] != nil)){
+            NSMutableDictionary *ctags = [[NSMutableDictionary alloc] initWithCapacity:2];
+            [ctags setValue:[acall srtpType] forKey:@"crypto-suite" ];
+            [ctags setValue:[NSString stringWithFormat:@"inline:%@",[acall srtpKeyL]] forKey:@"key-params"];
+            [cryptoLines addObject:ctags];
+        }
+        
+        NSString * sessionId = [xmppJingle initSessionTo:[acall to] lhost:host lport:port payloads:allAudioCodecs custom:heads cryptoRequired:reqCrypt cryptoLines:cryptoLines];
         [acall setCallId:sessionId];
         [acall setState:NEW];
     }
 }
 
+- (NSString *)findKeyForType:(NSString *)srtpType cels:(NSArray *)clines{
+    NSString *ret = nil;
+    for (NSDictionary * cl in clines){
+        NSString * ctype = [cl objectForKey:@"crypto-suite"];
+        if ([ctype compare:srtpType] == NSOrderedSame){
+            ret = [cl objectForKey:@"key-params"];
+        }
+    }
+    if (ret != nil) {
+        NSRange r = [ret rangeOfString:@"inline:"];
+        if ((r.location == 0) && (r.length == 7)){
+            ret = [ret substringFromIndex:7];
+        } else {
+            NSLog(@"looking for inline in %@",ret);
+            ret = nil;
+        }
+    } else {
+        NSLog(@"no matching cypher suite");
+    }
+    return ret;
+}
 
 - (void) sendApiKey {
     // <iq type="set" xmlns="jabber:client"><apikey xmlns="http://phono.com/apikey">C17D167F-09C6-4E4C-A3DD-2025D48BA243</apikey></iq>
@@ -254,30 +299,39 @@
 }
 
 
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark XMPPJingle Delegate
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (void)xmppJingle:(XMPPJingle *)sender didReceiveIncommingAudioCall:(NSString *)sid from:(XMPPJID *)from to:(XMPPJID *)to transport:(NSXMLElement *)candidate sdp:(NSXMLElement *)payload {
+- (void)xmppJingle:(XMPPJingle *)sender didReceiveIncommingAudioCall:(NSString *)sid from:(XMPPJID *)from to:(XMPPJID *)to transport:(NSXMLElement *)candidate sdp:(NSXMLElement *)payload cryptoRequired:(NSString *) creqI cryptoElements:(NSArray *)cels {
     PhonoCall * incall = [[PhonoCall alloc] initInbound];
     [incall setPhono:phono];
+    [incall setSrtpType:@"AES_CM_128_HMAC_SHA1_80"];
     [incall setCallId:sid];
     [incall setPayload:payload];
     [incall setCandidate:candidate];
     [incall setFrom:[from full]];
     [incall setTo:[to full]];
+    [incall setSecure:[creqI integerValue]];
+    [incall setSrtpKeyR:[self findKeyForType:[incall srtpType] cels:cels]];
     [incall setState:PENDING];
     [phono.phone didReceiveIncommingCall:incall];
 }
 
 
 
-- (void)xmppJingle:(XMPPJingle *)sender didReceiveAcceptForCall:(NSString *)sid from:(XMPPJID *)from to:(XMPPJID *)to transport:(NSXMLElement *)candidate sdp:(NSXMLElement *)payload {
+- (void)xmppJingle:(XMPPJingle *)sender didReceiveAcceptForCall:(NSString *)sid from:(XMPPJID *)from to:(XMPPJID *)to transport:(NSXMLElement *)candidate sdp:(NSXMLElement *)payload
+    cryptoRequired:(NSString *) creqI cryptoElements:(NSArray *)cels
+{
     PhonoCall *ccall = [phono.phone currentCall];
     if ([[ccall callId] compare:sid] == NSOrderedSame ){
         if (ccall.state == PENDING){
             [ccall setCandidate:candidate];
             [ccall setPayload:payload];
+            [ccall setSecure:[creqI integerValue]];
+            [ccall setSrtpKeyR:[self findKeyForType:[ccall srtpType] cels:cels]];
             if(ccall.ringing){
                 [phono.papi stop:phono.phone.ringbackTone ];
             }

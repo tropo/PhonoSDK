@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		222840F2156EA5E6007F5389 /* libphono-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 222840F1156EA5E6007F5389 /* libphono-i386.a */; };
+		221E7FA115A72FF500064FBA /* libphono.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 221E7FA015A72FF500064FBA /* libphono.a */; };
 		2254A4FA15613DE2008EC48E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2254A4F915613DE2008EC48E /* Foundation.framework */; };
 		2254A4FC15613DE2008EC48E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2254A4FB15613DE2008EC48E /* UIKit.framework */; };
 		2254A4FE15613DE2008EC48E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2254A4FD15613DE2008EC48E /* CoreGraphics.framework */; };
@@ -45,8 +45,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		222840F1156EA5E6007F5389 /* libphono-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libphono-i386.a"; path = "../../target/libphono-i386.a"; sourceTree = "<group>"; };
-		223AC7D11562507B000B0865 /* libphono-arm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libphono-arm.a"; path = "KitchenSink/libs/libphono-arm.a"; sourceTree = "<group>"; };
+		221E7FA015A72FF500064FBA /* libphono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libphono.a; path = "../../libphono/build/Release-iphoneos/libphono.a"; sourceTree = "<group>"; };
 		2254A4F515613DE2008EC48E /* KitchenSink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KitchenSink.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2254A4F915613DE2008EC48E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2254A4FB15613DE2008EC48E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -96,6 +95,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				221E7FA115A72FF500064FBA /* libphono.a in Frameworks */,
 				2254A55815614354008EC48E /* Security.framework in Frameworks */,
 				2254A4FA15613DE2008EC48E /* Foundation.framework in Frameworks */,
 				2254A4FC15613DE2008EC48E /* UIKit.framework in Frameworks */,
@@ -111,7 +111,6 @@
 				2254A51015613DE2008EC48E /* MobileCoreServices.framework in Frameworks */,
 				2254A51215613DE2008EC48E /* CoreMedia.framework in Frameworks */,
 				2254A51D15613DE2008EC48E /* Cordova.framework in Frameworks */,
-				222840F2156EA5E6007F5389 /* libphono-i386.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -128,8 +127,7 @@
 		2254A4E715613DE2008EC48E = {
 			isa = PBXGroup;
 			children = (
-				222840F1156EA5E6007F5389 /* libphono-i386.a */,
-				223AC7D11562507B000B0865 /* libphono-arm.a */,
+				221E7FA015A72FF500064FBA /* libphono.a */,
 				2254A55715614354008EC48E /* Security.framework */,
 				2254A51315613DE2008EC48E /* KitchenSink */,
 				2254A4F815613DE2008EC48E /* Frameworks */,
@@ -502,9 +500,7 @@
 				INFOPLIST_FILE = "KitchenSink/KitchenSink-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../target\"",
-					"\"$(SRCROOT)/../../target\"",
-					"\"$(SRCROOT)/KitchenSink/libs\"",
+					"\"$(SRCROOT)/../../libphono/build/Release-iphoneos\"",
 				);
 				OTHER_LDFLAGS = (
 					"-weak_framework",
@@ -539,9 +535,7 @@
 				INFOPLIST_FILE = "KitchenSink/KitchenSink-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../target\"",
-					"\"$(SRCROOT)/../../target\"",
-					"\"$(SRCROOT)/KitchenSink/libs\"",
+					"\"$(SRCROOT)/../../libphono/build/Release-iphoneos\"",
 				);
 				OTHER_LDFLAGS = (
 					"-weak_framework",

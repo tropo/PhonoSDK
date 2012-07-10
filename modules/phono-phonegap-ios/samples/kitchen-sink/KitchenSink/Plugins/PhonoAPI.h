@@ -39,6 +39,9 @@ Return an array of codecs supported by the plugin {JSON array of property object
     BOOL useSpeakerForCall;
 
 }
+
++ (NSString *) mkKey;
+
 - (void) setUseSpeakerForCall:(BOOL)val;
 
 - (NSString *) allocateEndpoint;

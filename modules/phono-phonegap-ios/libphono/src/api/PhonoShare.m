@@ -114,5 +114,9 @@
 
 - (void) destroy{
     [endpoint close];
+    [codec release];
+    [srtpType release];
+    [masterKeyL release];
+    [masterKeyR release];
 }
 @end

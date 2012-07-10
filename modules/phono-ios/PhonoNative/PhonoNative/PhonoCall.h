@@ -31,11 +31,16 @@
     NSMutableDictionary *headers;
     NSString *callId;
     NSString *codecInd;
+    NSString *srtpKeyL;
+    NSString *srtpKeyR;
+    NSString *srtpType;
+
 
     NSInteger state;
     BOOL hold;
     BOOL mute;
     BOOL ringing;
+    BOOL secure;
     int volume;
     int gain;
     id candidate; // 
@@ -54,6 +59,10 @@
 @property(readwrite, copy) NSString *to;
 @property(readwrite, copy) NSString *share;
 @property(readwrite, copy) NSString *codecInd;
+@property(readwrite, copy) NSString *srtpKeyL;
+@property(readwrite, copy) NSString *srtpKeyR;
+@property(readwrite, copy) NSString *srtpType;
+
 
 @property(nonatomic, copy) void (^onRing)();
 @property(nonatomic, copy) void (^onAnswer)();
@@ -63,6 +72,7 @@
 
 @property(readonly, copy) NSMutableDictionary *headers;
 @property(readwrite) BOOL hold;
+@property(readwrite) BOOL secure;
 @property(readwrite) BOOL mute;
 @property(readwrite) BOOL ringing;
 @property(readwrite) int volume;
