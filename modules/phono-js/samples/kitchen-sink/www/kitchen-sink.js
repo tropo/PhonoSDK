@@ -35,7 +35,7 @@ $(document).ready(function() {
         var audioType = $('.audio-plugin').val();
         var directP2P = false;
         var connectionUrl = window.location.protocol+"//app.phono.com/http-bind";
-        var dialString = "app:9996160714";
+        var dialString = "sip:3366@login.zipdx.com";
         var chatString = "en2fr@bot.talk.google.com";
         var gw = "gw-v3.d.phono.com";
         
