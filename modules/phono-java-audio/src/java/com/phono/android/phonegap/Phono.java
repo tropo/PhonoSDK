@@ -245,7 +245,7 @@ public class Phono extends Plugin {
             }
         }
         if ((srtpPropsr != null) && (srtpPropsr.length() > 0)) {
-            InputStream sr = new ByteArrayInputStream(srtpPropsl.getBytes());
+            InputStream sr = new ByteArrayInputStream(srtpPropsr.getBytes());
             spr = new Properties();
             try {
                 spr.load(sr);
