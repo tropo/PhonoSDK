@@ -79,7 +79,9 @@ PhonegapAndroidAudio.prototype.play = function(transport, autoPlay) {
     var uri = Phono.util.parseUri(url);
 
     if (uri.protocol == "rtp") return null;
-    if (uri.protocol.length < 2) {
+    if (url.indexOf("//") == 0) {
+        luri = location.protocol+":"+url;
+    } else if (uri.protocol.length < 2) {
         // We are relative, so use the document.location
         var location = Phono.util.parseUri(document.location);
         luri = location.protocol+"://"+location.directoryPath.substring(0,location.directoryPath.length)+url;
