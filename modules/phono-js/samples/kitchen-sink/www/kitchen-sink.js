@@ -1,6 +1,7 @@
 /* Kitchen Sink */
 $(document).ready(function() {
     /* use code like this to sepcifiy a particular codec. */
+    /*
      Phono.util.filterWideband = function(offer, wideband) {
         var codecs = new Array();
         Phono.util.each(offer, function() {
@@ -16,7 +17,7 @@ $(document).ready(function() {
         });
         return codecs;
     };   
-   /**/ 
+    */ 
 
     var phonos={}, calls={}, chats={};
     
