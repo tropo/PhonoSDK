@@ -149,7 +149,7 @@ $(document).ready(function() {
             	    console.log("["+newPhonoID+"] New incoming call");
                     
             	    //Bind events from this call
-            	    Phono.events.bind(calls[newCallID], {
+            	    calls[newCallID].bind({
              	        onHangup: function(event) {
              	            newCallDiv.slideUp();
              	            calls[newCallID] = null;
@@ -303,6 +303,22 @@ $(document).ready(function() {
 	newChatDiv.find(".chatTxtInput").focus();
 	
 	return newChatID;
+    }
+
+    function isIOS() {
+        var userAgent = window.navigator.userAgent;
+        if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i)) {
+            return true;
+        }
+        return false;
+    }
+    
+    function isAndroid() {
+        var userAgent = window.navigator.userAgent;
+        if (userAgent.match(/Android/i)) {
+            return true;
+        }
+        return false;
     }
     
     // Create and return a chat message bubble
@@ -492,7 +508,7 @@ $(document).ready(function() {
 	return false;
     });
 
-    if(window.location.protocol != "https:" && window.location.protocol != "http:" && !Phono.util.isIOS() && !Phono.util.isAndroid()){
+    if(window.location.protocol != "https:" && window.location.protocol != "http:" && !isIOS() && !isAndroid()){
 	var errorText = "Looks like you are running this sample locally and not on a web server. To run this example, either load it from a web server or <a href='http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html' target='_blank'>edit your Flash security settings</a>.";
 	errorText += "<br/>Select \"Edit locations\" > \"Add location\" > \"Browse for folder\" and select the \"/js\" folder in the root of your download.";
 	errorText += " <a href='#' onclick='$(this).parent().slideUp();'>Close this</a>";

@@ -74,6 +74,10 @@
       }
       
    };
+
+   Call.prototype.bind = function(config) {
+       Phono.events.bind(this, config);
+   }
    
    Call.prototype.startAudio = function(iq) {
       if(this.input) {

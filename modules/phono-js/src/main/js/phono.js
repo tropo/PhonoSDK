@@ -43,7 +43,7 @@
 
    // Wrap ourselves with logging
    Phono.util.loggify("Phono", this);
-   
+
    this.connect();
    
 };
