@@ -3,12 +3,12 @@ function FlashAudio(phono, config, callback) {
     // Define defualt config and merge from constructor
     this.config = Phono.util.extend({
         protocol: "rtmfp",
-        swf: "//s.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf",
+        swf: "//" + MD5.hexdigest(window.location.host+phono.config.apiKey) + ".u.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf",
         cirrus: "rtmfp://phono-fms1-ext.voxeolabs.net/phono",
         direct: true,
         video: false
     }, config);
-    
+
     // Bind Event Listeners
     Phono.events.bind(this, config);
     
