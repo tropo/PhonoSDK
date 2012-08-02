@@ -20,7 +20,7 @@
 	each: function( object, callback, args ) {
 		var name, i = 0,
 			length = object.length,
-			isObj = length === undefined || jQuery.isFunction(object);
+			isObj = length === undefined || $.isFunction(object);
 
 		if ( args ) {
 			if ( isObj ) {
@@ -81,7 +81,7 @@
    		target = arguments[1] || {};
    		i = 2;
    	}
-   	if ( typeof target !== "object" && !jQuery.isFunction(target) ) {
+   	if ( typeof target !== "object" && !$.isFunction(target) ) {
    		target = {};
    	}
    	if ( length === i ) {
@@ -96,10 +96,10 @@
    				if ( target === copy ) {
    					continue;
    				}
-   				if ( deep && copy && ( jQuery.isPlainObject(copy) || jQuery.isArray(copy) ) ) {
-   					var clone = src && ( jQuery.isPlainObject(src) || jQuery.isArray(src) ) ? src
-   						: jQuery.isArray(copy) ? [] : {};
-   					target[ name ] = jQuery.extend( deep, clone, copy );
+   				if ( deep && copy && ( $.isPlainObject(copy) || $.isArray(copy) ) ) {
+   					var clone = src && ( $.isPlainObject(src) || $.isArray(src) ) ? src
+   						: $.isArray(copy) ? [] : {};
+   					target[ name ] = $.extend( deep, clone, copy );
    				} else if ( copy !== undefined ) {
    					target[ name ] = copy;
    				}

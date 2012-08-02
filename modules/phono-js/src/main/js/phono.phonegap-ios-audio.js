@@ -30,7 +30,7 @@ PhonegapIOSAudio.prototype.initState = function(callback, plugin) {
     PhoneGap.exec( 
                   function(result) {
                       console.log("codec success: " + result);
-                      var codecs = jQuery.parseJSON(result);
+                      var codecs = $.parseJSON(result);
                       for (l=0; l<codecs.length; l++) {
                           var name;
                           if (codecs[l].name.startsWith("SPEEX")) {name = "SPEEX";}
@@ -234,7 +234,7 @@ PhonegapIOSAudio.prototype.share = function(transport, autoPlay, codec) {
             PhoneGap.exec(
                         function(result) {
                             console.log("energy success: " + result);
-                            var en = jQuery.parseJSON(result);
+                            var en = $.parseJSON(result);
                             micEnergy = Math.floor(Math.max((Math.LOG2E * Math.log(en[0])-4.0),0.0));
                             spkEnergy = Math.floor(Math.max((Math.LOG2E * Math.log(en[1])-4.0),0.0));
                             },

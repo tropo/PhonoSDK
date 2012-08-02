@@ -54,7 +54,7 @@ function FlashAudio(phono, config, callback) {
 
     wmodeSetting = "opaque";
     
-    if ((navigator.appVersion.indexOf("X11")!=-1) || (navigator.appVersion.indexOf("Linux")!=-1) || (jQuery.browser.opera)) {
+    if ((navigator.appVersion.indexOf("X11")!=-1) || (navigator.appVersion.indexOf("Linux")!=-1) || ($.browser.opera)) {
         wmodeSetting = "window";
     }
     

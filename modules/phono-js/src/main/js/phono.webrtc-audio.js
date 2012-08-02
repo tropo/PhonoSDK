@@ -186,7 +186,7 @@ WebRTCAudio.prototype.transport = function() {
                 WebRTCAudio.pc = new WebRTCAudio.peerConnection(WebRTCAudio.stun,
                                                           function(message) {
                                                               console.log("C->S SDP: " + message);
-                                                              var roap = jQuery.parseJSON(message.substring(4,message.length));
+                                                              var roap = $.parseJSON(message.substring(4,message.length));
                                                               if (roap['messageType'] == "ANSWER") {
                                                                   console.log("Received ANSWER from PeerConnection: " + message);
                                                                   // Canary is giving a null s= line, so 
@@ -218,7 +218,7 @@ WebRTCAudio.prototype.transport = function() {
                                                                       updateCallback();
                                                                   } else {
                                                                       // This is an audio only call, lets lie
-                                                                      roapAnswer = jQuery.parseJSON(WebRTCAudio.offer.substring(4,message.length));
+                                                                      roapAnswer = $.parseJSON(WebRTCAudio.offer.substring(4,message.length));
                                                                       fakeAnswer = "SDP\n{\n\"answererSessionId\":\"" +
                                                                       roap['answererSessionId'] + "\",\n" +
                                                                       "\"messageType\":\"ANSWER\",\n" +
@@ -264,7 +264,7 @@ WebRTCAudio.prototype.transport = function() {
                                                               //message = message.replace("a=group:BUNDLE audio video", "a=group:BUNDLE 2 1");
                                                               //message = message.replace("a=mid:audio", "a=mid:2");
                                                               //message = message.replace("a=mid:video", "a=mid:1");
-                                                              var roap = jQuery.parseJSON(message.substring(4,message.length));
+                                                              var roap = $.parseJSON(message.substring(4,message.length));
                                                               if (roap['messageType'] == "OFFER") {
                                                                   j.c('transport',{xmlns:"http://phono.com/webrtc/transport"})
                                                                       .c('roap',Base64.encode(message));  
@@ -302,7 +302,7 @@ WebRTCAudio.prototype.transport = function() {
                 var encoded = this.textContent;
                 message = Base64.decode(encoded);
                 console.log("S->C SDP: " + message);
-                roap = jQuery.parseJSON(message.substring(4,message.length));
+                roap = $.parseJSON(message.substring(4,message.length));
             });
             if (roap['messageType'] == "OFFER") {
                 // We are receiving an inbound call

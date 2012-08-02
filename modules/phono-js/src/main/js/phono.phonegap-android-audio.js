@@ -248,7 +248,7 @@ PhonegapAndroidAudio.prototype.share = function(transport, autoPlay, codec) {
             PhoneGap.exec(
                         function(result) {
                             console.log("energy success: " + result);
-                            var en = jQuery.parseJSON(result);
+                            var en = $.parseJSON(result);
                             if(en != null) {
                               micEnergy = Math.floor(Math.max((Math.LOG2E * Math.log(en.mic)-4.0),0.0));
                               spkEnergy = Math.floor(Math.max((Math.LOG2E * Math.log(en.spk)-4.0),0.0)); 
