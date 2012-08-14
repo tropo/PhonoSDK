@@ -22,7 +22,7 @@
          throw message;
       }
    }
-   
+
    // Initialize Fields
    this.sessionId = null;
    Phono.log.debug("ConnectionUrl: " + this.config.connectionUrl);
@@ -86,6 +86,13 @@
                   .c("apikey", {xmlns:"http://phono.com/apikey"})
                   .t(phono.config.apiKey)
             );
+            if(phono.config.provisioningUrl) {
+                phono.connection.send(
+                    $iq({type:"set"})
+                        .c("provisioning", {xmlns:"http://phono.com/provisioning"})
+                        .t(phono.config.provisioningUrl)
+                );
+            }
             phono.handleConnect();
          } else if (status === Strophe.Status.DISCONNECTED) {
             phono.handleDisconnect();
