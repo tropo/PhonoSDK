@@ -91,6 +91,8 @@ $(document).ready(function() {
                                                     + this.sessionId + "</a>");
                 newPhonoDiv.find(".phoneControl").show();
 
+                if (audioType == "auto") newPhonoDiv.find(".audioType").text(this.audio.type);
+
                 if (this.audio.audioInDevices){
                     var inList = this.audio.audioInDevices();
                     //var inList = ["A","B","C"];
@@ -143,7 +145,7 @@ $(document).ready(function() {
                     
                     var newCallID = createCallDiv(newPhonoID,"incoming",pttEnabled);
                     var newCallDiv = $("#"+newCallID);
-                    newCallDiv.find(".callHeader .callDetail").html("<strong>Incoming call</strong>");
+                    newCallDiv.find(".callHeader .callDetail").html("<strong>Incoming call from: </strong>" + event.call.initiator);
                     newCallDiv.find(".callHeader .callID").html(newCallID);
             	    calls[newCallID] = event.call;
             	    console.log("["+newPhonoID+"] New incoming call");
@@ -151,10 +153,34 @@ $(document).ready(function() {
             	    //Bind events from this call
             	    calls[newCallID].bind({
              	        onHangup: function(event) {
+	                    window.clearInterval(calls[newCallID].energyPoll);
              	            newCallDiv.slideUp();
              	            calls[newCallID] = null;
              	            console.log("["+newPhonoID+"] ["+newCallID+"] Call hungup");
              	        },
+                        onAnswer: function(event) {
+                            var secure = calls[newCallID].secure();
+            	            console.log("["+newPhonoID+"] ["+newCallID+"] Call answered using " + calls[newCallID].codec.name + "/" + calls[newCallID].codec.rate);
+                            newCallDiv.find(".callCodec").html("<strong>Codec:</strong> " + calls[newCallID].codec.name + "/" + calls[newCallID].codec.rate);
+                            newCallDiv.find(".callSecure").html(secure ? "(secure)" : ""); 
+                            calls[newCallID].energyPoll = window.setInterval(function(){
+	                        var callDiv = $("#"+newCallID);
+                                str = "<strong>Mic:</strong> ";
+                                me = calls[newCallID].energy().mic;
+                                for (i=0;i<10;i++){
+                                    str = str+ ((i < me)?"X":"_");
+                                }
+                                callDiv.find(".callMicEnergy").html(str);	
+                                
+                                str = "<strong>Spk:</strong> ";
+                                se = calls[newCallID].energy().spk;
+                                for (i=0;i<10;i++){
+                                    str = str+ ((i < se)?"X":"_");
+                                }
+                                newCallDiv.find(".callSpkEnergy").html(str);	
+		            },500);
+			    
+                        },
              	        onError: function(event) {
              	   	    console.log("["+newPhonoID+"] ["+newCallID+"] Error: [" + event.reason + "]");
              	        }
@@ -194,8 +220,10 @@ $(document).ready(function() {
 	    tones: true,
 	    pushToTalk: pttEnabled,
             onAnswer: function(event) {
+                var secure = calls[newCallID].secure();
             	console.log("["+phonoDiv.attr('id')+"] ["+newCallID+"] Call answered using " + calls[newCallID].codec.name + "/" + calls[newCallID].codec.rate);
                 callDiv.find(".callCodec").html("<strong>Codec:</strong> " + calls[newCallID].codec.name + "/" + calls[newCallID].codec.rate);
+                callDiv.find(".callSecure").html(secure ? "(secure)" : ""); 
                 calls[newCallID].energyPoll = window.setInterval(function(){
 	             var callDiv = $("#"+newCallID);
                      str = "<strong>Mic:</strong> ";
@@ -412,6 +440,12 @@ $(document).ready(function() {
         var device = $(this).val();
         console.log("["+phonoId+"] Audio Input set: " + device);
 	phonos[phonoId].phone.audioInput(device);
+    }); 
+    $('.security-option').live($.browser.msie ? 'click': 'change', function() {
+	var phonoId = $(this).closest(".phono").attr("id");
+        var security = $(this).val();
+        console.log("["+phonoId+"] Security set: " + security);
+	phonos[phonoId].phone.security(security);
     }); 
     $('.flashHelp a').live('click', function() {
 	var thisPhono = $(this).closest(".phono");

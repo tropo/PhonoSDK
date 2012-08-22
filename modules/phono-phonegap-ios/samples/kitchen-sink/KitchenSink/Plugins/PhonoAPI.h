@@ -39,11 +39,14 @@ Return an array of codecs supported by the plugin {JSON array of property object
     BOOL useSpeakerForCall;
 
 }
+
++ (NSString *) mkKey;
+
 - (void) setUseSpeakerForCall:(BOOL)val;
 
 - (NSString *) allocateEndpoint;
 - (BOOL) freeEndpoint:(NSString *)uri;
-- (NSString *) share:(NSString *)uri autoplay:(BOOL)autoplay codec:(NSString *)codec;
+- (NSString *) share:(NSString *)uri autoplay:(BOOL)autoplay codec:(NSString *)codec srtpType:(NSString *)srtpType srtpKeyL:(NSString *)srtpKeyL srtpKeyR:(NSString *)srtpKeyR;
 - (NSString *) play:(NSString *)uri autoplay:(BOOL)autoplay;
 - (NSString *) codecs;
 - (NSArray *) codecArray;

@@ -27,6 +27,9 @@
 
             } else if (config.type === "webrtc") {
                 return Phono.util.loggify("WebRTCAudio", new WebRTCAudio(phono, config, callback));
+
+            } else if (config.type === "jsep") {
+                return Phono.util.loggify("JSEPAudio", new JSEPAudio(phono, config, callback));
                 
             } else if (config.type === "none") {
                 window.setTimeout(callback,10);

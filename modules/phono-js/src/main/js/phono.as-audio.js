@@ -1,12 +1,13 @@
 function FlashAudio(phono, config, callback) {
-    
+    this.type = "flash";
+
     // Define defualt config and merge from constructor
     this.config = Phono.util.extend({
         protocol: "rtmfp",
         swf: "//" + MD5.hexdigest(window.location.host+phono.config.apiKey) + ".u.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf",
         cirrus: "rtmfp://phono-fms1-ext.voxeolabs.net/phono",
         direct: true,
-        video: false
+        media: {audio:true,video:true}
     }, config);
 
     // Bind Event Listeners
@@ -141,7 +142,9 @@ FlashAudio.prototype.share = function(transport, autoPlay, codec) {
         peerID = transport.peerID;
         Phono.log.info("Direct media share with peer " + transport.peerID);
     }
+    var isSecure = false;
     var share = this.$flash.share(url, autoPlay, codec.id, codec.name, codec.rate, true, peerID, this.config.video);
+    if (url.indexOf("rtmfp://") == 0) isSecure = true;
     return {
         // Readonly
         url: function() {
@@ -190,11 +193,14 @@ FlashAudio.prototype.share = function(transport, autoPlay, codec) {
    		share.setSuppress(value);
    	    }
         },
-        energy: function(){
+        energy: function() {
             return {
                mic: 0.0 ,
                spk: 0.0
             }
+        },
+        secure: function() {
+            return isSecure;
         }
     }
 };   
