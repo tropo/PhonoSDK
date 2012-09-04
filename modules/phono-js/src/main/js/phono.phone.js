@@ -287,6 +287,11 @@
       this.hold(this.hold());
       this.headset(this.headset());
       this.pushToTalkStateChanged();
+
+      Phono.events.bind(this.output, {
+      	  onMediaReady: function() {
+              Phono.events.trigger(call, "mediaReady");
+          }});
    };
    
    Call.prototype.hangup = function() {

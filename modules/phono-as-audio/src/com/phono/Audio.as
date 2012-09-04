@@ -30,6 +30,8 @@ package com.phono
 	private var _waitQs:Dictionary = new Dictionary(); // rtmpUri -> Array of functions to call
 	private var _cirrusNc:NetConnection;
 	private var _cirrusUri:String;
+        private var _shares:Dictionary = new Dictionary(); // streamName -> Share
+        private var _version:String = "0.0";
 	
 	public function Audio()
 	{	
@@ -75,6 +77,11 @@ package com.phono
 	    _cirrusNc = nc;
 	    _cirrusUri = url;
 	    return true;
+        }
+
+        public function setVersion(version:String):void
+        {
+            _version = version;
         }
         
         public function nearID(url:String):String
@@ -163,6 +170,7 @@ package com.phono
 		var queue:Array = _waitQs[rtmpUri]
 		var share:Share = new RtmpShare(_hasEC, queue, nc, streamName, codec, url, _mic, suppress, direct);
 		if (autoStart) share.start();
+                _shares[streamName] = share;
 		return share;
 	    } else return null;
 	}
@@ -210,7 +218,7 @@ package com.phono
 		}, 1000);		
 	    }
 	}	
-	
+
 	// --- Internal functions
 	
 	private function onMicStatus(event:StatusEvent):void 
@@ -270,7 +278,7 @@ package com.phono
 				    });
 		nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onNCSecurityError);    
 		nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onNCAsyncError);
-		nc.connect(rtmpUri);
+		nc.connect(rtmpUri, _version);
 		// Allocate storage
 		_ncDict[rtmpUri] = nc;
 		_waitQs[rtmpUri] = new Array();
@@ -310,11 +318,20 @@ package com.phono
 	{
 	    dispatchEvent( new MediaEvent(MediaEvent.ERROR, null, "Flash Async Error (server error?)") );
 	}
+
+	// --- External functions
 	
 	public function onBWDone():void
 	{
 	    // Blank template for callback from rtmp relay
 	}			
+
+        public function pandaReady(streamName:String):void
+        {
+            // This needs to be relayed up to the Share
+            var share:RtmpShare = _shares[streamName];
+            share.mediaReady();
+        }
     }
 }
 

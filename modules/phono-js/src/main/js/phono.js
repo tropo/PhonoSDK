@@ -59,7 +59,7 @@
 
    
    // Global
-   Phono.version = "0.4";
+   Phono.version = "0.5";
    
    Phono.log = new PhonoLogger();
    

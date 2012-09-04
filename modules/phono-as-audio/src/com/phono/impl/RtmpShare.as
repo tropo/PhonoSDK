@@ -3,6 +3,7 @@ package com.phono.impl
     import com.phono.Audio;
     import com.phono.Codec;
     import com.phono.Share;
+    import com.phono.events.*;
     
     import flash.events.Event;
     import flash.events.TimerEvent;
@@ -27,7 +28,7 @@ package com.phono.impl
     
     import mx.utils.*;
     
-    public class RtmpShare implements Share
+    public class RtmpShare extends EnhancedEventDispatcher implements Share
     {
 	private const ECHO_TICKER_MS:int = 50;
 	
@@ -85,7 +86,7 @@ package com.phono.impl
 		    //_tx.bufferTime = 0;
 		    _tx.client = this;
 		    _tx.attachAudio(_mic);
-			trace("publish("+_streamName+")");
+		    trace("publish("+_streamName+")");
 		    _tx.publish(_streamName);
 		    
 		    if (_suppress) {						
@@ -103,6 +104,11 @@ package com.phono.impl
 	    _soundTimer.stop();
 	    _active = false;
 	}
+
+        public function mediaReady():void
+        {
+            dispatchEvent(new MediaEvent(MediaEvent.READY));
+        }
 	
 	public function digit(digit:String, duration:Number=250, audible:Boolean=true):void
 	{

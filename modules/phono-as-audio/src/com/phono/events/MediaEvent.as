@@ -16,6 +16,10 @@ package com.phono.events
 	 * Dispatched when flash has finished with the permission box.
 	 */
 	public static const CLOSE:String = "permissionBoxHide";
+        /**
+	 * Dispatched when flash is ready with media
+	 */
+	public static const READY:String = "mediaReady";
 	/**
 	 * Dispatched when an error is encountered with media.
 	 */

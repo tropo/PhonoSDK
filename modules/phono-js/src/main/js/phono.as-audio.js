@@ -47,6 +47,7 @@ function FlashAudio(phono, config, callback) {
                 });
             }
         });
+        plugin.$flash.setVersion(Phono.version);
         callback(plugin);
         if (plugin.config.direct) {
             window.setTimeout(10, plugin.$flash.doCirrusConnect(plugin.config.cirrus));
@@ -145,7 +146,8 @@ FlashAudio.prototype.share = function(transport, autoPlay, codec) {
     var isSecure = false;
     var share = this.$flash.share(url, autoPlay, codec.id, codec.name, codec.rate, true, peerID, this.config.video);
     if (url.indexOf("rtmfp://") == 0) isSecure = true;
-    return {
+
+    var s = {
         // Readonly
         url: function() {
             return share.getUrl();
@@ -202,7 +204,16 @@ FlashAudio.prototype.share = function(transport, autoPlay, codec) {
         secure: function() {
             return isSecure;
         }
-    }
+    };
+
+    share.addEventListener(null, function(event) {
+        var eventName = (event.getType()+"");
+        Phono.events.trigger(s, eventName, {
+            reason: event.getReason()
+        });
+    });
+
+    return s;
 };   
 
 // Returns an object containg JINGLE transport information
