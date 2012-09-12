@@ -81,6 +81,8 @@ package com.phono.impl
 		
 		// Start the stream				
 		if (_mic) {
+                    // Flash sometimes ignores this, so keep trying...
+                    _mic.framesPerPacket = 1;
                     if (_direct) _tx = new NetStream(_nc, NetStream.DIRECT_CONNECTIONS);
                     else _tx = new NetStream(_nc);	
 		    //_tx.bufferTime = 0;
@@ -93,6 +95,8 @@ package com.phono.impl
 			_soundTimer.start();
 		    }
 		    _active = true;
+                    // Just to make sure
+                    _mic.framesPerPacket = 1;
 		}
 	    }
 	}
