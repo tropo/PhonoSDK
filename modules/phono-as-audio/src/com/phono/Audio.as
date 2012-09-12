@@ -38,16 +38,21 @@ package com.phono
             // Detect version
             var version:Number = Number(Capabilities.version.split(" ")[1].split(",")[0] + "." 
                                         + Capabilities.version.split(" ")[1].split(",")[1]);
-            
-            if (version >= 10.3) _hasEC = true;
-            
-            if (_hasEC)
+                        
+            if (version > 10.3)
             {
-	        _mic = Microphone.getEnhancedMicrophone();
-                var enhancedOptions:MicrophoneEnhancedOptions = new MicrophoneEnhancedOptions();
-                enhancedOptions.autoGain = false;
-                _mic.enhancedOptions = enhancedOptions;		
-	    }
+                try {
+	            _mic = Microphone.getEnhancedMicrophone();
+                    var enhancedOptions:MicrophoneEnhancedOptions = new MicrophoneEnhancedOptions();
+                    enhancedOptions.autoGain = false;
+                    _mic.enhancedOptions = enhancedOptions;
+		    _hasEC = true;
+                } 
+                catch(error:Error) 
+                {
+                    _mic = Microphone.getMicrophone();
+	        }
+            }
             else
             {
                 _mic = Microphone.getMicrophone();
@@ -55,7 +60,7 @@ package com.phono
         
             _mic.addEventListener(StatusEvent.STATUS, onMicStatus);	
             
-            trace("Flash Audio()");
+            trace("Flash Audio() complete");
 	}		
 	
 	// --- Public API
