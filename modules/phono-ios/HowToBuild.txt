@@ -1,4 +1,7 @@
+There are (at least) 2 ways
 to build phonoNative-ios from git - assuming xcode is installed
+
+Commandline method (requires phonegap 1.7 to be installed) :
 
 1) git clone https://github.com/phono/PhonoSDK.git
 2) cd PhonoSDK/modules/phono-phonegap-ios 
@@ -8,6 +11,17 @@ to build phonoNative-ios from git - assuming xcode is installed
 
 6) VisIVR contains an (ugly) iphone app that uses the API.
 You can use this as a starting point to build something prettier.
+
+GUI method (assumes you will only use native phono):
+
+1) git clone https://github.com/phono/PhonoSDK.git
+2) cd 3rdParty  
+3) git clone https://github.com/steely-glint/XMPPFramework.git
+4) cd ..
+5) open PhonoIOSNative.xcworkspace in xcode 
+6) build VisIVR which contains an (ugly) demo app that uses the API.
+
+
 
 
 

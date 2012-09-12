@@ -1,13 +1,8 @@
-//@Include=FABridge.js
-
-// FIXME: Needed by flXHR
-var flensed={base_path:"//s.phono.com/deps/flensed/1.0/"};
-
 ;function Phono(config) {
 
    // Define defualt config and merge from constructor
    this.config = Phono.util.extend({
-      gateway: "gw.phono.com",
+      gateway: "gw-v4.d.phono.com",
       connectionUrl: window.location.protocol+"//app.phono.com/http-bind"
    }, config);
    if (this.config.connectionUrl.indexOf("file:")==0){
@@ -48,7 +43,7 @@ var flensed={base_path:"//s.phono.com/deps/flensed/1.0/"};
 
    // Wrap ourselves with logging
    Phono.util.loggify("Phono", this);
-   
+
    this.connect();
    
 };
@@ -64,7 +59,7 @@ var flensed={base_path:"//s.phono.com/deps/flensed/1.0/"};
 
    
    // Global
-   Phono.version = "0.3";
+   Phono.version = "0.5";
    
    Phono.log = new PhonoLogger();
    

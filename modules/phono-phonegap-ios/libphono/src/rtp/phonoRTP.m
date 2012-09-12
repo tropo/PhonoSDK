@@ -167,6 +167,13 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
 	}
 	return out_value;
 }
+
+- (void) protect:(uint8_t *)payload length:(int)paylen{
+    
+}
+- (void) unprotect:(uint8_t *)payload length:(int)paylen{
+    
+}
 - (void) sendPacket:(NSData *)data stamp:(uint64_t)stamp ptype:(int) lptype{
     [self sendPacket:data stamp:stamp ptype:lptype marker:NO];
 }
@@ -200,7 +207,7 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
     for (i = 0; i < dlen ; i++) {
         payload[i + RTPHEAD] = datp[i];
     }
-    [self appendAuth:payload offs:(RTPHEAD+i)];
+    [self protect:payload length:payload_length];
     int e = send(ipv4Soc,payload,payload_length,0);
     if (firstSent == nil) {
         firstSent = [[NSDate alloc] init];
@@ -219,8 +226,7 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
     [self sendPacket:data stamp:samplecnt ptype:ptype];
 }
 
-- (void) checkAuth:(uint8_t *) packet length:(int) plen{
-}
+
 
 - (uint32_t) getIndex: (uint16_t) seqno {
     return seqno; // wrong wrong wrong  - todo
@@ -255,7 +261,7 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
     char seqno = 0;
     long stamp = 0;
     long tstamp = 0;
-    int sync = 0;
+    uint32_t sync = 0;
     
     if (plen < 12) {
         NSLog(@"Packet too short. RTP must be >12 bytes");
@@ -289,15 +295,7 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
     // if padding set then last byte tells you how much to skip
     int paylen = (pad == 0) ? (plen - offs) : ((plen - offs) - (0xff) & packet[plen - 1]);
     // SRTP packets have a tail auth section and potentially an MKI
-    paylen -= _tailIn;
-    payload = alloca(paylen);
-    /*if (paylen != 160) {
-        NSLog(@"Expected 160 byte payload, got %d",paylen);
-    }*/
-    int o = 0;
-    while (offs - endhead < paylen) {
-        payload[o++] = packet[offs++];
-    }
+
     // quick plausibility checks
     // should check the ip address etc - but actually we better trust the OS
     // since we have 'connected' this socket meaning _only_ correctly sourced packets seen here.
@@ -311,8 +309,13 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
         [self syncChanged:sync];
     }
     _index = [self getIndex:seqno];
-    [self updateCounters:seqno];
-    [self checkAuth:packet length:plen];
+    [self unprotect:packet length:plen];
+    paylen -= _tailIn;
+    payload = alloca(paylen);
+    int o = 0;
+    while (offs - endhead < paylen) {
+        payload[o++] = packet[offs++];
+    }
     tstamp = 20*_index;
     [self deliverPayload:payload length:paylen stamp:tstamp ssrc:sync];
     
@@ -371,14 +374,6 @@ static uint16_t copyBitsI(uint8_t *input, int in_pos,
     }
 }
 
-- (void) appendAuth:(uint8_t *) payload offs:(int)length  {
-    // nothing to do in rtp
-}
-
-- (void) updateCounters:(uint16_t) seqno {
-
-    
-}
 
 -(void) syncChanged:(uint64_t) sync {
     if (_sync == 0) {

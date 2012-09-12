@@ -15,20 +15,16 @@ function WebRTCAudio(phono, config, callback) {
     var plugin = this;
     
     var localContainerId = this.config.localContainerId;
-    var remoteContainerId = this.config.remoteContainerId;
 
     // Create audio continer if user did not specify one
     if(!localContainerId) {
 	this.config.localContainerId = this.createContainer();
     }
-    if(!remoteContainerId) {
-	this.config.remoteContainerId = this.createContainer();
-    }
 
-    WebRTCAudio.remoteVideo = document.getElementById(this.config.remoteContainerId);
     WebRTCAudio.localVideo = document.getElementById(this.config.localContainerId);
 
     try { 
+        console.log("Request access to local media, use new syntax");
         navigator.webkitGetUserMedia(this.config.media, 
                                      function(stream) {
                                          WebRTCAudio.localStream = stream;
@@ -42,7 +38,6 @@ function WebRTCAudio(phono, config, callback) {
                                          console.log("Failed to get access to local media. Error code was " + error.code);
                                          alert("Failed to get access to local media. Error code was " + error.code + ".");   
                                      });
-        console.log("Requested access to local media.");
     } catch (e) {
         console.log("getUserMedia error, try old syntax");
         navigator.webkitGetUserMedia("video,audio", 
@@ -65,10 +60,6 @@ WebRTCAudio.exists = function() {
     return (typeof webkitDeprecatedPeerConnection == "function")|| (typeof webkitPeerConnection == "function");
 }
 
-//WebRTCAudio.localStream = null;
-WebRTCAudio.offer = null;
-WebRTCAudio.answer = null;
-WebRTCAudio.pc = null
 WebRTCAudio.stun = "STUN stun.l.google.com:19302";
 WebRTCAudio.count = 0;
 
@@ -127,11 +118,11 @@ WebRTCAudio.prototype.share = function(transport, autoPlay, codec) {
         stop: function() {
             // Stop
             console.log("Closing PeerConnection");
-            if (WebRTCAudio.pc != null) {
-                WebRTCAudio.pc.close();
-                WebRTCAudio.pc = null;
+            if (transport.getPC() != null) {
+                transport.getPC().close();
+                console.log("closed");
             } 
-            WebRTCAudio.remoteVideo.style.opacity = 0;
+//            WebRTCAudio.remoteVideo.style.opacity = 0;
         },
         digit: function(value, duration, audible) {
             // No idea how to do this yet
@@ -141,14 +132,6 @@ WebRTCAudio.prototype.share = function(transport, autoPlay, codec) {
             return null;
         },
         mute: function(value) {
-//            if(arguments.length === 0) {
- //               return WebRTCAudio.localStream.audioTracks.item(1).enabled;
-//   	    }
-//            if (value == true) {
-//                WebRTCAudio.localStream.audioTracks.item(1).enabled = false;
-//            } else {
-//                WebRTCAudio.localStream.audioTracks.item(1).enabled = true;
-//            }
             return null;
         },
         suppress: function(value) {
@@ -159,6 +142,9 @@ WebRTCAudio.prototype.share = function(transport, autoPlay, codec) {
                mic: 0.0,
                spk: 0.0
             }
+        },
+        secure: function() {
+            return true;
         }
     }
 };   
@@ -169,7 +155,20 @@ WebRTCAudio.prototype.permission = function() {
 };
 
 // Returns an object containg JINGLE transport information
-WebRTCAudio.prototype.transport = function() {
+WebRTCAudio.prototype.transport = function(config) {
+    var pc, offer, answer, ok, remoteContainerId;
+
+    if(!config || !config.remoteContainerId) {
+        if (this.config.remoteContainerId) {
+            remoteContainerId = this.config.remoteContainerId;
+        } else {
+	    remoteContainerId = this.createContainer();
+        }
+    } else {
+        remoteContainerId = config.remoteContainerId;
+    }
+
+    var remoteVideo = document.getElementById(remoteContainerId);    
     
     return {
         name: "http://phono.com/webrtc/transport",
@@ -177,19 +176,23 @@ WebRTCAudio.prototype.transport = function() {
         buildTransport: function(direction, j, callback, u, updateCallback) {
             if (direction == "answer") {
                 // We are the result of an inbound call, so provide answer
-                WebRTCAudio.pc = new WebRTCAudio.peerConnection(WebRTCAudio.stun,
+                if (pc != null) {
+                    pc.close();
+                    pc = null;
+                }
+                pc = new WebRTCAudio.peerConnection(WebRTCAudio.stun,
                                                           function(message) {
                                                               console.log("C->S SDP: " + message);
-                                                              var roap = jQuery.parseJSON(message.substring(4,message.length));
+                                                              var roap = $.parseJSON(message.substring(4,message.length));
                                                               if (roap['messageType'] == "ANSWER") {
                                                                   console.log("Received ANSWER from PeerConnection: " + message);
                                                                   // Canary is giving a null s= line, so 
                                                                   // we replace it with something useful
                                                                   message = message.replace("s=", "s=Canary");
-                                                                  WebRTCAudio.answer = message;
+                                                                  answer = message;
                                                                   j.c('transport',{xmlns:"http://phono.com/webrtc/transport"})
-                                                                      .c('roap',Base64.encode(WebRTCAudio.answer));
-                                                                  WebRTCAudio.ok = "SDP\n{\n\"answererSessionId\":\"" +
+                                                                      .c('roap',Base64.encode(answer));
+                                                                  ok = "SDP\n{\n\"answererSessionId\":\"" +
                                                                       roap['offererSessionId'] + "\",\n" +
                                                                       "\"messageType\":\"OK\",\n" +
                                                                       "\"offererSessionId\":\"" +
@@ -198,43 +201,58 @@ WebRTCAudio.prototype.transport = function() {
                                                                   
                                                                   setTimeout(function() {
                                                                       // Auto OK it
-                                                                      console.log("H->C SDP: " + WebRTCAudio.ok);
-                                                                      WebRTCAudio.pc.processSignalingMessage(WebRTCAudio.ok);
+                                                                      console.log("H->C SDP: " + ok);
+                                                                      pc.processSignalingMessage(ok);
                                                                   }, 1);
                                                                   // Invoke the callback to finish 
                                                                   callback();
                                                               } else if (roap['messageType'] == "OFFER") {
                                                                   // Oh no, here we go
-                                                                  WebRTCAudio.offer = message;
-                                                                  u.c('transport',{xmlns:"http://phono.com/webrtc/transport"})
-                                                                      .c('roap',Base64.encode(WebRTCAudio.offer));
-                                                                  updateCallback();
+                                                                  if (offer.indexOf("video") != -1) {
+                                                                      offer = message;
+                                                                      u.c('transport',{xmlns:"http://phono.com/webrtc/transport"})
+                                                                          .c('roap',Base64.encode(offer));
+                                                                      updateCallback();
+                                                                  } else {
+                                                                      // This is an audio only call, lets lie
+                                                                      roapAnswer = $.parseJSON(WebRTCAudio.offer.substring(4,message.length));
+                                                                      fakeAnswer = "SDP\n{\n\"answererSessionId\":\"" +
+                                                                      roap['answererSessionId'] + "\",\n" +
+                                                                      "\"messageType\":\"ANSWER\",\n" +
+                                                                      "\"offererSessionId\":\"" +
+                                                                      roap['offererSessionId'] + "\",\n" +
+                                                                          "\"seq\":2,\n" +
+                                                                          "\"sdp\":\"" + roapAnswer['sdp']
+                                                                          + "\"}";
+                                                                      console.log("H->C SDP: " + fakeAnswer);
+                                                                      pc.processSignalingMessage(fakeAnswer);
+                                                                  }
                                                               } else {
                                                                   console.log("Recieved unexpected ROAP: " + message);
                                                               }
                                                           }
                                                          );
                 
-                WebRTCAudio.pc.onaddstream = function(event) {
+                pc.onaddstream = function(event) {
                     console.log("Remote stream added.");
                     console.log("Local stream is: " + WebRTCAudio.localStream);
                     var url = webkitURL.createObjectURL(event.stream);
-                    WebRTCAudio.remoteVideo.style.opacity = 1;
-                    WebRTCAudio.remoteVideo.src = url;
+                    remoteVideo.style.opacity = 1;
+                    remoteVideo.src = url;
                 };
-                WebRTCAudio.pc.onremovestream = function(event) {
+                pc.onremovestream = function(event) {
                     conole.log("Remote stream removed.");
                 };
-                console.log("Created new PeerConnection, passing it :" + WebRTCAudio.offer);
-                WebRTCAudio.pc.addStream(WebRTCAudio.localStream); 
-                WebRTCAudio.pc.processSignalingMessage(WebRTCAudio.offer);
+                console.log("Created new PeerConnection, passing it :" + offer);
+                pc.addStream(WebRTCAudio.localStream); 
+                pc.processSignalingMessage(offer);
             } else {
                 // We are creating an outbound call
-                if (WebRTCAudio.pc != null) {
-                    WebRTCAudio.pc.close();
-                    WebRTCAudio.pc = null;
+                if (pc != null) {
+                    pc.close();
+                    pc = null;
                 }
-                WebRTCAudio.pc = new WebRTCAudio.peerConnection(WebRTCAudio.stun,
+                pc = new WebRTCAudio.peerConnection(WebRTCAudio.stun,
                                                           function(message) {
                                                               console.log("C->S SDP: " + message);
                                                               // Canary is giving a null s= line, so 
@@ -243,59 +261,59 @@ WebRTCAudio.prototype.transport = function() {
                                                               //message = message.replace("a=group:BUNDLE audio video", "a=group:BUNDLE 2 1");
                                                               //message = message.replace("a=mid:audio", "a=mid:2");
                                                               //message = message.replace("a=mid:video", "a=mid:1");
-                                                              var roap = jQuery.parseJSON(message.substring(4,message.length));
+                                                              var roap = $.parseJSON(message.substring(4,message.length));
                                                               if (roap['messageType'] == "OFFER") {
                                                                   j.c('transport',{xmlns:"http://phono.com/webrtc/transport"})
                                                                       .c('roap',Base64.encode(message));  
-                                                                  WebRTCAudio.offer = message;
+                                                                  offer = message;
                                                                   callback();
                                                               } else if (roap['messageType'] == "OK") {
                                                                   // Ignore, we autogenerate on remote side
                                                               }
                                                               else if (roap['messageType'] == "ANSWER") {
                                                                   // Oh no, here we go
-                                                                  WebRTCAudio.answer = message;
+                                                                  answer = message;
                                                                   u.c('transport',{xmlns:"http://phono.com/webrtc/transport"})
-                                                                      .c('roap',Base64.encode(WebRTCAudio.answer));
+                                                                      .c('roap',Base64.encode(answer));
                                                                   updateCallback();
                                                               } else {
                                                                   console.log("Recieved unexpected ROAP: " + message);
                                                               }
                                                           }
                                                          );
-                WebRTCAudio.pc.onaddstream = function(event) {
+                pc.onaddstream = function(event) {
                     console.log("Remote stream added.");
                     console.log("Local stream is: " + WebRTCAudio.localStream);
                     var url = webkitURL.createObjectURL(event.stream);
-                    WebRTCAudio.remoteVideo.style.opacity = 1;
-                    WebRTCAudio.remoteVideo.src = url;
+                    remoteVideo.style.opacity = 1;
+                    remoteVideo.src = url;
                 };
-                WebRTCAudio.pc.addStream(WebRTCAudio.localStream);
+                pc.addStream(WebRTCAudio.localStream);
                 console.log("Created PeerConnection for new OUTBOUND CALL");
             }
         },
-        processTransport: function(t) {
+        processTransport: function(t, update) {
             var roap;
             var message;
             t.find('roap').each(function () {
                 var encoded = this.textContent;
                 message = Base64.decode(encoded);
                 console.log("S->C SDP: " + message);
-                roap = jQuery.parseJSON(message.substring(4,message.length));
+                roap = $.parseJSON(message.substring(4,message.length));
             });
             if (roap['messageType'] == "OFFER") {
                 // We are receiving an inbound call
                 // Store the offer so we can use it to create an answer
                 //  when the user decides to do so
-                WebRTCAudio.offer = message;
+                offer = message;
                 // Or we are getting an update...
-                if (WebRTCAudio.pc != null) WebRTCAudio.pc.processSignalingMessage(message);
+                if (pc != null && update == true) pc.processSignalingMessage(message);
             } else if (roap['messageType'] == "ANSWER") {
 
                 // We are having an outbound call answered (must already have a PeerConnection)
-                WebRTCAudio.pc.processSignalingMessage(message);
+                pc.processSignalingMessage(message);
             }
-            return {input:{uri:"webrtc"}, output:{uri:"webrtc"}};
+            return {input:{uri:"webrtc"}, output:{getPC: function() {return pc;}}};
         }
     }
 };

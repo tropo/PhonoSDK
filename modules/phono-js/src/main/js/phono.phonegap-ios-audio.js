@@ -1,4 +1,5 @@
 function PhonegapIOSAudio(phono, config, callback) {
+    this.type = "phonegap-ios";
     
     // Bind Event Listeners
     Phono.events.bind(this, config);
@@ -30,7 +31,7 @@ PhonegapIOSAudio.prototype.initState = function(callback, plugin) {
     PhoneGap.exec( 
                   function(result) {
                       console.log("codec success: " + result);
-                      var codecs = jQuery.parseJSON(result);
+                      var codecs = $.parseJSON(result);
                       for (l=0; l<codecs.length; l++) {
                           var name;
                           if (codecs[l].name.startsWith("SPEEX")) {name = "SPEEX";}
@@ -61,11 +62,13 @@ PhonegapIOSAudio.prototype.play = function(transport, autoPlay) {
     var url = transport.uri;
     var luri = url;
     var uri = Phono.util.parseUri(url);
+    var location = Phono.util.parseUri(document.location);
 
     if (uri.protocol == "rtp") return null;
-    if (uri.protocol.length < 2) {
+    if (url.indexOf("//") == 0) {
+        luri = location.protocol+":"+url;
+    } else if (uri.protocol.length < 2) {
         // We are relative, so use the document.location
-        var location = Phono.util.parseUri(document.location);
         luri = location.protocol+"://"+location.directoryPath.substring(0,location.directoryPath.length)+url;
         luri = encodeURI(luri);
     }
@@ -116,19 +119,33 @@ PhonegapIOSAudio.prototype.play = function(transport, autoPlay) {
 };
 
 // Creates a new audio Share and will optionally begin playing
-PhonegapIOSAudio.prototype.share = function(transport, autoPlay, codec) {
+
+PhonegapIOSAudio.prototype.share = function(transport, autoPlay, codec, srtpPropsl, srtpPropsr) {
     var url = transport.uri;
     var codecD = ""+codec.name+":"+codec.rate+":"+codec.id;
     // Get PhoneGap to create the share
-    PhoneGap.exec( 
-                  function(result) {console.log("share success: " + result);},
-                  function(result) {console.log("share fail:" + result);},
-                  "Phono","share",
-                  [{
+    var pgprops;  
+    var isSecure = false;
+    if (srtpPropsl != undefined && srtpPropsr != undefined) {
+       pgprops = [{
+                      'uri':url,
+                      'autoplay': autoPlay == true ? "YES":"NO",
+                      'codec':codecD,
+                      'srtpPropsl':srtpPropsl,
+		      'srtpPropsr':srtpPropsr
+                  }];
+       isSecure = true;
+    } else {
+       pgprops = [{
                       'uri':url,
                       'autoplay': autoPlay == true ? "YES":"NO",
                       'codec':codecD
-                  }]);
+                  }];
+    }
+    PhoneGap.exec( 
+                  function(result) {console.log("share success: " + result);},
+                  function(result) {console.log("share fail:" + result);},
+                  "Phono","share",pgprops);
 
     var luri = Phono.util.localUri(url);
     var muteStatus = false;
@@ -232,7 +249,7 @@ PhonegapIOSAudio.prototype.share = function(transport, autoPlay, codec) {
             PhoneGap.exec(
                         function(result) {
                             console.log("energy success: " + result);
-                            var en = jQuery.parseJSON(result);
+                            var en = $.parseJSON(result);
                             micEnergy = Math.floor(Math.max((Math.LOG2E * Math.log(en[0])-4.0),0.0));
                             spkEnergy = Math.floor(Math.max((Math.LOG2E * Math.log(en[1])-4.0),0.0));
                             },
@@ -244,8 +261,12 @@ PhonegapIOSAudio.prototype.share = function(transport, autoPlay, codec) {
                mic: micEnergy,
                spk: spkEnergy
             }
+        },
+        secure: function() {
+            return isSecure;
         }
-    }
+   };
+    
 };   
 
 // We always have phonegap audio permission
@@ -263,6 +284,7 @@ PhonegapIOSAudio.prototype.transport = function() {
     return {
         name: "urn:xmpp:jingle:transports:raw-udp:1",
         description: "urn:xmpp:jingle:apps:rtp:1",
+        supportsSRTP: true,
         buildTransport: function(direction, j, callback) {
             console.log("buildTransport: " + endpoint);
             var uri = Phono.util.parseUri(endpoint);

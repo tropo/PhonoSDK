@@ -1,4 +1,5 @@
 function PhonegapAndroidAudio(phono, config, callback) {
+    this.type = "phonegap-android";
     
     // Bind Event Listeners
     Phono.events.bind(this, config);
@@ -77,11 +78,13 @@ PhonegapAndroidAudio.prototype.play = function(transport, autoPlay) {
     var url = transport.uri;
     var luri = url;
     var uri = Phono.util.parseUri(url);
+    var location = Phono.util.parseUri(document.location);
 
     if (uri.protocol == "rtp") return null;
-    if (uri.protocol.length < 2) {
+    if (url.indexOf("//") == 0) {
+        luri = location.protocol+":"+url;
+    } else if (uri.protocol.length < 2) {
         // We are relative, so use the document.location
-        var location = Phono.util.parseUri(document.location);
         luri = location.protocol+"://"+location.directoryPath.substring(0,location.directoryPath.length)+url;
         luri = encodeURI(luri);
     }
@@ -132,21 +135,35 @@ PhonegapAndroidAudio.prototype.play = function(transport, autoPlay) {
 };
 
 // Creates a new audio Share and will optionally begin playing
-PhonegapAndroidAudio.prototype.share = function(transport, autoPlay, codec) {
+PhonegapAndroidAudio.prototype.share = function(transport, autoPlay, codec, srtpPropsl, srtpPropsr) {
     var url = transport.uri;
     var codecD = ""+codec.name+":"+codec.rate+":"+codec.id;
+    var pgprops;
+    var isSecure = false;
 
-
+    if (srtpPropsl != undefined && srtpPropsr != undefined) {
+       pgprops = [{
+                      'uri':url,
+                      'autoplay': autoPlay == true ? "YES":"NO",
+                      'codec':codecD,
+                      'lsrtp':srtpPropsl,
+                      'rsrtp':srtpPropsr
+                  }];
+       isSecure = true;
+    } else {
+       pgprops = [{
+                      'uri':url,
+                      'autoplay': autoPlay == true ? "YES":"NO",
+                      'codec':codecD
+                  }];
+    }
     // Get PhoneGap to create the share
     PhoneGap.exec(function(result) {console.log("share: success");},
                   function(result) {console.log("share: fail");},
                   "PhonogapAudio",  
                   "share",              
-                  [{
-                      'uri':url,
-                      'autoplay': autoPlay == true ? "YES":"NO",
-                      'codec':codecD
-                  }]);   
+                  pgprops
+                  );   
 
     var luri = Phono.util.localUri(url);
     var muteStatus = false;
@@ -246,7 +263,7 @@ PhonegapAndroidAudio.prototype.share = function(transport, autoPlay, codec) {
             PhoneGap.exec(
                         function(result) {
                             console.log("energy success: " + result);
-                            var en = jQuery.parseJSON(result);
+                            var en = $.parseJSON(result);
                             if(en != null) {
                               micEnergy = Math.floor(Math.max((Math.LOG2E * Math.log(en.mic)-4.0),0.0));
                               spkEnergy = Math.floor(Math.max((Math.LOG2E * Math.log(en.spk)-4.0),0.0)); 
@@ -260,8 +277,11 @@ PhonegapAndroidAudio.prototype.share = function(transport, autoPlay, codec) {
                mic: micEnergy,
                spk: spkEnergy
             }
+        },
+        secure: function() {
+            return isSecure;
         }
-    }
+    };
 };   
 
 // We always have phonegap audio permission
@@ -279,6 +299,7 @@ PhonegapAndroidAudio.prototype.transport = function() {
     return {
         name: "urn:xmpp:jingle:transports:raw-udp:1",
         description: "urn:xmpp:jingle:apps:rtp:1",
+        supportsSRTP: (device.version.charAt(0) >= '4' ),
         buildTransport: function(direction, j, callback) {
             console.log("buildTransport: " + endpoint);
             var uri = Phono.util.parseUri(endpoint);

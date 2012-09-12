@@ -1,14 +1,15 @@
 function FlashAudio(phono, config, callback) {
-    
+    this.type = "flash";
+
     // Define defualt config and merge from constructor
     this.config = Phono.util.extend({
         protocol: "rtmfp",
-        swf: "//s.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf",
+        swf: "//" + MD5.hexdigest(window.location.host+phono.config.apiKey) + ".u.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf",
         cirrus: "rtmfp://phono-fms1-ext.voxeolabs.net/phono",
         direct: true,
-        video: false
+        media: {audio:true,video:true}
     }, config);
-    
+
     // Bind Event Listeners
     Phono.events.bind(this, config);
     
@@ -37,17 +38,25 @@ function FlashAudio(phono, config, callback) {
         plugin.$flash = this.create("Wrapper").getAudio();
         plugin.$flash.addEventListener(null, function(event) {
             var eventName = (event.getType()+"");
-            Phono.events.trigger(plugin, eventName);
+            Phono.events.trigger(plugin, eventName, {
+                reason: event.getReason()
+            });
+            if (eventName == "mediaError") {
+                Phono.events.trigger(phono, "error", {
+                    reason: event.getReason()
+                });
+            }
         });
+        plugin.$flash.setVersion(Phono.version);
         callback(plugin);
         if (plugin.config.direct) {
             window.setTimeout(10, plugin.$flash.doCirrusConnect(plugin.config.cirrus));
         }
     });
-    
+
     wmodeSetting = "opaque";
     
-    if ((navigator.appVersion.indexOf("X11")!=-1) || (navigator.appVersion.indexOf("Linux")!=-1) || (jQuery.browser.opera)) {
+    if ((navigator.appVersion.indexOf("X11")!=-1) || (navigator.appVersion.indexOf("Linux")!=-1) || ($.browser.opera)) {
         wmodeSetting = "window";
     }
     
@@ -88,11 +97,13 @@ FlashAudio.prototype.play = function(transport, autoPlay) {
     url = transport.uri.replace("protocol",this.config.protocol);
     var luri = url;
     var uri = Phono.util.parseUri(url);
+    var location = Phono.util.parseUri(document.location);
     
     if (uri.protocol == "rtp") return null;
-    if (uri.protocol.length < 2) {
+    if (url.indexOf("//") == 0) {
+        luri = location.protocol+":"+url;
+    } else if (uri.protocol.length < 2) {
         // We are relative, so use the document.location
-        var location = Phono.util.parseUri(document.location);
         luri = location.protocol+"://"+location.authority+location.directoryPath+url;
     }
     
@@ -132,8 +143,11 @@ FlashAudio.prototype.share = function(transport, autoPlay, codec) {
         peerID = transport.peerID;
         Phono.log.info("Direct media share with peer " + transport.peerID);
     }
+    var isSecure = false;
     var share = this.$flash.share(url, autoPlay, codec.id, codec.name, codec.rate, true, peerID, this.config.video);
-    return {
+    if (url.indexOf("rtmfp://") == 0) isSecure = true;
+
+    var s = {
         // Readonly
         url: function() {
             return share.getUrl();
@@ -181,13 +195,25 @@ FlashAudio.prototype.share = function(transport, autoPlay, codec) {
    		share.setSuppress(value);
    	    }
         },
-        energy: function(){
+        energy: function() {
             return {
                mic: 0.0 ,
                spk: 0.0
             }
+        },
+        secure: function() {
+            return isSecure;
         }
-    }
+    };
+
+    share.addEventListener(null, function(event) {
+        var eventName = (event.getType()+"");
+        Phono.events.trigger(s, eventName, {
+            reason: event.getReason()
+        });
+    });
+
+    return s;
 };   
 
 // Returns an object containg JINGLE transport information
@@ -247,7 +273,7 @@ FlashAudio.prototype.codecs = function() {
 };
 
 // Creates a DIV to hold the Flash movie if one was not specified by the user
-FlashAudio.prototype.createContainer = function() {
+FlashAudio.prototype.createContainer = function(phono) {
     
     var flashDiv = $("<div>")
       	.attr("id","_phono-audio-flash" + (FlashAudio.count++))

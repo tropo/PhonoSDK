@@ -20,7 +20,7 @@
 	each: function( object, callback, args ) {
 		var name, i = 0,
 			length = object.length,
-			isObj = length === undefined || jQuery.isFunction(object);
+			isObj = length === undefined || $.isFunction(object);
 
 		if ( args ) {
 			if ( isObj ) {
@@ -81,7 +81,7 @@
    		target = arguments[1] || {};
    		i = 2;
    	}
-   	if ( typeof target !== "object" && !jQuery.isFunction(target) ) {
+   	if ( typeof target !== "object" && !$.isFunction(target) ) {
    		target = {};
    	}
    	if ( length === i ) {
@@ -96,10 +96,10 @@
    				if ( target === copy ) {
    					continue;
    				}
-   				if ( deep && copy && ( jQuery.isPlainObject(copy) || jQuery.isArray(copy) ) ) {
-   					var clone = src && ( jQuery.isPlainObject(src) || jQuery.isArray(src) ) ? src
-   						: jQuery.isArray(copy) ? [] : {};
-   					target[ name ] = jQuery.extend( deep, clone, copy );
+   				if ( deep && copy && ( $.isPlainObject(copy) || $.isArray(copy) ) ) {
+   					var clone = src && ( $.isPlainObject(src) || $.isArray(src) ) ? src
+   						: $.isArray(copy) ? [] : {};
+   					target[ name ] = $.extend( deep, clone, copy );
    				} else if ( copy !== undefined ) {
    					target[ name ] = copy;
    				}
@@ -210,6 +210,18 @@
         }
         return false;
     },
+    getIEVersion: function() {
+        var rv = -1; // Return value assumes failure.
+        if (navigator.appName == 'Microsoft Internet Explorer')
+        {
+            var ua = navigator.userAgent;
+            var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+            if (re.exec(ua) != null)
+                rv = parseFloat( RegExp.$1 );
+        }
+        console.log("IE Version = " + rv);
+        return rv;
+    },
     localUri : function(fullUri) {
         var splitUri = fullUri.split(":");
         return splitUri[0] + ":" + splitUri[1] + ":" + splitUri[2];
@@ -250,6 +262,34 @@
             str += " ";
         }
         return str;
+    },
+    srtpProps: function(tag, crypto, keyparams, sessionparams, required) {
+        var props = "";
+        if (crypto != undefined) {
+            props = props + "crypto-suite=" + "'" + crypto +"' \n";
+        }
+        if (tag != undefined) {
+            props = props + "tag=" + "'" + tag + "' \n";
+        }
+        if (keyparams != undefined) {
+            props = props + "key-params=" + "'" + keyparams +"' \n";
+        }
+        if (sessionparams != undefined) {
+            props = props + "session-params=" + "'" + sessionprams +"' \n";
+        }
+        if (required != undefined) {
+            props = props + "required=" + "'" + required +"' \n";
+        }
+        return props;
+    },
+    genKey: function(bytes) {
+        // Generate bytes random bytes, then base64 encode and return as a string
+        var key = "";
+        var i;
+        for (i=0;i<bytes; i++) {
+            key = key + String.fromCharCode(Math.random() * 256);
+        }
+        return Base64.encode(key);
     }
 };
 

@@ -4,7 +4,6 @@
         Kitchen Sink
     </title>
     <meta http-equiv="PRAGMA" content="NO-CACHE" />
-    <meta http-equiv="X-UA-Compatible" content="IE=8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link type="text/css" rel="stylesheet" href="samples.css"/>
     <link type="text/css" rel="stylesheet" href="kitchen-sink.css"/>
@@ -65,6 +64,7 @@
    		 						<option value="ringtones/ringback-uk.mp3">Standard Europe</option>
    		 						<option value="ringtones/ringback-us.mp3">Standard US</option>
    		 						<option value="ringtones/Diggztone_Vibe.mp3">Vibe</option>
+   		 						<option value="">None</option>
    		 					</select>
    		 				</div>
    		 				<div class="setting">
@@ -81,11 +81,20 @@
    		 						<option value="ringtones/Diggztone_Piano.mp3">Piano</option>
    		 						<option value="ringtones/ringback-uk.mp3">Standard Europe</option>
    		 						<option value="ringtones/Diggztone_Vibe.mp3">Vibe</option>
+                                                                <option value="">None</option>
    		 					</select>
    		 				</div>
 						<div class="setting">
 							Audio Input:<br/>
 							<select class="audio-input">
+							</select>
+                                                </div>
+						<div class="setting">
+							Security:<br/>
+							<select class="security-option">
+                                                          <option value="optional">Optional</option>
+                                                          <option value="mandatory">Mandatory</option>
+                                                          <option value="disabled">Disabled</option>
 							</select>
                                                 </div>
    		 				<br class="clearfix"/>
@@ -97,6 +106,7 @@
    		 			<div class="callHeader">
    		 				<span class="callID"></span>
    		 				<span class="callDetail"></span>
+                                                <span class="callSecure"></span>
                                                 <span class="callCodec"></span>
                                                 <span class="callMicEnergy"></span>
                                                 <span class="callSpkEnergy"></span>
@@ -155,7 +165,6 @@
                     <option value="flash">Flash (standard)</option>
                     <option value="panda">Flash (panda)</option>
    		    <option value="java">Java</option>
-   		    <option value="webrtc">WebRTC</option>
    		    <option value="none">None</option>
    		  </select>
                   &#160;for audio

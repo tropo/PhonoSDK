@@ -19,11 +19,15 @@
 #import "PhonoNative.h"
 #import "PhonoPhone.h"
 #import "PhonoAPI.h"
+#import <Security/Security.h>
+
 
 @implementation PhonoCall
-@synthesize callId,onRing,onAnswer,onHangup,onError,state,hold,volume,gain,headers,phono,payload, candidate, to ,from, share, ringing,codecInd;
+@synthesize callId,onRing,onAnswer,onHangup,onError,state,hold,volume,gain,headers,phono,payload, candidate, to ,from, share, ringing,codecInd,srtpType,srtpKeyL,srtpKeyR,secure;
 
 @dynamic mute;
+
+
 
 - (void) setMute:(BOOL)mutev {
     mute = mutev;
@@ -55,6 +59,8 @@
     if (self) {
         to = [[[NSString alloc ] initWithFormat:@"%@@%@" , [PhonoNative escapeString:user] , domain] retain];
         headers = [[NSMutableDictionary alloc] init];
+        srtpType = @"AES_CM_128_HMAC_SHA1_80"; // always
+        srtpKeyL = [[NSString alloc] initWithString:[PhonoAPI mkKey]];
     }
     
     return self;

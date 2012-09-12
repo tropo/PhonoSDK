@@ -1,4 +1,5 @@
 function JavaAudio(phono, config, callback) {
+    this.type = "java";
 
     if (JavaAudio.exists()){
       // Define defualt config and merge from constructor
@@ -83,11 +84,13 @@ JavaAudio.prototype.play = function(transport, autoPlay) {
     var player;
     var luri = url;
     var uri = Phono.util.parseUri(url);
+    var location = Phono.util.parseUri(document.location);
 
     if (uri.protocol == "rtp") return null;
-    if (uri.protocol.length < 2) {
+    if (url.indexOf("//") == 0) {
+        luri = location.protocol+":"+url;
+    } else if (uri.protocol.length < 2) {
         // We are relative, so use the document.location
-        var location = Phono.util.parseUri(document.location);
         luri = location.protocol+"://"+location.authority+location.directoryPath+url;
     }
 
@@ -115,13 +118,21 @@ JavaAudio.prototype.play = function(transport, autoPlay) {
 };
 
 // Creates a new audio Share and will optionally begin playing
-JavaAudio.prototype.share = function(transport, autoPlay, codec) {
+JavaAudio.prototype.share = function(transport, autoPlay, codec, srtpPropsl, srtpPropsr) {
     var url = transport.uri;
     var applet = this.$applet[0];
 
     Phono.log.debug("[JAVA share codec ] "+codec.p.pt +" id = "+codec.id);
     var acodec = applet.mkCodec(codec.p, codec.id);
-    var share = applet.share(url, acodec, autoPlay);
+    var share;
+    var isSecure = false;
+    if (srtpPropsl != undefined && srtpPropsr != undefined) {
+        share = applet.share(url, acodec, autoPlay, srtpPropsl, srtpPropsr);
+        isSecure = true;
+    }
+    else { 
+        share = applet.share(url, acodec, autoPlay);
+    }
     return {
         // Readonly
         url: function() {
@@ -170,12 +181,15 @@ JavaAudio.prototype.share = function(transport, autoPlay, codec) {
    		share.doES(value);
    	    }
         },
-        energy: function(){
+        energy: function() {
             var en = share.energy();
             return {
                mic: Math.floor(Math.max((Math.LOG2E * Math.log(en[0])-4.0),0.0)),
                spk: Math.floor(Math.max((Math.LOG2E * Math.log(en[1])-4.0),0.0))
             }
+        },
+        secure: function() {
+            return isSecure;
         }
     }
 };   
@@ -193,6 +207,7 @@ JavaAudio.prototype.transport = function() {
     return {
         name: "urn:xmpp:jingle:transports:raw-udp:1",
         description: "urn:xmpp:jingle:apps:rtp:1",
+        supportsSRTP: true,
         buildTransport: function(direction, j, callback) {
             var uri = Phono.util.parseUri(endpoint);
             j.c('transport',{xmlns:"urn:xmpp:jingle:transports:raw-udp:1"})

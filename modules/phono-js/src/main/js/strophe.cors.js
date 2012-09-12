@@ -39,10 +39,10 @@ Strophe.addConnectionPlugin('cors', {
                 xhr.ontimeout = function () {
                     stateChange(xhr, 500);
                 }
-                var sendFnc = xhr.send;
+                xhr.sendFnc = xhr.send;
                 xhr.send = function (value) {
                     xhr.readyState = 2;
-                    return sendFnc(value);
+                    return xhr.sendFnc(value);
                 }
                 return xhr;
             };

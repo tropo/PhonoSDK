@@ -30,7 +30,7 @@
       this.phone = phone;
       this.phono = phone.phono;
       this.audioLayer = this.phono.audio;
-      this.transport = this.audioLayer.transport();
+      this.transport = this.audioLayer.transport(config);
       this.connection = this.phono.connection;
       
       this.config = Phono.util.extend({
@@ -41,7 +41,8 @@
          volume: 50,
          gain: 50,
          tones: false,
-         codecs: phone.config.codecs
+         codecs: phone.config.codecs,
+         security: phone._security
       }, config);
       
       // Apply config
@@ -58,6 +59,17 @@
       this.initiator = null;
       this.codec = null;
 
+      this.srtpPropsr = undefined;
+      this.srtpPropsl = undefined;
+
+      if (this._security != "disabled" && this.transport.supportsSRTP == true) {
+          // Set up some local SRTP crypto parameters
+          this.tag = "1";
+          this.crypto = "AES_CM_128_HMAC_SHA1_80";
+          this.keyparams = "inline:" + Phono.util.genKey(30);
+          this.srtpPropsl = Phono.util.srtpProps(this.tag, this.crypto, this.keyparams);
+      }
+       
       this.headers = [];
       
       if(this.config.headers) {
@@ -67,14 +79,18 @@
       // Bind Event Listeners
       Phono.events.bind(this, config);
       
-       this.ringer = this.audioLayer.play({uri:phone.ringTone()}); 
-       this.ringback = this.audioLayer.play({uri:phone.ringbackTone()});
+      this.ringer = this.audioLayer.play({uri:phone.ringTone()}); 
+      this.ringback = this.audioLayer.play({uri:phone.ringbackTone()});
       if (this.audioLayer.audioIn){
          this.audioLayer.audioIn(phone.audioInput());
       }
       
    };
-   
+
+   Call.prototype.bind = function(config) {
+       Phono.events.bind(this, config);
+   }
+
    Call.prototype.startAudio = function(iq) {
       if(this.input) {
          this.input.start();
@@ -96,7 +112,7 @@
    Call.prototype.start = function() {
       
       var call = this;
-      
+
       if (call.state != CallState.INITIAL) return;
        
       var initiateIq = $iq({type:"set", to:call.remoteJid});
@@ -114,7 +130,7 @@
              
        var partialInitiate = initiate
            .c('content', {creator:"initiator"})
-           .c('description', {xmlns:this.transport.description})
+           .c('description', {xmlns:this.transport.description});
        
        Phono.util.each(this.config.codecs(Phono.util.filterWideband(this.audioLayer.codecs(),this.phone.wideband())), function() {
            partialInitiate = partialInitiate.c('payload-type', {
@@ -123,6 +139,17 @@
                clockrate: this.rate
            }).up();           
        });
+
+       // Add our crypto
+       var required = "0";
+       if (call._security == "mandatory") required = "1";
+       if (call._security != "disabled" && this.transport.supportsSRTP == true) {
+           partialInitiate = partialInitiate.c('encryption', {required: required}).c('crypto', {
+               tag: call.tag,
+               'crypto-suite': call.crypto,
+               'key-params': call.keyparams
+           }).up();    
+       }
 
        var updateIq = $iq({type:"set", to:call.remoteJid});
        
@@ -195,9 +222,9 @@
        
        var partialAccept = accept
            .c('content', {creator:"initiator"})
-           .c('description', {xmlns:this.transport.description})
+           .c('description', {xmlns:this.transport.description});
        
-       parialAccept = partialAccept.c('payload-type', {
+       partialAccept = partialAccept.c('payload-type', {
            id: call.codec.id,
            name: call.codec.name,
            clockrate: call.codec.rate
@@ -212,6 +239,15 @@
                }).up();     
            } 
        });
+
+       // Add our crypto
+       if (call.srtpPropsl != undefined && call.srtpPropsr != undefined) {
+           partialAccept = partialAccept.c('encryption').c('crypto', {
+               tag: call.tag,
+               'crypto-suite': call.crypto,
+               'key-params': call.keyparams
+           }).up();    
+       }
        
        var updateIq = $iq({type:"set", to:call.remoteJid});
       
@@ -251,6 +287,11 @@
       this.hold(this.hold());
       this.headset(this.headset());
       this.pushToTalkStateChanged();
+
+      Phono.events.bind(this.output, {
+      	  onMediaReady: function() {
+              Phono.events.trigger(call, "mediaReady");
+          }});
    };
    
    Call.prototype.hangup = function() {
@@ -353,6 +394,21 @@
 	return ret;
    };
 
+   Call.prototype.secure = function() {
+       var ret = false;
+       if (this.output) {
+           ret = this.output.secure();
+       }
+       return ret;
+   };
+
+   Call.prototype.security = function(value) {
+   	if(arguments.length === 0) {
+   	    return this._security;
+   	}
+   	this._security = value;
+   };
+   
    Call.prototype.headset = function(value) {
    	if(arguments.length === 0) {
    	    return this._headset;
@@ -410,16 +466,35 @@
               p: 20
           };
       }
+
+      // Check to see if we have crypto, we only support AES_CM_128_HMAC_SHA1_80
+      if (call._security != "disabled" && this.transport.supportsSRTP == true) {
+           description.find('crypto').each(function () {
+               if ($(this).attr('crypto-suite') == call.crypto) {
+                   call.srtpPropsr = Phono.util.srtpProps($(this).attr('tag'), 
+                                                          $(this).attr('crypto-suite'), 
+                                                          $(this).attr('key-params'), 
+                                                          $(this).attr('session-params'));
+                   call.tag = $(this).attr('tag'); // So we can answer with the correct tag
+               }
+           });
+      }
+
+      if (call._security == "mandatory" && call.srtpPropsr == undefined) {
+          // We must fail the call, remote end did not agree on crypto
+          Phono.log.error("No security when mandatory specified");
+          return null;
+      }
        
       // Find a matching media transport
       var foundTransport = false;
       $(iq).find('transport').each(function () {
           if (call.transport.name == $(this).attr('xmlns') && foundTransport == false) {
-              var transport = call.transport.processTransport($(this));      
+              var transport = call.transport.processTransport($(this), false);      
               if (transport != undefined) {
                   call.bindAudio({
                       input: call.audioLayer.play(transport.input, false),
-                      output: call.audioLayer.share(transport.output, false, codec)
+                      output: call.audioLayer.share(transport.output, false, codec, call.srtpPropsl, call.srtpPropsr)
                   });
                   foundTransport = true;
               } else {
@@ -427,6 +502,13 @@
               }
           }
       });
+
+      // Belt and braces
+      if (call._security == "mandatory" && call.output.secure() == false) {
+          // We must fail the call, remote end did not agree on crypto
+          Phono.log.error("Security error, share not secure when mandatory specified");
+          return null;
+      }
 
       if (foundTransport == false) {
           Phono.log.error("No matching valid transport");
@@ -461,7 +543,8 @@
          ringbackTone: "//s.phono.com/ringtones/ringback-us.mp3",
          wideband: true,
          headset: false,
-         codecs: function(offer) {return offer;}
+         codecs: function(offer) {return offer;},
+         security: "optional", // mandatory, disabled
       }, config);
       
       // Apply config
@@ -507,10 +590,14 @@
             // Register Call
             phone.calls[call.id] = call;
 
+            call.state = CallState.PROGRESS;
+          
             // Negotiate SDP
             call.codec = call.negotiate(iq);
             if(call.codec == null) {
-               Phono.log.warn("Failed to negotiate incoming call", iq);
+                Phono.log.warn("Failed to negotiate incoming call", iq);
+                call.hangup();
+                break;
             }
             
             // Get incoming headers
@@ -526,7 +613,6 @@
             if (call.ringer != null) call.ringer.start();
             
             // Auto accept the call (i.e. send ringing)
-            call.state = CallState.PROGRESS;
             call.accept();
 
             // Fire imcoming call event
@@ -548,6 +634,8 @@
             call.codec = call.negotiate(iq);
             if(call.codec == null) {
                 Phono.log.warn("Failed to negotiate outbound call", iq);
+                call.hangup();
+                break;
             }
 
             call.state = CallState.CONNECTED;
@@ -566,7 +654,7 @@
          // Transport information update
          case "transport-replace":
          case "transport-accept":
-            call.transport.processTransport($(iq));
+          call.transport.processTransport($(iq), true);
             break;
 
          // Hangup
@@ -714,6 +802,13 @@
          return this._wideband;
       }
       this._wideband = value;
+   }
+
+   Phone.prototype.security = function(value) {
+       if(arguments.length == 0) {
+           return this._security;
+       }
+       this._security = value;
    }
 
    Phono.registerPlugin("phone", {
