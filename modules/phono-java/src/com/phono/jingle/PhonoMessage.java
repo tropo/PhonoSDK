@@ -5,13 +5,12 @@
 
 package com.phono.jingle;
 
-import com.phono.api.faces.PhonoMessageFace;
 
 /**
  *
  * @author tim
  */
-public class PhonoMessage  implements PhonoMessageFace {
+public class PhonoMessage  {
 
     private PhonoMessaging _pmi;
     private String _body;

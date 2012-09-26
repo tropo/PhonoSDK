@@ -7,9 +7,6 @@ package com.phono.jingle;
 import com.phono.api.Codec;
 import com.phono.api.CodecList;
 import com.phono.api.Share;
-import com.phono.api.faces.PhonoMessagingFace;
-import com.phono.api.faces.PhonoNativeFace;
-import com.phono.api.faces.PhonoPhoneFace;
 import com.phono.applet.audio.phone.PhonoAudioShim;
 import com.phono.rtp.Endpoint;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -33,7 +30,7 @@ import org.minijingle.jingle.description.Payload;
  *
  * @author tim
  */
-public class PhonoNative implements PhonoNativeFace {
+public class PhonoNative  {
 
     static String NS_JINGLE = "urn:xmpp:jingle:1";
     static String NS_JINGLE_RTP = "urn:xmpp:jingle:apps:rtp:1";
@@ -46,21 +43,21 @@ public class PhonoNative implements PhonoNativeFace {
     protected String _apiKey;
     protected String _sessionID;
     protected String myJID; // not exposed for now
-    PhonoPhoneFace _phone;
-    PhonoMessagingFace _messaging;
+    PhonoPhone _phone;
+    PhonoMessaging _messaging;
     private boolean _connected;
     private XMPPConnection _xmppConnection;
     private final PhonoAudioShim _audio;
     private final CodecList _codecList;
     final private Hashtable _endpoints = new Hashtable();
 
-    public PhonoNative(PhonoPhoneFace p, PhonoMessagingFace m) {
+    public PhonoNative(PhonoPhone p, PhonoMessaging m) {
         this();
         setPhone(p);
         setMessaging(m);
     }
 
-    public PhonoNative(String domain, PhonoPhoneFace p, PhonoMessagingFace m) {
+    public PhonoNative(String domain, PhonoPhone p, PhonoMessaging m) {
         this(domain);
         setPhone(p);
         setMessaging(m);
@@ -94,26 +91,26 @@ public class PhonoNative implements PhonoNativeFace {
         return _sessionID;
     }
 
-    public void setPhone(PhonoPhoneFace p) {
+    public void setPhone(PhonoPhone p) {
         _phone = p;
         ((PhonoPhone) p).setPhonoNative(this);
     }
 
-    public PhonoPhoneFace getPhone() {
+    public PhonoPhone getPhone() {
         return _phone;
     }
 
-    public void setMessaging(PhonoMessagingFace m) {
+    public void setMessaging(PhonoMessaging m) {
         _messaging = m;
         ((PhonoMessaging) m).setPhonoNative(this);
     }
 
-    public PhonoMessagingFace getMessaging() {
+    public PhonoMessaging getMessaging() {
         return _messaging;
     }
 
     public void connect() {
-        final PhonoNativeFace nat = this;
+        final PhonoNative nat = this;
         try {
             ConnectionListener natlist = new ConnectionListener() {
 

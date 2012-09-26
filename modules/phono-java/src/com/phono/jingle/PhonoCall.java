@@ -4,9 +4,7 @@
  */
 package com.phono.jingle;
 
-import com.phono.api.CodecList;
 import com.phono.api.Share;
-import com.phono.api.faces.PhonoCallFace;
 import com.phono.applet.audio.phone.Play;
 import com.phono.rtp.Endpoint;
 import java.net.SocketException;
@@ -24,7 +22,7 @@ import org.minijingle.xmpp.smack.JingleIQ;
  *
  * @author tim
  */
-public class PhonoCall implements PhonoCallFace {
+public class PhonoCall  {
 
     private PhonoPhone _phone;
     private Description _localDescription;
@@ -55,7 +53,7 @@ public class PhonoCall implements PhonoCallFace {
                 _localDescription.addPayload(payload);
             }
         } catch (SocketException ex) {
-            _phone.onError(null);
+            _phone.onError();
         }
 
     }
@@ -74,10 +72,6 @@ public class PhonoCall implements PhonoCallFace {
     }
 
     public void onError() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public CallState getState() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

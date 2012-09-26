@@ -4,10 +4,6 @@
  */
 package com.phono.jingle;
 
-import com.phono.api.faces.PhonoCallFace;
-import com.phono.api.faces.PhonoEventFace;
-import com.phono.api.faces.PhonoNativeFace;
-import com.phono.api.faces.PhonoPhoneFace;
 import com.phono.srtplight.Log;
 import java.util.Hashtable;
 import org.jivesoftware.smack.PacketListener;
@@ -27,14 +23,14 @@ import org.minijingle.xmpp.smack.JingleIQ;
  *
  * @author tim
  */
-public class PhonoPhone implements PhonoPhoneFace {
+public class PhonoPhone  {
 
     private PhonoNative _pni;
     private String _ringTone;
     private String _ringbackTone;
     private Hashtable<String, PhonoCall> _currentCalls = new Hashtable<String, PhonoCall>();
 
-    void setPhonoNative(PhonoNativeFace p) {
+    void setPhonoNative(PhonoNative p) {
         _pni = (PhonoNative) p;
         PacketListener pli = new PacketListener() {
 
@@ -77,19 +73,19 @@ public class PhonoPhone implements PhonoPhoneFace {
         _ringbackTone = rt;
     }
 
-    public void onError(PhonoEventFace e) {
+    public void onError() {
         throw new UnsupportedOperationException("This method should generally be overridden - PhonoPhone.onError()");
     }
 
-    public void onIncommingCall(PhonoCallFace c) {
+    public void onIncommingCall(PhonoCall c) {
         throw new UnsupportedOperationException("This method should generally be overridden - PhonoPhone.onIncommingCall()");
     }
 
-    public PhonoCallFace newCall() {
+    public PhonoCall newCall() {
         throw new UnsupportedOperationException("This method should always be overridden - PhonoPhone.newCall()");
     }
 
-    public PhonoCallFace dial(String jid, Hashtable headers)  {
+    public PhonoCall dial(String jid, Hashtable headers)  {
 
 
         if (headers != null ){

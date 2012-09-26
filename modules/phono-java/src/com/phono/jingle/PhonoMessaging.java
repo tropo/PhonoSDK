@@ -5,9 +5,7 @@
 
 package com.phono.jingle;
 
-import com.phono.api.faces.PhonoMessageFace;
-import com.phono.api.faces.PhonoMessagingFace;
-import com.phono.api.faces.PhonoNativeFace;
+
 import com.phono.srtplight.Log;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.filter.PacketFilter;
@@ -18,10 +16,10 @@ import org.jivesoftware.smack.packet.Packet;
  *
  * @author tim
  */
-public class PhonoMessaging implements PhonoMessagingFace {
+public class PhonoMessaging {
     private PhonoNative _pni;
 
-        void setPhonoNative(PhonoNativeFace p) {
+        void setPhonoNative(PhonoNative p) {
         _pni = (PhonoNative) p;
         final PhonoMessaging pmi = this;
         PacketListener pli = new PacketListener() {
@@ -47,7 +45,7 @@ public class PhonoMessaging implements PhonoMessagingFace {
     }
 
 
-    public void onMessage(PhonoMessageFace message) {
+    public void onMessage(PhonoMessage message) {
         Log.warn("Message arrived - you should probably have overridden this method -> PhonoMessaging.onMessage()");
     }
 

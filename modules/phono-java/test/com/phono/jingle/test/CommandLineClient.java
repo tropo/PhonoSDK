@@ -4,13 +4,11 @@
  */
 package com.phono.jingle.test;
 
-import com.phono.api.faces.PhonoCallFace;
-import com.phono.api.faces.PhonoNativeFace;
-import com.phono.api.faces.PhonoPhoneFace;
-import com.phono.api.faces.PhonoMessageFace;
+
 import com.phono.jingle.PhonoNative;
 import com.phono.jingle.PhonoPhone;
 import com.phono.jingle.PhonoCall;
+import com.phono.jingle.PhonoMessage;
 import com.phono.jingle.PhonoMessaging;
 
 import com.phono.srtplight.Log;
@@ -24,9 +22,9 @@ import java.util.Hashtable;
  */
 public class CommandLineClient {
 
-    PhonoNativeFace _pn;
-    PhonoPhoneFace _phone;
-    PhonoCallFace _call;
+    PhonoNative _pn;
+    PhonoPhone _phone;
+    PhonoCall _call;
     Thread _console;
 
     /**
@@ -71,14 +69,14 @@ public class CommandLineClient {
             }
 
             @Override
-            public void onIncommingCall(PhonoCallFace c) {
+            public void onIncommingCall(PhonoCall c) {
                 _call = c;
                 System.out.println("Press a<ret> to answer");
             }
         };
         final PhonoMessaging messing = new PhonoMessaging() {
             @Override
-            public void onMessage(PhonoMessageFace message) {
+            public void onMessage(PhonoMessage message) {
                 System.out.println("message from " + message.getFrom() + ": " + message.getBody());
             }
         };
