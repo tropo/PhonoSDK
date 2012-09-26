@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Voxeo Corp.
+ * Copyright 2012 Voxeo Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,6 @@ public class CommandLineClient {
                 System.out.println("message from " + message.getFrom() + ": " + message.getBody());
             }
         };
-        //final Runnable cli = this;
         _pn = new PhonoNative() {
 
             @Override
