@@ -59,18 +59,21 @@ package com.phono.impl
 	    _tones = new Tones();
 	    _codec = codec;
             _suppress = suppress;
-	    _mic.setSilenceLevel(0,2000);
-	    _mic.gain = 50;
-            _mic.rate = 16; 
+            if (_mic) {
+	        _mic.setSilenceLevel(0,2000);
+	        _mic.gain = 50;
+                _mic.rate = 16; 
+            }
 	    _gain = _mic.gain;
 	    _queue = queue;
             _direct = direct;
             // Disable suppression if we have a working EC, even if they have asked for it
             if (hasEC) _suppress = false;
-
-	    _mic.codec = SoundCodec.SPEEX;				
-	    _mic.framesPerPacket = 1;
-	    
+            
+            if (_mic) {
+	        _mic.codec = SoundCodec.SPEEX;				
+	        _mic.framesPerPacket = 1;
+	    }
             _soundTimer.addEventListener(TimerEvent.TIMER, onSoundTicker);
 	}
 
@@ -157,10 +160,10 @@ package com.phono.impl
 	    _mute = value;
 	    if (_mute) {
 		if (_suppress && _active) _soundTimer.stop();
-		_mic.gain = 0;
+                if (_mic) _mic.gain = 0;
 	    } else {
 		if (_suppress && _active) _soundTimer.start();
-		_mic.gain = _gain;
+		if (_mic) _mic.gain = _gain;
 	    }
 	}
 	

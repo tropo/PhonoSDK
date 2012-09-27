@@ -58,8 +58,15 @@ package com.phono
                 _mic = Microphone.getMicrophone();
             }
         
-            _mic.addEventListener(StatusEvent.STATUS, onMicStatus);	
-            
+            if (_mic)
+            {
+                _mic.addEventListener(StatusEvent.STATUS, onMicStatus);	
+            }
+            else 
+            {
+                dispatchEvent(new MediaEvent(MediaEvent.ERROR,null,
+                                             "No microphone available."));
+            }
             trace("Flash Audio() complete");
 	}		
 	
@@ -145,7 +152,7 @@ package com.phono
 	    // Force an open request for microphone permisson if we don't already have it - 
 	    // Flash will automatically open the box, so we need to be ready
 	    setTimeout(function():void {
-		if (_mic.muted) {
+		if (_mic && _mic.muted) {
 		    showPermissionBox();
 		}
 	    },10);
