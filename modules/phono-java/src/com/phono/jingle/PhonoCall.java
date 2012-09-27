@@ -31,10 +31,11 @@ import org.minijingle.jingle.transport.RawUdpTransport;
 import org.minijingle.xmpp.smack.JingleIQ;
 
 /**
- *
+ * Abstract Class representing a Phono call
+ * You must implement the abstract methods for your UI logic etc.
  * @author tim
  */
-public class PhonoCall  {
+abstract public class PhonoCall {
 
     private PhonoPhone _phone;
     private Description _localDescription;
@@ -57,7 +58,6 @@ public class PhonoCall  {
             String bits[] = bod.split(":");
             _candidate = new Candidate(bits[0], bits[1], "1");
             _transport = new RawUdpTransport(_candidate);
-            //this.localSrtp = new Encryption("1", new Crypto("AES_CM_128_HMAC_SHA1_80", "inline:d0RmdmcmVCspeEc3QGZiNWpVLFJhQX1cfHAwJSoj", "KDR=0"));
             _localDescription = new Description("audio", null);// explicitly _don't_ support SRTP in this release.
             PhonoNative pni = pp.getNative();
             List<Payload> payloads = pni.getPayloads();
@@ -71,50 +71,91 @@ public class PhonoCall  {
     }
     /* expect to have these overridden */
 
-    public void onRing() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    /**
+     * You must implement this abstract method.
+     * It will be called when this outbound call is ringing
+     */
+    abstract public void onRing();
 
-    public void onAnswer() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    /**
+     * You must implement this abstract method.
+     * It will be called when this outbound call is answered
+     */
+    abstract public void onAnswer();
 
-    public void onHangup() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    /**
+     * You must implement this abstract method.
+     * It will be called when this  call is answered
+     */
+    abstract public void onHangup();
 
-    public void onError() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    /**
+     * You must implement this abstract method.
+     * It will be called when a call related error occurs
+     */
+    abstract public void onError();
 
+    /**
+     * Set a custom header on this call
+     * @param name
+     * @param value
+     */
     public void setHeader(String name, String value) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * set 'hold' on or off on this call
+     * @param h
+     */
     public void setHold(boolean h) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * set to true if you require this call to be encrypted (not implemented)
+     * @param s
+     */
     public void setSecure(boolean s) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * Mute this call
+     * @param m
+     */
     public void setMute(boolean m) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * check to see if this call is in the ringing state
+     * @return
+     */
     public boolean isRinging() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * set the playback volume
+     * @param v
+     */
     public void setVolume(int v) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * set the microphone gain
+     * @param v
+     */
     public void setGain(int v) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * send a dtmf digit
+     * @param character
+     */
     public void digit(Character character) {
         if (_share != null) {
             String ds = "" + character;
@@ -200,6 +241,9 @@ public class PhonoCall  {
         return _rjid;
     }
 
+    /**
+     * answer this (inbound) call.
+     */
     public void answer() {
         if (_play != null) {
             _play.stop();

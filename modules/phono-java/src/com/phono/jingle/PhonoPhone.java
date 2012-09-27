@@ -32,10 +32,12 @@ import org.minijingle.jingle.transport.RawUdpTransport;
 import org.minijingle.xmpp.smack.JingleIQ;
 
 /**
- *
+ * Abstract class representing a Phono Phone.
+ * You must implement the abstract methods to suit your own UI
+ * 
  * @author tim
  */
-public class PhonoPhone  {
+abstract public class PhonoPhone {
 
     private PhonoNative _pni;
     private String _ringTone;
@@ -85,22 +87,38 @@ public class PhonoPhone  {
         _ringbackTone = rt;
     }
 
-    public void onError() {
-        throw new UnsupportedOperationException("This method should generally be overridden - PhonoPhone.onError()");
-    }
+    /**
+     * you must implement this abstract method
+     * it is invoked when a Phone related error occurs
+     */
+    abstract public void onError();
 
-    public void onIncommingCall(PhonoCall c) {
-        throw new UnsupportedOperationException("This method should generally be overridden - PhonoPhone.onIncommingCall()");
-    }
+    /**
+     * you must implement this abstract method
+     * it is invoked when a new incoming call arrives
+     */
+    abstract public void onIncommingCall(PhonoCall c);
 
-    public PhonoCall newCall() {
-        throw new UnsupportedOperationException("This method should always be overridden - PhonoPhone.newCall()");
-    }
+    /**
+     * you must implement this abstract method
+     * it should return a concrete instance of the PhonoCall class -
+     * with it's abstract methods implemented.
+     * This may be done inline with an anon inner class
+     * or with an explicit named class - as suits your application
+     *
+     */
+    abstract public PhonoCall newCall();
 
-    public PhonoCall dial(String jid, Hashtable headers)  {
+    /**
+     * make an outbound call to a phono jid
+     * @param jid
+     * @param headers
+     * @return the new call (created by calling newCall above)
+     */
+    public PhonoCall dial(String jid, Hashtable headers) {
 
 
-        if (headers != null ){
+        if (headers != null) {
             Log.warn("headers not implemented yet.");
         }
 

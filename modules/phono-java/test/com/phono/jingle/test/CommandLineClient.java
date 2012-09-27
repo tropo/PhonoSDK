@@ -16,7 +16,6 @@
  */
 package com.phono.jingle.test;
 
-
 import com.phono.jingle.PhonoNative;
 import com.phono.jingle.PhonoPhone;
 import com.phono.jingle.PhonoCall;
@@ -26,7 +25,6 @@ import com.phono.jingle.PhonoMessaging;
 import com.phono.srtplight.Log;
 import java.io.IOException;
 import java.util.Hashtable;
-
 
 /**
  *
@@ -51,10 +49,24 @@ public class CommandLineClient {
         Log.debug("Starting command line client");
         final PhonoPhone phone = new PhonoPhone() {
 
+            /* implement the abstract methods in PhonoPhone to give UI feedback */
+            @Override
+            public void onIncommingCall(PhonoCall c) {
+                _call = c;
+                System.out.println("Press a<ret> to answer");
+            }
+
+            @Override
+            public void onError() {
+                System.out.println("Phone error");
+            }
+
+            /* implement the Phono Phone method that created a new PhonoCall Object */
             @Override
             public PhonoCall newCall() {
                 return new PhonoCall(this) {
 
+                    /* implement the abstract methods in PhonoCall to provide UI feedback */
                     @Override
                     public void onRing() {
                         System.out.println("Phone ringing ");
@@ -79,26 +91,23 @@ public class CommandLineClient {
                     }
                 };
             }
-
-            @Override
-            public void onIncommingCall(PhonoCall c) {
-                _call = c;
-                System.out.println("Press a<ret> to answer");
-            }
         };
         final PhonoMessaging messing = new PhonoMessaging() {
+            /* implement the abstract method in PhonoMessaging to provide UI feedback */
             @Override
             public void onMessage(PhonoMessage message) {
                 System.out.println("message from " + message.getFrom() + ": " + message.getBody());
             }
         };
         _pn = new PhonoNative() {
+            /* implement the abstract method in PhonoNative to provide UI feedback */
 
             @Override
             public void onReady() {
                 System.out.println("Connection Ready");
                 if (_console == null) {
                     Runnable cli = new Runnable() {
+
                         public void run() {
                             consoleUI();
                         }
@@ -118,15 +127,23 @@ public class CommandLineClient {
                 System.out.println("Connection Error! ");
             }
         };
+        /* attach the UI to the PhonoNative stack*/
         _pn.setPhone(phone);
         _pn.setMessaging(messing);
+        /* connect to voxeo's cloud */
         _pn.connect();
+        /* configure the ringtones */
+
         phone.setRingTone("http://s.phono.com/ringtones/Diggztone_Piano.mp3");
         phone.setRingbackTone("http://s.phono.com/ringtones/ringback-uk.mp3");
+        /* save our phone for later access */
         _phone = phone;
 
     }
 
+    /**
+     * primitive (minimal) commandline UI
+     */
     private void consoleUI() {
         while (_console != null) {
             try {

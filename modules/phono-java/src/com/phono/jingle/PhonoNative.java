@@ -39,10 +39,12 @@ import org.jivesoftware.smack.XMPPException;
 import org.minijingle.jingle.description.Payload;
 
 /**
- *
+ * Abstract class implementing the Main Phono Logic.
+ * You have to implement the abstract methods of this class, create single
+ * instance of that and then provide it with instances of PhonoMessaging and PhonoPhone.
  * @author tim
  */
-public class PhonoNative  {
+abstract public class PhonoNative {
 
     static String NS_JINGLE = "urn:xmpp:jingle:1";
     static String NS_JINGLE_RTP = "urn:xmpp:jingle:apps:rtp:1";
@@ -63,28 +65,50 @@ public class PhonoNative  {
     private final CodecList _codecList;
     final private Hashtable _endpoints = new Hashtable();
 
+    /**
+     * Constructor with an concrete PhonoPhone and PhonoMessaging instances
+     * @param p
+     * @param m
+     */
     public PhonoNative(PhonoPhone p, PhonoMessaging m) {
         this();
         setPhone(p);
         setMessaging(m);
     }
 
+    /**
+     * Constructor with an concrete PhonoPhone and PhonoMessaging instances
+     *
+     * @param domain - alternate domain to connect to - instead of app.phono.com
+     * @param p
+     * @param m
+     */
     public PhonoNative(String domain, PhonoPhone p, PhonoMessaging m) {
         this(domain);
         setPhone(p);
         setMessaging(m);
     }
 
+    /**
+     *
+     * bare constructor - you must set concrete PhonoPhone and PhonoMessaging instances
+     * once it is constructed.
+     */
     public PhonoNative() {
         this("app.phono.com");
     }
 
+    /**
+     * bare constructor - you must set concrete PhonoPhone and PhonoMessaging instances
+     * once it is constructed.
+     * @param domain alternate domain to connect to - instead of app.phono.com
+     */
     public PhonoNative(String domain) {
         _audio = new PhonoAudioShim();
         _codecList = new CodecList(_audio);
         ProviderManager.getInstance().addIQProvider("jingle", Jingle.XMLNS, new JingleProvider());
         ConnectionConfiguration cc = new ConnectionConfiguration(domain);
-        if(Log.getLevel() >= Log.DEBUG) {
+        if (Log.getLevel() >= Log.DEBUG) {
             cc.setDebuggerEnabled(true);
         }
         _xmppConnection = new XMPPConnection(cc);
@@ -184,23 +208,17 @@ public class PhonoNative  {
     /**
      * Override this method to get onReady notifications
      */
-    public void onReady() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    abstract public void onReady();
 
     /**
      * Override this method to get onUnready notifications
      */
-    public void onUnready() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    abstract public void onUnready();
 
     /**
      * Override this method to get onError notifications
      */
-    public void onError() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    abstract public void onError();
 
     void sendPacket(IQ pack) {
         _xmppConnection.sendPacket(pack);
@@ -210,7 +228,7 @@ public class PhonoNative  {
         _xmppConnection.addPacketListener(pli, pf);
     }
 
-    public List<Payload> getPayloads() {
+    List<Payload> getPayloads() {
         Codec[] codecs = getCodecs();
         List<Payload> payloads = new ArrayList<Payload>();
 
@@ -221,7 +239,7 @@ public class PhonoNative  {
         return payloads;
     }
 
-    public Share mkShare(String uri, Payload pay) {
+    Share mkShare(String uri, Payload pay) {
         Codec codec = null;
         Codec[] codecs = getCodecs();
         int payid = Integer.parseInt(pay.getId());
@@ -242,12 +260,12 @@ public class PhonoNative  {
         _audio.destroy();
     }
 
-    public void allocateEndpoint(String uri) {
+    void allocateEndpoint(String uri) {
         Endpoint endpoint = new Endpoint(uri);
         _endpoints.put(endpoint.getLocalURI(), endpoint);
     }
 
-    public void freeEndpoint(String uri) {
+    void freeEndpoint(String uri) {
         synchronized (_endpoints) {
             Endpoint e = (Endpoint) _endpoints.get(uri);
 
@@ -262,14 +280,14 @@ public class PhonoNative  {
         return _codecList.getCodecs();
     }
 
-    public Share share(String uri, Codec codec) {
+    Share share(String uri, Codec codec) {
         Properties spl = null;
         Properties spr = null;
 
         return share(uri, codec, spl, spr);
     }
 
-    public Share share(String uri, Codec codec, Properties spl, Properties spr) {
+    Share share(String uri, Codec codec, Properties spl, Properties spr) {
         // need to fix this for inbound at some point...
 
 
@@ -313,7 +331,7 @@ public class PhonoNative  {
                 if (share != null) {
                     share.stop(); // minimal cleanup on errors.
                 }
-                System.out.println(ex);                // do something useful here....
+                Log.error(ex.getMessage());                // do something useful here....
             }
         } else {
             Log.warn("No codec matching " + codec.toString());
@@ -326,7 +344,7 @@ public class PhonoNative  {
             try {
                 float ofreq = (_audio.getCodec(_audio.getCodec())).getSampleRate();
                 float nfreq = (_audio.getCodec(codec.iaxcn)).getSampleRate();
-                System.out.println("getting audio is " + ofreq + " = " + nfreq + " ? " + ((nfreq != ofreq) ? "No" : "Yes"));
+                Log.debug("getting audio is " + ofreq + " = " + nfreq + " ? " + ((nfreq != ofreq) ? "No" : "Yes"));
 
                 if (nfreq != ofreq) {
                     _audio.unInit();

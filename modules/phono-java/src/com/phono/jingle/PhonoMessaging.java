@@ -1,18 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-package com.phono.jingle;
-
-
-import com.phono.srtplight.Log;
-import org.jivesoftware.smack.PacketListener;
-import org.jivesoftware.smack.filter.PacketFilter;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-
-/*
  * Copyright 2012 Voxeo Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +14,21 @@ import org.jivesoftware.smack.packet.Packet;
  * limitations under the License.
  *
  */
-public class PhonoMessaging {
+package com.phono.jingle;
+
+
+import com.phono.srtplight.Log;
+import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+
+/**
+ * Abstract class that holds the PhonoMessaging logic.
+ * You must implement  onMessage()
+ * @author tim
+ */
+abstract public class PhonoMessaging {
     private PhonoNative _pni;
 
         void setPhonoNative(PhonoNative p) {
@@ -56,11 +56,18 @@ public class PhonoMessaging {
         _pni.addPacketListener(pli, pf);
     }
 
+/**
+ * you must implement this abstract method.
+ * it is called when an inbound (text) message is received
+ * @param message
+ */
+    abstract public void onMessage(PhonoMessage message) ;
 
-    public void onMessage(PhonoMessage message) {
-        Log.warn("Message arrived - you should probably have overridden this method -> PhonoMessaging.onMessage()");
-    }
-
+    /**
+     * send a message 
+     * @param to
+     * @param body
+     */
     public void send(String to, String body) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

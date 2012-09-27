@@ -19,7 +19,7 @@ package com.phono.jingle;
 
 
 /**
- *
+ * Represents a Phono Message
  * @author tim
  */
 public class PhonoMessage  {

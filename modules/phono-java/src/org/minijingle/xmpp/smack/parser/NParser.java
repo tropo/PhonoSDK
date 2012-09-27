@@ -39,7 +39,7 @@ public class NParser {
                 parser.next();
             }
 
-            System.out.println("Received: " + str.toString());
+            //System.out.println("Received: " + str.toString());
         } catch (XmlPullParserException e) {
             e.printStackTrace();
         } catch (IOException e) {
