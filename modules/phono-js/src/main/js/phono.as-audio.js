@@ -297,8 +297,8 @@ FlashAudio.prototype.createContainer = function(phono) {
     Phono.events.bind(this, {
       	onPermissionBoxShow: function() {
 	    $("#"+containerId).css({
-		"width":"215px",
-   		"height":"138px"
+		"width":"240px",
+   		"height":"160px"
 	    });
       	},
       	onPermissionBoxHide: function() {
