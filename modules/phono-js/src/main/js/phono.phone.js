@@ -544,7 +544,7 @@
          wideband: true,
          headset: false,
          codecs: function(offer) {return offer;},
-         security: "optional", // mandatory, disabled
+         security: "optional" // mandatory, disabled
       }, config);
       
       // Apply config
