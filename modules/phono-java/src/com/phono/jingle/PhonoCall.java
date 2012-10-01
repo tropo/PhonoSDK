@@ -16,8 +16,8 @@
  */
 package com.phono.jingle;
 
+import com.phono.api.PlayFace;
 import com.phono.api.Share;
-import com.phono.applet.audio.phone.Play;
 import com.phono.rtp.Endpoint;
 import java.net.SocketException;
 import java.util.List;
@@ -43,7 +43,7 @@ abstract public class PhonoCall {
     private Endpoint _end;
     private String _luri;
     private Candidate _candidate;
-    private Play _play;
+    private PlayFace _play;
     private Share _share;
     private String _sid;
     private String _rjid;
@@ -186,7 +186,7 @@ abstract public class PhonoCall {
             _play.stop();
             _play = null;
         }
-        _play = new Play(_ringTone);
+        _play = _phone.getNative().newPlayer(_ringTone);
         _play.start();
     }
 

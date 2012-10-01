@@ -18,9 +18,10 @@
 package com.phono.android.audio;
 
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
-import org.apache.cordova.api.CordovaInterface;
+import com.phono.api.PlayFace;
 import com.phono.rtp.Endpoint;
 import com.phono.srtplight.Log;
 
@@ -29,14 +30,14 @@ import com.phono.srtplight.Log;
  *
  * @author tim
  */
-public class Play extends Endpoint implements OnPreparedListener {
+public class Play extends Endpoint implements OnPreparedListener, PlayFace {
 
     MediaPlayer _mp;
     String _uri;
     boolean _prepared = false;
     final static String FILE = "file://";
 
-    public Play(String uri, CordovaInterface ctx) throws Exception {
+    public Play(String uri, Context ctx) throws Exception {
         super(uri);
         _uri = uri;
         _mp = new MediaPlayer();

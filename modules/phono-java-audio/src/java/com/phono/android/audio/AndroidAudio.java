@@ -594,4 +594,8 @@ public class AndroidAudio implements AudioFace {
         return (CodecFace) _codecMap.get(codecL);
 
     }
+
+    public void unInit() {
+        Log.warn("un-init() called on audio.");
+    }
 }

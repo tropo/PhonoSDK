@@ -16,6 +16,9 @@
  */
 package com.phono.jingle.test;
 
+import com.phono.api.PlayFace;
+import com.phono.applet.audio.phone.Play;
+import com.phono.audio.AudioFace;
 import com.phono.jingle.PhonoNative;
 import com.phono.jingle.PhonoPhone;
 import com.phono.jingle.PhonoCall;
@@ -100,7 +103,7 @@ public class CommandLineClient {
             }
         };
         _pn = new PhonoNative() {
-            /* implement the abstract method in PhonoNative to provide UI feedback */
+            /* implement the abstract methods in PhonoNative to provide UI feedback */
 
             @Override
             public void onReady() {
@@ -126,6 +129,18 @@ public class CommandLineClient {
             public void onError() {
                 System.out.println("Connection Error! ");
             }
+/* platform specific stuff here */
+/* different classes are used for android. */
+            @Override
+            public AudioFace newAudio() {
+                return new com.phono.applet.audio.phone.PhonoAudioShim();
+            }
+
+            @Override
+            public PlayFace newPlayer(String tone) {
+                return new com.phono.applet.audio.phone.Play(tone);
+            }
+
         };
         /* attach the UI to the PhonoNative stack*/
         _pn.setPhone(phone);

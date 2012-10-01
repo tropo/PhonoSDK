@@ -18,8 +18,10 @@ package com.phono.jingle;
 
 import com.phono.api.Codec;
 import com.phono.api.CodecList;
+import com.phono.api.PlayFace;
 import com.phono.api.Share;
-import com.phono.applet.audio.phone.PhonoAudioShim;
+import com.phono.audio.AudioException;
+import com.phono.audio.AudioFace;
 import com.phono.rtp.Endpoint;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
@@ -35,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jivesoftware.smack.XMPPException;
 import org.minijingle.jingle.description.Payload;
 
@@ -61,7 +65,7 @@ abstract public class PhonoNative {
     PhonoMessaging _messaging;
     private boolean _connected;
     private XMPPConnection _xmppConnection;
-    private final PhonoAudioShim _audio;
+    private final AudioFace _audio;
     private final CodecList _codecList;
     final private Hashtable _endpoints = new Hashtable();
 
@@ -83,7 +87,7 @@ abstract public class PhonoNative {
      * @param p
      * @param m
      */
-    public PhonoNative(String domain, PhonoPhone p, PhonoMessaging m) {
+    public PhonoNative(String domain,  PhonoPhone p, PhonoMessaging m) {
         this(domain);
         setPhone(p);
         setMessaging(m);
@@ -104,7 +108,7 @@ abstract public class PhonoNative {
      * @param domain alternate domain to connect to - instead of app.phono.com
      */
     public PhonoNative(String domain) {
-        _audio = new PhonoAudioShim();
+        _audio =  newAudio();
         _codecList = new CodecList(_audio);
         ProviderManager.getInstance().addIQProvider("jingle", Jingle.XMLNS, new JingleProvider());
         ConnectionConfiguration cc = new ConnectionConfiguration(domain);
@@ -115,6 +119,13 @@ abstract public class PhonoNative {
 
     }
 
+    /**
+     * implement this method to provide a platform specific implementation of
+     * AudioFace 
+     * @return 
+     */
+    abstract public AudioFace newAudio();
+    
     public void setApiKey(String k) {
         _apiKey = k;
     }
@@ -257,7 +268,11 @@ abstract public class PhonoNative {
     }
 
     public void terminate() {
-        _audio.destroy();
+        try {
+            _audio.destroy();
+        } catch (AudioException ex) {
+            Log.error("error in audio destroy"+ ex.getMessage());
+        }
     }
 
     void allocateEndpoint(String uri) {
@@ -302,7 +317,7 @@ abstract public class PhonoNative {
 
             try {
 
-                PhonoAudioShim af = getAudio(codec);
+                AudioFace af = getAudio(codec);
                 share = new Share(uri, af, codec.pt, spl, spr);
                 _audio.init(codec.iaxcn, 100); // todo fix rtt
                 String luri = share.getLocalURI();
@@ -339,7 +354,7 @@ abstract public class PhonoNative {
         return ret;
     }
 
-    private PhonoAudioShim getAudio(Codec codec) {
+    private AudioFace getAudio(Codec codec) {
         if (_audio != null) {
             try {
                 float ofreq = (_audio.getCodec(_audio.getCodec())).getSampleRate();
@@ -356,4 +371,13 @@ abstract public class PhonoNative {
         }
         return _audio;
     }
+
+    /**
+     * return a platform appropriate implementation of a PlayFace
+     * with the specified ringtone loaded.
+     * 
+     * @param tone
+     * @return 
+     */
+    public abstract PlayFace newPlayer(String tone) ;
 }

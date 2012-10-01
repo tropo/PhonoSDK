@@ -233,4 +233,6 @@ public interface AudioFace {
 
     public CodecFace getCodec(long l);
 
+    public void unInit();
+
 }
