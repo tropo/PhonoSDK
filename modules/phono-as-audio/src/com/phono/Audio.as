@@ -140,7 +140,7 @@ package com.phono
 		
 		var queue:Array = _waitQs[rtmpUri]
 		player = new RtmpPlayer(_hasEC, queue, nc, streamName, url, peerID);
-	    } else if (protocolName.toLowerCase() == "http") {
+	    } else if (protocolName.toLowerCase() == "http" || protocolName.toLowerCase() == "https") {
 		player = new HttpPlayer(url);
 	    }
 	    if (autoStart) player.start();
