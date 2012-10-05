@@ -47,11 +47,13 @@ package com.phono.impl
 	private var _mic:Microphone;
 	private var _active:Boolean = false;		
 	private var _tail:int = 0;
+        private var _release:Function;
 	
 	private var _soundTimer:Timer = new Timer(ECHO_TICKER_MS, 0);
 	
-	public function RtmpShare(hasEC:Boolean, queue:Array, nc:NetConnection, streamName:String, codec:Codec, url:String, mic:Microphone, suppress:Boolean, direct:Boolean)
+	public function RtmpShare(hasEC:Boolean, queue:Array, nc:NetConnection, streamName:String, codec:Codec, url:String, mic:Microphone, suppress:Boolean, direct:Boolean, release:Function)
 	{
+            _release = release;
             _mic = mic;     
 	    _nc = nc;
 	    _streamName = streamName;
@@ -110,7 +112,12 @@ package com.phono.impl
 	    if (_tx != null) _tx.close();
 	    _soundTimer.stop();
 	    _active = false;
-	}
+        }
+
+        public function release():void
+        {
+            _release();
+        }
 
         public function mediaReady():void
         {

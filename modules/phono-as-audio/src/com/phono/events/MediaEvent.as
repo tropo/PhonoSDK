@@ -17,6 +17,10 @@ package com.phono.events
 	 */
 	public static const CLOSE:String = "permissionBoxHide";
         /**
+	 * Dispatched when flash is connected to a server
+	 */
+	public static const CONNECTED:String = "flashConnected";
+        /**
 	 * Dispatched when flash is ready with media
 	 */
 	public static const READY:String = "mediaReady";

@@ -17,8 +17,9 @@ package com.phono.impl
 	private var _queue:Array;
         private var _hasEC:Boolean;
         private var _peerID:String;
+        private var _release:Function;
 	
-	public function RtmpPlayer(hasEC:Boolean, queue:Array, nc:NetConnection, streamName:String, url:String, peerID:String)
+	public function RtmpPlayer(hasEC:Boolean, queue:Array, nc:NetConnection, streamName:String, url:String, peerID:String, release:Function)
 	{
 	    _streamName = streamName;
 	    _url = url;
@@ -26,6 +27,7 @@ package com.phono.impl
 	    _nc = nc;
             _hasEC = hasEC;
             _peerID = peerID;
+            _release = release;
 	}
         
 	public function start():void
@@ -49,8 +51,13 @@ package com.phono.impl
 	public function stop():void
 	{
 	    if (!_nc.connected) _queue.push(this.stop);
-	    if (_rx != null) _rx.close(); 
+	    if (_rx != null) _rx.close();
 	}
+
+        public function release():void
+        {
+            _release();
+        }
 	
 	public function set volume(vol:Number):void
 	{

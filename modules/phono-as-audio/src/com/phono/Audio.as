@@ -26,7 +26,8 @@ package com.phono
 	private var _mic:Microphone; // Internal mic handle for permission checking
         private var _hasEC:Boolean = false; // Are we on a flash player with a working EC
 	private var _boxOpen:Boolean = false;
-	private var _ncDict:Dictionary = new Dictionary(); // rtmpUri -> NC		
+	private var _ncDict:Dictionary = new Dictionary(); // rtmpUri -> NC
+	private var _ncRefCount:Dictionary = new Dictionary();
 	private var _waitQs:Dictionary = new Dictionary(); // rtmpUri -> Array of functions to call
 	private var _cirrusNc:NetConnection;
 	private var _cirrusUri:String;
@@ -88,7 +89,12 @@ package com.phono
             var nc:NetConnection = getNetConnection(url);
 	    _cirrusNc = nc;
 	    _cirrusUri = url;
-	    return true;
+	    return nc.connected;
+        }
+
+        public function doCirrusDisconnect(url:String):Boolean
+        {
+            return releaseNetConnection(url);
         }
 
         public function setVersion(version:String):void
@@ -105,6 +111,8 @@ package com.phono
 	    } catch (e:Error) {
 		nearID = "";
 	    }
+            // To satisfy refcounting, we are done with it now.
+            releaseNetConnection(url);
             return nearID;
         }
 	
@@ -139,7 +147,11 @@ package com.phono
 		}
 		
 		var queue:Array = _waitQs[rtmpUri]
-		player = new RtmpPlayer(_hasEC, queue, nc, streamName, url, peerID);
+		player = new RtmpPlayer(_hasEC, queue, nc, streamName, url, peerID, function():void {
+                    if (peerID == NetStream.CONNECT_TO_FMS) {
+                        releaseNetConnection(rtmpUri);
+                    }
+                });
 	    } else if (protocolName.toLowerCase() == "http" || protocolName.toLowerCase() == "https") {
 		player = new HttpPlayer(url);
 	    }
@@ -180,7 +192,11 @@ package com.phono
 		}
 		
 		var queue:Array = _waitQs[rtmpUri]
-		var share:Share = new RtmpShare(_hasEC, queue, nc, streamName, codec, url, _mic, suppress, direct);
+		var share:Share = new RtmpShare(_hasEC, queue, nc, streamName, codec, url, _mic, suppress, direct, function():void {
+                    if (!direct) {
+                        releaseNetConnection(rtmpUri);
+                    }
+                });
 		if (autoStart) share.start();
                 _shares[streamName] = share;
 		return share;
@@ -245,11 +261,12 @@ package com.phono
 	{
 	    var nc:NetConnection;
 	    var rtmpUri:String = uri;
-	    if (_ncDict[rtmpUri] != null) nc = _ncDict[rtmpUri];
-	    else {
-		//NetConnection.defaultObjectEncoding = flash.net.ObjectEncoding.AMF0;	
+            // See if we already have it open
+	    if (_ncDict[rtmpUri] != null) {
+                nc = _ncDict[rtmpUri];
+                _ncRefCount[rtmpUri] = _ncRefCount[rtmpUri] + 1;
+            } else {
 		nc = new NetConnection();
-		//nc.objectEncoding = ObjectEncoding.AMF0;
 		nc.client = this;
 		nc.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onNCSecurityError);    
 		nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onNCAsyncError);
@@ -265,6 +282,8 @@ package com.phono
 						op();
 					    }	
 					    delete _waitQs[rtmpUri];
+                                            dispatchEvent(new MediaEvent(MediaEvent.CONNECTED,null,
+                                                                         "Flash NetConnection Connected"));
 					    break;
                                         case "NetConnection.Connect.Closed":
                                             dispatchEvent(new MediaEvent(MediaEvent.ERROR,null,
@@ -293,10 +312,26 @@ package com.phono
 		nc.connect(rtmpUri, _version);
 		// Allocate storage
 		_ncDict[rtmpUri] = nc;
+                _ncRefCount[rtmpUri] = 1;
 		_waitQs[rtmpUri] = new Array();
 	    }
 	    return nc;
 	}
+
+
+        // Close the NetConnection, returns true if ref count 0 and actually closed
+        private function releaseNetConnection(uri:String):Boolean
+        {
+            _ncRefCount[uri] = _ncRefCount[uri] - 1;
+            if (_ncRefCount[uri] == 0) {
+                var nc:NetConnection = _ncDict[uri];
+                nc.close();
+                delete _ncDict[uri];
+                delete _ncRefCount[uri];
+                return true;
+            }
+            return false;
+        }
 	
 	// Parse the uri and return the rtmpUri
 	private function getRtmpUri(uri:String):String

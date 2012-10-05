@@ -36,6 +36,11 @@ package com.phono.impl
 		_channel = null;
 	    }
 	}
+
+        public function release():void
+        {
+            // Nothing to do
+        }
 	
 	public function set volume(vol:Number):void
 	{
