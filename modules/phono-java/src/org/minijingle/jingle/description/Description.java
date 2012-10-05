@@ -15,14 +15,17 @@ public class Description {
     public final String NAMESPACE = "urn:xmpp:jingle:apps:rtp:1";
 
     @XStreamAsAttribute
-    private final String media;
+    private  String media;
 
     @XStreamImplicit
     @XStreamAlias("payload-type")
-    private final List<Payload> payloads = new ArrayList<Payload>();
+    private  List<Payload> payloads = new ArrayList<Payload>();
 
     private Encryption encryption = null;
 
+    public Description(){
+    	super();
+    }
     public Description(String media) {
         this.media = media;
     }

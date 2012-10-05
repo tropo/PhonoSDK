@@ -48,6 +48,8 @@ abstract public class PhonoCall {
     private String _sid;
     private String _rjid;
     private Content _remoteContent;
+	private int _gain = 100;
+	private int _volume = 100;
 
     public PhonoCall(PhonoPhone pp) {
         _phone = pp;
@@ -125,7 +127,7 @@ abstract public class PhonoCall {
      * @param m
      */
     public void setMute(boolean m) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    	_share.mute(m);
     }
 
     /**
@@ -133,7 +135,7 @@ abstract public class PhonoCall {
      * @return
      */
     public boolean isRinging() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    	return _play != null;
     }
 
     /**
@@ -141,7 +143,10 @@ abstract public class PhonoCall {
      * @param v
      */
     public void setVolume(int v) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    	_volume = v;
+    	if (_share != null){
+    		_share.volume((float)v);
+    	}
     }
 
     /**
@@ -149,7 +154,10 @@ abstract public class PhonoCall {
      * @param v
      */
     public void setGain(int v) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    	_gain = v;
+    	if(_share != null){
+    		_share.gain((float)v);
+    	}
     }
 
     /**
@@ -209,6 +217,8 @@ abstract public class PhonoCall {
         _end.release(); // ugly... and a race condition .
 
         _share = _phone.getNative().mkShare(uri, pay);
+        _share.gain(_gain);
+        _share.volume(_volume);
         _share.start();
 
 
@@ -285,6 +295,8 @@ abstract public class PhonoCall {
             _end.release(); // ugly... and a race condition .
 
             _share = pni.mkShare(uri, apay);
+            _share.gain(_gain);
+            _share.volume(_volume);
             _share.start();
 
 

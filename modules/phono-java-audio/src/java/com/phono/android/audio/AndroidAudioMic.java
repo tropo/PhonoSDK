@@ -173,7 +173,6 @@ public class AndroidAudioMic implements Runnable {
         return _inEnergy;
     }
 
-    @Override
     public void run() {
         //android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
         //_mic.startRecording();

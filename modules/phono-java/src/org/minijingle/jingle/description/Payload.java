@@ -7,11 +7,15 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 public class Payload {
 
     @XStreamAsAttribute
-    private final String id, name;
+    private  String id, name;
 
     @XStreamAsAttribute
     private int clockrate;
 
+    public Payload(){
+    	super();
+    }
+    
     public Payload(String id, String name) {
         this.id = id;
         this.name = name;
@@ -34,4 +38,17 @@ public class Payload {
     public int getClockrate() {
         return clockrate;
     }
+
+    public void setId(String i) {
+        id = i;
+    }
+
+    public void  setName(String n) {
+         name = n;
+    }
+
+    public void setClockrate(int c) {
+        clockrate = c;
+    }
+    
 }

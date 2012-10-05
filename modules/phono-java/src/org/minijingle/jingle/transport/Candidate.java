@@ -7,7 +7,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 public class Candidate {
 
     @XStreamAsAttribute
-    private final String ip, port, generation, id, component;
+    private String ip, port, generation, id, component;
 
     public Candidate(String ip, String port, String generation) {
         this.ip = ip;
@@ -17,6 +17,11 @@ public class Candidate {
         this.component = "1";
     }
 
+    public Candidate(){
+    	super();
+    	component ="1";
+    }
+    
     public String getIp() {
         return ip;
     }
@@ -27,5 +32,17 @@ public class Candidate {
 
     public String getGeneration() {
         return generation;
+    }
+
+    public void setIp(String i) {
+         ip = i;
+    }
+
+    public void setPort(String p) {
+         port = p;
+    }
+
+    public void setGeneration(String g) {
+         generation = g;
     }
 }

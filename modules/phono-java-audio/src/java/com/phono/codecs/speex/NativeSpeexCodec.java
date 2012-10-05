@@ -17,7 +17,6 @@
 
 package com.phono.codecs.speex;
 
-import com.phono.audio.codec.g722.*;
 import com.phono.audio.codec.CodecFace;
 import com.phono.audio.codec.DecoderFace;
 import com.phono.audio.codec.EncoderFace;
@@ -80,12 +79,10 @@ public class NativeSpeexCodec implements CodecFace, EncoderFace, DecoderFace {
     }
 
 
-    @Override
     public byte[] encode_frame(short[] audio) {
         return speexEncode(_codec, audio);
     }
 
-    @Override
     public short[] decode_frame(byte[] bytes) {
         speexDecode(_codec, bytes, _adataOut);
         return _adataOut;

@@ -385,9 +385,6 @@
 					"\"$(SRCROOT)/../target\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
-					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-azfjbduhvcpnhpgtnwxnjqpdejhw/Build/Products/Debug-iphoneos\"",
-					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-azfjbduhvcpnhpgtnwxnjqpdejhw/Build/Products/Debug-iphonesimulator\"",
-					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-adbqunjftafrxqfuzedyiialvrmp/Build/Products/Debug-iphoneos\"",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -415,9 +412,6 @@
 					"\"$(SRCROOT)/../target\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
-					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-azfjbduhvcpnhpgtnwxnjqpdejhw/Build/Products/Debug-iphoneos\"",
-					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-azfjbduhvcpnhpgtnwxnjqpdejhw/Build/Products/Debug-iphonesimulator\"",
-					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-adbqunjftafrxqfuzedyiialvrmp/Build/Products/Debug-iphoneos\"",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",

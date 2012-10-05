@@ -26,6 +26,9 @@ public class Jingle {
     private String from, to;
     private Ringing ringing;
 
+    public Jingle(){
+    	super();
+    }
     public Jingle(String sid, String initiator, String responder, String action) {
         this.sid = sid;
         this.initiator = initiator;

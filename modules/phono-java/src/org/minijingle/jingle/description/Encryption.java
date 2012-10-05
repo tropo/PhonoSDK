@@ -8,10 +8,13 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 public class Encryption {
 
     @XStreamAsAttribute
-    private final String required;
+    private  String required;
 
-    private final Crypto crypto;
+    private  Crypto crypto;
 
+    public Encryption(){
+    	super();
+    }
     public Encryption(final String required, final Crypto crypto) {
         this.required = required;
         this.crypto = crypto;
@@ -21,5 +24,10 @@ public class Encryption {
     {
 		return crypto;
 	}
-
+    public void setCrypto(Crypto x){
+    	crypto =x;
+    }
+    public void setRequired(String rec){
+    	required = rec;
+    }
 }

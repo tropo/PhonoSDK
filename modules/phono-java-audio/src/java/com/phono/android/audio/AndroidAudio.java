@@ -87,7 +87,7 @@ public class AndroidAudio implements AudioFace {
         _cleanAudioList = new ArrayList<StampedAudio>();
     }
 
-    @Override
+    
     public void init(long codec, int latency) throws AudioException {
         _codec = _codecMap.get(new Long(codec));
         if (_codec == null) {
@@ -183,7 +183,7 @@ public class AndroidAudio implements AudioFace {
         return (short) (((Math.sin(position * n1) + Math.sin(position * n2)) / 4) * Short.MAX_VALUE);
     }
 
-    @Override
+    
     public long getCodec() {
         long ret;
         if (_codec != null) {
@@ -195,7 +195,7 @@ public class AndroidAudio implements AudioFace {
         return ret;
     }
 
-    @Override
+    
     public String getCodecName() {
         String ret = "";
         if (_codec != null) {
@@ -204,7 +204,7 @@ public class AndroidAudio implements AudioFace {
         return ret;
     }
 
-    @Override
+    
     public int getFrameSize() {
         int ret;
         if (_codec != null) {
@@ -216,7 +216,7 @@ public class AndroidAudio implements AudioFace {
         return ret;
     }
 
-    @Override
+    
     public int getFrameInterval() {
         int ret;
         if (_codec != null) {
@@ -230,7 +230,7 @@ public class AndroidAudio implements AudioFace {
         return ret;
     }
 
-    @Override
+    
     public long[] getCodecs() {
         int len = _codecMap.size();
         long codecs[] = new long[len];
@@ -247,18 +247,18 @@ public class AndroidAudio implements AudioFace {
         return codecs;
     }
 
-    @Override
+    
     public int getVADpc() {
         return -1;
     }
 
-    @Override
+    
     public boolean isCodecAvailable(long codec) {
         Long format = new Long(codec);
         return _codecMap.containsKey(format);
     }
 
-    @Override
+    
     public int getOutboundTimestamp() {
         int ret = 0;
         if (_mic != null) {
@@ -267,7 +267,7 @@ public class AndroidAudio implements AudioFace {
         return ret;
     }
 
-    @Override
+    
     public void addAudioReceiver(AudioReceiver r) throws AudioException {
         _audioReceiver = r;
         if ((android.os.Build.VERSION.SDK_INT >= 14)
@@ -282,7 +282,7 @@ public class AndroidAudio implements AudioFace {
      * @param stampedAudio
      *            The stamped audio to speaker
      */
-    @Override
+    
     public void writeStampedAudio(StampedAudio stampedAudio)
             throws AudioException {
         if (_speaker != null) {
@@ -300,7 +300,7 @@ public class AndroidAudio implements AudioFace {
     }
     int _aibc = 0;
 
-    @Override
+    
     public StampedAudio getCleanStampedAudio() {
         StampedAudio ret = null;
         synchronized (_cleanAudioList) {
@@ -364,7 +364,7 @@ public class AndroidAudio implements AudioFace {
      * @return a StampedAudio containing a framesize worth of data.
      * @see #getFrameSize()
      */
-    @Override
+    
     public StampedAudio readStampedAudio() throws AudioException {
         StampedAudio stampedAudio = null;
         if (_mic != null) {
@@ -390,12 +390,12 @@ public class AndroidAudio implements AudioFace {
         return stampedAudio;
     }
 
-    @Override
+    
     public boolean isAudioUp() {
         return (_mic != null && _speaker != null);
     }
 
-    @Override
+    
     public void startPlay() {
         if (_speaker != null) {
             //_speaker.startPlay(); // let the arrival of audio decide
@@ -406,14 +406,14 @@ public class AndroidAudio implements AudioFace {
         }
     }
 
-    @Override
+    
     public void stopPlay() {
         if (_speaker != null) {
             _speaker.stopPlay();
         }
     }
 
-    @Override
+    
     public void startRec() {
         if (_mic != null) {
             _mic.startRec();
@@ -428,14 +428,14 @@ public class AndroidAudio implements AudioFace {
         }
     }
 
-    @Override
+    
     public void stopRec() {
         if (_mic != null) {
             _mic.stopRec();
         }
     }
 
-    @Override
+    
     public void destroy() throws AudioException {
         Log.debug(
                 this.getClass().getSimpleName() + ".destroy(): ");
@@ -449,12 +449,12 @@ public class AndroidAudio implements AudioFace {
         }
     }
 
-    @Override
+    
     public Properties getAudioProperties() {
         return new Properties(_audioProperties);
     }
 
-    @Override
+    
     public boolean setAudioProperty(String name, Object value)
             throws IllegalArgumentException {
         Log.debug(
@@ -464,7 +464,7 @@ public class AndroidAudio implements AudioFace {
         return false;
     }
 
-    @Override
+    
     public double[] getEnergy() {
         double[] ret = new double[2];
         ret[0] = 0;
@@ -479,12 +479,12 @@ public class AndroidAudio implements AudioFace {
         return ret;
     }
 
-    @Override
+    
     public void updateRemoteStats(NetStatsFace r) {
         // not implemented yet
     }
 
-    @Override
+    
     public boolean doVAD() {
         return false;
     }

@@ -96,7 +96,7 @@ public class DroidPhonoAudioShim extends AndroidAudio {
     }
 
     public void setVolume(double d) {
-        float fvol = (float) (d/100.0);
+        float fvol = (float) (d);
         this.getAudioTrack().setStereoVolume(fvol, fvol);
     }
 

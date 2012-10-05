@@ -17,4 +17,8 @@ public class Reason {
         this.busy = busy;
     }
 
+    public Reason(){
+    	
+    }
+    
 }

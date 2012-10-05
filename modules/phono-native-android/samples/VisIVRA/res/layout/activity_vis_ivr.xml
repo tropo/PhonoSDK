@@ -1,0 +1,196 @@
+<AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/AbsoluteLayout1"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/conStatusTextView"
+        android:layout_width="164dp"
+        android:layout_height="39dp"
+        android:layout_x="81dp"
+        android:layout_y="9dp"
+        android:text="loading" />
+
+    <WebView
+        android:id="@+id/webView1"
+        android:layout_width="284dp"
+        android:layout_height="136dp"
+        android:layout_x="13dp"
+        android:layout_y="154dp" />
+
+    <Button
+        android:id="@+id/button5"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="3dp"
+        android:layout_y="301dp"
+        android:text="0" 
+        android:onClick="digit"/>
+
+    <Button
+        android:id="@+id/Button01"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="50dp"
+        android:layout_y="304dp"
+        android:text="1"
+        android:onClick="digit" />
+
+    <Button
+        android:id="@+id/Button02"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="95dp"
+        android:layout_y="304dp"
+        android:text="2" 
+        android:onClick="digit"/>
+
+    <Button
+        android:id="@+id/Button03"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="140dp"
+        android:layout_y="306dp"
+        android:text="3" 
+        android:onClick="digit"/>
+
+    <Button
+        android:id="@+id/Button06"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="2dp"
+        android:layout_y="352dp"
+        android:text="6" 
+        android:onClick="digit"/>
+
+    <Button
+        android:id="@+id/Button07"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="50dp"
+        android:layout_y="350dp"
+        android:text="7" 
+        android:onClick="digit"/>
+
+    <Button
+        android:id="@+id/Button08"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="97dp"
+        android:layout_y="349dp"
+        android:text="8" 
+        android:onClick="digit"/>
+
+    <Button
+        android:id="@+id/Button09"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="144dp"
+        android:layout_y="347dp"
+        android:text="9" 
+        android:onClick="digit"/>
+
+    <Button
+        android:id="@+id/Button10"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="196dp"
+        android:layout_y="348dp"
+        android:text="*" 
+        android:onClick="digit"/>
+
+    <Button
+        android:id="@+id/Button11"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="247dp"
+        android:layout_y="347dp"
+        android:text="#" 
+        android:onClick="digit"/>
+
+    <Button
+        android:id="@+id/Button05"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="195dp"
+        android:layout_y="302dp"
+        android:text="4" 
+        android:onClick="digit"/>
+
+    <Button
+        android:id="@+id/Button04"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="244dp"
+        android:layout_y="302dp"
+        android:text="5" 
+        android:onClick="digit"/>
+
+    <TextView
+        android:id="@+id/addressTextView"
+        android:layout_width="293dp"
+        android:layout_height="wrap_content"
+        android:layout_x="5dp"
+        android:layout_y="62dp"
+        android:text="9996160714"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/hangupButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="1dp"
+        android:layout_y="101dp"
+        android:text="Hangup" 
+        android:onClick="hangup"/>
+
+    <Button
+        android:id="@+id/dialButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="237dp"
+        android:layout_y="98dp"
+        android:text="Dial/Ans" 
+        android:onClick="dial"/>
+
+    <TextView
+        android:id="@+id/statusTextView"
+        android:layout_width="152dp"
+        android:layout_height="wrap_content"
+        android:layout_x="91dp"
+        android:layout_y="116dp"
+        android:text="status"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <Button
+        android:id="@+id/disconnectButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="7dp"
+        android:layout_y="6dp"
+        android:text="Disc" 
+        android:onClick="disconnect"/>
+
+    <Button
+        android:id="@+id/connectButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="230dp"
+        android:layout_y="7dp"
+        android:text="Conn"
+        android:onClick="connect" />
+
+</AbsoluteLayout>

@@ -38,6 +38,10 @@ public class Content {
 
     }
 
+    public Content(){
+    	super();
+    }
+    
     public String getCreator() {
         return creator;
     }

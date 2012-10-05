@@ -70,9 +70,11 @@
      </copy>
     </target>
 <target name="-post-compile">
-     <delete includeEmptyDirs="true">
-       <fileset dir="${source.dir}/"/>
+<!--     <delete includeEmptyDirs="true">
+       <fileset dir="${source.dir}/**/"/>
      </delete>
+-->
+
     </target>
     <import file="custom_rules.xml" optional="true" />
 

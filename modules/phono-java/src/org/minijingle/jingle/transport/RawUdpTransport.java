@@ -12,11 +12,11 @@ public class RawUdpTransport {
 
     @XStreamAsAttribute
     @XStreamAlias("xmlns")
-    public final String NAMESPACE = "urn:xmpp:jingle:transports:raw-udp:1";
+    public  String NAMESPACE = "urn:xmpp:jingle:transports:raw-udp:1";
 
     @XStreamImplicit
     @XStreamAlias("candidate")
-    private final ArrayList<Candidate> candidates = new ArrayList<Candidate>();
+    private  ArrayList<Candidate> candidates = new ArrayList<Candidate>();
 
     @XStreamAsAttribute
     private String pwd , ufrag;
@@ -31,6 +31,10 @@ public class RawUdpTransport {
         this.pwd = pwd;
     }
 
+    public RawUdpTransport(){
+    	
+    }
+    
     public List<Candidate> getCandidates() {
         return candidates;
     }
@@ -42,4 +46,17 @@ public class RawUdpTransport {
     public String getUfrag() {
         return ufrag;
     }
+    
+    public void setCandidate(Candidate c) {
+         candidates.add(c);
+    }
+
+    public void setPwd(String p) {
+        pwd = p;
+    }
+
+    public void setUfrag(String u) {
+         ufrag = u;
+    }
+    
 }

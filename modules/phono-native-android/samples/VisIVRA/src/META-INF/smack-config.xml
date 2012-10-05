@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="MacRoman"?>
+
+
+<smack>
+
+    <!-- Classes that will be loaded when Smack starts -->
+    <startupClasses>
+</startupClasses>
+</smack>

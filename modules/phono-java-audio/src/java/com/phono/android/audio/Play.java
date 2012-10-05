@@ -19,6 +19,7 @@ package com.phono.android.audio;
 
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import com.phono.api.PlayFace;
@@ -35,6 +36,7 @@ public class Play extends Endpoint implements OnPreparedListener, PlayFace {
     MediaPlayer _mp;
     String _uri;
     boolean _prepared = false;
+	private boolean _startme;
     final static String FILE = "file://";
 
     public Play(String uri, Context ctx) throws Exception {
@@ -50,13 +52,15 @@ public class Play extends Endpoint implements OnPreparedListener, PlayFace {
             _mp.setOnPreparedListener(this);
             _mp.prepareAsync();
         }
-
-
+        _mp.setLooping(true);
+        //_mp.setAudioStreamType(AudioManager.MODE_RINGTONE);
     }
 
     public void stop() {
         if (_mp != null) {
             _mp.stop();
+            _startme = false;
+
         }
     }
 
@@ -66,6 +70,7 @@ public class Play extends Endpoint implements OnPreparedListener, PlayFace {
                 _mp.start();
             } else {
                 Log.debug("not ready to play " + _uri);
+                _startme = true;
             }
         }
     }
@@ -80,5 +85,8 @@ public class Play extends Endpoint implements OnPreparedListener, PlayFace {
     public void onPrepared(MediaPlayer mp) {
         Log.debug("prepared " + _uri);
         _prepared = true;
+        if(_startme){
+        	mp.start();
+        }
     }
 }

@@ -30,7 +30,6 @@ public class JingleProvider implements IQProvider, PacketInterceptor
      * Parse a iq/jingle element.
      */
     public IQ parseIQ(final XmlPullParser parser) throws Exception {
-
         NParser p = new NParser(parser);
         return JingleIQ.fromXml(p.getAsString());
 
