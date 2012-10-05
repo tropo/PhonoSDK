@@ -268,6 +268,7 @@
                                              call.state = CallState.CONNECTED;
                                              Phono.events.trigger(call, "answer");
                                              if (call.ringer != null) call.ringer.stop();
+                                             call.setupBinding();
                                              call.startAudio();
                                          });
                                      },
@@ -318,6 +319,7 @@
           call.stopAudio();
           if (call.ringer != null) call.ringer.stop();
           if (call.ringback != null) call.ringback.stop();          
+          if (call.transport.destroyTransport) call.transport.destroyTransport();
       });
       
    };
@@ -492,10 +494,12 @@
           if (call.transport.name == $(this).attr('xmlns') && foundTransport == false) {
               var transport = call.transport.processTransport($(this), false);      
               if (transport != undefined) {
-                  call.bindAudio({
-                      input: call.audioLayer.play(transport.input, false),
-                      output: call.audioLayer.share(transport.output, false, codec, call.srtpPropsl, call.srtpPropsr)
-                  });
+                  call.setupBinding = function () {
+                      return call.bindAudio ({
+                          input: call.audioLayer.play(transport.input, false),
+                          output: call.audioLayer.share(transport.output, false, codec, call.srtpPropsl, call.srtpPropsr)
+                      });
+                  };
                   foundTransport = true;
               } else {
                   Phono.log.error("No valid candidate in transport");
@@ -644,6 +648,7 @@
             if (call.ringback != null) call.ringback.stop();
 
             // Connect audio streams
+            call.setupBinding();
             call.startAudio();
 
             // Fire answer event
@@ -665,7 +670,8 @@
             call.stopAudio();
             if (call.ringer != null) call.ringer.stop();
             if (call.ringback != null) call.ringback.stop();
-            
+            if (call.transport.destroyTransport) call.transport.destroyTransport();
+
             // Fire hangup event
             Phono.events.trigger(call, "hangup")
             

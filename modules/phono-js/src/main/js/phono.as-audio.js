@@ -5,7 +5,7 @@ function FlashAudio(phono, config, callback) {
     this.config = Phono.util.extend({
         protocol: "rtmfp",
         swf: "//" + MD5.hexdigest(window.location.host+phono.config.apiKey) + ".u.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf",
-        cirrus: "rtmfp://phono-fms1-ext.voxeolabs.net/phono",
+        cirrus: "rtmfp://192.168.0.10/phono",
         direct: true,
         media: {audio:true,video:true}
     }, config);
@@ -49,9 +49,6 @@ function FlashAudio(phono, config, callback) {
         });
         plugin.$flash.setVersion(Phono.version);
         callback(plugin);
-        if (plugin.config.direct) {
-            window.setTimeout(10, plugin.$flash.doCirrusConnect(plugin.config.cirrus));
-        }
     });
 
     wmodeSetting = "opaque";
@@ -122,6 +119,8 @@ FlashAudio.prototype.play = function(transport, autoPlay) {
         },
         stop: function() {
             player.stop();
+            // This is final, you can't restart if it was rtmp or rtmfp
+            player.release();
         },
         volume: function(value) {
    	    if(arguments.length === 0) {
@@ -166,6 +165,8 @@ FlashAudio.prototype.share = function(transport, autoPlay, codec) {
         },
         stop: function() {
             share.stop();
+            // This is final, you can't restart
+            share.release();
         },
         digit: function(value, duration, audible) {
             share.digit(value, duration, audible);
@@ -221,20 +222,42 @@ FlashAudio.prototype.transport = function() {
     var $flash = this.$flash;
     var config = this.config;
     var cirrus = this.config.cirrus;
+    var plugin = this;
     return {
         name: this.$flash.getTransport(),
         description: this.$flash.getDescription(),
         buildTransport: function(direction, j, callback) {
             var nearID = "";
             if (config.direct) {
-                nearID = $flash.nearID(cirrus);
-            }
-            if (nearID != "") {
-                j.c('transport',{xmlns:this.name, peerID:nearID});
+                // XXX HOW LONG WILL WAIT BEFORE ABORTING?
+                var onConnected = function() {
+                    if (nearID == "") {
+                        // First call
+                        nearID = $flash.nearID(cirrus);
+                        Phono.log.info("Got nearID = " + nearID);
+                        if (nearID != "") {
+                            j.c('transport',{xmlns:this.name, peerID:nearID});
+                        } else {
+                            j.c('transport',{xmlns:this.name});
+                        }
+                        callback();
+                    }
+                }
+                
+                // Connect to cirrus, and once we get the good event, grab the nearID and continue
+                var connected = $flash.doCirrusConnect(cirrus);
+                Phono.log.info("doCirrusConnect");
+                if (connected) {
+                    // Will not get an additional callabck
+                    Phono.log.info("doCirrusConnect - already connected");
+                    onConnected();
+                } else {
+                    Phono.events.add(plugin, "flashConnected", onConnected);
+                }
             } else {
                 j.c('transport',{xmlns:this.name});
+                callback();
             }
-            callback();
         },
         processTransport: function(t) {
             var pID = t.attr('peerid');
@@ -254,6 +277,13 @@ FlashAudio.prototype.transport = function() {
                             };
             });
             return transport;
+        },
+        destroyTransport: function() {
+            // Disconnect from cirrus server, reference counting is done in phono-as-audio
+            if (config.direct) {
+                Phono.log.info("Disconnecting from cirrus server");
+                $flash.doCirrusDisconnect(cirrus);
+            }
         }
     }
 };
