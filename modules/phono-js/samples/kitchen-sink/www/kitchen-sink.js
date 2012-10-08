@@ -34,7 +34,7 @@ $(document).ready(function() {
 	var firstPhono = $('.phono').first()
 	var newPhonoDiv = firstPhono.clone()
         var audioType = $('.audio-plugin').val();
-        var directP2P = false;
+        var directP2P = true;
         var connectionUrl = window.location.protocol+"//app.phono.com/http-bind";
         var dialString = "sip:3366@login.zipdx.com";
         var chatString = "en2fr@bot.talk.google.com";
@@ -76,6 +76,12 @@ $(document).ready(function() {
             directP2P = true;
         }
 
+        if (audioType == "pandabridged") {
+            gw = "gw-v4.d.phono.com";
+            audio = "flash";
+            directP2P = false;
+        }
+
 	phonos[newPhonoID] = $.phono({
 	    apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
             connectionUrl:connectionUrl,
@@ -91,7 +97,12 @@ $(document).ready(function() {
                                                     + this.sessionId + "</a>");
                 newPhonoDiv.find(".phoneControl").show();
 
-                if (audioType == "auto") newPhonoDiv.find(".audioType").text(this.audio.type);
+                newPhonoDiv.find(".audioType").text(this.audio.type);
+                if (this.audio.type == "flash" && gw == "gw-v4.d.phono.com") {
+                    newPhonoDiv.find(".audioType").text(directP2P?"flash (new)":"flash (new - bridged)");
+                } else if (this.audio.type == "flash") {
+                    newPhonoDiv.find(".audioType").text("flash (old)");
+                }
 
                 if (this.audio.audioInDevices){
                     var inList = this.audio.audioInDevices();
