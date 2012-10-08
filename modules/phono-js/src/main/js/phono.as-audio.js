@@ -5,7 +5,7 @@ function FlashAudio(phono, config, callback) {
     this.config = Phono.util.extend({
         protocol: "rtmfp",
         swf: "//" + MD5.hexdigest(window.location.host+phono.config.apiKey) + ".u.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf",
-        cirrus: "rtmfp://192.168.0.10/phono",
+        cirrus: "rtmfp://phono-fms1-ext.voxeolabs.net/phono",
         direct: true,
         media: {audio:true,video:true}
     }, config);
