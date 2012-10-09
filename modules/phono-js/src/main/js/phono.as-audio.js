@@ -223,9 +223,12 @@ FlashAudio.prototype.transport = function() {
     var config = this.config;
     var cirrus = this.config.cirrus;
     var plugin = this;
+    var name = this.$flash.getTransport();
+    var description = this.$flash.getDescription();
+
     return {
-        name: this.$flash.getTransport(),
-        description: this.$flash.getDescription(),
+        name: name,
+        description: description,
         buildTransport: function(direction, j, callback) {
             var nearID = "";
             if (config.direct) {
@@ -236,9 +239,9 @@ FlashAudio.prototype.transport = function() {
                         nearID = $flash.nearID(cirrus);
                         Phono.log.info("Got nearID = " + nearID);
                         if (nearID != "") {
-                            j.c('transport',{xmlns:this.name, peerID:nearID});
+                            j.c('transport',{xmlns:name, peerID:nearID});
                         } else {
-                            j.c('transport',{xmlns:this.name});
+                            j.c('transport',{xmlns:name});
                         }
                         callback();
                     }
