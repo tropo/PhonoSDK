@@ -266,9 +266,9 @@
                                      function(){
                                          call.connection.sendIQ(acceptIq, function (iq) {
                                              call.state = CallState.CONNECTED;
-                                             Phono.events.trigger(call, "answer");
                                              if (call.ringer != null) call.ringer.stop();
                                              call.setupBinding();
+                                             Phono.events.trigger(call, "answer");
                                              call.startAudio();
                                          });
                                      },
