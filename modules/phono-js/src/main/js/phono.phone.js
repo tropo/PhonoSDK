@@ -471,23 +471,23 @@
 
       // Check to see if we have crypto, we only support AES_CM_128_HMAC_SHA1_80
       if (call._security != "disabled" && this.transport.supportsSRTP == true) {
-           description.find('crypto').each(function () {
-               if ($(this).attr('crypto-suite') == call.crypto) {
-                   call.srtpPropsr = Phono.util.srtpProps($(this).attr('tag'), 
-                                                          $(this).attr('crypto-suite'), 
-                                                          $(this).attr('key-params'), 
-                                                          $(this).attr('session-params'));
-                   call.tag = $(this).attr('tag'); // So we can answer with the correct tag
-               }
-           });
+          description.find('crypto').each(function () {
+              if ($(this).attr('crypto-suite') == call.crypto) {
+                  call.srtpPropsr = Phono.util.srtpProps($(this).attr('tag'), 
+                                                         $(this).attr('crypto-suite'), 
+                                                         $(this).attr('key-params'), 
+                                                         $(this).attr('session-params'));
+                  call.tag = $(this).attr('tag'); // So we can answer with the correct tag
+              }
+          });
+          
+          if (call._security == "mandatory" && call.srtpPropsr == undefined) {
+              // We must fail the call, remote end did not agree on crypto
+              Phono.log.error("No security when mandatory specified");
+              return null;
+          }
       }
 
-      if (call._security == "mandatory" && call.srtpPropsr == undefined) {
-          // We must fail the call, remote end did not agree on crypto
-          Phono.log.error("No security when mandatory specified");
-          return null;
-      }
-       
       // Find a matching media transport
       var foundTransport = false;
       $(iq).find('transport').each(function () {
@@ -506,13 +506,6 @@
               }
           }
       });
-
-      // Belt and braces
-      if (call._security == "mandatory" && call.output.secure() == false) {
-          // We must fail the call, remote end did not agree on crypto
-          Phono.log.error("Security error, share not secure when mandatory specified");
-          return null;
-      }
 
       if (foundTransport == false) {
           Phono.log.error("No matching valid transport");
@@ -641,25 +634,33 @@
                 call.hangup();
                 break;
             }
-
-            call.state = CallState.CONNECTED;
-
+          
             // Stop ringback
             if (call.ringback != null) call.ringback.stop();
-
+          
             // Connect audio streams
             call.setupBinding();
+          
+            // Belt and braces
+            if (call._security == "mandatory" && call.output.secure() == false) {
+                // We must fail the call, remote end did not agree on crypto
+                Phono.log.error("Security error, call not secure when mandatory specified");
+                call.hangup();
+                break;
+            }
+
             call.startAudio();
 
+            call.state = CallState.CONNECTED;
+                
             // Fire answer event
             Phono.events.trigger(call, "answer")
-            
             break;
 
          // Transport information update
          case "transport-replace":
          case "transport-accept":
-          call.transport.processTransport($(iq), true);
+            call.transport.processTransport($(iq), true);
             break;
 
          // Hangup
