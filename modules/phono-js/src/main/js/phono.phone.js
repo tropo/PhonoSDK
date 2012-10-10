@@ -268,8 +268,15 @@
                                              call.state = CallState.CONNECTED;
                                              if (call.ringer != null) call.ringer.stop();
                                              call.setupBinding();
-                                             Phono.events.trigger(call, "answer");
-                                             call.startAudio();
+                                             // Check security
+                                             if (call._security == "mandatory" && call.output.secure() == false) {
+                                                 // We must fail the call, remote end did not agree on crypto
+                                                 Phono.log.error("Security error, call not secure when mandatory specified");
+                                                 call.hangup();
+                                             } else {
+                                                 Phono.events.trigger(call, "answer");
+                                                 call.startAudio();
+                                             }
                                          });
                                      },
                                      partialUpdate.up(),
