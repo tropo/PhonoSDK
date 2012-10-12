@@ -107,6 +107,9 @@ public class CommandLineClient {
 
             @Override
             public void onReady() {
+                        /* attach the UI to the PhonoNative stack*/
+                _pn.setPhone(phone);
+                _pn.setMessaging(messing);
                 System.out.println("Connection Ready");
                 if (_console == null) {
                     Runnable cli = new Runnable() {
@@ -142,9 +145,7 @@ public class CommandLineClient {
             }
 
         };
-        /* attach the UI to the PhonoNative stack*/
-        _pn.setPhone(phone);
-        _pn.setMessaging(messing);
+
         /* connect to voxeo's cloud */
         _pn.connect();
         /* configure the ringtones */

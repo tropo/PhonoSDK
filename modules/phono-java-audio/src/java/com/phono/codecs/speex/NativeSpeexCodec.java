@@ -17,9 +17,13 @@
 
 package com.phono.codecs.speex;
 
+import org.xiph.speex.SpeexDecoder;
+import org.xiph.speex.SpeexEncoder;
+
 import com.phono.audio.codec.CodecFace;
 import com.phono.audio.codec.DecoderFace;
 import com.phono.audio.codec.EncoderFace;
+import com.phono.srtplight.Log;
 
 /**
  *
@@ -31,8 +35,12 @@ public class NativeSpeexCodec implements CodecFace, EncoderFace, DecoderFace {
     short[] _adataOut;
     byte[] _wireOut;
     byte[] _codec;
+    long _iaxcn;
+    String _name;
+    int _aframesz;
+    int _speexmode;
 
-    private native byte[] initCodec();
+    private native byte[] initCodec(int mode, int q, int c, int sampleRate);
 
     private native byte[] speexEncode(byte[] codec, short[] a);
 
@@ -41,13 +49,29 @@ public class NativeSpeexCodec implements CodecFace, EncoderFace, DecoderFace {
     public native void freeCodec(byte[] codec);
 
     static {
-        System.loadLibrary("phono-speexw");
+        System.loadLibrary("phono-speex");
     }
 
-    public NativeSpeexCodec() {
+    protected  int getCompexity(boolean wide){
+        return wide? 1:0 ;
+    }
 
-        _adataOut = new short[320];
-        _codec = initCodec();
+    protected  int getQuality(boolean wide){
+        return wide ? 5:3;
+    }
+
+    public NativeSpeexCodec(boolean wide) {
+        _speexmode = wide ? 1:0;
+        _sampleRate = wide ? 16000 : 8000;
+        _iaxcn = wide ? CodecFace.AUDIO_SPEEX16 : CodecFace.AUDIO_SPEEX;
+        _name = wide ? "SPEEX" : "SPEEX";
+        int q = getQuality(wide) ;
+        int c = getCompexity(wide);
+        _aframesz = wide ? 320 : 160; // number of shorts in an audio frame;
+
+        _adataOut = new short[_aframesz];
+        _codec = initCodec(_speexmode,q,c,_sampleRate);
+        Log.debug("Native speex codec "+(wide?"wide":"narrow")+"band rate="+_sampleRate+" q="+q+" c="+c);
     }
 
     public int getFrameSize() {
@@ -59,9 +83,8 @@ public class NativeSpeexCodec implements CodecFace, EncoderFace, DecoderFace {
     }
 
     public long getCodec() {
-        return SpeexCodec.AUDIO_SPEEX16;
+        return _iaxcn;
     }
-
     public DecoderFace getDecoder() {
         return this;
     }
@@ -71,11 +94,11 @@ public class NativeSpeexCodec implements CodecFace, EncoderFace, DecoderFace {
     }
 
     public float getSampleRate() {
-        return 16000.0F;
+        return _sampleRate;
     }
 
     public String getName() {
-        return "SPEEX";
+        return _name;
     }
 
 

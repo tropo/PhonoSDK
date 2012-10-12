@@ -16,8 +16,6 @@
  */
 package com.phono.jingle;
 
-import android.media.AudioTrack;
-
 import com.phono.srtplight.Log;
 import java.util.Hashtable;
 import org.jivesoftware.smack.PacketListener;
@@ -166,7 +164,7 @@ abstract public class PhonoPhone {
             String sid = jingleIQ.getElement().getSid();
             _currentCalls.put(sid, call);
             call.setSid(sid);
-            String rji = jingleIQ.getElement().getInitiator();
+            String rji = jingleIQ.getElement().getFrom();
             call.setRJid(rji);
             call.incomming(jingleIQ.getElement().getContent());
             call.play(_ringTone);

@@ -16,8 +16,6 @@
  */
 package com.phono.jingle;
 
-import android.media.AudioTrack;
-
 import com.phono.api.Codec;
 import com.phono.api.CodecList;
 import com.phono.api.PlayFace;
@@ -39,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -234,8 +233,7 @@ abstract public class PhonoNative {
 				}
 			}
 		};
-		Thread conRunner = new Thread(conRun, "ConnectionTRunner");
-		conRunner.start();
+		_stpe.submit(conRun);
 	}
 
 	public void disconnect() {
@@ -245,6 +243,9 @@ abstract public class PhonoNative {
 		}
 	}
 
+	public void submit(Runnable r){
+		_stpe.submit(r);
+	}
 	public boolean isConnected() {
 		return _connected;
 	}
@@ -388,7 +389,7 @@ abstract public class PhonoNative {
 				Log.error(ex.getMessage()); // do something useful here....
 			}
 		} else {
-			Log.warn("No codec matching " + codec.toString());
+			Log.warn("No codec matching null.");
 		}
 		return ret;
 	}
@@ -421,5 +422,27 @@ abstract public class PhonoNative {
 	 * @return
 	 */
 	public abstract PlayFace newPlayer(String tone);
+
+	public Payload findAudioPayload(List<Payload> payloads) {
+		Payload ret = null;
+		Codec[] codecs = getCodecs();
+		for (Payload pay : payloads) {
+			if (Integer.parseInt(pay.getId()) != CodecList.DTMFPAYLOADTTYPE) {
+				for (Codec c : codecs) {
+					if ((c.name.equals(pay.getName()))
+							&& (c.rate == pay.getClockrate())) {
+						ret = pay;
+						Log.debug(c.name+" matches "+pay.getName()+" icode="+c.iaxcn);
+						break;
+					} else {
+						Log.debug(c.name+" matches "+pay.getName()+" icode="+c.iaxcn);
+					}
+				}
+			} else {
+				Log.debug(pay.getName()+" not audio code");
+			}
+		}
+		return ret;
+	}
 
 }

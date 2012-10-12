@@ -210,7 +210,7 @@ abstract public class PhonoCall {
         }
 
         List<Payload> payloads = c.getDescription().getPayloads();
-        Payload pay = payloads.get(0);
+        Payload pay = _phone.getNative().findAudioPayload(payloads);
         List<Candidate> candidates = c.getTransport().getCandidates();
         Candidate candi = candidates.get(0);
         String uri = _luri + ":" + candi.getIp() + ":" + candi.getPort();
@@ -283,10 +283,10 @@ abstract public class PhonoCall {
 
             accept.setContent(combContent);
 
-            final JingleIQ initiateIQ = new JingleIQ(accept);
+            final JingleIQ acceptIQ = new JingleIQ(accept);
             //initiateIQ.setFrom(localJid);
-            initiateIQ.setTo(_rjid);
-            pni.sendPacket(initiateIQ);
+            acceptIQ.setTo(_rjid);
+            pni.sendPacket(acceptIQ);
 
 
             List<Candidate> candidates = _remoteContent.getTransport().getCandidates();

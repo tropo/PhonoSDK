@@ -491,17 +491,26 @@ public class AndroidAudio implements AudioFace {
 
     protected void fillCodecMap() {
         // add all the supported Codecs, in the order of preference
-        NativeSpeexCodec natspeex = null;
-        
-         try {
-            natspeex = new NativeSpeexCodec();
-            _codecMap.put(new Long(natspeex.getCodec()), natspeex);
 
-            Log.debug("fillCodecMap: " + "got native speex codec");
+        NativeSpeexCodec natspeexw = null;
+        NativeSpeexCodec natspeexn = null;
+
+         try {
+            natspeexw = new NativeSpeexCodec(true);
+            _codecMap.put(new Long(natspeexw.getCodec()), natspeexw);
+
+            Log.debug("fillCodecMap: " + "got wide native speex codec");
+            
+            natspeexn = new NativeSpeexCodec(false);
+            _codecMap.put(new Long(natspeexn.getCodec()), natspeexn);
+
+            Log.debug("fillCodecMap: " + "got narrow native speex codec");
+            
 
         } catch (Throwable thrown) {
             Log.debug("fillCodecMap: " + "didn't get speex native " + thrown.getMessage());
         }
+
         try {
             NativeG722Codec g722Codec = new NativeG722Codec();
             _codecMap.put(new Long(g722Codec.getCodec()), g722Codec);
@@ -518,7 +527,7 @@ public class AndroidAudio implements AudioFace {
 
         if (_cpucount > 1) {
             // if they have 2 cpus it is worth a shot at speex in java
-            if (natspeex == null) {
+            if (natspeexw == null) {
                 SpeexCodec speexCodec = new SpeexCodec(true) {
 
                     @Override
@@ -533,6 +542,11 @@ public class AndroidAudio implements AudioFace {
                 };
                 _codecMap.put(speexCodec.getCodec(), speexCodec);
             }
+            
+            if (natspeexn == null) {
+                SpeexCodec speexCodec = new SpeexCodec(false) ;
+                _codecMap.put(speexCodec.getCodec(), speexCodec);
+            } 
             ALaw_Codec alawCodec = new ALaw_Codec();
             _codecMap.put(new Long(alawCodec.getCodec()), alawCodec);
             // if they have 2 cpus it is worth a shot at gsm in java

@@ -4,14 +4,6 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent" >
 
-    <TextView
-        android:id="@+id/conStatusTextView"
-        android:layout_width="164dp"
-        android:layout_height="39dp"
-        android:layout_x="81dp"
-        android:layout_y="9dp"
-        android:text="loading" />
-
     <WebView
         android:id="@+id/webView1"
         android:layout_width="284dp"
@@ -139,15 +131,6 @@
         android:text="5" 
         android:onClick="digit"/>
 
-    <TextView
-        android:id="@+id/addressTextView"
-        android:layout_width="293dp"
-        android:layout_height="wrap_content"
-        android:layout_x="5dp"
-        android:layout_y="62dp"
-        android:text="9996160714"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
     <Button
         android:id="@+id/hangupButton"
         android:layout_width="wrap_content"
@@ -175,22 +158,19 @@
         android:text="status"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <Button
-        android:id="@+id/disconnectButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_x="7dp"
-        android:layout_y="6dp"
-        android:text="Disc" 
-        android:onClick="disconnect"/>
+    <TextView
+        android:id="@+id/conStatusTextView"
+        android:layout_width="164dp"
+        android:layout_height="39dp"
+        android:layout_x="14dp"
+        android:layout_y="10dp"
+        android:text="loading" />
 
-    <Button
-        android:id="@+id/connectButton"
-        android:layout_width="wrap_content"
+    <Spinner
+        android:id="@+id/buddyList"
+        android:layout_width="277dp"
         android:layout_height="wrap_content"
-        android:layout_x="230dp"
-        android:layout_y="7dp"
-        android:text="Conn"
-        android:onClick="connect" />
+        android:layout_x="11dp"
+        android:layout_y="60dp" />
 
 </AbsoluteLayout>
