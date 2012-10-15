@@ -20,7 +20,7 @@
   <property name="ksphono.dir" value=".."/>
 
   <target name="build-ksphono-iphonesimulator">
-        <exec executable="xCodeBuild" dir="${ksphono.dir}">
+        <exec executable="xCodeBuild" dir="${ksphono.dir}" failonerror="true">
           <arg value="-sdk"/>
           <arg value="iphonesimulator"/>
         </exec>
@@ -28,7 +28,7 @@
   </target>
 
   <target name="clean-ksphono">
-        <exec executable="xCodeBuild" dir="${ksphono.dir}">
+        <exec executable="xCodeBuild" dir="${ksphono.dir}" failonerror="true">
           <arg value="clean"/>
         </exec>
   </target>

@@ -4,7 +4,7 @@
   <property name="plugin.dir" value="Plugins"/>
 
   <target name="build-libphono-iphoneos">
-        <exec executable="xCodeBuild" dir="${libphono.dir}">
+        <exec executable="xCodeBuild" dir="${libphono.dir}" failonerror="true">
           <arg value="-sdk"/>
           <arg value="iphoneos"/>
         </exec>
@@ -12,7 +12,7 @@
   </target>
 
   <target name="build-libphono-iphonesimulator">
-        <exec executable="xCodeBuild" dir="${libphono.dir}">
+        <exec executable="xCodeBuild" dir="${libphono.dir}" failonerror="true">
           <arg value="-sdk"/>
           <arg value="iphonesimulator"/>
         </exec>
@@ -20,7 +20,7 @@
   </target>
 
   <target name="clean-libphono">
-        <exec executable="xCodeBuild" dir="${libphono.dir}">
+        <exec executable="xCodeBuild" dir="${libphono.dir}" failonerror="true">
           <arg value="clean"/>
         </exec>
   </target>
