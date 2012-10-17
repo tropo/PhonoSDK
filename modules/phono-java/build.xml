@@ -12,11 +12,19 @@
     <fileset dir="${pjadir}/lib/" includes="JLayer.jar"/>
     <fileset dir="${pjadir}/lib/" includes="srtplight.jar"/>
   </path>
+
+  <path id="sourcepath">
+            <pathelement location="src" />
+            <pathelement location="test" />
+            <pathelement location="${pjadir}/src/java"/>
+  </path>
   
   <target name="build" depends="clean">
     <mkdir dir="target"/>
     <mkdir dir="build/classes"/>
-    <javac destdir="build/classes" classpathref="classpath" target="1.5">
+    <javac destdir="build/classes" 
+        sourcepathref="sourcepath"
+        classpathref="classpath" target="1.5">
             <src path="src" />
             <src path="test" />
             <src path="${pjadir}/src/java"/>
@@ -34,7 +42,23 @@
     </jar>
 
   </target>
-  
+  <target name="builddocs">
+  <javadoc 
+           destdir="docs/api"
+           author="true"
+           version="true"
+           use="true"
+           windowtitle="Phono Native API"
+	   classpathref="classpath"
+           sourcepathref="sourcepath"
+           packagenames="com.phono.jingle">
+    
+    <doctitle><![CDATA[<h1>Phono Native </h1>]]></doctitle>
+    <bottom><![CDATA[<i>Copyright &#169; 2012 Voxeo Labs. All Rights Reserved.</i>
+]]></bottom>
+    <group title="Phono Native" packages="com.phono.jingle"/>
+  </javadoc>
+  </target>
   <target name="clean">
     <delete dir="target" />
     <delete dir="build" />

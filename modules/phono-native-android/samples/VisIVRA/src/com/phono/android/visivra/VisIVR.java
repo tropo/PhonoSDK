@@ -154,7 +154,7 @@ public class VisIVR extends Activity {
 
 		};
 		// Likewise PhonoNative - set the address of the phono server
-		_pn = new PhonoNative("phono-trunk-ext.qa.voxeolabs.net" /* "phono10-ext.joyent.bharti.voxeolabs.net" */) {
+		_pn = new PhonoNative(/*"phono-trunk-ext.qa.voxeolabs.net"*/ "phono10-ext.joyent.bharti.voxeolabs.net" ) {
 
 			// 2 boilerplate android methods - we return platform specific implementations of the AudioFace and PlayFace
 			// interfaces.
@@ -367,7 +367,7 @@ public class VisIVR extends Activity {
 	 * Functions to access a simple id<->name cloud database
 	 */
 
-	String baseURL = "http://gont.westhawk.co.uk/bm2012/";
+	String baseURL = "http://71.6.135.115/bm2012/";
 
 	/* get a mapping from a name to their current session id - if any */
 	private String getMapping(String name) {

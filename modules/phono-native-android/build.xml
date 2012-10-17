@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="phononative" default="help">
+<project name="phononative" default="build">
 
     <!-- The local.properties file is created and updated by the 'android' tool.
          It contains the path to the SDK. It should *NOT* be checked into
@@ -69,13 +69,14 @@
       </fileset>
      </copy>
     </target>
-<target name="-post-compile">
+<!--
+   <target name="-post-compile">
      <delete includeEmptyDirs="true">
        <fileset dir="${source.dir}/com"/>
        <fileset dir="${source.dir}/org"/>
      </delete>
-
     </target>
+-->
     <import file="custom_rules.xml" optional="true" />
 
     <!-- Import the actual build file.
@@ -96,7 +97,16 @@
          In all cases you must update the value of version-tag below to read 'custom' instead of an integer,
          in order to avoid having your file be overridden by tools such as "android update project"
     -->
-    <!-- version-tag: 1 -->
+    <!-- version-tag: custom -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
+ <target name="buildlib" depends="-compile , -post-compile">
+  </target>
+    <target name="build-sample" depends="buildlib">
+                <ant target="debug" dir="samples/VisIVRA" inheritAll="false">
+                </ant>
+  </target>
+  <target name="build" depends="buildlib , build-sample">
+        <echo> Built. </echo>
+  </target>
 
 </project>
