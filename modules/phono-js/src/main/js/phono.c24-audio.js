@@ -169,7 +169,8 @@ C24Audio.prototype.transport = function(config) {
                 pc.onaddstream = function (event) {console.log("Remote stream added."); };
                 pc.onremovestream = function (event) {console.log("Remote stream removed."); };
 		pc.onicechange= function (event) {console.log("ice state change now: "+pc.iceState); };
-		pc.onnegotationneeded = function (event) {console.log("Call a diplomat - "); };
+		pc.onnegotiationneeded = function (event) {console.log("Call a diplomat - "); };
+                pc.onstatechange = function (event) {console.log("state change: "+pc.readyState); };
                 console.log("add local");
                 pc.addStream(C24Audio.localStream,constraints);
 
@@ -200,17 +201,28 @@ C24Audio.prototype.transport = function(config) {
                 // We are having an outbound call answered (must already have a PeerConnection)
                 var sdp = unescape(roap.sdp);
 		sdp=sdp.replace("m=video 0 RTP/SAVPF 100 101 102","");
-                sdp = sdp.substring(0,sdp.length-1);
+		var bits = sdp.split("\r\n");
                 console.log("about to make a new remote description:"+sdp);
                 var sd = new RTCSessionDescription({'sdp':sdp, 'type':"answer"} );
 		console.log("about to set the remote description: "+JSON.stringify(sd,null," "));
 		pc.setRemoteDescription(sd,
-			function(){console.log("remotedescription sad")},
 			function(){console.log("remotedescription happy");
                 		   console.log("have set remote description ICE state is" + pc.iceState);
                                    console.log("have peer state is" + pc.readyState);
 				   console.log("Pc now: "+JSON.stringify(pc,null," "));
-			});
+		                   for(i=0;i<bits.length;i++){
+			                   var bit = bits[i];
+			                   if (bit.indexOf("a=candidate")==0){
+				                   console.log("candidate line="+bit);
+				                   var candidate = new RTCIceCandidate(
+                                                    {sdpMLineIndex:0,sdpMid:"audio",candidate:bit});
+				                   console.log("adding candidate "+JSON.stringify(candidate,null," "));
+                                                   pc.addIceCandidate(candidate);
+					   }
+		                  }
+				  //pc.updateIce();
+			},
+			function(){console.log("remotedescription sad")});
 
             }
             return {input:{uri:"webrtc"}, output:{getPC: function() {return pc;}}};
