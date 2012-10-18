@@ -1,10 +1,9 @@
-
 function C24Audio(phono, config, callback) {
 
     console.log("Initialize C24");
 
     if (typeof webkitRTCPeerConnection== "function") {
-	C24Audio.GUM = navigator.webkitGetUserMedia;
+        C24Audio.GUM = function(p,s,f) {navigator.webkitGetUserMedia(p,s,f)};
         C24Audio.mkPeerConnection = function (a,b) { return new webkitRTCPeerConnection(a,b);};
 	C24Audio.hasCallbacks = true;
     } else if (typeof mozRTCPeerConnection == "function") {
@@ -30,18 +29,17 @@ function C24Audio(phono, config, callback) {
 	this.config.localContainerId = this.createContainer();
     }
 
-
     console.log("Request access to local media, use new syntax");
-    C24Audio.GUM({'audio':true, 'video':false}, 
-                                     function(stream) {
-                                         C24Audio.localStream = stream;
-                                         console.log("Have access to realtime audio - Happy :-) ");
-                                         callback(plugin);
-                                     },
-                                     function(error) {
-                                         console.log("Failed to get access to local media. Error code was " + error.code);
-                                         alert("Failed to get access to local media. Error code was " + error.code + ".");   
-                                     });
+    C24Audio.GUM({'audio':true, 'video':true}, 
+                 function(stream) {
+                     C24Audio.localStream = stream;
+                     console.log("Have access to realtime audio - Happy :-) ");
+                     callback(plugin);
+                 },
+                 function(error) {
+                     console.log("Failed to get access to local media. Error code was " + error.code);
+                     alert("Failed to get access to local media. Error code was " + error.code + ".");   
+                 });
 }
 
 C24Audio.exists = function() {
@@ -89,7 +87,6 @@ C24Audio.prototype.play = function(transport, autoPlay) {
 
 // Creates a new audio Share and will optionally begin playing
 C24Audio.prototype.share = function(transport, autoPlay, codec) {
-    var url = transport.uri;
     var share;
     var localStream;  
 
@@ -103,13 +100,15 @@ C24Audio.prototype.share = function(transport, autoPlay, codec) {
         },
         // Control
         start: function() {
-	   console.log("start");
+	    console.log("share() start");
+            // XXX This is where we should start the peerConnection audio
         },
         stop: function() {
-	   console.log("stop");
+	    console.log("share() stop");
+            // XXX This is where we should stop the peerConneciton audio
         },
         digit: function(value, duration, audible) {
-            // No idea how to do this yet
+            // XXX No idea how to do this yet
         },
         // Properties
         gain: function(value) {
@@ -123,8 +122,8 @@ C24Audio.prototype.share = function(transport, autoPlay, codec) {
         },
         energy: function(){        
             return {
-               mic: 0.0,
-               spk: 0.0
+                mic: 0.0,
+                spk: 0.0
             }
         },
         secure: function() {
@@ -138,16 +137,16 @@ C24Audio.prototype.permission = function() {
     return true;
 };
 
-function fakeRoapOffer(sdes){
- var fake = "SDP\n{\n\"answererSessionId\":\"" +
-		      "1" + "\",\n" +
-		      "\"messageType\":\"OFFER\",\n" +
-		      "\"offererSessionId\":\"" +
-		      "1" + "\",\n" +
-		      "\"seq\":2,\n" +
-		      "\"sdp\":\"" + sdes.sdp
-		      + "\"}";
- return fake;
+function fakeRoap(sdes){
+    var fake = "SDP\n{\n\"answererSessionId\":\"" +
+	"1" + "\",\n" +
+	"\"messageType\":\"OFFER\",\n" +
+	"\"offererSessionId\":\"" +
+	"1" + "\",\n" +
+	"\"seq\":2,\n" +
+	"\"sdp\":\"" + sdes.sdp
+	+ "\"}";
+    return fake;
 }
 
 // Returns an object containg JINGLE transport information
@@ -160,7 +159,7 @@ C24Audio.prototype.transport = function(config) {
         buildTransport: function(direction, j, callback, u, updateCallback) {
 	    var configuration = {iceServers:[ { url:"stun:stun.l.google.com:19302" }  ]};
             var constraints =   {has_audio:true, has_video:false};
-;
+            ;
             if (direction == "answer") {
                 console.log("inbound");
                 // We are the result of an inbound call, so provide answer
@@ -169,42 +168,45 @@ C24Audio.prototype.transport = function(config) {
                 pc = C24Audio.mkPeerConnection(configuration,constraints);
                 console.log("create PC");
                 if (C24Audio.hasCallbacks) {
-                  console.log("adding callbacks");
-	       	  pc.onicecandidate = function(evt) {
+                    console.log("adding callbacks");
+	       	    pc.onicecandidate = function(evt) {
                         if (evt.candidate != null) {
-        		   console.log("An Ice candidate "+JSON.stringify(evt.candidate));
+        		    console.log("An Ice candidate "+JSON.stringify(evt.candidate));
                         } else {
-			   console.log("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
-                           var offer = fakeRoapOffer(pc.localDescription);
-			   console.log("fake roap offer:"+offer);
-			   j.c('transport',{xmlns:"http://phono.com/webrtc/transport"}).c('roap',Base64.encode(offer));
-		           callback();
+			    console.log("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
+                            var offer = fakeRoap(pc.localDescription);
+			    console.log("fake roap offer:"+offer);
+			    j.c('transport',{xmlns:"http://phono.com/webrtc/transport"}).c('roap',Base64.encode(offer));
+		            callback();
                         }
-                  }
-                  pc.onconnecting = function(message) {console.log("onSessionConnecting");};
-	          pc.onopen = function(message) {console.log("onSessionOpened");};
-                  pc.onaddstream = function (event) {console.log("Remote stream added."); };
-                  pc.onremovestream = function (event) {console.log("Remote stream removed."); };
-		  pc.onicechange= function (event) {console.log("ice state change now: "+pc.iceState); };
-		  pc.onnegotiationneeded = function (event) {console.log("Call a diplomat - "); };
-                  pc.onstatechange = function (event) {console.log("state change: "+pc.readyState); };
+                    }
+                    pc.onconnecting = function(message) {console.log("onSessionConnecting");};
+	            pc.onopen = function(message) {console.log("onSessionOpened");};
+                    pc.onaddstream = function (event) {
+                        // XXX We will need to add the video stream here
+                        console.log("Remote stream added."); 
+                    };
+                    pc.onremovestream = function (event) {console.log("Remote stream removed."); };
+		    pc.onicechange= function (event) {console.log("ice state change now: "+pc.iceState); };
+		    pc.onnegotiationneeded = function (event) {console.log("Call a diplomat - "); };
+                    pc.onstatechange = function (event) {console.log("state change: "+pc.readyState); };
                 } else {
-		  console.log("Moz - so not adding Cbs");
+		    console.log("Moz - so not adding Cbs");
                 }
 		console.log("add local");
-                pc.addStream(C24Audio.localStream,constraints);
+                pc.addStream(C24Audio.localStream);
 		var cb = function(offer) {
-                      console.log("Created offer");
-   		      pc.setLocalDescription(offer);
-		      var msgString = JSON.stringify(offer,null," ");
-                      console.log('set local desc ' + msgString);
-		      if (!C24Audio.hasCallbacks){
+                    console.log("Created offer");
+   		    pc.setLocalDescription(offer);
+		    var msgString = JSON.stringify(offer,null," ");
+                    console.log('set local desc ' + msgString);
+		    if (!C24Audio.hasCallbacks){
 			/* duplicate of onicecandy */
                         var offer = fakeRoapOffer(pc.localDescription);
                         console.log("fake roap offer:"+offer);
                         j.c('transport',{xmlns:"http://phono.com/webrtc/transport"}).c('roap',Base64.encode(offer));
                         callback();
-		      }
+		    }
 		};
 		pc.createOffer(cb , null, constraints);
 
@@ -226,33 +228,22 @@ C24Audio.prototype.transport = function(config) {
                 // We are receiving an inbound call
             } else if (roap['messageType'] == "ANSWER") {
                 // We are having an outbound call answered (must already have a PeerConnection)
-                var sdp = unescape(roap.sdp);
-		sdp=sdp.replace("m=video 0 RTP/SAVPF 100 101 102","");
-		var bits = sdp.split("\r\n");
-                console.log("about to make a new remote description:"+sdp);
+                var sdp = roap.sdp;
+                sdp=sdp.replace(/\bUDP\b/gi,'udp');
                 var sd = new RTCSessionDescription({'sdp':sdp, 'type':"answer"} );
 		console.log("about to set the remote description: "+JSON.stringify(sd,null," "));
 		pc.setRemoteDescription(sd,
-			function(){console.log("remotedescription happy");
-                		   console.log("have set remote description ICE state is" + pc.iceState);
-                                   console.log("have peer state is" + pc.readyState);
-				   console.log("Pc now: "+JSON.stringify(pc,null," "));
-		                   for(i=0;i<bits.length;i++){
-			                   var bit = bits[i];
-			                   if (bit.indexOf("a=candidate")==0){
-				                   console.log("candidate line="+bit);
-				                   var candidate = new RTCIceCandidate(
-                                                    {sdpMLineIndex:0,sdpMid:"audio",candidate:bit});
-				                   console.log("adding candidate "+JSON.stringify(candidate,null," "));
-                                                   pc.addIceCandidate(candidate);
-					   }
-		                  }
-				  //pc.updateIce();
-			},
-			function(){console.log("remotedescription sad")});
+			                function(){console.log("remotedescription happy");
+				                   console.log("Pc now: "+JSON.stringify(pc,null," "));
+			                          },
+			                function(){console.log("remotedescription sad")});
 
             }
             return {input:{uri:"webrtc"}, output:{getPC: function() {return pc;}}};
+        },
+        destroyTransport: function() {
+            // Destroy any transport state we have created
+            pc.close();
         }
     }
 };
