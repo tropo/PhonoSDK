@@ -1,8 +1,21 @@
+
 function C24Audio(phono, config, callback) {
 
     console.log("Initialize C24");
 
-    C24Audio.peerConnection = webkitRTCPeerConnection;
+    if (typeof webkitRTCPeerConnection== "function") {
+	C24Audio.GUM = navigator.webkitGetUserMedia;
+        C24Audio.mkPeerConnection = function (a,b) { return new webkitRTCPeerConnection(a,b);};
+	C24Audio.hasCallbacks = true;
+    } else if (typeof mozRTCPeerConnection == "function") {
+	C24Audio.GUM = function(p,s,f) {navigator.mozGetUserMedia(p,s,f);};
+        C24Audio.mkPeerConnection = function (a,b) {return new mozRTCPeerConnection(a,b);};
+	C24Audio.hasCallbacks = false;
+    } else {
+	C24Audio.GUM = navigator.getUserMedia;
+	C24Audio.mkPeerConnection = function (a,b) {return new RTCPeerConnection(a,b);};
+	C24Audio.hasCallbacks = true;
+    }
 
     this.config = Phono.util.extend({
         media: {audio:true}
@@ -19,7 +32,7 @@ function C24Audio(phono, config, callback) {
 
 
     console.log("Request access to local media, use new syntax");
-    navigator.webkitGetUserMedia({'audio':true, 'video':false}, 
+    C24Audio.GUM({'audio':true, 'video':false}, 
                                      function(stream) {
                                          C24Audio.localStream = stream;
                                          console.log("Have access to realtime audio - Happy :-) ");
@@ -32,7 +45,9 @@ function C24Audio(phono, config, callback) {
 }
 
 C24Audio.exists = function() {
-    return (typeof webkitPeerConnection == "function") || (typeof PeerConnection == "function");
+    return (typeof webkitPeerConnection == "function") 
+	|| (typeof mozRTCPeerConnection == "function")
+	|| (typeof RTCPeerConnection == "function");
 }
 
 C24Audio.stun = "STUN stun.l.google.com:19302";
@@ -151,9 +166,11 @@ C24Audio.prototype.transport = function(config) {
                 // We are the result of an inbound call, so provide answer
             } else {
                 console.log("outbound");
-                pc = new C24Audio.peerConnection(configuration,constraints);
+                pc = C24Audio.mkPeerConnection(configuration,constraints);
                 console.log("create PC");
-	       	pc.onicecandidate = function(evt) {
+                if (C24Audio.hasCallbacks) {
+                  console.log("adding callbacks");
+	       	  pc.onicecandidate = function(evt) {
                         if (evt.candidate != null) {
         		   console.log("An Ice candidate "+JSON.stringify(evt.candidate));
                         } else {
@@ -163,23 +180,33 @@ C24Audio.prototype.transport = function(config) {
 			   j.c('transport',{xmlns:"http://phono.com/webrtc/transport"}).c('roap',Base64.encode(offer));
 		           callback();
                         }
+                  }
+                  pc.onconnecting = function(message) {console.log("onSessionConnecting");};
+	          pc.onopen = function(message) {console.log("onSessionOpened");};
+                  pc.onaddstream = function (event) {console.log("Remote stream added."); };
+                  pc.onremovestream = function (event) {console.log("Remote stream removed."); };
+		  pc.onicechange= function (event) {console.log("ice state change now: "+pc.iceState); };
+		  pc.onnegotiationneeded = function (event) {console.log("Call a diplomat - "); };
+                  pc.onstatechange = function (event) {console.log("state change: "+pc.readyState); };
+                } else {
+		  console.log("Moz - so not adding Cbs");
                 }
-                pc.onconnecting = function(message) {console.log("onSessionConnecting");};
-	        pc.onopen = function(message) {console.log("onSessionOpened");};
-                pc.onaddstream = function (event) {console.log("Remote stream added."); };
-                pc.onremovestream = function (event) {console.log("Remote stream removed."); };
-		pc.onicechange= function (event) {console.log("ice state change now: "+pc.iceState); };
-		pc.onnegotiationneeded = function (event) {console.log("Call a diplomat - "); };
-                pc.onstatechange = function (event) {console.log("state change: "+pc.readyState); };
-                console.log("add local");
+		console.log("add local");
                 pc.addStream(C24Audio.localStream,constraints);
-
-		pc.createOffer(function(offer) {
+		var cb = function(offer) {
                       console.log("Created offer");
    		      pc.setLocalDescription(offer);
 		      var msgString = JSON.stringify(offer,null," ");
                       console.log('set local desc ' + msgString);
-                } , null, constraints);
+		      if (!C24Audio.hasCallbacks){
+			/* duplicate of onicecandy */
+                        var offer = fakeRoapOffer(pc.localDescription);
+                        console.log("fake roap offer:"+offer);
+                        j.c('transport',{xmlns:"http://phono.com/webrtc/transport"}).c('roap',Base64.encode(offer));
+                        callback();
+		      }
+		};
+		pc.createOffer(cb , null, constraints);
 
                 // We are creating an outbound call
             }
