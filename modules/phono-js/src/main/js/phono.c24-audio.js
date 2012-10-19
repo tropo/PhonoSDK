@@ -17,7 +17,7 @@ function C24Audio(phono, config, callback) {
     }
 
     this.config = Phono.util.extend({
-        media: {audio:true, video:true}
+        media: {audio:true, video:false}
     }, config);
     
     var plugin = this;
