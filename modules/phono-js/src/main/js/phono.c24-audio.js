@@ -138,14 +138,19 @@ C24Audio.prototype.permission = function() {
 };
 
 function fakeRoap(sdes){
-    var fake = "SDP\n{\n\"answererSessionId\":\"" +
-	"1" + "\",\n" +
-	"\"messageType\":\"" + sdes.type.toUpperCase() + "\",\n" +
-	"\"offererSessionId\":\"" +
-	"1" + "\",\n" +
-	"\"seq\":2,\n" +
-	"\"sdp\":\"" + sdes.sdp
-	+ "\"}";
+    var fakeJson = {
+        answererSessionId: "1",
+        messageType: sdes.type.toUpperCase(),
+        offererSessionId: "1",
+        seq:2,
+        sdp: sdes.sdp
+    };
+    var fake = "SDP\r\n" + JSON.stringify(fakeJson);
+    //var fake = "SDP\r\n{\n\"answererSessionId\":\"" + "1" + "\",\r\n" +
+//	"\"messageType\":\"" + sdes.type.toUpperCase() + "\",\r\n" +
+//	"\"offererSessionId\":\"" + "1" + "\",\r\n" +
+//	"\"seq\":2,\r\n" +
+//	"\"sdp\":\"" + sdes.sdp + "\"}";
     console.log("FAKE ROAP======================\r\n" + fake);
     return fake;
 }
@@ -178,7 +183,7 @@ C24Audio.prototype.transport = function(config) {
                         if (evt.candidate != null) {
         		    console.log("An Ice candidate "+JSON.stringify(evt.candidate));
                             if (candidates >=0) candidates = candidates + 1;
-                        } if (candidates > 4) { //XXX HACK
+                        } else if (candidates > 3) {
 			    console.log("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
                             var answer = fakeRoap(pc.localDescription);
 			    console.log("fake roap answer:"+answer);
@@ -225,12 +230,14 @@ C24Audio.prototype.transport = function(config) {
 	       	    pc.onicecandidate = function(evt) {
                         if (evt.candidate != null) {
         		    console.log("An Ice candidate "+JSON.stringify(evt.candidate));
-                        } else {
+                            if (candidates >=0) candidates = candidates + 1;
+                        } else if (candidates > 3) {
 			    console.log("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
                             var offer = fakeRoap(pc.localDescription);
 			    console.log("fake roap offer:"+offer);
 			    j.c('transport',{xmlns:"http://phono.com/webrtc/transport"}).c('roap',Base64.encode(offer));
 		            callback();
+                            candidates = -1;
                         }
                     }
                     pc.onconnecting = function(message) {console.log("onSessionConnecting");};
@@ -280,14 +287,14 @@ C24Audio.prototype.transport = function(config) {
             if (roap['messageType'] == "OFFER") {
                 // We are receiving an inbound call
                 pc = C24Audio.mkPeerConnection(configuration,constraints);
-                var sdp = roap.sdp;
+                var sdp = decodeURI(roap.sdp);
                 sdp=sdp.replace(/\bUDP\b/gi,'udp');
                 var sd = new RTCSessionDescription({'sdp':sdp, 'type':"offer"} );
 		console.log("about to set the remote description: "+JSON.stringify(sd,null," "));
                 pc.inboundOffer = sd; // Temp stash
             } else if (roap['messageType'] == "ANSWER") {
                 // We are having an outbound call answered (must already have a PeerConnection)
-                var sdp = roap.sdp;
+                var sdp = decodeURI(roap.sdp);
                 sdp=sdp.replace(/\bUDP\b/gi,'udp');
                 var sd = new RTCSessionDescription({'sdp':sdp, 'type':"answer"} );
 		console.log("about to set the remote description: "+JSON.stringify(sd,null," "));
