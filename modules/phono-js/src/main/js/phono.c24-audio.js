@@ -166,6 +166,12 @@ C24Audio.prototype.transport = function(config) {
                 console.log("inbound");
                 // We are the result of an inbound call, so provide answer
                 if (C24Audio.hasCallbacks) {
+                    pc.setRemoteDescription(pc.inboundOffer,
+                                            function(){console.log("remotedescription happy");
+				                       console.log("Pc now: "+JSON.stringify(pc,null," "));
+			                              },
+			                    function(){console.log("remotedescription sad")});
+
                     console.log("adding callbacks");
 	       	    pc.onicecandidate = function(evt) {
                         console.log("onicecandidate: " + JSON.stringify(evt.candidate));
@@ -274,16 +280,11 @@ C24Audio.prototype.transport = function(config) {
             if (roap['messageType'] == "OFFER") {
                 // We are receiving an inbound call
                 pc = C24Audio.mkPeerConnection(configuration,constraints);
-
                 var sdp = roap.sdp;
                 sdp=sdp.replace(/\bUDP\b/gi,'udp');
                 var sd = new RTCSessionDescription({'sdp':sdp, 'type':"offer"} );
 		console.log("about to set the remote description: "+JSON.stringify(sd,null," "));
-                pc.setRemoteDescription(sd,
-                                        function(){console.log("remotedescription happy");
-				                   console.log("Pc now: "+JSON.stringify(pc,null," "));
-			                          },
-			                function(){console.log("remotedescription sad")});
+                pc.inboundOffer = sd; // Temp stash
             } else if (roap['messageType'] == "ANSWER") {
                 // We are having an outbound call answered (must already have a PeerConnection)
                 var sdp = roap.sdp;
