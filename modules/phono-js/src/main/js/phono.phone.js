@@ -166,6 +166,7 @@
        
        this.transport.buildTransport("offer", partialInitiate.up(), 
                                      function() {
+                                         console.log("callback is running");
                                          call.connection.sendIQ(initiateIq, function (iq) {
                                              call.state = CallState.PROGRESS;
                                          });
@@ -588,7 +589,7 @@
          
             call = Phono.util.loggify("Call", new Call(phone, id, Direction.INBOUND));
             call.phone = phone;
-            call.remoteJid = $(iq).attr('from');
+            call.remotpheJid = $(iq).attr('from');
             call.initiator = jingle.attr('initiator');
             
             // Register Call

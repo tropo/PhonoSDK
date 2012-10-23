@@ -5,6 +5,8 @@
     //@Include=phono.phonegap-android-audio.js
     //@Include=phono.webrtc-audio.js
     //@Include=phono.c24-audio.js
+    //@Include=phono.bowser-audio.js
+    //@Include=phono.moz-audio.js
 
     Phono.registerPlugin("audio", {
         
@@ -31,6 +33,12 @@
 
             } else if (config.type === "c24") {
                 return Phono.util.loggify("C24Audio", new C24Audio(phono, config, callback));
+
+            } else if (config.type === "moz") {
+                return Phono.util.loggify("MozAudio", new MozAudio(phono, config, callback));
+
+            } else if (config.type === "bowser") {
+                return Phono.util.loggify("BowserAudio", new BowserAudio(phono, config, callback));
                 
             } else if (config.type === "none") {
                 window.setTimeout(callback,10);
