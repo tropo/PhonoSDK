@@ -44,7 +44,7 @@ BowserAudio.exists = function() {
     return (typeof webkitDeprecatedPeerConnection == "function")|| (typeof webkitPeerConnection == "function");
 }
 
-BowserAudio.stun = "STUN 173.194.70.126:19302";
+BowserAudio.stun = "STUN stun.l.google.com:19302";
 BowserAudio.count = 0;
 
 // BowserAudio Functions
@@ -254,7 +254,7 @@ BowserAudio.prototype.transport = function(config) {
                                                                       .c('roap',Base64.encode(message));  
                                                                   offer = message;
                                                                   console.log("about to callback to send");
-                                                                  window.setTimeout(callback, 10);
+                                                                  window.setTimeout(callback(),1000);;
                                                                   console.log("done callback");
                                                               } else if (roap['messageType'] == "OK") {
                                                                   // Ignore, we autogenerate on remote side

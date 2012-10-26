@@ -135,6 +135,7 @@
    //@Include=flashembed.min.js
    //@Include=$phono-audio
    //@Include=phono.messaging.js
+   //@Include=phono.sdp.js
    //@Include=phono.phone.js
 
    // ======================================================================

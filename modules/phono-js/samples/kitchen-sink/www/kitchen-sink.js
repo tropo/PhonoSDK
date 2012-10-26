@@ -49,6 +49,8 @@ $(document).ready(function() {
         if (urlParam("connectionUrl") != undefined) connectionUrl = urlParam("connectionUrl");
         if (urlParam("dial") != undefined) dialString = urlParam("dial");
         if (urlParam("chat") != undefined) chatString = urlParam("chat");
+        if (urlParam("gateway") != undefined) gw = urlParam("gateway");
+
 
         console.log("audioType = " + audioType);
         console.log("dialString = " + dialString);
