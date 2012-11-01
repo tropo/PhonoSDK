@@ -1,4 +1,5 @@
 function C24JingleAudio(phono, config, callback) {
+    this.type = "webrtc";
 
     console.log("Initialize C24");
 
@@ -136,10 +137,12 @@ C24JingleAudio.prototype.permission = function() {
 // Returns an object containg JINGLE transport information
 C24JingleAudio.prototype.transport = function(config) {
     var pc;
+    var inboundOffer;
     var configuration = {iceServers:[ { url:"stun:stun.l.google.com:19302" }  ]};
     var constraints;
     var candidates = 0;
     var remoteContainerId;
+    var description = "urn:xmpp:jingle:apps:rtp:1";
 
     constraints =  {has_audio:this.config.media['audio'], has_video:this.config.media['video']};
 
@@ -157,7 +160,7 @@ C24JingleAudio.prototype.transport = function(config) {
 
     return {
         name: "urn:xmpp:jingle:transports:ice-udp:1",
-        description: "urn:xmpp:jingle:apps:rtp:1",
+        description: description,
         buildTransport: function(direction, j, callback, u, updateCallback) {
             if (direction == "answer") {
                 console.log("inbound");
@@ -214,9 +217,30 @@ C24JingleAudio.prototype.transport = function(config) {
                         if (candidates >=0) candidates = candidates + 1;
                     } else if (candidates > 3) {
 			console.log("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
-                        var sdpObj = Phono.sdp.parseSDP(pc.localDescription.sdp);
-                        console.log("sdpObj = " + JSON.stringify(sdpObj));
-			// XXXj.c('transport',{xmlns:"http://phono.com/webrtc/transport"}).c('roap',Base64.encode(offer));
+                        var contents = Phono.sdp.parseSDP(pc.localDescription.sdp);
+                        console.log("contents = " + JSON.stringify(contents));
+                        Phono.util.each(contents, function () {
+                            var sdpObj = this;
+                            
+                            j = j.c('content', {creator:"initiator"})
+                                .c('description', {xmlns:description,
+                                                   media:sdpObj.media.type});
+                            
+                            Phono.util.each(sdpObj.codecs, function() {
+                                j = j.c('payload-type', this).up();           
+                            });
+                            
+                            j = j.c('encryption', {required: '1'}).c('crypto', sdpObj.crypto).up();    
+                            
+			    j = j.up().c('transport',{xmlns:"urn:xmpp:jingle:transports:ice-udp:1",
+                                                      pwd: sdpObj.ice.pwd,
+                                                      ufrag: sdpObj.ice.ufrag});
+                            
+                            Phono.util.each(sdpObj.candidates, function() {
+                                j = j.c('candidate', this).up();           
+                            });
+                        });
+
 		        callback();
                         candidates = -1;
                     }
@@ -249,34 +273,56 @@ C24JingleAudio.prototype.transport = function(config) {
         },
         processTransport: function(t, update) {
             console.log("process message");
-            var roap;
-            var message;
-            t.find('roap').each(function () {
-                var encoded = this.textContent;
-                message = Base64.decode(encoded);
-                console.log("S->C SDP: " + message);
-                roap = $.parseJSON(message.substring(4,message.length));
-                console.log("roap: "+JSON.stringify(roap));
-            });
-            if (roap['messageType'] == "OFFER") {
-                // We are receiving an inbound call
-                pc = C24JingleAudio.mkPeerConnection(configuration,constraints);
-                var sdp = decodeURI(roap.sdp);
-                sdp=sdp.replace(/\bUDP\b/gi,'udp');
+
+            if (pc) {
+                // We are an answer to an outbound call
+                
+            } else {
+                // We are an offer for an inbound call
+                // Parse jingle into an SDP object
+                var sdpObj = {};
+                sdpObj.candidates = [];
+                t.find('candidate').each(function () {
+                    var candidate = Phono.util.getAttributes(this);
+                    console.log("candidate: "+JSON.stringify(candidate,null," "));
+                    sdpObj.candidates.push(candidate);
+                });
+                sdpObj.codecs = [];
+                t.find('payload-type').each(function () {
+                    var codec = Phono.util.getAttributes(this);
+                    console.log("codec: "+JSON.stringify(codec,null," "));
+                    sdpObj.codecs.push(codec);
+                });
+                t.find('crypto').each(function () {
+                    var crypto = Phono.util.getAttributes(this);
+                    console.log("crypto: "+JSON.stringify(crypto,null," "));
+                    sdpObj.crypto = crypto;
+                });
+                sdpObj.ice = {};
+                t.find('transport').each(function () {
+                    sdpObj.ice.pwd = $(this).attr('pwd');
+                    sdpObj.ice.ufrag = $(this).attr('ufrag');
+                });
+                sdpObj.media = {};
+                t.find('description').each(function () {
+                    var mediaType = $(this).attr('media');
+                    var mediaObj = {};
+                    mediaObj.type = mediaType;
+                    mediaObj.proto = "RTP/SAVPF"; // HACK
+                    mediaObj.port = 0;
+                    sdbObj.media[mediaType] = mediaObj;
+                });
+
+                
+                console.log("sdpObj: "+JSON.stringify(sdpObj,null," "));
+                                         
+                var sdp = Phono.sdp.buildSDP(sdpObj);
                 var sd = new RTCSessionDescription({'sdp':sdp, 'type':"offer"} );
-		console.log("about to set the remote description: "+JSON.stringify(sd,null," "));
-                pc.inboundOffer = sd; // Temp stash
-            } else if (roap['messageType'] == "ANSWER") {
-                // We are having an outbound call answered (must already have a PeerConnection)
-                var sdp = decodeURI(roap.sdp);
-                sdp=sdp.replace(/\bUDP\b/gi,'udp');
-                var sd = new RTCSessionDescription({'sdp':sdp, 'type':"answer"} );
-		console.log("about to set the remote description: "+JSON.stringify(sd,null," "));
-		pc.setRemoteDescription(sd,
-			                function(){console.log("remotedescription happy");
-				                   console.log("Pc now: "+JSON.stringify(pc,null," "));
-			                          },
-			                function(){console.log("remotedescription sad")});
+		console.log("Have a remote description: "+JSON.stringify(sd,null," "));
+                // Create the peer connection
+
+                
+                inboundOffer = sd; // Temp stash
 
             }
             return {input:{uri:"webrtc"}, output:{uri:"webrtc"}};
@@ -291,14 +337,7 @@ C24JingleAudio.prototype.transport = function(config) {
 // Returns an array of codecs supported by this plugin
 // Hack until we get capabilities support
 C24JingleAudio.prototype.codecs = function() {
-    var result = new Array();
-    result.push({
-        id: 1,
-        name: "webrtc",
-        rate: 16000,
-        p: 20
-    });
-    return result;
+    return {};
 };
 
 C24JingleAudio.prototype.audioInDevices = function(){

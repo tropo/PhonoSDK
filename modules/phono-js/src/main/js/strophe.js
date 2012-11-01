@@ -702,7 +702,7 @@ function $msg(attrs) { return new Strophe.Builder("message", attrs); }
  *
  *  Returns:
  *    A new Strophe.Builder object.
- */
+ */ 
 function $iq(attrs) { return new Strophe.Builder("iq", attrs); }
 /** Function: $pres
  *  Create a Strophe.Builder with a <presence/> element as the root.
