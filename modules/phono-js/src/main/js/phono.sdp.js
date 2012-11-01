@@ -169,7 +169,7 @@
             c.id + " " +
             c.ip + " " +
             c.port;
-        if (c.type) sdp = sdp + " type " + c.type;
+        if (c.type) sdp = sdp + " typ " + c.type;
         if (c.generation) sdp = sdp + " generation " + c.generation;
         sdp = sdp + "\r\n";
         return sdp;
@@ -189,7 +189,7 @@
     _buildMedia = function(sdpObj) {
         var sdp = "m=" + sdpObj.media.type + " " + sdpObj.media.port + " " + sdpObj.media.proto;
         var mi = 0;
-        while (mi + 1 < sdpObj.media.pts.length) {
+        while (mi + 1 <= sdpObj.media.pts.length) {
             sdp = sdp + " " + sdpObj.media.pts[mi];
             mi = mi + 1;
         }
@@ -207,7 +207,7 @@
         }
 
         var ci = 0;
-        while (ci + 1 < sdpObj.candidates.length) {
+        while (ci + 1 <= sdpObj.candidates.length) {
             sdp = sdp + _buildCandidate(sdpObj.candidates[ci]);
             ci = ci + 1;
         }
@@ -242,7 +242,7 @@
         }
  
         var cdi = 0;
-        while (cdi + 1 < sdpObj.codecs.length) {
+        while (cdi + 1 <= sdpObj.codecs.length) {
             sdp = sdp + _buildCodec(sdpObj.codecs[cdi]);
             cdi = cdi + 1;
         }
@@ -264,36 +264,171 @@
     }
 
     Phono.sdp = {
-        // candidate: an SDP text string representing a cadidate
-        // Return: an object representing the candidate in Jingle like constructs
-        parseCandidate: function(candidateSDP) {
-            var line = _parseLine(candidateSDP);
-            return _parseCandidate(line.contents);
+
+        // jingle: A container to place the output jingle in
+        // blob: A js object representing the input SDP
+        buildJingle: function(jingle, blob) {
+            var description = "urn:xmpp:jingle:apps:rtp:1";
+            var c = jingle;
+            if (blob.group) {
+                var bundle = "";
+                c.c('group', {type:blob.group.type,
+                              contents:blob.group.contents.join(",")}).up();
+            }
+
+            Phono.util.each(blob.contents, function () {
+                var sdpObj = this;
+                
+                var desc = {xmlns:description,
+                            media:sdpObj.media.type};
+
+                if (sdpObj.ssrc) {
+                    desc.ssrc = sdpObj.ssrc.ssrc,
+                    desc.cname = sdpObj.ssrc.cname,
+                    desc.mslabel = sdpObj.ssrc.mslabel,
+                    desc.label = sdpObj.ssrc.label
+                }
+
+                if (sdpObj.mid) {
+                    desc.mid = sdpObj.mid
+                }
+
+                if (sdpObj['rtcp-mux']) {
+                    desc['rtcp-mux'] = sdpObj['rtcp-mux'];
+                }
+
+                c = c.c('content', {creator:"initiator"})
+                .c('description', desc);
+                
+                Phono.util.each(sdpObj.codecs, function() {
+                    c = c.c('payload-type', this).up();           
+                });
+                
+                c = c.c('encryption', {required: '1'}).c('crypto', sdpObj.crypto).up();    
+                
+
+                // Raw candidates
+	        c = c.up().up().c('transport',{xmlns:"urn:xmpp:jingle:transports:raw-udp:1"});
+
+                c = c.c('candidate', {component:'1',
+                                      ip: sdpObj.connection.address,
+                                      port: sdpObj.media.port}).up();
+                c = c.c('candidate', {component:'2',
+                                      ip: sdpObj.rtcp.address,
+                                      port: sdpObj.rtcp.port});
+                c.up().up();
+
+                // Ice candidates
+                var transp = {xmlns:"urn:xmpp:jingle:transports:ice-udp:1",
+                             pwd: sdpObj.ice.pwd,
+                             ufrag: sdpObj.ice.ufrag};
+                
+                if (sdpObj.ice.options) {
+                    transp.options = sdpObj.ice.options;
+                }
+                
+	        c = c.c('transport',transp);
+                
+                Phono.util.each(sdpObj.candidates, function() {
+                    c = c.c('candidate', this).up();           
+                });
+                c = c.up().up();
+            });
+            return c;
         },
         
-        // candidate: an object representing the body
-        // Return a text string in SDP format
-        buildCandidate: function(candidateObj) {
-            return _buildCandidate(candidateObj);
+        // jingle: Some Jingle to parse
+        // Returns a js object representing the SDP
+        parseJingle: function(jingle) {
+            var blobObj = {};
+
+            jingle.find('group').each(function () {
+                blobObj.group = {};
+                blobObj.group.type =  $(this).attr('type');
+                blobObj.group.contents = $(this).attr('contents').split(",");
+            });
+
+            blobObj.contents = [];
+            jingle.find('content').each(function () {
+                var sdpObj = {};
+                var mediaObj = {};
+                mediaObj.pts = [];
+                
+                blobObj.contents.push(sdpObj);
+
+                $(this).find('description').each(function () {
+                    var mediaType = $(this).attr('media');
+                    mediaObj.type = mediaType;
+                    mediaObj.proto = "RTP/SAVPF"; // HACK
+                    mediaObj.port = 1000;
+                    var ssrcObj = {};
+                    if ($(this).attr('ssrc')) {
+                        ssrcObj.ssrc = $(this).attr('ssrc');
+                        if ($(this).attr('cname')) ssrcObj.cname = $(this).attr('cname');
+                        if ($(this).attr('mslabel')) ssrcObj.mslabel = $(this).attr('mslabel');
+                        if ($(this).attr('label')) ssrcObj.label = $(this).attr('label');
+                        sdpObj.ssrc = ssrcObj;
+                    }
+                    if ($(this).attr('rtcp-mux')) {
+                        sdpObj['rtcp-mux'] = $(this).attr('rtcp-mux');
+                    }
+                    if ($(this).attr('mid')) {
+                        sdpObj['mid'] = $(this).attr('mid');
+                    }
+                    sdpObj.media = mediaObj;
+                });
+
+                sdpObj.candidates = [];
+                sdpObj.codecs = [];
+                $(this).find('payload-type').each(function () {
+                    var codec = Phono.util.getAttributes(this);
+                    console.log("codec: "+JSON.stringify(codec,null," "));
+                    sdpObj.codecs.push(codec);
+                    mediaObj.pts.push(codec.id);
+                });
+                $(this).find('crypto').each(function () {
+                    var crypto = Phono.util.getAttributes(this);
+                    console.log("crypto: "+JSON.stringify(crypto,null," "));
+                    sdpObj.crypto = crypto;
+                });
+                sdpObj.ice = {};
+                $(this).find('transport').each(function () {
+                    if ($(this).attr('xmlns') == "urn:xmpp:jingle:transports:raw-udp:1") {
+                        $(this).find('candidate').each(function () {
+                            var candidate = Phono.util.getAttributes(this);
+                            console.log("candidate: "+JSON.stringify(candidate,null," "));
+                            if (candidate.component == "1") {
+                                sdpObj.media.port = candidate.port;
+                                sdpObj.connection = {};
+                                sdpObj.connection.address = candidate.ip;
+                                sdpObj.connection.addrtype = "IP4";
+                                sdpObj.connection.nettype = "IN";
+                            }
+                            if (candidate.component == "2") {
+                                sdpObj.rtcp = {};
+                                sdpObj.rtcp.port = candidate.port;
+                                sdpObj.rtcp.address = candidate.ip;
+                                sdpObj.rtcp.addrtype = "IP4";
+                                sdpObj.rtcp.nettype = "IN";
+                            }
+                        });
+                    } 
+                    if ($(this).attr('xmlns') == "urn:xmpp:jingle:transports:ice-udp:1") {
+                        sdpObj.ice.pwd = $(this).attr('pwd');
+                        sdpObj.ice.ufrag = $(this).attr('ufrag');
+                        if ($(this).attr('options')) {
+                            sdpObj.ice.options = $(this).attr('options');
+                        }
+                        $(this).find('candidate').each(function () {
+                            var candidate = Phono.util.getAttributes(this);
+                            console.log("candidate: "+JSON.stringify(candidate,null," "));
+                            sdpObj.candidates.push(candidate);
+                        });
+                    }
+                });
+            });
+            return blobObj;
         },
-        
-        /*
-        //a=ice-ufrag:2d8439a71c719f2f5c51c35f1daaf2a4
-        //a=ice-pwd:663aefd879858ef8686d32826121d16e
-        ice: {
-          pwd:'asd88fgpdd777uzjYhagZg'
-          ufrag:'8hhy'
-        },
-          
-        "v=0
-        o=- 611498911 611498911 IN IP4 127.0.0.1
-        ns=-
-        t=0 0
-        m=audio 20298 RTP/SAVPF 0 101
-        c=IN IP4 192.67.4.20
-        
-        a=sendrecv
-        */
         
         // sdp: an SDP text string representing an offer or answer, missing candidates
         // Return an object representing the SDP in Jingle like constructs
@@ -393,11 +528,20 @@
             // Write some constant stuff
             var session = contentsObj.session;
             var sdp = 
-                "v=0\r\n" +
-                "s=-\r\n" + 
-                "t=0 0\r\n" +
-                "o=" + session.username + " " + session.id + " " + session.ver + " " + 
+                "v=0\r\n";
+            if (contentsObj.session) {
+                var session = contentsObj.session;
+                sdp = sdp + "o=" + session.username + " " + session.id + " " + session.ver + " " + 
                 session.nettype + " " + session.addrtype + " " + session.address + "\r\n"; 
+            } else {
+                var id = new Date().getTime();
+                var ver = 2;
+                sdp = sdp + "o=-" + " " + id + " " + ver + " IN IP4 127.0.0.1" + "\r\n";
+            }
+
+            sdp = sdp + "s=-\r\n" + 
+                "t=0 0\r\n";
+
             if (contentsObj.connection) {
                 var connection = contentsObj.connection;
                 sdp = sdp + "c=" + connection.nettype + " " + connection.addrtype + 
@@ -422,6 +566,19 @@
                 ic = ic + 1;
             }
             return sdp;
+        },
+
+        // candidate: an SDP text string representing a cadidate
+        // Return: an object representing the candidate in Jingle like constructs
+        parseCandidate: function(candidateSDP) {
+            var line = _parseLine(candidateSDP);
+            return _parseCandidate(line.contents);
+        },
+        
+        // candidate: an object representing the body
+        // Return a text string in SDP format
+        buildCandidate: function(candidateObj) {
+            return _buildCandidate(candidateObj);
         }
     };
 
