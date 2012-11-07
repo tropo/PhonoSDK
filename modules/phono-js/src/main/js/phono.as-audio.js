@@ -6,7 +6,7 @@ function FlashAudio(phono, config, callback) {
         protocol: "rtmfp",
         swf: "//" + MD5.hexdigest(window.location.host+phono.config.apiKey) + ".u.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf",
         cirrus: "rtmfp://phono-fms1-ext.voxeolabs.net/phono",
-        direct: true,
+        bridged: false,
         media: {audio:true,video:true}
     }, config);
 
@@ -105,7 +105,7 @@ FlashAudio.prototype.play = function(transport, autoPlay) {
     }
     
     var player;
-    if (this.config.direct == true && transport.peerID != undefined && this.config.cirrus != undefined) {
+    if (this.config.bridged == false && transport.peerID != undefined && this.config.cirrus != undefined) {
         Phono.log.info("Direct media play with peer " + transport.peerID);
         player = this.$flash.play(luri, autoPlay, transport.peerID, this.config.video);
     }
@@ -136,9 +136,8 @@ FlashAudio.prototype.play = function(transport, autoPlay) {
 // Creates a new audio Share and will optionally begin playing
 FlashAudio.prototype.share = function(transport, autoPlay, codec) {
     var url = transport.uri.replace("protocol",this.config.protocol);
-    var direct = false;
     var peerID = "";
-    if (this.config.direct == true && transport.peerID != undefined && this.config.cirrus != undefined) { 
+    if (this.config.bridged == false && transport.peerID != undefined && this.config.cirrus != undefined) { 
         peerID = transport.peerID;
         Phono.log.info("Direct media share with peer " + transport.peerID);
     }
@@ -231,7 +230,7 @@ FlashAudio.prototype.transport = function() {
         description: description,
         buildTransport: function(direction, j, callback) {
             var nearID = "";
-            if (config.direct) {
+            if (!config.bridged) {
                 // XXX HOW LONG WILL WAIT BEFORE ABORTING?
                 var onConnected = function() {
                     if (nearID == "") {
@@ -283,7 +282,7 @@ FlashAudio.prototype.transport = function() {
         },
         destroyTransport: function() {
             // Disconnect from cirrus server, reference counting is done in phono-as-audio
-            if (config.direct) {
+            if (!config.bridged) {
                 Phono.log.info("Disconnecting from cirrus server");
                 $flash.doCirrusDisconnect(cirrus);
             }
