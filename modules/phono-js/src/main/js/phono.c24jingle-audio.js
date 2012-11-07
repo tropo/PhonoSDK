@@ -172,7 +172,7 @@ C24JingleAudio.prototype.transport = function(config) {
                     if (evt.candidate != null) {
         		console.log("An Ice candidate "+JSON.stringify(evt.candidate));
                         if (candidates >=0) candidates = candidates + 1;
-                    } else if (candidates > 3) {
+                    } else if (candidates > 1) {
 			console.log("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
                         var blob = Phono.sdp.parseSDP(pc.localDescription.sdp);
                         console.log("blob = " + JSON.stringify(blob));
@@ -220,7 +220,7 @@ C24JingleAudio.prototype.transport = function(config) {
                     if (evt.candidate != null) {
         		console.log("An Ice candidate "+JSON.stringify(evt.candidate));
                         if (candidates >=0) candidates = candidates + 1;
-                    } else if (candidates > 3) {
+                    } else if (candidates > 1) {
 			console.log("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
                         var blob = Phono.sdp.parseSDP(pc.localDescription.sdp);
                         console.log("blob = " + JSON.stringify(blob));

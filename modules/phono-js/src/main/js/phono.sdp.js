@@ -50,19 +50,7 @@
         }
     }
 
-/*
-    a=candidate:257138899 1 udp 2113937151 192.168.0.151 53973 typ host generation 0
-    {
-        priority:'257138899'
-        component:'1',
-        protocol:'udp'
-        id:'el0747fg11',
-        ip:'10.0.1.1'
-        port:'8998'
-        type:'host'
-        generation:'0',
-    }
-*/    
+    //a=candidate:257138899 1 udp 2113937151 192.168.0.151 53973 typ host generation 0
     _parseCandidate = function (params) {
         var candidate = {
             priority:params[0],
@@ -83,7 +71,6 @@
     }
 
     //a=rtcp:1 IN IP4 0.0.0.0
-
     _parseRtcp = function (params) {
         var rtcp = {
             port:params[0]
@@ -96,15 +83,7 @@
         return rtcp;
     }
 
-/*
     //a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:zvrxmXFpomTqz7CJYhN5G7JM3dVVxG/fZ0Il6DDo
-    crypto: {
-        crypto-suite: 'AES_CM_128_HMAC_SHA1_80', 
-        key-params: 'inline:WVNfX19zZW1jdGwgKCkgewkyMjA7fQp9CnVubGVz|2^20|1:32',
-        session-params: 'KDR=1 UNENCRYPTED_SRTCP',
-        tag: '1'
-    }
-*/
     _parseCrypto = function(params) {
         var crypto = {
             'tag':params[0],
@@ -114,15 +93,7 @@
         return crypto;
     }
 
-/*
     //a=rtpmap:101 telephone-event/8000"
-    codec: {
-        id: 101, // payload-type
-        name: "telephone-event",
-        rate: 8000, 
-        p: 20 // ptime XXX
-    },
-*/
     _parseRtpmap = function(params) {
         var codec = {
             id: params[0],
@@ -259,6 +230,7 @@
 
 // Entry points
 
+    // Fake Phono for node.js
     if (typeof Phono == 'undefined') {
         Phono = {};
     }
@@ -305,11 +277,9 @@
                 });
                 
                 c = c.c('encryption', {required: '1'}).c('crypto', sdpObj.crypto).up();    
-                
 
                 // Raw candidates
 	        c = c.up().up().c('transport',{xmlns:"urn:xmpp:jingle:transports:raw-udp:1"});
-
                 c = c.c('candidate', {component:'1',
                                       ip: sdpObj.connection.address,
                                       port: sdpObj.media.port}).up();
@@ -322,13 +292,10 @@
                 var transp = {xmlns:"urn:xmpp:jingle:transports:ice-udp:1",
                              pwd: sdpObj.ice.pwd,
                              ufrag: sdpObj.ice.ufrag};
-                
                 if (sdpObj.ice.options) {
                     transp.options = sdpObj.ice.options;
                 }
-                
 	        c = c.c('transport',transp);
-                
                 Phono.util.each(sdpObj.candidates, function() {
                     c = c.c('candidate', this).up();           
                 });
@@ -488,7 +455,7 @@
                         break;
                     case "rtpmap":
                         var codec = _parseRtpmap(a.params);
-                        sdpObj.codecs.push(codec);
+                        if (codec) sdpObj.codecs.push(codec);
                         break;
                     case "sendrecv":
                         sdpObj.direction = "sendrecv";
