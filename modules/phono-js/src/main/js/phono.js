@@ -26,7 +26,10 @@
    // Initialize Fields
    this.sessionId = null;
    Phono.log.debug("ConnectionUrl: " + this.config.connectionUrl);
-   this.connection = new Strophe.Connection(this.config.connectionUrl);
+
+   // Existing connection?
+   this.connection = this.config.connection || new Strophe.Connection(this.config.connectionUrl);
+
    if(navigator.appName.indexOf('Internet Explorer')>0){
     xmlSerializer = {};
     xmlSerializer.serializeToString = function(body) {return body.xml;};
@@ -74,28 +77,21 @@
 
    Phono.prototype.connect = function() {
 
-      // Noop if already connected
-      if(this.connection.connected) return;
-
-      var phono = this;
-
-      this.connection.connect(phono.config.gateway, null, function (status) {
-         if (status === Strophe.Status.CONNECTED) {
-            phono.connection.send(
-               $iq({type:"set"})
-                  .c("apikey", {xmlns:"http://phono.com/apikey"})
-                  .t(phono.config.apiKey)
+      // If this is our own internal connection
+      if(!this.config.connection) {
+         if(!this.connection.connected) {
+            this.connection.connect(
+               this.config.gateway, 
+               null, 
+               this.handleStropheStatusChange(),
+               50
             );
-            phono.handleConnect();
-         } else if (status === Strophe.Status.DISCONNECTED) {
-            phono.handleDisconnect();
-         } else if (status === Strophe.Status.ERROR 
-                 || status === Strophe.Status.CONNFAIL 
-                 || status === Strophe.Status.CONNFAIL 
-                 || status === Strophe.Status.AUTHFAIL) {
-            phono.handleError();
-          }
-      },50);
+         }
+      }
+      else {
+         this.handleConnect();  
+      }
+
    };
 
    Phono.prototype.disconnect = function() {
@@ -104,6 +100,24 @@
 
    Phono.prototype.connected = function() {
       return this.connection.connected;
+   };
+
+   Phono.prototype.handleStropheStatusChange = function(status) {
+      if (status === Strophe.Status.CONNECTED) {
+         this.connection.send(
+            $iq({type:"set"})
+               .c("apikey", {xmlns:"http://phono.com/apikey"})
+               .t(this.config.apiKey)
+         );
+         this.handleConnect();
+      } else if (status === Strophe.Status.DISCONNECTED) {
+         this.handleDisconnect();
+      } else if (status === Strophe.Status.ERROR 
+              || status === Strophe.Status.CONNFAIL 
+              || status === Strophe.Status.CONNFAIL 
+              || status === Strophe.Status.AUTHFAIL) {
+         this.handleError();
+      }
    };
 
    // Fires when the underlying Strophe Connection is estabilshed
