@@ -81,12 +81,17 @@
 
       this.connection.connect(phono.config.gateway, null, function (status) {
          if (status === Strophe.Status.CONNECTED) {
-            phono.connection.send(
-               $iq({type:"set"})
-                  .c("apikey", {xmlns:"http://phono.com/apikey"})
-                  .t(phono.config.apiKey)
-            );
-            phono.handleConnect();
+             var apiKeyIQ = $iq(
+                 {type:"set"})
+                 .c("apikey", {xmlns:"http://phono.com/apikey"})
+                 .t(phono.config.apiKey);
+             phono.connection.sendIQ(apiKeyIQ, 
+                                    phono.handleConnect,
+                                    function() {
+                                        Phono.events.trigger(phono, "error", {
+                                            reason: "API key rejected"
+                                        });
+                                    });
          } else if (status === Strophe.Status.DISCONNECTED) {
             phono.handleDisconnect();
          } else if (status === Strophe.Status.ERROR 
