@@ -128,29 +128,6 @@
          initiate.c("custom-header", {name:this.name, data:this.value}).up();
       });
              
-       var partialInitiate = initiate
-           .c('content', {creator:"initiator"})
-           .c('description', {xmlns:this.transport.description});
-       
-       Phono.util.each(this.config.codecs(Phono.util.filterWideband(this.audioLayer.codecs(),this.phone.wideband())), function() {
-           partialInitiate = partialInitiate.c('payload-type', {
-               id: this.id,
-               name: this.name,
-               clockrate: this.rate
-           }).up();           
-       });
-
-       // Add our crypto
-       var required = "0";
-       if (call._security == "mandatory") required = "1";
-       if (call._security != "disabled" && this.transport.supportsSRTP == true) {
-           partialInitiate = partialInitiate.c('encryption', {required: required}).c('crypto', {
-               tag: call.tag,
-               'crypto-suite': call.crypto,
-               'key-params': call.keyparams
-           }).up();    
-       }
-
        var updateIq = $iq({type:"set", to:call.remoteJid});
        
        var update = updateIq.c('jingle', {
@@ -164,8 +141,36 @@
            .c('content', {creator:"initiator"})
            .c('description', {xmlns:this.transport.description})
        
-       this.transport.buildTransport("offer", partialInitiate.up(), 
+       this.transport.buildTransport("offer", initiate, 
                                      function() {
+                                         console.log("callback is running");
+                                         
+                                         if (call.transport.description) {
+                                             initiate = initiate
+                                                 .c('content', {creator:"initiator"})
+                                                 .c('description', {xmlns:call.transport.description})
+                                             
+                                             // Add any codecs that were not in the transport layer
+                                             Phono.util.each(call.config.codecs(Phono.util.filterWideband(call.audioLayer.codecs(),call.phone.wideband())), function() {
+                                                 initiate = initiate.c('payload-type', {
+                                                     id: this.id,
+                                                     name: this.name,
+                                                     clockrate: this.rate
+                                                 }).up();           
+                                             });
+                                             
+                                             // Add any crypto that wasn't in the transport layer
+                                             var required = "0";
+                                             if (call._security == "mandatory") required = "1";
+                                             if (call._security != "disabled" && call.transport.supportsSRTP == true) {
+                                                 initiate = initiate.c('encryption', {required: required}).c('crypto', {
+                                                     tag: call.tag,
+                                                     'crypto-suite': call.crypto,
+                                                     'key-params': call.keyparams
+                                                 }).up();    
+                                             }
+                                         }
+
                                          call.connection.sendIQ(initiateIq, function (iq) {
                                              call.state = CallState.PROGRESS;
                                          });
@@ -220,34 +225,7 @@
            sid: call.id
        });
        
-       var partialAccept = accept
-           .c('content', {creator:"initiator"})
-           .c('description', {xmlns:this.transport.description});
        
-       partialAccept = partialAccept.c('payload-type', {
-           id: call.codec.id,
-           name: call.codec.name,
-           clockrate: call.codec.rate
-       }).up();           
-
-       $.each((call.audioLayer.codecs()), function() {
-           if (this.name == "telephone-event") {
-               partialAccept = partialAccept.c('payload-type', {
-                   id: this.id,
-                   name: this.name,
-                   clockrate: this.rate
-               }).up();     
-           } 
-       });
-
-       // Add our crypto
-       if (call.srtpPropsl != undefined && call.srtpPropsr != undefined) {
-           partialAccept = partialAccept.c('encryption').c('crypto', {
-               tag: call.tag,
-               'crypto-suite': call.crypto,
-               'key-params': call.keyparams
-           }).up();    
-       }
        
        var updateIq = $iq({type:"set", to:call.remoteJid});
       
@@ -262,8 +240,39 @@
            .c('content', {creator:"initiator"})
            .c('description', {xmlns:this.transport.description})
 
-       this.transport.buildTransport("answer", partialAccept.up(), 
+       this.transport.buildTransport("answer", accept, 
                                      function(){
+                                         if (call.transport.description) {
+                                             var partialAccept = accept
+                                                 .c('content', {creator:"initiator"})
+                                                 .c('description', {xmlns:call.transport.description});
+                                             
+                                             partialAccept = partialAccept.c('payload-type', {
+                                                 id: call.codec.id,
+                                                 name: call.codec.name,
+                                                 clockrate: call.codec.rate
+                                             }).up();           
+                                             
+                                             $.each((call.audioLayer.codecs()), function() {
+                                                 if (this.name == "telephone-event") {
+                                                     partialAccept = partialAccept.c('payload-type', {
+                                                         id: this.id,
+                                                         name: this.name,
+                                                         clockrate: this.rate
+                                                     }).up();     
+                                                 } 
+                                             });
+                                             
+                                             // Add our crypto
+                                             if (call.srtpPropsl != undefined && call.srtpPropsr != undefined) {
+                                                 partialAccept = partialAccept.c('encryption').c('crypto', {
+                                                     tag: call.tag,
+                                                     'crypto-suite': call.crypto,
+                                                     'key-params': call.keyparams
+                                                 }).up();    
+                                             }
+                                         }
+
                                          call.connection.sendIQ(acceptIq, function (iq) {
                                              call.state = CallState.CONNECTED;
                                              if (call.ringer != null) call.ringer.stop();
@@ -499,7 +508,7 @@
       var foundTransport = false;
       $(iq).find('transport').each(function () {
           if (call.transport.name == $(this).attr('xmlns') && foundTransport == false) {
-              var transport = call.transport.processTransport($(this), false);      
+              var transport = call.transport.processTransport($(iq), false);      
               if (transport != undefined) {
                   call.setupBinding = function () {
                       return call.bindAudio ({

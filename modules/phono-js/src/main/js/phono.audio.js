@@ -4,6 +4,10 @@
     //@Include=phono.phonegap-ios-audio.js
     //@Include=phono.phonegap-android-audio.js
     //@Include=phono.webrtc-audio.js
+    //@Include=phono.c24-audio.js
+    //@Include=phono.c24jingle-audio.js
+    //@Include=phono.bowser-audio.js
+    //@Include=phono.moz-audio.js
 
     Phono.registerPlugin("audio", {
         
@@ -28,8 +32,17 @@
             } else if (config.type === "webrtc") {
                 return Phono.util.loggify("WebRTCAudio", new WebRTCAudio(phono, config, callback));
 
-            } else if (config.type === "jsep") {
-                return Phono.util.loggify("JSEPAudio", new JSEPAudio(phono, config, callback));
+            } else if (config.type === "c24") {
+                return Phono.util.loggify("C24Audio", new C24Audio(phono, config, callback));
+
+            } else if (config.type === "c24jingle") {
+                return Phono.util.loggify("C24JingleAudio", new C24JingleAudio(phono, config, callback));
+
+            } else if (config.type === "moz") {
+                return Phono.util.loggify("MozAudio", new MozAudio(phono, config, callback));
+
+            } else if (config.type === "bowser") {
+                return Phono.util.loggify("BowserAudio", new BowserAudio(phono, config, callback));
                 
             } else if (config.type === "none") {
                 window.setTimeout(callback,10);

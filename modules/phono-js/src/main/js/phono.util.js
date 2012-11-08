@@ -290,6 +290,17 @@
             key = key + String.fromCharCode(Math.random() * 256);
         }
         return Base64.encode(key);
+    },
+    getAttributes: function(element) {
+	var res = {},
+	attr;
+	for(var i = 0, len = element.attributes.length; i < len; i++) {
+	    if(element.attributes.hasOwnProperty(i)) {
+		attr = element.attributes[i];
+		res[attr.name] = attr.value;
+	    }
+	}
+	return res;
     }
 };
 
