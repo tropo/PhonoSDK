@@ -716,14 +716,15 @@
 
       // Configure Call properties inherited from Phone
       config = Phono.util.extend({
-         headset: this.headset()
+         headset: this.headset(),
+         callerId: this.connection.jid
       }, (config || {}));
 
       // Create and configure Call
       var call = new Phono.util.loggify("Call", new Call(this, id, Direction.OUTBOUND, config));
       call.phone = this;
       call.remoteJid = to;
-      call.initiator = this.connection.jid;
+      call.initiator = config.callerId;
 
       // Give platform a chance to fix up 
       // the destination and add headers
