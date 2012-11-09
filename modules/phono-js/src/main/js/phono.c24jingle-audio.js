@@ -179,9 +179,9 @@ C24JingleAudio.prototype.transport = function(config) {
                         Phono.sdp.buildJingle(j, blob);
                         var codec = 
                             {
-                                id: blobObj.contents[0].codecs[0].id,
-                                name: blobObj.contents[0].codecs[0].name,
-                                rate: blobObj.contents[0].codecs[0].clockrate
+                                id: blob.contents[0].codecs[0].id,
+                                name: blob.contents[0].codecs[0].name,
+                                rate: blob.contents[0].codecs[0].clockrate
                             };
 		        callback(codec);
 
