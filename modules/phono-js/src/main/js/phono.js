@@ -83,7 +83,7 @@
             this.connection.connect(
                this.config.gateway, 
                null, 
-               this.handleStropheStatusChange(),
+               this.handleStropheStatusChange,
                50
             );
          }
@@ -104,7 +104,7 @@
 
    Phono.prototype.handleStropheStatusChange = function(status) {
       var phono = this;
-       
+
       if (status === Strophe.Status.CONNECTED) {
           var apiKeyIQ = $iq(
               {type:"set"})
