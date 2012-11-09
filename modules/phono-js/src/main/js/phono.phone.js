@@ -328,14 +328,15 @@
             initiator: call.initiator,
             sid: call.id}
       );
-      
+
+      call.stopAudio();
+      if (call.transport.destroyTransport) call.transport.destroyTransport();
+             
       this.connection.sendIQ(jingleIq, function (iq) {
           call.state = CallState.DISCONNECTED;
           Phono.events.trigger(call, "hangup");
-          call.stopAudio();
           if (call.ringer != null) call.ringer.stop();
           if (call.ringback != null) call.ringback.stop();          
-          if (call.transport.destroyTransport) call.transport.destroyTransport();
       });
       
    };
@@ -725,14 +726,15 @@
 
       // Configure Call properties inherited from Phone
       config = Phono.util.extend({
-         headset: this.headset()
+         headset: this.headset(),
+         callerId: this.connection.jid
       }, (config || {}));
 
       // Create and configure Call
       var call = new Phono.util.loggify("Call", new Call(this, id, Direction.OUTBOUND, config));
       call.phone = this;
       call.remoteJid = to;
-      call.initiator = this.connection.jid;
+      call.initiator = config.callerId;
 
       // Give platform a chance to fix up 
       // the destination and add headers

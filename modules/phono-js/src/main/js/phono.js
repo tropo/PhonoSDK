@@ -103,20 +103,27 @@
    };
 
    Phono.prototype.handleStropheStatusChange = function(status) {
+      var phono = this;
+       
       if (status === Strophe.Status.CONNECTED) {
-         this.connection.send(
-            $iq({type:"set"})
-               .c("apikey", {xmlns:"http://phono.com/apikey"})
-               .t(this.config.apiKey)
-         );
-         this.handleConnect();
+          var apiKeyIQ = $iq(
+              {type:"set"})
+              .c("apikey", {xmlns:"http://phono.com/apikey"})
+              .t(phono.config.apiKey);
+          phono.connection.sendIQ(apiKeyIQ, 
+                                  phono.handleConnect,
+                                  function() {
+                                      Phono.events.trigger(phono, "error", {
+                                          reason: "API key rejected"
+                                      });
+                                  });
       } else if (status === Strophe.Status.DISCONNECTED) {
-         this.handleDisconnect();
+          this.handleDisconnect();
       } else if (status === Strophe.Status.ERROR 
-              || status === Strophe.Status.CONNFAIL 
-              || status === Strophe.Status.CONNFAIL 
-              || status === Strophe.Status.AUTHFAIL) {
-         this.handleError();
+                 || status === Strophe.Status.CONNFAIL 
+                 || status === Strophe.Status.CONNFAIL 
+                 || status === Strophe.Status.AUTHFAIL) {
+          this.handleError();
       }
    };
 
