@@ -1,7 +1,7 @@
 function C24JingleAudio(phono, config, callback) {
     this.type = "webrtc";
 
-    console.log("Initialize C24");
+    console.log("Initialize C24Jingle");
 
     if (typeof webkitRTCPeerConnection== "function") {
         C24JingleAudio.GUM = function(p,s,f) {navigator.webkitGetUserMedia(p,s,f)};
@@ -177,8 +177,14 @@ C24JingleAudio.prototype.transport = function(config) {
                         var blob = Phono.sdp.parseSDP(pc.localDescription.sdp);
                         console.log("blob = " + JSON.stringify(blob));
                         Phono.sdp.buildJingle(j, blob);
+                        var codec = 
+                            {
+                                id: blobObj.contents[0].codecs[0].id,
+                                name: blobObj.contents[0].codecs[0].name,
+                                rate: blobObj.contents[0].codecs[0].clockrate
+                            };
+		        callback(codec);
 
-		        callback();
                         candidates = -1;
                     }
                 }
@@ -259,12 +265,19 @@ C24JingleAudio.prototype.transport = function(config) {
         processTransport: function(t, update) {
             console.log("process message");
 
+            var blobObj = Phono.sdp.parseJingle(t);
+            console.log("blobObj: "+JSON.stringify(blobObj,null," "));
+            var sdp = Phono.sdp.buildSDP(blobObj);
+            console.log("contents: "+JSON.stringify(blobObj.contents,null," "));
+            var selectedCodec = 
+                {
+                    id: blobObj.contents[0].codecs[0].id,
+                    name: blobObj.contents[0].codecs[0].name,
+                    rate: blobObj.contents[0].codecs[0].clockrate
+                };
+
             if (pc) {
                 // We are an answer to an outbound call
-                var blobObj = Phono.sdp.parseJingle(t);
-                console.log("blobObj: "+JSON.stringify(blobObj,null," "));
-                                         
-                var sdp = Phono.sdp.buildSDP(blobObj);
                 var sd = new RTCSessionDescription({'sdp':sdp, 'type':"answer"} );
 		console.log("about to set the remote description: "+JSON.stringify(sd,null," "));
 		pc.setRemoteDescription(sd,
@@ -275,16 +288,10 @@ C24JingleAudio.prototype.transport = function(config) {
                 
             } else {
                 // We are an offer for an inbound call
-                // Parse jingle into an SDP object
-                var blobObj = Phono.sdp.parseJingle(t);
-                
-                console.log("blobObj: "+JSON.stringify(blobObj,null," "));
-                                         
-                var sdp = Phono.sdp.buildSDP(blobObj);
                 var sd = new RTCSessionDescription({'sdp':sdp, 'type':"offer"} );
                 inboundOffer = sd; // Temp stash
             }
-            return {input:{uri:"webrtc"}, output:{uri:"webrtc"}};
+            return {input:{uri:"webrtc"}, output:{uri:"webrtc"}, codec:selectedCodec};
         },
         destroyTransport: function() {
             // Destroy any transport state we have created

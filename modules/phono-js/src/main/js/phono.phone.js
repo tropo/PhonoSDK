@@ -241,7 +241,7 @@
            .c('description', {xmlns:this.transport.description})
 
        this.transport.buildTransport("answer", accept, 
-                                     function(){
+                                     function(codec){
                                          if (call.transport.description) {
                                              var partialAccept = accept
                                                  .c('content', {creator:"initiator"})
@@ -273,6 +273,9 @@
                                              }
                                          }
 
+                                         // If the codec changed, set it for correctness
+                                         if (codec) call.codec = codec;
+                                         
                                          call.connection.sendIQ(acceptIq, function (iq) {
                                              call.state = CallState.CONNECTED;
                                              if (call.ringer != null) call.ringer.stop();
@@ -474,18 +477,6 @@
          });
       });
       
-      // No matching codec
-      if (!codec) {
-          Phono.log.error("No matching jingle codec (not a problem if using WebRTC)");
-          // Voodoo up a temporary codec as a placeholder
-          codec = {
-              id: 1,
-              name: "webrtc-ulaw",
-              rate: 8000,
-              p: 20
-          };
-      }
-
       // Check to see if we have crypto, we only support AES_CM_128_HMAC_SHA1_80
       if (call._security != "disabled" && this.transport.supportsSRTP == true) {
           description.find('crypto').each(function () {
@@ -509,7 +500,8 @@
       var foundTransport = false;
       $(iq).find('transport').each(function () {
           if (call.transport.name == $(this).attr('xmlns') && foundTransport == false) {
-              var transport = call.transport.processTransport($(iq), false);      
+              var transport = call.transport.processTransport($(iq), false);
+
               if (transport != undefined) {
                   call.setupBinding = function () {
                       return call.bindAudio ({
@@ -518,6 +510,10 @@
                       });
                   };
                   foundTransport = true;
+                  if (transport.codec) {
+                      // If the codec changed, set it for correctness
+                      codec = transport.codec;
+                  };      
               } else {
                   Phono.log.error("No valid candidate in transport");
               }
@@ -528,6 +524,19 @@
           Phono.log.error("No matching valid transport");
           return null;
       }
+
+      // No matching codec
+      if (!codec) {
+          Phono.log.error("No matching jingle codec (not a problem if using ROAP WebRTC)");
+          // Voodoo up a temporary codec as a placeholder
+          codec = {
+              id: 1,
+              name: "webrtc-ulaw",
+              rate: 8000,
+              p: 20
+          };
+      }
+
       return codec;
        
    };
