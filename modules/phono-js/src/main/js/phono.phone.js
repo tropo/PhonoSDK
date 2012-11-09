@@ -319,14 +319,15 @@
             initiator: call.initiator,
             sid: call.id}
       );
-      
+
+      call.stopAudio();
+      if (call.transport.destroyTransport) call.transport.destroyTransport();
+             
       this.connection.sendIQ(jingleIq, function (iq) {
           call.state = CallState.DISCONNECTED;
           Phono.events.trigger(call, "hangup");
-          call.stopAudio();
           if (call.ringer != null) call.ringer.stop();
           if (call.ringback != null) call.ringback.stop();          
-          if (call.transport.destroyTransport) call.transport.destroyTransport();
       });
       
    };
