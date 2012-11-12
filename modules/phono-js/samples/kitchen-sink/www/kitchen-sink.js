@@ -34,11 +34,11 @@ $(document).ready(function() {
 	var firstPhono = $('.phono').first()
 	var newPhonoDiv = firstPhono.clone()
         var audioType = $('.audio-plugin').val();
-        var directP2P = true;
+        var bridged = false;
         var connectionUrl = window.location.protocol+"//app.phono.com/http-bind";
         var dialString = "sip:3366@login.zipdx.com";
         var chatString = "en2fr@bot.talk.google.com";
-        var gw = "gw-v4.d.phono.com";
+        var gw = "gw-v6.d.phono.com";
         
         if (connectionUrl.indexOf("file:") == 0){
             connectionUrl = "http://app.phono.com/http-bind";
@@ -69,19 +69,24 @@ $(document).ready(function() {
         if (audioType == "flash") {
             gw = "gw-v3.d.phono.com";
             audio = "flash";
-            directP2P = false;
+            bridged = true;
         }
 
         if (audioType == "panda") {
             gw = "gw-v4.d.phono.com";
             audio = "flash";
-            directP2P = true;
+            bridged = false;
         }
 
         if (audioType == "pandabridged") {
             gw = "gw-v4.d.phono.com";
             audio = "flash";
-            directP2P = false;
+            bridged = true;
+        }
+
+        if (audioType == "jsep") {
+            gw = "gw-v6.d.phono.com";
+            audio = "jsep";
         }
 
 	phonos[newPhonoID] = $.phono({
@@ -137,7 +142,7 @@ $(document).ready(function() {
                 type: audio,
                 jar: "../../../plugins/audio/phono.audio.jar",
                 swf: "../../../plugins/audio/phono.audio.swf",
-                direct: directP2P,
+                bridged: bridged,
                 onPermissionBoxShow: function(event) {
                     console.log("["+newPhonoID+"] Flash permission box loaded"); 
                 },

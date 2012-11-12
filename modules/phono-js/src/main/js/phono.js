@@ -2,7 +2,7 @@
 
    // Define defualt config and merge from constructor
    this.config = Phono.util.extend({
-      gateway: "gw-v4.d.phono.com",
+      gateway: "gw-v6.d.phono.com",
       connectionUrl: window.location.protocol+"//app.phono.com/http-bind"
    }, config);
    if (this.config.connectionUrl.indexOf("file:")==0){

@@ -188,18 +188,18 @@ JSEPAudio.prototype.transport = function(config) {
 		    callback(codec);
                 }
             }
-            pc.onconnecting = function(message) {Phono.log.info("onSessionConnecting");};
-	    pc.onopen = function(message) {Phono.log.info("onSessionOpened");};
+            pc.onconnecting = function(message) {Phono.log.info("onSessionConnecting.");};
+	    pc.onopen = function(message) {Phono.log.info("onSessionOpened.");};
             pc.onaddstream = function (event) {
-                Phono.log.info("Remote stream added."); 
+                Phono.log.info("onAddStream."); 
                 var url = webkitURL.createObjectURL(event.stream);
                 remoteVideo.style.opacity = 1;
                 remoteVideo.src = url;
             };
-            pc.onremovestream = function (event) {Phono.log.info("Remote stream removed."); };
-	    pc.onicechange= function (event) {Phono.log.info("ice state change now: "+pc.iceState); };
-	    pc.onnegotiationneeded = function (event) {Phono.log.info("Call a diplomat - "); };
-            pc.onstatechange = function (event) {Phono.log.info("state change: "+pc.readyState); };
+            pc.onremovestream = function (event) {Phono.log.info("onRemoveStream."); };
+	    pc.onicechange= function (event) {Phono.log.info("onIceChange: "+pc.iceState); };
+	    pc.onnegotiationneeded = function (event) {Phono.log.info("onNegotiationNeeded."); };
+            pc.onstatechange = function (event) {Phono.log.info("onStateChange: "+pc.readyState); };
 
             Phono.log.info("Adding localStream");
 
@@ -231,10 +231,10 @@ JSEPAudio.prototype.transport = function(config) {
                 audio.showPermissionBox(cb2);
             }
         },
-        processTransport: function(t, update) {
+        processTransport: function(t, update, iq) {
             Phono.log.info("process message");
 
-            var sdpObj = Phono.sdp.parseJingle(t);
+            var sdpObj = Phono.sdp.parseJingle(iq);
             var sdp = Phono.sdp.buildSDP(sdpObj);
             var codec = 
                 {
