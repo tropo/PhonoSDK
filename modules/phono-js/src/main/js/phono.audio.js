@@ -4,8 +4,8 @@
     //@Include=phono.phonegap-ios-audio.js
     //@Include=phono.phonegap-android-audio.js
     //@Include=phono.webrtc-audio.js
+    //@Include=phono.jsep-audio.js
     //@Include=phono.c24-audio.js
-    //@Include=phono.c24jingle-audio.js
     //@Include=phono.bowser-audio.js
     //@Include=phono.moz-audio.js
 
@@ -32,11 +32,11 @@
             } else if (config.type === "webrtc") {
                 return Phono.util.loggify("WebRTCAudio", new WebRTCAudio(phono, config, callback));
 
+            } else if (config.type === "jsep") {
+                return Phono.util.loggify("JSEPAudio", new C24JingleAudio(phono, config, callback));
+
             } else if (config.type === "c24") {
                 return Phono.util.loggify("C24Audio", new C24Audio(phono, config, callback));
-
-            } else if (config.type === "c24jingle") {
-                return Phono.util.loggify("C24JingleAudio", new C24JingleAudio(phono, config, callback));
 
             } else if (config.type === "moz") {
                 return Phono.util.loggify("MozAudio", new MozAudio(phono, config, callback));
@@ -50,17 +50,20 @@
                 
             } else if (config.type === "auto") {
                 
-                console.log("Detecting Audio Plugin");
-                
-                if (PhonegapIOSAudio.exists())  { 
-                    console.log("Detected iOS"); 
+                Phono.log.info("Detecting Audio Plugin");
+
+                if (JSEPAudio.exists()) {
+                    Phono.log.info("Detected JSEP browser"); 
+                    return Phono.util.loggify("JSEPAudio", new JSEPAudio(phono, config, callback));
+                } else if (PhonegapIOSAudio.exists())  { 
+                    Phono.log.info("Detected iOS"); 
                     return Phono.util.loggify("PhonegapIOSAudio", new PhonegapIOSAudio(phono, config, callback));
                     
                 } else if (PhonegapAndroidAudio.exists()) { 
-                    console.log("Detected Android"); 
+                    Phono.log.info("Detected Android"); 
                     return Phono.util.loggify("PhonegapAndroidAudio", new PhonegapAndroidAudio(phono, config, callback));
                 } else { 
-                    console.log("Detected Flash"); 
+                    Phono.log.info("Using Flash default"); 
                     return Phono.util.loggify("FlashAudio", new FlashAudio(phono, config, callback));
                     
                 }
