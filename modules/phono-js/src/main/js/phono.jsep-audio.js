@@ -149,6 +149,7 @@ JSEPAudio.prototype.transport = function(config) {
     var remoteContainerId;
     var complete = false;
     var audio = this;
+    var candidateCount = 0;
 
     constraints =  {has_audio:this.config.media['audio'], has_video:this.config.media['video']};
 
@@ -171,8 +172,9 @@ JSEPAudio.prototype.transport = function(config) {
             pc = JSEPAudio.mkPeerConnection(configuration,constraints);
             
 	    pc.onicecandidate = function(evt) {
-                if (evt.candidate != null || complete == true) {
+                if ((evt.candidate != null || complete == true) && (candidateCount < 1 || direction == "offer")) {
         	    Phono.log.info("An Ice candidate "+JSON.stringify(evt.candidate));
+                    candidateCount += 1;
                 } else {
 		    Phono.log.info("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
                     complete = true;
@@ -208,9 +210,15 @@ JSEPAudio.prototype.transport = function(config) {
                 
 	        var cb = function(localDesc) {
                     Phono.log.info("Created localDesc");
-   		    pc.setLocalDescription(localDesc);
-		    var msgString = JSON.stringify(localDesc,null," ");
+                    var sdpObj = Phono.sdp.parseSDP(localDesc.sdp);
+                    // XXX Nail it to google-ice
+                    sdpObj.contents[0].ice.options = "google-ice";
+                    var sdp = Phono.sdp.buildSDP(sdpObj);
+                    var sd = new RTCSessionDescription({'sdp':sdp, 'type':localDesc.type} );
+   		    pc.setLocalDescription(sd);
+		    var msgString = JSON.stringify(sd,null," ");
                     Phono.log.info('Set localDesc ' + msgString);
+                    Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
 	        };
                 
                 if (direction == "answer") {
