@@ -745,6 +745,9 @@
       call.phone = this;
       call.remoteJid = to;
       call.initiator = config.callerId;
+      if (call.initiator == undefined || call.initiator == null || call.initiator == "") {
+          call.initiator = this.connection.jid;
+      }
 
       // Give platform a chance to fix up 
       // the destination and add headers
