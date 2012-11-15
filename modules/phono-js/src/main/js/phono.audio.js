@@ -5,9 +5,7 @@
     //@Include=phono.phonegap-android-audio.js
     //@Include=phono.webrtc-audio.js
     //@Include=phono.jsep-audio.js
-    //@Include=phono.c24-audio.js
     //@Include=phono.bowser-audio.js
-    //@Include=phono.moz-audio.js
 
     Phono.registerPlugin("audio", {
         
@@ -55,10 +53,12 @@
                 if (JSEPAudio.exists()) {
                     Phono.log.info("Detected JSEP browser"); 
                     return Phono.util.loggify("JSEPAudio", new JSEPAudio(phono, config, callback));
+                } else if (BowserAudio.exists()) {
+                    Phono.log.info("Detected Bowser browser"); 
+                    return Phono.util.loggify("BowserAudio", new BowserAudio(phono, config, callback));
                 } else if (PhonegapIOSAudio.exists())  { 
                     Phono.log.info("Detected iOS"); 
                     return Phono.util.loggify("PhonegapIOSAudio", new PhonegapIOSAudio(phono, config, callback));
-                    
                 } else if (PhonegapAndroidAudio.exists()) { 
                     Phono.log.info("Detected Android"); 
                     return Phono.util.loggify("PhonegapAndroidAudio", new PhonegapAndroidAudio(phono, config, callback));

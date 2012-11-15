@@ -276,10 +276,13 @@
                     c = c.c('payload-type', this).up();           
                 });
                 
-                c = c.c('encryption', {required: '1'}).c('crypto', sdpObj.crypto).up();    
+                if (sdpObj.crypto) {
+                    c = c.c('encryption', {required: '1'}).c('crypto', sdpObj.crypto).up();    
+                    c = c.up();
+                }
 
                 // Raw candidates
-	        c = c.up().up().c('transport',{xmlns:"urn:xmpp:jingle:transports:raw-udp:1"});
+	        c = c.up().c('transport',{xmlns:"urn:xmpp:jingle:transports:raw-udp:1"});
                 c = c.c('candidate', {component:'1',
                                       ip: sdpObj.connection.address,
                                       port: sdpObj.media.port}).up();

@@ -9,7 +9,7 @@ function BowserAudio(phono, config, callback) {
     }
 
     this.config = Phono.util.extend({
-        media: "audio,video"
+        media:  {audio:true, video:false}
     }, config);
     
     var plugin = this;
@@ -41,7 +41,7 @@ function BowserAudio(phono, config, callback) {
 }
 
 BowserAudio.exists = function() {
-    return (typeof webkitDeprecatedPeerConnection == "function")|| (typeof webkitPeerConnection == "function");
+    return (typeof webkitDeprecatedPeerConnection == "function") || (typeof webkitPeerConnection == "function");
 }
 
 BowserAudio.stun = "STUN stun.l.google.com:19302";
@@ -138,6 +138,19 @@ BowserAudio.prototype.permission = function() {
     return true;
 };
 
+function fakeRoap(sdp, type){
+    var fakeJson = {
+        answererSessionId: "1",
+        messageType: type,
+        offererSessionId: "1",
+        seq:2,
+        sdp: sdp
+    };
+    var fake = "SDP\r\n" + JSON.stringify(fakeJson);
+    console.log("FAKE ROAP======================\r\n" + fake);
+    return fake;
+}
+
 // Returns an object containg JINGLE transport information
 BowserAudio.prototype.transport = function(config) {
     var pc, offer, answer, ok, remoteContainerId;
@@ -155,82 +168,10 @@ BowserAudio.prototype.transport = function(config) {
     var remoteVideo = document.getElementById(remoteContainerId);    
     
     return {
-        name: "http://phono.com/webrtc/transport",
-        description: "http://phono.com/webrtc/description",
+        name: "urn:xmpp:jingle:transports:ice-udp:1",
         buildTransport: function(direction, j, callback, u, updateCallback) {
             if (direction == "answer") {
-                // We are the result of an inbound call, so provide answer
-                if (pc != null) {
-                    pc.close();
-                    pc = null;
-                }
-                pc = new BowserAudio.peerConnection(BowserAudio.stun,
-                                                          function(message) {
-                                                              console.log("Have a signalling message to send.");
-                                                              console.log("C->S SDP: " + message);
-                                                              var roap = $.parseJSON(message.substring(4,message.length));
-                                                              if (roap['messageType'] == "ANSWER") {
-                                                                  console.log("Received ANSWER from PeerConnection: " + message);
-                                                                  // Canary is giving a null s= line, so 
-                                                                  // we replace it with something useful
-                                                                  message = message.replace("s=", "s=Canary");
-                                                                  answer = message;
-                                                                  j.c('transport',{xmlns:"http://phono.com/webrtc/transport"})
-                                                                      .c('roap',Base64.encode(answer));
-                                                                  ok = "SDP\n{\n\"answererSessionId\":\"" +
-                                                                      roap['offererSessionId'] + "\",\n" +
-                                                                      "\"messageType\":\"OK\",\n" +
-                                                                      "\"offererSessionId\":\"" +
-                                                                      roap['answererSessionId'] + "\",\n" +
-                                                                      "\"seq\":1\n}"
-                                                                  
-                                                                  setTimeout(function() {
-                                                                      // Auto OK it
-                                                                      console.log("H->C SDP: " + ok);
-                                                                      pc.processSignalingMessage(ok);
-                                                                  }, 1);
-                                                                  // Invoke the callback to finish 
-                                                                  callback();
-                                                              } else if (roap['messageType'] == "OFFER") {
-                                                                  // Oh no, here we go
-                                                                  if (offer.indexOf("video") != -1) {
-                                                                      offer = message;
-                                                                      u.c('transport',{xmlns:"http://phono.com/webrtc/transport"})
-                                                                          .c('roap',Base64.encode(offer));
-                                                                      updateCallback();
-                                                                  } else {
-                                                                      // This is an audio only call, lets lie
-                                                                      roapAnswer = $.parseJSON(BowserAudio.offer.substring(4,message.length));
-                                                                      fakeAnswer = "SDP\n{\n\"answererSessionId\":\"" +
-                                                                      roap['answererSessionId'] + "\",\n" +
-                                                                      "\"messageType\":\"ANSWER\",\n" +
-                                                                      "\"offererSessionId\":\"" +
-                                                                      roap['offererSessionId'] + "\",\n" +
-                                                                          "\"seq\":2,\n" +
-                                                                          "\"sdp\":\"" + roapAnswer['sdp']
-                                                                          + "\"}";
-                                                                      console.log("H->C SDP: " + fakeAnswer);
-                                                                      pc.processSignalingMessage(fakeAnswer);
-                                                                  }
-                                                              } else {
-                                                                  console.log("Recieved unexpected ROAP: " + message);
-                                                              }
-                                                          }
-                                                         );
-                
-                pc.onaddstream = function(event) {
-                    console.log("Remote stream added.");
-                    console.log("Local stream is: " + BowserAudio.localStream);
-                    var url = webkitURL.createObjectURL(event.stream);
-                    remoteVideo.style.opacity = 1;
-                    remoteVideo.src = url;
-                };
-                pc.onremovestream = function(event) {
-                    conole.log("Remote stream removed.");
-                };
-                console.log("Created new PeerConnection, passing it :" + offer);
-                pc.addStream(BowserAudio.localStream); 
-                pc.processSignalingMessage(offer);
+
             } else {
                 // We are creating an outbound call
                 if (pc != null) {
@@ -240,31 +181,24 @@ BowserAudio.prototype.transport = function(config) {
                 pc = new BowserAudio.peerConnection(BowserAudio.stun,
                                                           function(message) {
                                                               console.log("Have a signalling message to send");
-                                                              //console.log("C->S SDP: " + message);
-                                                              // Canary is giving a null s= line, so 
-                                                              // we replace it with something useful
-                                                              message = message.replace("s=", "s=Canary");
-                                                              //message = message.replace("a=group:BUNDLE audio video", "a=group:BUNDLE 2 1");
-                                                              //message = message.replace("a=mid:audio", "a=mid:2");
-                                                              //message = message.replace("a=mid:video", "a=mid:1");
                                                               var roap = $.parseJSON(message.substring(4,message.length));
                                                               console.log("roap messageType == " + roap['messageType']);
+                                                              var sdpObj = Phono.sdp.parseSDP(roap['sdp']);
+                                                              console.log("Have an sdpObj");
+
                                                               if (roap['messageType'] == "OFFER") {
-                                                                  j.c('transport',{xmlns:"http://phono.com/webrtc/transport"})
-                                                                      .c('roap',Base64.encode(message));  
-                                                                  offer = message;
-                                                                  console.log("about to callback to send");
-                                                                  window.setTimeout(callback(),1000);;
-                                                                  console.log("done callback");
+                                                                  console.log("buildJingle");
+                                                                  Phono.sdp.buildJingle(j, sdpObj);
+                                                                  var codec = 
+                                                                      {
+                                                                          id: sdpObj.contents[0].codecs[0].id,
+                                                                          name: sdpObj.contents[0].codecs[0].name,
+                                                                          rate: sdpObj.contents[0].codecs[0].clockrate
+                                                                      };
+                                                                  console.log("do callback");
+		                                                  callback(codec);
                                                               } else if (roap['messageType'] == "OK") {
                                                                   // Ignore, we autogenerate on remote side
-                                                              }
-                                                              else if (roap['messageType'] == "ANSWER") {
-                                                                  // Oh no, here we go
-                                                                  answer = message;
-                                                                  u.c('transport',{xmlns:"http://phono.com/webrtc/transport"})
-                                                                      .c('roap',Base64.encode(answer));
-                                                                  updateCallback();
                                                               } else {
                                                                   console.log("Recieved unexpected ROAP: " + message);
                                                               }
@@ -281,28 +215,30 @@ BowserAudio.prototype.transport = function(config) {
                 console.log("Created PeerConnection for new OUTBOUND CALL");
             }
         },
-        processTransport: function(t, update) {
-            var roap;
-            var message;
-            t.find('roap').each(function () {
-                var encoded = this.textContent;
-                message = Base64.decode(encoded);
-                console.log("S->C SDP: " + message);
-                roap = $.parseJSON(message.substring(4,message.length));
-            });
-            if (roap['messageType'] == "OFFER") {
-                // We are receiving an inbound call
-                // Store the offer so we can use it to create an answer
-                //  when the user decides to do so
-                offer = message;
-                // Or we are getting an update...
-                if (pc != null && update == true) pc.processSignalingMessage(message);
-            } else if (roap['messageType'] == "ANSWER") {
+        processTransport: function(t, update, iq) {
+            Phono.log.info("process message");
 
-                // We are having an outbound call answered (must already have a PeerConnection)
-                pc.processSignalingMessage(message);
+            var sdpObj = Phono.sdp.parseJingle(iq);
+            var sdp = Phono.sdp.buildSDP(sdpObj);
+            var codec = 
+                {
+                    id: sdpObj.contents[0].codecs[0].id,
+                    name: sdpObj.contents[0].codecs[0].name,
+                    rate: sdpObj.contents[0].codecs[0].clockrate
+                };
+
+            console.log("codec = " + codec.name);
+
+            if (pc) {
+                // We are an answer to an outbound call
+                // Turn the answer into a ROAP message
+
+                var roap = fakeRoap(sdp, "ANSWER");
+                console.log("Calling processSignallingMessage()");
+                pc.processSignalingMessage(roap);
+                console.log("Called processSignallingMessage()");
             }
-            return {input:{uri:"webrtc"}, output:{getPC: function() {return pc;}}};
+            return {codec: codec};
         }
     }
 };
