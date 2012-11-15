@@ -349,7 +349,26 @@
       if(!duration) {
          duration = 349;
       }
-      this.output.digit(value, duration, this._tones);
+      if (this.output.digit) {
+          this.output.digit(value, duration, this._tones);
+      } else {
+          // Send as Jingle
+          var jingleIq = $iq({
+              type: "set", 
+              to: this.remoteJid})
+              .c('jingle', {
+                  xmlns: Strophe.NS.JINGLE,
+                  action: "session-info",
+                  initiator: this.initiator,
+                  sid: this.id})
+              .c('dtmf', {
+                  xmlns: Strophe.NS.JINGLE_DTMF,
+                  code: value,
+                  duration: duration,
+                  volume: "42"});
+          
+          this.connection.sendIQ(jingleIq);
+      }
    };
    
    Call.prototype.pushToTalk = function(value) {

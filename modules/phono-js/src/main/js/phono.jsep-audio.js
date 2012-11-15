@@ -91,9 +91,6 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
 	    Phono.log.info("share() stop");
             // XXX This is where we should stop the peerConneciton audio
         },
-        digit: function(value, duration, audible) {
-            // XXX No idea how to do this yet
-        },
         // Properties
         gain: function(value) {
             return null;
@@ -144,7 +141,7 @@ JSEPAudio.prototype.permission = function() {
 JSEPAudio.prototype.transport = function(config) {
     var pc;
     var inboundOffer;
-    var configuration = {iceServers:[ { url:"stun:stun.l.google.com:19302" }  ]};
+    var configuration = {iceServers:[ { url:"stun:stun.l.google.com:19302" } ]};
     var constraints;
     var remoteContainerId;
     var complete = false;
@@ -214,7 +211,7 @@ JSEPAudio.prototype.transport = function(config) {
 	        var cb = function(localDesc) {
                     Phono.log.info("Created localDesc");
                     var sdpObj = Phono.sdp.parseSDP(localDesc.sdp);
-                    // XXX Nail it to google-ice
+                    // Nail it to google-ice
                     sdpObj.contents[0].ice.options = "google-ice";
                     var sdp = Phono.sdp.buildSDP(sdpObj);
                     var sd = new RTCSessionDescription({'sdp':sdp, 'type':localDesc.type} );
@@ -267,7 +264,7 @@ JSEPAudio.prototype.transport = function(config) {
             } else {
                 // We are an offer for an inbound call
                 var sd = new RTCSessionDescription({'sdp':sdp, 'type':"offer"} );
-                inboundOffer = sd; // Temp stash
+                inboundOffer = sd;
             }
             return {codec:codec};
         },
