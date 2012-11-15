@@ -151,7 +151,7 @@ JSEPAudio.prototype.transport = function(config) {
     var audio = this;
     var candidateCount = 0;
 
-    constraints =  {has_audio:this.config.media['audio'], has_video:this.config.media['video']};
+    constraints =  {'mandatory': {'OfferToReceiveAudio':this.config.media['audio'], 'OfferToReceiveVideo':this.config.media['video']}};
 
     if(!config || !config.remoteContainerId) {
         if (this.config.remoteContainerId) {
@@ -172,22 +172,25 @@ JSEPAudio.prototype.transport = function(config) {
             pc = JSEPAudio.mkPeerConnection(configuration,constraints);
             
 	    pc.onicecandidate = function(evt) {
-                if ((evt.candidate != null || complete == true) && (candidateCount < 1 || direction == "offer")) {
-        	    Phono.log.info("An Ice candidate "+JSON.stringify(evt.candidate));
-                    candidateCount += 1;
-                } else {
-		    Phono.log.info("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
-                    complete = true;
-                    var sdpObj = Phono.sdp.parseSDP(pc.localDescription.sdp);
-                    Phono.log.info("sdpObj = " + JSON.stringify(sdpObj));
-                    Phono.sdp.buildJingle(j, sdpObj);
-                    var codec = 
-                        {
-                            id: sdpObj.contents[0].codecs[0].id,
-                            name: sdpObj.contents[0].codecs[0].name,
-                            rate: sdpObj.contents[0].codecs[0].clockrate
-                        };
-		    callback(codec);
+                if (!complete) {
+                    if ((evt.candidate == null) || 
+                        (candidateCount >= 1 && !audio.config.media['video'] && direction == "answer")) {
+		        Phono.log.info("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
+                        complete = true;
+                        var sdpObj = Phono.sdp.parseSDP(pc.localDescription.sdp);
+                        Phono.log.info("sdpObj = " + JSON.stringify(sdpObj));
+                        Phono.sdp.buildJingle(j, sdpObj);
+                        var codec = 
+                            {
+                                id: sdpObj.contents[0].codecs[0].id,
+                                name: sdpObj.contents[0].codecs[0].name,
+                                rate: sdpObj.contents[0].codecs[0].clockrate
+                            };
+		        callback(codec);
+                    } else {
+        	        Phono.log.info("An Ice candidate "+JSON.stringify(evt.candidate));
+                        candidateCount += 1;
+                    }
                 }
             }
             pc.onconnecting = function(message) {Phono.log.info("onSessionConnecting.");};
