@@ -132,7 +132,7 @@
 
     // Object -> SDP
 
-    _buildCandidate = function(candidateObj) {
+    _buildCandidate = function(candidateObj, iceObj) {
         var c = candidateObj;
         var sdp = "a=candidate:" + c.priority + " " +
             c.component + " " + 
@@ -141,6 +141,13 @@
             c.ip + " " +
             c.port;
         if (c.type) sdp = sdp + " typ " + c.type;
+        if (c.component == 1) sdp = sdp + " name rtp";
+        if (c.component == 2) sdp = sdp + " name rtcp";
+        sdp = sdp + " network_name en0";
+        if (iceObj) {
+            if (iceObj.ufrag) sdp = sdp + " username " + iceObj.ufrag;
+            if (iceObj.pwd) sdp = sdp + " password " + iceObj.pwd;
+        }
         if (c.generation) sdp = sdp + " generation " + c.generation;
         sdp = sdp + "\r\n";
         return sdp;
@@ -179,7 +186,7 @@
 
         var ci = 0;
         while (ci + 1 <= sdpObj.candidates.length) {
-            sdp = sdp + _buildCandidate(sdpObj.candidates[ci]);
+            sdp = sdp + _buildCandidate(sdpObj.candidates[ci], sdpObj.ice);
             ci = ci + 1;
         }
 
@@ -400,6 +407,13 @@
             return blobObj;
         },
         
+        dumpSDP: function(sdpString) {
+            var sdpLines = sdpString.split("\r\n");
+            for (var sdpLine in sdpLines) {
+                console.log(sdpLines[sdpLine]);
+            }
+        },
+
         // sdp: an SDP text string representing an offer or answer, missing candidates
         // Return an object representing the SDP in Jingle like constructs
         parseSDP: function(sdpString) {

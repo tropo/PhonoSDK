@@ -39,7 +39,7 @@ JSEPAudio.count = 0;
 
 // Creates a new Player and will optionally begin playing
 JSEPAudio.prototype.play = function(transport, autoPlay) {
-    var url = null;;
+    var url = null;
     var audioPlayer = null;
     if (transport) {
         url = transport.uri;

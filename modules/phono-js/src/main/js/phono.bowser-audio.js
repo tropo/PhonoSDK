@@ -53,13 +53,15 @@ BowserAudio.count = 0;
 
 // Creates a new Player and will optionally begin playing
 BowserAudio.prototype.play = function(transport, autoPlay) {
-    var url = transport.uri;
-    var luri = url;
+    var url = null;
     var audioPlayer = null;
-    
+    if (transport) {
+        url = transport.uri;
+    }
+
     return {
         url: function() {
-            return luri;
+            return url;
         },
         start: function() {
             if (audioPlayer != null) {
@@ -138,15 +140,16 @@ BowserAudio.prototype.permission = function() {
     return true;
 };
 
-function fakeRoap(sdp, type){
+function fakeRoap(sdp, type, offererSessionId, answererSessionId, seq){
     var fakeJson = {
-        answererSessionId: "1",
+        answererSessionId: offererSessionId,
         messageType: type,
-        offererSessionId: "1",
-        seq:2,
-        sdp: sdp
+        offererSessionId: answererSessionId,
+        seq: seq,
+        sdp: sdp,
+        tieBreaker: 555
     };
-    var fake = "SDP\r\n" + JSON.stringify(fakeJson);
+    var fake = "SDP\n" + JSON.stringify(fakeJson);
     console.log("FAKE ROAP======================\r\n" + fake);
     return fake;
 }
@@ -154,6 +157,7 @@ function fakeRoap(sdp, type){
 // Returns an object containg JINGLE transport information
 BowserAudio.prototype.transport = function(config) {
     var pc, offer, answer, ok, remoteContainerId;
+    var offererSessionId;
 
     if(!config || !config.remoteContainerId) {
         if (this.config.remoteContainerId) {
@@ -180,13 +184,16 @@ BowserAudio.prototype.transport = function(config) {
                 }
                 pc = new BowserAudio.peerConnection(BowserAudio.stun,
                                                           function(message) {
-                                                              console.log("Have a signalling message to send");
+                                                              console.log("Have a signalling message to send 1");
+                                                              console.log("message: " + message);
                                                               var roap = $.parseJSON(message.substring(4,message.length));
                                                               console.log("roap messageType == " + roap['messageType']);
+                                                              console.log("roap seq == " + roap['seq']);
                                                               var sdpObj = Phono.sdp.parseSDP(roap['sdp']);
                                                               console.log("Have an sdpObj");
 
                                                               if (roap['messageType'] == "OFFER") {
+                                                                  offererSessionId = roap['offererSessionId'];
                                                                   console.log("buildJingle");
                                                                   Phono.sdp.buildJingle(j, sdpObj);
                                                                   var codec = 
@@ -216,10 +223,19 @@ BowserAudio.prototype.transport = function(config) {
             }
         },
         processTransport: function(t, update, iq) {
-            Phono.log.info("process message");
+            Phono.log.info("process message 1");
 
             var sdpObj = Phono.sdp.parseJingle(iq);
+
+            Phono.log.info("process message 2");
+
+            sdpObj.contents[0].media.proto = "RTP/AVPF";
             var sdp = Phono.sdp.buildSDP(sdpObj);
+
+            Phono.log.info("process message 3");
+
+            Phono.sdp.dumpSDP(sdp);
+
             var codec = 
                 {
                     id: sdpObj.contents[0].codecs[0].id,
@@ -233,7 +249,10 @@ BowserAudio.prototype.transport = function(config) {
                 // We are an answer to an outbound call
                 // Turn the answer into a ROAP message
 
-                var roap = fakeRoap(sdp, "ANSWER");
+                console.log("Building fakeroap 1");
+                var roap = fakeRoap(sdp, "ANSWER", "1234", offererSessionId, 1);
+                console.log("Building fakeroap 2");
+                Phono.sdp.dumpSDP(roap);
                 console.log("Calling processSignallingMessage()");
                 pc.processSignalingMessage(roap);
                 console.log("Called processSignallingMessage()");
