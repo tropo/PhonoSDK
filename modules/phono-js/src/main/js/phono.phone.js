@@ -2,6 +2,7 @@
 
    Strophe.addNamespace('JINGLE', "urn:xmpp:jingle:1");
    Strophe.addNamespace('JINGLE_SESSION_INFO',"urn:xmpp:jingle:apps:rtp:1:info");
+   Strophe.addNamespace('JINGLE_DTMF',"urn:xmpp:jingle:dtmf:0");
 
    var CallState = {
        CONNECTED: 0,
@@ -347,7 +348,7 @@
    
    Call.prototype.digit = function(value, duration) {
       if(!duration) {
-         duration = 349;
+         duration = 50;
       }
       if (this.output.digit) {
           this.output.digit(value, duration, this._tones);
