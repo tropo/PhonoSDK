@@ -85,7 +85,6 @@ BowserAudio.prototype.play = function(transport, autoPlay) {
 
 // Creates a new audio Share and will optionally begin playing
 BowserAudio.prototype.share = function(transport, autoPlay, codec) {
-    var url = transport.uri;
     var share;
     var localStream;  
 
