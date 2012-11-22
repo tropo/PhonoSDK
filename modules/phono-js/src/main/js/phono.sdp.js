@@ -192,8 +192,10 @@
 
         if (sdpObj.ice) {
             var ice = sdpObj.ice;
-            sdp = sdp + "a=ice-ufrag:" + ice.ufrag + "\r\n";
-            sdp = sdp + "a=ice-pwd:" + ice.pwd + "\r\n";
+            if (!ice.filterLines) {
+                sdp = sdp + "a=ice-ufrag:" + ice.ufrag + "\r\n";
+                sdp = sdp + "a=ice-pwd:" + ice.pwd + "\r\n";
+            }
             if (ice.options) {
                 sdp = sdp + "a=ice-options:" + ice.options + "\r\n";
             }
@@ -203,6 +205,8 @@
             sdp = sdp + "a=recvonly\r\n";
         } else if (sdpObj.direction == "sendonly") {
             sdp = sdp + "a=sendonly\r\n";
+        } else if (sdpObj.direction == "none") {
+            sdp = sdp;
         } else {
            sdp = sdp + "a=sendrecv\r\n";
         }
@@ -520,7 +524,7 @@
             } else {
                 var id = new Date().getTime();
                 var ver = 2;
-                sdp = sdp + "o=-" + " " + id + " " + ver + " IN IP4 127.0.0.1" + "\r\n";
+                sdp = sdp + "o=-" + " " + id + " " + ver + " IN IP4 192.168.0.151" + "\r\n";
             }
 
             sdp = sdp + "s=-\r\n" + 

@@ -50,18 +50,15 @@ JSEPAudio.prototype.play = function(transport, autoPlay) {
             return url;
         },
         start: function() {
-            if (audioPlayer != null) {
-                $(audioPlayer).remove();
-            }
-            audioPlayer = $("<audio>")
-      	        .attr("id","_phono-audioplayer-webrtc" + (JSEPAudio.count++))
-                .attr("autoplay","autoplay")
-                .attr("src",url)
-                .attr("loop","loop")
-      	        .appendTo("body");
+            audioPlayer = new Audio(url); 
+            console.log("starting");
+            audioPlayer.addEventListener('ended', function() {
+                audioPlayer.play();
+            });
+            audioPlayer.play();
         },
         stop: function() {
-            $(audioPlayer).remove();
+            if (audioPlayer) audioPlayer.pause();
             audioPlayer = null;
         },
         volume: function() { 
@@ -270,7 +267,9 @@ JSEPAudio.prototype.transport = function(config) {
         },
         destroyTransport: function() {
             // Destroy any transport state we have created
-            pc.close();
+            if (pc) {
+                pc.close();
+            }
         }
     }
 };

@@ -24,7 +24,7 @@ function BowserAudio(phono, config, callback) {
     BowserAudio.localVideo = document.getElementById(this.config.localContainerId);
     
     console.log("getUserMedia...");
-    navigator.webkitGetUserMedia("video,audio", 
+    navigator.webkitGetUserMedia("audio", 
                                  function(stream) {
                                      BowserAudio.localStream = stream;
                                      console.log("We have a stream");
@@ -145,8 +145,7 @@ function fakeRoap(sdp, type, offererSessionId, answererSessionId, seq){
         messageType: type,
         offererSessionId: answererSessionId,
         seq: seq,
-        sdp: sdp,
-        tieBreaker: 555
+        sdp: sdp
     };
     var fake = "SDP\n" + JSON.stringify(fakeJson);
     console.log("FAKE ROAP======================\r\n" + fake);
@@ -228,7 +227,13 @@ BowserAudio.prototype.transport = function(config) {
 
             Phono.log.info("process message 2");
 
+            sdpObj.contents[0]['rtcp-mux'] = null;
             sdpObj.contents[0].media.proto = "RTP/AVPF";
+            sdpObj.contents[0].crypto = null;
+            sdpObj.contents[0].direction = "none";
+            sdpObj.contents[0].ice.filterLines = true;
+            sdpObj.group = null;
+
             var sdp = Phono.sdp.buildSDP(sdpObj);
 
             Phono.log.info("process message 3");
@@ -249,7 +254,7 @@ BowserAudio.prototype.transport = function(config) {
                 // Turn the answer into a ROAP message
 
                 console.log("Building fakeroap 1");
-                var roap = fakeRoap(sdp, "ANSWER", "1234", offererSessionId, 1);
+                var roap = fakeRoap(sdp, "ANSWER", "1", offererSessionId, 2);
                 console.log("Building fakeroap 2");
                 Phono.sdp.dumpSDP(roap);
                 console.log("Calling processSignallingMessage()");
