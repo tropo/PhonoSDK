@@ -41,7 +41,7 @@ JSEPAudio.count = 0;
 JSEPAudio.prototype.play = function(transport, autoPlay) {
     var url = null;
     var audioPlayer = null;
-    if (transport) {
+    if (transport.uri) {
         url = transport.uri;
     }
     
@@ -50,20 +50,28 @@ JSEPAudio.prototype.play = function(transport, autoPlay) {
             return url;
         },
         start: function() {
-            audioPlayer = new Audio(url); 
-            console.log("starting");
-            var loop = function() {
+            if (url) {
                 audioPlayer = new Audio(url); 
-                audioPlayer.play();
-                audioPlayer.addEventListener('ended', loop);
+                console.log("starting");
+                var loop = function() {
+                    audioPlayer = new Audio(url); 
+                    audioPlayer.play();
+                    audioPlayer.addEventListener('ended', loop);
+                }
+                loop();
             }
-            loop();
         },
         stop: function() {
             if (audioPlayer) audioPlayer.pause();
             audioPlayer = null;
         },
-        volume: function() { 
+        volume: function(value) {
+   	    if(arguments.length === 0) {
+   		return transport.volume * 100;
+   	    }
+   	    else {
+   		transport.volume = (value / 100);
+   	    }
         }
     }
 };
@@ -79,8 +87,7 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
             return null;
         },
         codec: function() {
-            // Information provided elsewhere
-            return null;
+            return codec;
         },
         // Control
         start: function() {
@@ -91,16 +98,32 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
             if (JSEPAudio.localStream) {
                 JSEPAudio.localStream.stop();
             }
-            return null;
         },
         // Properties
         gain: function(value) {
+            // We have no control over this
             return null;
         },
         mute: function(value) {
-            return null;
+            if(arguments.length === 0) {
+                var muted = true;
+                Phono.util.each(JSEPAudio.localStream.audioTracks, function() {
+                    if (this.enabled == true) muted = false;
+                });
+   		return muted;
+   	    }
+            if (value == true) {
+                Phono.util.each(JSEPAudio.localStream.audioTracks, function() {
+                    this.enabled = false;
+                });
+            } else {
+                Phono.util.each(JSEPAudio.localStream.audioTracks, function() {
+                    this.enabled = true;
+                });
+            }
         },
         suppress: function(value) {
+            // Echo canceller is on always
             return null;
         },
         energy: function(){        
@@ -268,7 +291,7 @@ JSEPAudio.prototype.transport = function(config) {
                 var sd = new RTCSessionDescription({'sdp':sdp, 'type':"offer"} );
                 inboundOffer = sd;
             }
-            return {codec:codec};
+            return {codec:codec, input:remoteVideo};
         },
         destroyTransport: function() {
             // Destroy any transport state we have created
