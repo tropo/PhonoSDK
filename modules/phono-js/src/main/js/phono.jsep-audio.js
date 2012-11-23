@@ -52,10 +52,12 @@ JSEPAudio.prototype.play = function(transport, autoPlay) {
         start: function() {
             audioPlayer = new Audio(url); 
             console.log("starting");
-            audioPlayer.addEventListener('ended', function() {
+            var loop = function() {
+                audioPlayer = new Audio(url); 
                 audioPlayer.play();
-            });
-            audioPlayer.play();
+                audioPlayer.addEventListener('ended', loop);
+            }
+            loop();
         },
         stop: function() {
             if (audioPlayer) audioPlayer.pause();
@@ -69,24 +71,27 @@ JSEPAudio.prototype.play = function(transport, autoPlay) {
 // Creates a new audio Share and will optionally begin playing
 JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
     var share;
-    var localStream;  
 
     return {
         // Readonly
         url: function() {
+            // No Share URL
             return null;
         },
         codec: function() {
+            // Information provided elsewhere
             return null;
         },
         // Control
         start: function() {
-	    Phono.log.info("share() start");
-            // XXX This is where we should start the peerConnection audio
+            // Audio started automatically
+            return null;
         },
         stop: function() {
-	    Phono.log.info("share() stop");
-            // XXX This is where we should stop the peerConneciton audio
+            if (JSEPAudio.localStream) {
+                JSEPAudio.localStream.stop();
+            }
+            return null;
         },
         // Properties
         gain: function(value) {
@@ -269,6 +274,11 @@ JSEPAudio.prototype.transport = function(config) {
             // Destroy any transport state we have created
             if (pc) {
                 pc.close();
+            }
+
+            if (JSEPAudio.localStream) {
+                JSEPAudio.localStream.stop();
+                JSEPAudio.localStream = null;
             }
         }
     }
