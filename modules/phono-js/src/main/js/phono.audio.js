@@ -31,13 +31,7 @@
                 return Phono.util.loggify("WebRTCAudio", new WebRTCAudio(phono, config, callback));
 
             } else if (config.type === "jsep") {
-                return Phono.util.loggify("JSEPAudio", new C24JingleAudio(phono, config, callback));
-
-            } else if (config.type === "c24") {
-                return Phono.util.loggify("C24Audio", new C24Audio(phono, config, callback));
-
-            } else if (config.type === "moz") {
-                return Phono.util.loggify("MozAudio", new MozAudio(phono, config, callback));
+                return Phono.util.loggify("JSEPAudio", new JSEPAudio(phono, config, callback));
 
             } else if (config.type === "bowser") {
                 return Phono.util.loggify("BowserAudio", new BowserAudio(phono, config, callback));
