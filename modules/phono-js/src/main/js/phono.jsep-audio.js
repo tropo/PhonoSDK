@@ -202,11 +202,13 @@ JSEPAudio.prototype.transport = function(config) {
                         var sdpObj = Phono.sdp.parseSDP(pc.localDescription.sdp);
                         Phono.log.info("sdpObj = " + JSON.stringify(sdpObj));
                         Phono.sdp.buildJingle(j, sdpObj);
+                        var codecId = 0;
+                        if (sdpObj.contents[0].codecs[0].name == "telephone-event") codecId = 1;
                         var codec = 
                             {
-                                id: sdpObj.contents[0].codecs[0].id,
-                                name: sdpObj.contents[0].codecs[0].name,
-                                rate: sdpObj.contents[0].codecs[0].clockrate
+                                id: sdpObj.contents[0].codecs[codecId].id,
+                                name: sdpObj.contents[0].codecs[codecId].name,
+                                rate: sdpObj.contents[0].codecs[codecId].clockrate
                             };
 		        callback(codec);
                     } else {
@@ -269,11 +271,13 @@ JSEPAudio.prototype.transport = function(config) {
 
             var sdpObj = Phono.sdp.parseJingle(iq);
             var sdp = Phono.sdp.buildSDP(sdpObj);
+            var codecId = 0;
+            if (sdpObj.contents[0].codecs[0].name == "telephone-event") codecId = 1;
             var codec = 
                 {
-                    id: sdpObj.contents[0].codecs[0].id,
-                    name: sdpObj.contents[0].codecs[0].name,
-                    rate: sdpObj.contents[0].codecs[0].clockrate
+                    id: sdpObj.contents[0].codecs[codecId].id,
+                    name: sdpObj.contents[0].codecs[codecId].name,
+                    rate: sdpObj.contents[0].codecs[codecId].clockrate
                 };
 
             if (pc) {
