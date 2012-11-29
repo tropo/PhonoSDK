@@ -51,12 +51,38 @@
     }
 
     //a=candidate:257138899 1 udp 2113937151 192.168.0.151 53973 typ host generation 0
+    //a=candidate:1 1 udp 1.0 192.168.157.40 40877 typ host name rtp network_name en0 username root password mysecret generation 0
+        /*
+    candidate-attribute   = "candidate" ":" foundation SP component-id SP
+    transport SP
+    priority SP
+    connection-address SP     ;from RFC 4566
+    port         ;port from RFC 4566
+    SP cand-type
+    [SP rel-addr]
+    [SP rel-port]
+     *(SP extension-att-name SP
+    extension-att-value)
+
+    foundation            = 1*32ice-char
+    component-id          = 1*5DIGIT
+    transport             = "UDP" / transport-extension
+    transport-extension   = token              ; from RFC 3261
+    priority              = 1*10DIGIT
+    cand-type             = "typ" SP candidate-types
+    candidate-types       = "host" / "srflx" / "prflx" / "relay" / token
+    rel-addr              = "raddr" SP connection-address
+    rel-port              = "rport" SP port
+    extension-att-name    = byte-string    ;from RFC 4566
+    extension-att-value   = byte-string
+    ice-char              = ALPHA / DIGIT / "+" / "/"
+     */
     _parseCandidate = function (params) {
         var candidate = {
-            priority:params[0],
+            foundation:params[0],
             component:params[1],
             protocol:params[2],
-            id:params[3],
+            priority:params[3],
             ip:params[4],
             port:params[5]
         };
@@ -64,6 +90,9 @@
         while (index + 1 <= params.length) {
             if (params[index] == "typ") candidate["type"] = params[index+1];
             if (params[index] == "generation") candidate["generation"] = params[index+1];
+            if (params[index] == "username") candidate["username"] = params[index+1];
+            if (params[index] == "password") candidate["password"] = params[index+1];
+
             index += 2;
         }
 
@@ -88,7 +117,7 @@
         var crypto = {
             'tag':params[0],
             'crypto-suite':params[1],
-            'key-params':params[2],
+            'key-params':params[2]
         }
         return crypto;
     }
@@ -134,19 +163,26 @@
 
     _buildCandidate = function(candidateObj, iceObj) {
         var c = candidateObj;
-        var sdp = "a=candidate:" + c.priority + " " +
+        var sdp = "a=candidate:" + c.foundation + " " +
             c.component + " " + 
             c.protocol + " " +
-            c.id + " " +
+            c.priority + " " +
             c.ip + " " +
             c.port;
         if (c.type) sdp = sdp + " typ " + c.type;
         if (c.component == 1) sdp = sdp + " name rtp";
         if (c.component == 2) sdp = sdp + " name rtcp";
         sdp = sdp + " network_name en0";
-        if (iceObj) {
+        if (c.username && c.password ){
+            sdp = sdp + " username "+c.username;
+            sdp = sdp + " password "+c.password;
+            if (!iceObj.ufrag)  iceObj.ufrag = c.username;
+            if (!iceObj.pwd) iceObj.pwd=c.username;;
+        } else if (iceObj) {
             if (iceObj.ufrag) sdp = sdp + " username " + iceObj.ufrag;
             if (iceObj.pwd) sdp = sdp + " password " + iceObj.pwd;
+        } else {
+            sdp = sdp+ " username root password mysecret";// I know a secret
         }
         if (c.generation) sdp = sdp + " generation " + c.generation;
         sdp = sdp + "\r\n";
@@ -176,6 +212,10 @@
         if (sdpObj.connection) {
             sdp = sdp + "c=" + sdpObj.connection.nettype + " " + sdpObj.connection.addrtype + " " +
                 sdpObj.connection.address + "\r\n";
+        }
+        
+        if (sdpObj.mid) {
+            sdp = sdp + "a=mid:" + sdpObj.mid + "\r\n";
         }
 
         if (sdpObj.rtcp) {
@@ -211,9 +251,7 @@
            sdp = sdp + "a=sendrecv\r\n";
         }
 
-        if (sdpObj.mid) {
-            sdp = sdp + "a=mid:" + sdpObj.mid + "\r\n";
-        }
+
 
         if (sdpObj['rtcp-mux']) {
             sdp = sdp + "a=rtcp-mux" + "\r\n";
@@ -302,6 +340,8 @@
                                       port: sdpObj.rtcp.port});
                 c.up().up();
 
+                if (!sdpObj.ice.pwd) sdpObj.ice.pwd = sdpObj.candidates[0].password;
+                if (!sdpObj.ice.ufrag) sdpObj.ice.ufrag = dpObj.candidates[0].username;
                 // Ice candidates
                 var transp = {xmlns:"urn:xmpp:jingle:transports:ice-udp:1",
                              pwd: sdpObj.ice.pwd,
@@ -524,7 +564,7 @@
             } else {
                 var id = new Date().getTime();
                 var ver = 2;
-                sdp = sdp + "o=-" + " " + id + " " + ver + " IN IP4 192.168.0.151" + "\r\n";
+                sdp = sdp + "o=-" + " " + id + " " + ver + " IN IP4 192.67.4.14" + "\r\n"; // does the IP here matter ?!?
             }
 
             sdp = sdp + "s=-\r\n" + 

@@ -141,9 +141,9 @@ BowserAudio.prototype.permission = function() {
 
 function fakeRoap(sdp, type, offererSessionId, answererSessionId, seq){
     var fakeJson = {
-        answererSessionId: offererSessionId,
+        answererSessionId: answererSessionId,
         messageType: type,
-        offererSessionId: answererSessionId,
+        offererSessionId: offererSessionId,
         seq: seq,
         sdp: sdp
     };
@@ -187,10 +187,12 @@ BowserAudio.prototype.transport = function(config) {
                                                               var roap = $.parseJSON(message.substring(4,message.length));
                                                               console.log("roap messageType == " + roap['messageType']);
                                                               console.log("roap seq == " + roap['seq']);
-                                                              var sdpObj = Phono.sdp.parseSDP(roap['sdp']);
-                                                              console.log("Have an sdpObj");
+
 
                                                               if (roap['messageType'] == "OFFER") {
+                                                                  console.log("Have an sdp ->"+roap['sdp']);
+                                                                  var sdpObj = Phono.sdp.parseSDP(roap['sdp']);
+                                                                  console.log("Have an sdpObj->"+sdpObj);
                                                                   offererSessionId = roap['offererSessionId'];
                                                                   console.log("buildJingle");
                                                                   Phono.sdp.buildJingle(j, sdpObj);
@@ -254,7 +256,8 @@ BowserAudio.prototype.transport = function(config) {
                 // Turn the answer into a ROAP message
 
                 console.log("Building fakeroap 1");
-                var roap = fakeRoap(sdp, "ANSWER", "1", offererSessionId, 2);
+                var answerSessionId = offererSessionId.split('').reverse().join('');
+                var roap = fakeRoap(sdp, "ANSWER", offererSessionId,answerSessionId, 2);
                 console.log("Building fakeroap 2");
                 Phono.sdp.dumpSDP(roap);
                 console.log("Calling processSignallingMessage()");
