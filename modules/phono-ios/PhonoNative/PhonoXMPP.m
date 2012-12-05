@@ -207,7 +207,7 @@
     [phono.phone setCurrentCall:nil];
 
     
-    [xmppJingle sendHangup:acall.callId to:[acall from] reason:@"success"];
+    [xmppJingle sendHangup:acall.callId to:[acall to] reason:@"success"];
 }
 
 - (void)dialCall:(PhonoCall *)acall{
