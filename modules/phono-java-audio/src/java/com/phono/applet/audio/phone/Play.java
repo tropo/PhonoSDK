@@ -126,7 +126,9 @@ public class Play {
                 dev = makeAudioDevice();
 
                 _play = new Player(in, dev);
-                _play.play();
+		if (_playThread != null) {
+                 	_play.play();
+		}
             }
         } catch (Exception ex) {
             Log.error(ex.toString());
@@ -144,8 +146,8 @@ public class Play {
 
     public void stop() {
         try {
-            _play.close();
             _playThread = null;
+            _play.close();
         } catch (Throwable t) {
             Log.error("play.stop() error" + t.getMessage());
         }
