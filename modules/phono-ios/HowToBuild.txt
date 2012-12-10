@@ -17,7 +17,7 @@ app using ant:
 2) cd PhonoSDK/modules/phono-ios 
 3) ant 
 4) This should put all necessary files into PhonoSDK/target/sdk/plugins/native-ios
-5) add the Headers and library to your xcode project
+5) add the Headers and library to your xcode project along with the tricksy -lxml2 ( see here - https://github.com/robbiehanson/KissXML/wiki/GettingStarted) 
 
 6) VisIVR contains an (ugly) iphone app that uses the API.
 You can use this as a starting point to build something prettier.
