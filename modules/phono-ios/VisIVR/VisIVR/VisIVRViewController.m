@@ -103,6 +103,8 @@ NSString *_empty = @"<html>\
     };
     phone.ringTone = [[NSBundle mainBundle] pathForResource:@"Diggztone_Marimba" ofType:@"mp3"] ;
     phone.ringbackTone= [[NSBundle mainBundle] pathForResource:@"ringback-uk" ofType:@"mp3"];
+    //phone.ringTone = @"http://s.phono.com/releases/0.5/samples/kitchen-sink/www/ringtones/Diggztone_Marimba.mp3";
+    //phone.ringbackTone= @"http://s.phono.com/releases/0.5/samples/kitchen-sink/www/ringtones/ringback-uk.mp3";
 
     phono = [[PhonoNative alloc] initWithPhone:phone ];
     phono.messaging.onMessage = ^(PhonoMessage *message){

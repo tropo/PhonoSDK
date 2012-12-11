@@ -103,7 +103,6 @@
 		22230BD3149A337100AEF013 /* DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 22230B31149A337100AEF013 /* DDLog.m */; };
 		22230BD4149A337100AEF013 /* DDTTYLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 22230B32149A337100AEF013 /* DDTTYLogger.h */; };
 		22230BD5149A337100AEF013 /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 22230B33149A337100AEF013 /* DDTTYLogger.m */; };
-		22230BD8149A356000AEF013 /* libidn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230B1A149A337100AEF013 /* libidn.a */; };
 		223A1D7E149777E80019A5E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 223A1D7D149777E80019A5E3 /* Foundation.framework */; };
 		223A1D84149777E80019A5E3 /* PhonoNative.m in Sources */ = {isa = PBXBuildFile; fileRef = 223A1D83149777E80019A5E3 /* PhonoNative.m */; };
 		223A1DC71497A24B0019A5E3 /* PhonoPhone.h in Headers */ = {isa = PBXBuildFile; fileRef = 223A1DC51497A24B0019A5E3 /* PhonoPhone.h */; };
@@ -116,6 +115,7 @@
 		223A1DD81498C2E10019A5E3 /* PhonoMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 223A1DD61498C2E10019A5E3 /* PhonoMessage.m */; };
 		229B9A1614A0E1AA00E632FA /* XMPPJingle.h in Headers */ = {isa = PBXBuildFile; fileRef = 229B9A1414A0E1AA00E632FA /* XMPPJingle.h */; };
 		229B9A1714A0E1AA00E632FA /* XMPPJingle.m in Sources */ = {isa = PBXBuildFile; fileRef = 229B9A1514A0E1AA00E632FA /* XMPPJingle.m */; };
+		22E7357C16775D5600684502 /* libidn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230B1A149A337100AEF013 /* libidn.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -240,8 +240,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22E7357C16775D5600684502 /* libidn.a in Frameworks */,
 				221C4AE315AAE8D500312106 /* libphono.a in Frameworks */,
-				22230BD8149A356000AEF013 /* libidn.a in Frameworks */,
 				223A1D7E149777E80019A5E3 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -823,6 +823,7 @@
 					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-eudjhdpvcvdpzxauxxfifkmkdqsv/Build/Products/Debug-iphoneos\"",
+					"\"$(SRCROOT)/3rdParty/XMPPFramework/Vendor/libidn\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -844,6 +845,7 @@
 					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-eudjhdpvcvdpzxauxxfifkmkdqsv/Build/Products/Debug-iphoneos\"",
+					"\"$(SRCROOT)/3rdParty/XMPPFramework/Vendor/libidn\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
