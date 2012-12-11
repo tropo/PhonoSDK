@@ -113,8 +113,8 @@
 - (NSString *) play:(NSString *)uri autoplay:(BOOL)autoplay{
     NSString * ret ;
     NSError *error = NULL;
-    NSLog(@"playing %@",uri);
-
+    NSLog(@"AVPlayer playing %@",uri);
+    
     
     NSURL *url = [[NSURL alloc ] initWithString:uri];
     
@@ -126,16 +126,21 @@
         NSLog(@"Play error on %@ of %@",uri,ret);
     } else {
         ret = [[av url] absoluteString] ;
-        [players setObject: av forKey:ret];
-        NSLog(@"adding %@",uri);
-
-        if (autoplay) {
-            [av play];
-            NSLog(@"playing %@",uri);
-        }
+        if (ret != nil){
+            
+            [players setObject: av forKey:ret];
+            NSLog(@"adding %@",uri);
+            
+            if (autoplay) {
+                [av play];
+                NSLog(@"playing %@",uri);
+            }else {
+                NSLog(@"Cant get player for  %@",uri);
+            }
     }
-    
-    return ret;
+}
+
+return ret;
 }
 
 

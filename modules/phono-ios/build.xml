@@ -7,10 +7,26 @@
        </classpath>
 </taskdef>
   
+
+  <property name="libPhono.dir" value="../phono-phonegap-ios/libphono/"/>
   <property name="PhonoNative.dir" value="PhonoNative"/>
   <property name="header.dir" value="PhonoNative/PhonoNative"/>
 
-  <target name="build-PhonoNative-iphoneos">
+  <target name="build-libphono-iphoneos">
+        <exec executable="xCodeBuild" dir="${libPhono.dir}">
+          <arg value="-sdk"/>
+          <arg value="iphoneos"/>
+        </exec>
+  </target>
+
+  <target name="build-libphono-iphonesimulator">
+        <exec executable="xCodeBuild" dir="${libPhono.dir}">
+          <arg value="-sdk"/>
+          <arg value="iphonesimulator"/>
+        </exec>
+  </target>
+
+  <target name="build-PhonoNative-iphoneos" depends="build-libphono-iphoneos">
         <exec executable="xCodeBuild" dir="${PhonoNative.dir}">
           <arg value="-sdk"/>
           <arg value="iphoneos"/>
@@ -18,7 +34,7 @@
         <move file="PhonoNative/build/Release-iphoneos/libPhonoNative.a" tofile="target/PhonoNative-arm.a"/>
   </target>
 
-  <target name="build-PhonoNative-iphonesimulator">
+  <target name="build-PhonoNative-iphonesimulator" depends="build-libphono-iphonesimulator">
         <exec executable="xCodeBuild" dir="${PhonoNative.dir}">
           <arg value="-sdk"/>
           <arg value="iphonesimulator"/>
