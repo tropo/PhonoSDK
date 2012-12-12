@@ -25,7 +25,7 @@
 
 @implementation PhonoNative
 
-@synthesize apiKey,onReady,onUnready,onError,sessionID,phone, pxmpp, papi, messaging, myJID;
+@synthesize apiKey,onReady,onUnready,onError,sessionID,phone, pxmpp, papi, messaging, myJID, gateway, provisioningURL;
 
 - (id)init
 {
@@ -108,7 +108,11 @@
         pxmpp = [[PhonoXMPP alloc] initWithPhono:self];
     }
     if (pxmpp != nil){
-        [pxmpp setupStream];
+        if (gateway != nil){
+            [pxmpp setupStreamWithGateway:gateway];
+        } else {
+            [pxmpp setupStream];
+        }
         [pxmpp connect:apiKey];
     }
 

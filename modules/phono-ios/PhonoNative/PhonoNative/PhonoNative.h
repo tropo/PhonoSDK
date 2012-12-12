@@ -32,6 +32,8 @@
     void (^onError)();
     NSString *sessionID;
     NSString *myJID;
+    NSString *gateway;
+    NSString *provisioningURL;
 
     PhonoPhone *phone;
     PhonoMessaging *messaging;
@@ -47,6 +49,9 @@
 @property(nonatomic, copy) void (^onUnready)();
 @property(nonatomic, copy) void (^onError)();
 @property(readwrite, copy) NSString *sessionID;
+@property(readwrite, copy) NSString *provisioningURL;
+@property(readwrite, copy) NSString *gateway;
+
 @property(readwrite, copy) NSString *myJID;
 @property(readonly) PhonoPhone *phone;
 @property(readonly) PhonoMessaging *messaging;

@@ -40,6 +40,8 @@
 - (BOOL)connect:(NSString *)apiKey;
 - (void)disconnect;
 - (void)setupStream;
+- (void)setupStreamWithGateway:(NSString*)gateway;
+
 - (void)dialCall:(PhonoCall *)acall;
 - (id) initWithPhono:(PhonoNative *)p;
 - (void)acceptInboundCall:(PhonoCall *)incall;

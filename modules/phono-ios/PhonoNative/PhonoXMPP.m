@@ -28,7 +28,10 @@
 - (BOOL) isConnected{
     return isXmppConnected;
 }
-- (void)setupStream
+- (void)setupStream {
+    [self setupStreamWithGateway:@"app.phono.com"];
+}
+- (void)setupStreamWithGateway:(NSString*)gateway
 {
 	// NSAssert(xmppStream == nil, @"Method setupStream invoked multiple times");
 	if (xmppStream != nil){
@@ -82,9 +85,11 @@
     
     //[xmppStream setHostName:@"ec2-50-19-77-101.compute-1.amazonaws.com"];
     //[xmppStream setHostName:@"app-phono-com-1412939140.us-east-1.elb.amazonaws.com"]; http://haproxy1-ext.voxeolabs.net/http-bind
-    [xmppStream setHostName:@"app.phono.com"];
+    //[xmppStream setHostName:@"app.phono.com"];
     //[xmppStream setHostName:@"phono-srtp-ext.qa.voxeolabs.net"];
+    NSLog(@"Connecting to %@",gateway);
 
+    [xmppStream setHostName:gateway];
     [xmppStream setHostPort:5222];	
     
 	
@@ -287,6 +292,22 @@
     [xapikey addChild:[NSXMLNode textWithStringValue:apiKey]];
     [iq addChild:xapikey];
     [xmppStream sendElement:iq];
+}
+
+- (void) sendProvURL {
+    NSString * provURL = [phono provisioningURL];
+    if (provURL != nil){
+        NSLog(@"sending provURL %@",provURL);
+        XMPPIQ *iq = [XMPPIQ iqWithType:@"set" ];
+        readyID = [[NSString alloc ] initWithString:[xmppJingle mkIdElement]];
+        [iq addAttributeWithName:@"id" stringValue:readyID];
+        NSXMLElement *xprov = [NSXMLElement elementWithName:@"provisioning" xmlns:@"http://phono.com/provisioning"];
+        [xprov addChild:[NSXMLNode textWithStringValue:provURL]];
+        [iq addChild:xprov];
+        [xmppStream sendElement:iq];
+    } else {
+        NSLog(@"not sending provURL");
+    }
 }
 
 - (void) sendMessage:(PhonoMessage *)mess {
@@ -495,6 +516,7 @@ didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
     [self sendApiKey];
     XMPPPresence *presence = [XMPPPresence presence]; // type="available" is implicit
     [[self xmppStream] sendElement:presence];
+    [self sendProvURL];
     
 }
 
