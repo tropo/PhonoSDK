@@ -2,6 +2,9 @@ function JSEPAudio(phono, config, callback) {
     this.type = "jsep";
 
     Phono.log.info("Initialize JSEP");
+    if (webkitAudioContext){
+        JSEPAudio.webAudioContext = new webkitAudioContext();
+    } 
 
     if (typeof webkitRTCPeerConnection== "function") {
         JSEPAudio.GUM = function(p,s,f) {navigator.webkitGetUserMedia(p,s,f)};
@@ -32,6 +35,20 @@ JSEPAudio.exists = function() {
 
 JSEPAudio.stun = "STUN stun.l.google.com:19302";
 JSEPAudio.count = 0;
+JSEPAudio.toneMap = {
+                '0':[1336,941],
+                '1':[1209,697],
+                '2':[1336,697],
+                '3':[1477,696],
+                '4':[1209,770],
+                '5':[1336,770],
+                '6':[1477,770],
+                '7':[1209,852],
+                '8':[1336,852],
+                '9':[1447,852],
+                '*':[1209,941],
+                '#':[1477,941]
+            };
 
 // JSEPAudio Functions
 //
@@ -134,8 +151,33 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
         },
         secure: function() {
             return true;
-        }
-    }
+        },
+        freep: function(value, duration, audible) {
+            if (audible){ 
+                var context = JSEPAudio.webAudioContext; 
+                if (context){
+                    var note1;
+                    var note2;
+                    if (duration < 100) duration = 100;// sensible sound
+                    note1 = context.createOscillator();
+                    note2 = context.createOscillator();
+                    note1.connect(context.destination);
+                    note2.connect(context.destination);
+    
+                    var twoTone = JSEPAudio.toneMap[value];
+                    note1.frequency.value = twoTone[0];
+                    note2.frequency.value = twoTone[1];
+                    note1.noteOn(0.0);
+                    note2.noteOn(0.0);
+                    window.setTimeout(
+                      function(){
+                        note1.noteOff(0.0);
+                        note2.noteOff(0.0);
+                        }, duration);
+               } 
+          }
+      }
+   };
 };   
 
 JSEPAudio.prototype.showPermissionBox = function(callback) {

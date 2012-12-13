@@ -369,6 +369,12 @@
                   volume: "42"});
           
           this.connection.sendIQ(jingleIq);
+          if (this.output.freep){
+             console.log("freep "+value);
+             this.output.freep(value, duration, this._tones);
+          } else {
+             console.log("no freep "+value);
+          }
       }
    };
    
