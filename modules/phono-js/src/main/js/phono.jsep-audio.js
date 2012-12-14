@@ -33,6 +33,10 @@ JSEPAudio.exists = function() {
     return (typeof webkitRTCPeerConnection == "function");
 }
 
+JSEPAudio.prototype.getCaps = function(c) {
+    return c.c(this.type).up();
+};
+
 JSEPAudio.stun = "STUN stun.l.google.com:19302";
 JSEPAudio.count = 0;
 JSEPAudio.toneMap = {

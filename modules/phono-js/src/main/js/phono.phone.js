@@ -616,7 +616,7 @@
       callback(this);
 
    };
-   
+
    Phone.prototype.doJingle = function(iq) {
       
       var phone = this;
