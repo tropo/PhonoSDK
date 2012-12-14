@@ -106,7 +106,7 @@ $(document).ready(function() {
 
                 newPhonoDiv.find(".audioType").text(this.audio.type);
                 if (this.audio.type == "flash" && gw == "gw-v4.d.phono.com") {
-                    newPhonoDiv.find(".audioType").text(directP2P?"flash (new)":"flash (new - bridged)");
+                    newPhonoDiv.find(".audioType").text(bridged?"flash (new - bridged)":"flash (new)");
                 } else if (this.audio.type == "flash") {
                     newPhonoDiv.find(".audioType").text("flash (old)");
                 }
