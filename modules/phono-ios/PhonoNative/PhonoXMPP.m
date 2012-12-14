@@ -11,6 +11,7 @@
 #import "PhonoNative.h"
 #import "PhonoPhone.h"
 #import "PhonoCall.h"
+#import <UIKit/UIKit.h>
 
 @implementation PhonoXMPP
 
@@ -284,15 +285,43 @@
 }
 
 - (void) sendApiKey {
-    // <iq type="set" xmlns="jabber:client"><apikey xmlns="http://phono.com/apikey">C17D167F-09C6-4E4C-A3DD-2025D48BA243</apikey></iq>
+    [self sendApiKeyWithDevice:[UIDevice currentDevice]];
+}
+
+- (void) sendApiKeyWithDevice:(UIDevice*)myDev {
+/*
+<iq from="ce90c348-f48e-4522-858e-4dd4a35a3c34@gw-v3.d.phono.com/voxeo"
+    id="1355494874.2102" to="gw-v3.d.phono.com" type="set">
+ <apikey xmlns="http://phono.com/apikey">C17D167F-09C6-4E4C-A3DD-2025D48BA243</apikey>
+ <caps xmlns="http://phono.com/caps">
+  <audio><ios-native bridged="true" protocol="(s)rtp"/></audio>
+  <device name="iPhone Simulator" systemName="iPhone OS" systemVersion="6.0"/>
+ </caps></iq>
+ */
     XMPPIQ *iq = [XMPPIQ iqWithType:@"set" ];
     readyID = [[NSString alloc ] initWithString:[xmppJingle mkIdElement]];
     [iq addAttributeWithName:@"id" stringValue:readyID];
     NSXMLElement *xapikey = [NSXMLElement elementWithName:@"apikey" xmlns:@"http://phono.com/apikey"];
     [xapikey addChild:[NSXMLNode textWithStringValue:apiKey]];
     [iq addChild:xapikey];
+
+    NSXMLElement *xcaps = [NSXMLElement elementWithName:@"caps" xmlns:@"http://phono.com/caps"];
+    NSXMLElement *xaudio = [NSXMLElement elementWithName:@"audio"];
+    NSXMLElement *xios = [NSXMLElement elementWithName:@"ios-native"];
+    [xios addAttributeWithName:@"protocol" stringValue:@"(s)rtp"];
+    [xios addAttributeWithName:@"bridged" stringValue:@"true"];
+    [xcaps addChild:xaudio];
+    [xaudio addChild:xios];
+    NSXMLElement *xdevice = [NSXMLElement elementWithName:@"device"];
+    [xdevice addAttributeWithName:@"name" stringValue:[myDev name]];
+    [xdevice addAttributeWithName:@"systemName" stringValue:[myDev systemName]];
+    [xdevice addAttributeWithName:@"systemVersion" stringValue:[myDev systemVersion]];
+
+    [xcaps addChild:xdevice];
+    [iq addChild:xcaps];
     [xmppStream sendElement:iq];
 }
+
 
 - (void) sendProvURL {
     NSString * provURL = [phono provisioningURL];
