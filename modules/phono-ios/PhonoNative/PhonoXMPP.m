@@ -306,6 +306,8 @@
     [iq addChild:xapikey];
 
     NSXMLElement *xcaps = [NSXMLElement elementWithName:@"caps" xmlns:@"http://phono.com/caps"];
+    [xcaps addAttributeWithName:@"version" stringValue:@"0.6"];
+
     NSXMLElement *xaudio = [NSXMLElement elementWithName:@"audio"];
     NSXMLElement *xios = [NSXMLElement elementWithName:@"ios-native"];
     [xios addAttributeWithName:@"protocol" stringValue:@"(s)rtp"];
