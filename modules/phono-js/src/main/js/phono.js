@@ -126,7 +126,7 @@
            {type:"set"})
            .c("apikey", {xmlns:"http://phono.com/apikey"})
            .t(phono.config.apiKey).up()
-           .c("caps", {xmlns:"http://phono.com/caps"});
+           .c("caps", {xmlns:"http://phono.com/caps", ver:Phono.version});
 
        // Loop over all plugins adding any caps that we have
        for(pluginName in Phono.plugins) {
