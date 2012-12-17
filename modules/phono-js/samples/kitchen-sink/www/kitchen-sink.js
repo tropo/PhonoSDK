@@ -63,8 +63,10 @@ $(document).ready(function() {
         newPhonoDiv.find(".chatTo").val(chatString);
 
         var audio = audioType;
+        var video = false;
+
         var protocol = "sip:";
-        if (audioType == "webrtc") protocol = "xmpp:";
+        if (audioType == "webrtc" || audioType == "jsep") protocol = "xmpp:";
 
         if (audioType == "flash") {
             gw = "gw-v3.d.phono.com";
@@ -87,6 +89,7 @@ $(document).ready(function() {
         if (audioType == "jsep") {
             gw = "gw-v6.d.phono.com";
             audio = "jsep";
+            video = true;
         }
 
 	phonos[newPhonoID] = $.phono({
@@ -142,6 +145,7 @@ $(document).ready(function() {
                 type: audio,
                 jar: "../../../plugins/audio/phono.audio.jar",
                 swf: "../../../plugins/audio/phono.audio.swf",
+                media: {audio:true, video:video},
                 bridged: bridged,
                 onPermissionBoxShow: function(event) {
                     console.log("["+newPhonoID+"] Flash permission box loaded"); 
