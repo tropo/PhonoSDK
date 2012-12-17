@@ -25,6 +25,7 @@
     UITextField *outMess;
     UIScrollView *scrollView;
     UITextField *activeField;
+    void (^backgroundNotifier)();
 }
 @property (nonatomic,retain) IBOutlet UITextField *outMess;
 @property (nonatomic,retain) IBOutlet UITextField *appNum;
@@ -35,6 +36,8 @@
 @property (nonatomic,retain) IBOutlet UILabel *codec;
 @property (nonatomic,retain) IBOutlet UISwitch * speakerSw;;
 @property (nonatomic,retain) IBOutlet UIScrollView *scrollView;
+@property(nonatomic, copy) void (^backgroundNotifier)();
+
 - (IBAction)connect;
 - (IBAction)disconnect;
 - (IBAction)call;
@@ -43,5 +46,4 @@
 - (IBAction)sendMess;
 - (IBAction)speaker:(id)sender;
 - (IBAction)mute:(id) sender;
-
 @end

@@ -14,7 +14,7 @@
 
 @implementation VisIVRViewController
 
-@synthesize  appNum , tjid, status, prompt, domain, outMess, codec, speakerSw, scrollView;
+@synthesize  appNum , tjid, status, prompt, domain, outMess, codec, speakerSw, scrollView,backgroundNotifier;
 
 NSString *_empty = @"<html>\
 <head>\
@@ -60,6 +60,13 @@ NSString *_empty = @"<html>\
 }
 
 -(void) popIncommingCallAlert:(PhonoCall *) incall{
+    NSLog(@"popIncommingCallAlert ");
+
+    if (backgroundNotifier != nil){
+        NSLog(@" have backgroundNotifier");
+
+        backgroundNotifier();
+    }
     call = incall;
     NSString *erom = [PhonoNative unescapeString:[incall from]];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Incomming Call"
@@ -93,6 +100,8 @@ NSString *_empty = @"<html>\
     }
 }
 
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -103,15 +112,21 @@ NSString *_empty = @"<html>\
     };
     phone.ringTone = [[NSBundle mainBundle] pathForResource:@"Diggztone_Marimba" ofType:@"mp3"] ;
     phone.ringbackTone= [[NSBundle mainBundle] pathForResource:@"ringback-uk" ofType:@"mp3"];
+    //phone.ringTone = @"http://s.phono.com/releases/0.5/samples/kitchen-sink/www/ringtones/Diggztone_Marimba.mp3";
+    //phone.ringbackTone= @"http://s.phono.com/releases/0.5/samples/kitchen-sink/www/ringtones/ringback-uk.mp3";
+
+    
+    NSString *dev = [[UIDevice currentDevice] uniqueIdentifier] ; // deprecated - do _not_ use in appstore app
 
     phono = [[PhonoNative alloc] initWithPhone:phone ];
+    [phono setGateway:@"sfa.westhawk.co.uk"];
     phono.messaging.onMessage = ^(PhonoMessage *message){
         [self gotMessage:message];
     };
     phono.onReady = ^{ [self gotjId];};
     phono.onUnready = ^{ [self gotjId];};
     phono.onError = ^{ [self update:@"error"];};
-
+    phono.provisioningURL = [NSString stringWithFormat:@"http://sfa.westhawk.co.uk:8080/MTS/AudioOnly/%@.groovy",dev];
 
     NSURL *base = [NSURL URLWithString:@"http://s.phono.com/"];
     NSString *empty = [NSString stringWithFormat:_empty,@""];    

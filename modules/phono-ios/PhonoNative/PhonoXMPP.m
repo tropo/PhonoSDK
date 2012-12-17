@@ -11,6 +11,7 @@
 #import "PhonoNative.h"
 #import "PhonoPhone.h"
 #import "PhonoCall.h"
+#import <UIKit/UIKit.h>
 
 @implementation PhonoXMPP
 
@@ -28,7 +29,10 @@
 - (BOOL) isConnected{
     return isXmppConnected;
 }
-- (void)setupStream
+- (void)setupStream {
+    [self setupStreamWithGateway:@"app.phono.com"];
+}
+- (void)setupStreamWithGateway:(NSString*)gateway
 {
 	// NSAssert(xmppStream == nil, @"Method setupStream invoked multiple times");
 	if (xmppStream != nil){
@@ -82,9 +86,11 @@
     
     //[xmppStream setHostName:@"ec2-50-19-77-101.compute-1.amazonaws.com"];
     //[xmppStream setHostName:@"app-phono-com-1412939140.us-east-1.elb.amazonaws.com"]; http://haproxy1-ext.voxeolabs.net/http-bind
-    [xmppStream setHostName:@"app.phono.com"];
+    //[xmppStream setHostName:@"app.phono.com"];
     //[xmppStream setHostName:@"phono-srtp-ext.qa.voxeolabs.net"];
+    NSLog(@"Connecting to %@",gateway);
 
+    [xmppStream setHostName:gateway];
     [xmppStream setHostPort:5222];	
     
 	
@@ -279,14 +285,60 @@
 }
 
 - (void) sendApiKey {
-    // <iq type="set" xmlns="jabber:client"><apikey xmlns="http://phono.com/apikey">C17D167F-09C6-4E4C-A3DD-2025D48BA243</apikey></iq>
+    [self sendApiKeyWithDevice:[UIDevice currentDevice]];
+}
+
+- (void) sendApiKeyWithDevice:(UIDevice*)myDev {
+/*
+<iq from="ce90c348-f48e-4522-858e-4dd4a35a3c34@gw-v3.d.phono.com/voxeo"
+    id="1355494874.2102" to="gw-v3.d.phono.com" type="set">
+ <apikey xmlns="http://phono.com/apikey">C17D167F-09C6-4E4C-A3DD-2025D48BA243</apikey>
+ <caps xmlns="http://phono.com/caps">
+  <audio><ios-native bridged="true" protocol="(s)rtp"/></audio>
+  <device name="iPhone Simulator" systemName="iPhone OS" systemVersion="6.0"/>
+ </caps></iq>
+ */
     XMPPIQ *iq = [XMPPIQ iqWithType:@"set" ];
     readyID = [[NSString alloc ] initWithString:[xmppJingle mkIdElement]];
     [iq addAttributeWithName:@"id" stringValue:readyID];
     NSXMLElement *xapikey = [NSXMLElement elementWithName:@"apikey" xmlns:@"http://phono.com/apikey"];
     [xapikey addChild:[NSXMLNode textWithStringValue:apiKey]];
     [iq addChild:xapikey];
+
+    NSXMLElement *xcaps = [NSXMLElement elementWithName:@"caps" xmlns:@"http://phono.com/caps"];
+    [xcaps addAttributeWithName:@"version" stringValue:@"0.6"];
+
+    NSXMLElement *xaudio = [NSXMLElement elementWithName:@"audio"];
+    NSXMLElement *xios = [NSXMLElement elementWithName:@"ios-native"];
+    [xios addAttributeWithName:@"protocol" stringValue:@"(s)rtp"];
+    [xios addAttributeWithName:@"bridged" stringValue:@"true"];
+    [xcaps addChild:xaudio];
+    [xaudio addChild:xios];
+    NSXMLElement *xdevice = [NSXMLElement elementWithName:@"device"];
+    [xdevice addAttributeWithName:@"name" stringValue:[myDev name]];
+    [xdevice addAttributeWithName:@"systemName" stringValue:[myDev systemName]];
+    [xdevice addAttributeWithName:@"systemVersion" stringValue:[myDev systemVersion]];
+
+    [xcaps addChild:xdevice];
+    [iq addChild:xcaps];
     [xmppStream sendElement:iq];
+}
+
+
+- (void) sendProvURL {
+    NSString * provURL = [phono provisioningURL];
+    if (provURL != nil){
+        NSLog(@"sending provURL %@",provURL);
+        XMPPIQ *iq = [XMPPIQ iqWithType:@"set" ];
+        readyID = [[NSString alloc ] initWithString:[xmppJingle mkIdElement]];
+        [iq addAttributeWithName:@"id" stringValue:readyID];
+        NSXMLElement *xprov = [NSXMLElement elementWithName:@"provisioning" xmlns:@"http://phono.com/provisioning"];
+        [xprov addChild:[NSXMLNode textWithStringValue:provURL]];
+        [iq addChild:xprov];
+        [xmppStream sendElement:iq];
+    } else {
+        NSLog(@"not sending provURL");
+    }
 }
 
 - (void) sendMessage:(PhonoMessage *)mess {
@@ -495,6 +547,7 @@ didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
     [self sendApiKey];
     XMPPPresence *presence = [XMPPPresence presence]; // type="available" is implicit
     [[self xmppStream] sendElement:presence];
+    [self sendProvURL];
     
 }
 

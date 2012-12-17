@@ -14,13 +14,17 @@
 @interface VisIVRAppDelegate : UIResponder <UIApplicationDelegate>
 {
 	UIWindow *window;
+    BOOL appInBackground;
 }
 
+- (void)backgroundCallNotification;
 
 
 @property (strong, nonatomic) UIWindow *window;
 
 @property (strong, nonatomic) VisIVRViewController *viewController;
+@property (readonly, nonatomic) BOOL appInBackground;
+
 
 
 

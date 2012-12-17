@@ -37,7 +37,7 @@
 		22D926AD14AC96A100F9D295 /* Diggztone_Vibe.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D926A214AC96A100F9D295 /* Diggztone_Vibe.mp3 */; };
 		22D926AE14AC96A100F9D295 /* ringback-uk.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D926A314AC96A100F9D295 /* ringback-uk.mp3 */; };
 		22D926AF14AC96A100F9D295 /* ringback-us.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D926A414AC96A100F9D295 /* ringback-us.mp3 */; };
-		22E0E4EC15AC5B6700313698 /* libPhonoNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E0E4EB15AC5B6700313698 /* libPhonoNative.a */; };
+		22E7357F1677615300684502 /* PhonoNative-arm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E7357E1677615300684502 /* PhonoNative-arm.a */; };
 		22F126BF14B75A6D00E2FB89 /* Headers in Resources */ = {isa = PBXBuildFile; fileRef = 22F126BE14B75A6D00E2FB89 /* Headers */; };
 /* End PBXBuildFile section */
 
@@ -77,8 +77,7 @@
 		22D926A214AC96A100F9D295 /* Diggztone_Vibe.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_Vibe.mp3; sourceTree = "<group>"; };
 		22D926A314AC96A100F9D295 /* ringback-uk.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "ringback-uk.mp3"; sourceTree = "<group>"; };
 		22D926A414AC96A100F9D295 /* ringback-us.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "ringback-us.mp3"; sourceTree = "<group>"; };
-		22DD691C15AC433D007C3F97 /* PhonoNative-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "PhonoNative-i386.a"; path = "../target/PhonoNative-i386.a"; sourceTree = "<group>"; };
-		22E0E4EB15AC5B6700313698 /* libPhonoNative.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPhonoNative.a; path = "../../../../../../../Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-adbqunjftafrxqfuzedyiialvrmp/Build/Products/Debug-iphoneos/libPhonoNative.a"; sourceTree = "<group>"; };
+		22E7357E1677615300684502 /* PhonoNative-arm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "PhonoNative-arm.a"; path = "../target/PhonoNative-arm.a"; sourceTree = "<group>"; };
 		22F126BE14B75A6D00E2FB89 /* Headers */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Headers; path = ../../target/Headers; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -87,7 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22E0E4EC15AC5B6700313698 /* libPhonoNative.a in Frameworks */,
+				22E7357F1677615300684502 /* PhonoNative-arm.a in Frameworks */,
 				221BD7BF14A49A4900E3972C /* CoreFoundation.framework in Frameworks */,
 				229AD0F114A3AC81008C656D /* AVFoundation.framework in Frameworks */,
 				229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */,
@@ -110,8 +109,7 @@
 		2223083D1499E05400AEF013 = {
 			isa = PBXGroup;
 			children = (
-				22E0E4EB15AC5B6700313698 /* libPhonoNative.a */,
-				22DD691C15AC433D007C3F97 /* PhonoNative-i386.a */,
+				22E7357E1677615300684502 /* PhonoNative-arm.a */,
 				221BD7BE14A49A4900E3972C /* CoreFoundation.framework */,
 				229AD0F014A3AC81008C656D /* AVFoundation.framework */,
 				229AD0EE14A3AC59008C656D /* Security.framework */,
@@ -388,6 +386,7 @@
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-azfjbduhvcpnhpgtnwxnjqpdejhw/Build/Products/Debug-iphoneos\"",
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-azfjbduhvcpnhpgtnwxnjqpdejhw/Build/Products/Debug-iphonesimulator\"",
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-adbqunjftafrxqfuzedyiialvrmp/Build/Products/Debug-iphoneos\"",
+					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-fwgatndlforwdvbsvsptpfmsppil/Build/Products/Debug-iphoneos\"",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -418,6 +417,7 @@
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-azfjbduhvcpnhpgtnwxnjqpdejhw/Build/Products/Debug-iphoneos\"",
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-azfjbduhvcpnhpgtnwxnjqpdejhw/Build/Products/Debug-iphonesimulator\"",
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-adbqunjftafrxqfuzedyiialvrmp/Build/Products/Debug-iphoneos\"",
+					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-fwgatndlforwdvbsvsptpfmsppil/Build/Products/Debug-iphoneos\"",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",

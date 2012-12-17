@@ -5,9 +5,6 @@
       location = "group:VisIVR/VisIVR.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:../phono-phonegap-ios/libphono/libphono.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:PhonoNative/PhonoNative.xcodeproj">
    </FileRef>
 </Workspace>
