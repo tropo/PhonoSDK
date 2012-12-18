@@ -173,16 +173,21 @@ public class AndroidAudioMic implements Runnable {
         return _inEnergy;
     }
 
-    @Override
     public void run() {
         //android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
         //_mic.startRecording();
+        long then = getTime();
         long ftime = _audio.getFrameInterval();
         while (_me != null) {
-            readMic();
 
+            readMic();
+            long now =getTime();
+            long nexpected = (ftime *_countFrames)+then;
+            long nap = (nexpected-now);
+            if (_countFrames %50 == 0) Log.debug("would sleep "+nap);
+            nap =1;
             try {
-                Thread.sleep(1);
+                Thread.sleep(nap);
             } catch (InterruptedException ex) {
                 Log.verb(this.getClass().getSimpleName()
                         + ".run(): InterruptedException: " + ex.getMessage());
@@ -204,14 +209,9 @@ public class AndroidAudioMic implements Runnable {
                     + ", bufferRead=" + bufferRead);
 
             short[] sframe = _micFramebuff;
-            short[] seframe = effectIn(sframe);
-            //long then = 0;
-            //if ((_countFrames % 500) == 0) { then = getTime();}
-            byte[] tbuff = _encoder.encode_frame(seframe);
+            //short[] seframe = effectIn(sframe);
+            byte[] tbuff = _encoder.encode_frame(sframe);
 
-            //if ((_countFrames % 50) == 0) {long diff = getTime() - then;
-            //    Log.debug("encode took "+ diff);
-            //}
             if (tbuff != null) {
                 stampedAudio = _audio.getCleanStampedAudio();
                 stampedAudio.setStampAndBytes(tbuff, 0, tbuff.length,

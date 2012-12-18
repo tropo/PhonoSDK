@@ -81,13 +81,13 @@ public class NativeG722Codec implements CodecFace, EncoderFace, DecoderFace {
     }
 
 
-    @Override
+    
     public byte[] encode_frame(short[] audio) {
         g722Encode(_codec, audio, _wireOut);
         return _wireOut;
     }
 
-    @Override
+   
     public short[] decode_frame(byte[] bytes) {
         g722Decode(_codec, bytes, _adataOut);
         return _adataOut;

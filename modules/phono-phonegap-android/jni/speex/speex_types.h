@@ -12,7 +12,7 @@
  ********************************************************************
 
  function: #ifdef jail to whip a few platforms into the UNIX ideal.
- last mod: $Id: speex_types.h,v 1.1 2009/06/11 12:16:33 uid100 Exp $
+ last mod: $Id: os_types.h 7524 2004-08-11 04:20:36Z conrad $
 
  ********************************************************************/
 /**
@@ -31,10 +31,10 @@
      typedef _G_int16_t spx_int16_t;
      typedef _G_uint16_t spx_uint16_t;
 #  elif defined(__MINGW32__)
-     typedef short spx_int16_t;                                                                             
-     typedef unsigned short spx_uint16_t;                                                                   
-     typedef int spx_int32_t;                                                                               
-     typedef unsigned int spx_uint32_t;                                                                     
+     typedef short spx_int16_t;
+     typedef unsigned short spx_uint16_t;
+     typedef int spx_int32_t;
+     typedef unsigned int spx_uint32_t;
 #  elif defined(__MWERKS__)
      typedef int spx_int32_t;
      typedef unsigned int spx_uint32_t;
@@ -56,7 +56,7 @@
    typedef SInt32 spx_int32_t;
    typedef UInt32 spx_uint32_t;
 
-#elif defined(__MACOSX__) /* MacOS X Framework build */
+#elif (defined(__APPLE__) && defined(__MACH__)) /* MacOS X Framework build */
 
 #  include <sys/types.h>
    typedef int16_t spx_int16_t;
@@ -119,7 +119,7 @@
 
 #else
 
-#  include "speex_config_types.h"
+#  include <speex/speex_config_types.h>
 
 #endif
 

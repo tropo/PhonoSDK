@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="custom_rules">
+    <target name="-pre-build">
+     <echo>copy phono native jars</echo>
+      <copy file="../../bin/classes.jar" tofile="libs/phonoNativeAndroid.jar"/>
+     <copy todir="libs" overwrite="true">
+      <fileset dir="../../libs/">
+            <include name="*.jar"/>
+      </fileset>
+     </copy>
+    </target>
+</project>

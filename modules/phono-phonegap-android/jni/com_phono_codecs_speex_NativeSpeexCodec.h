@@ -13,7 +13,7 @@ extern "C" {
  * Signature: ()[B
  */
 JNIEXPORT jbyteArray JNICALL Java_com_phono_codecs_speex_NativeSpeexCodec_initCodec
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject,jint,jint,jint,jint);
 
 /*
  * Class:     com_phono_codecs_speex_NativeSpeexCodec

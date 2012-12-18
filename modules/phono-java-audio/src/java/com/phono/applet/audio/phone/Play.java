@@ -16,6 +16,7 @@
  */
 package com.phono.applet.audio.phone;
 
+import com.phono.api.PlayFace;
 import com.phono.rtp.Endpoint;
 import com.phono.srtplight.Log;
 import java.io.InputStream;
@@ -28,7 +29,7 @@ import javazoom.jl.player.AudioDevice;
 import javazoom.jl.player.FactoryRegistry;
 import javazoom.jl.player.Player;
 
-public class Play {
+public class Play implements PlayFace {
     /*
     uri, {we trust the mime type if it is http ? thp} start(),
     stop(), volume(value) -> value

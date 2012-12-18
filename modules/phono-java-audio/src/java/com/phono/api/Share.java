@@ -96,7 +96,7 @@ public class Share {
     }
 
     public float volume(float value) {
-        audio.setVolume(value / 100.0);
+        audio.setVolume((float) value / 100.0);
         return value; // for now
     }
 

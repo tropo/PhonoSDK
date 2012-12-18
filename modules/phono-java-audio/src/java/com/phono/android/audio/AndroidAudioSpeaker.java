@@ -200,7 +200,6 @@ public class AndroidAudioSpeaker implements Runnable {
         return _outEnergy;
     }
 
-    @Override
     public void run() {
         Log.debug(this.getClass().getSimpleName() + ".run()");
         while (_me != null) {
