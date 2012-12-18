@@ -403,13 +403,13 @@
                 sdpObj.codecs = [];
                 $(this).find('payload-type').each(function () {
                     var codec = Phono.util.getAttributes(this);
-                    console.log("codec: "+JSON.stringify(codec,null," "));
+                    //Phono.log.debug("codec: "+JSON.stringify(codec,null," "));
                     sdpObj.codecs.push(codec);
                     mediaObj.pts.push(codec.id);
                 });
                 $(this).find('crypto').each(function () {
                     var crypto = Phono.util.getAttributes(this);
-                    console.log("crypto: "+JSON.stringify(crypto,null," "));
+                    //Phono.log.debug("crypto: "+JSON.stringify(crypto,null," "));
                     sdpObj.crypto = crypto;
                 });
                 sdpObj.ice = {};
@@ -417,7 +417,7 @@
                     if ($(this).attr('xmlns') == "urn:xmpp:jingle:transports:raw-udp:1") {
                         $(this).find('candidate').each(function () {
                             var candidate = Phono.util.getAttributes(this);
-                            console.log("candidate: "+JSON.stringify(candidate,null," "));
+                            //Phono.log.debug("candidate: "+JSON.stringify(candidate,null," "));
                             if (candidate.component == "1") {
                                 sdpObj.media.port = candidate.port;
                                 sdpObj.connection = {};
@@ -442,7 +442,7 @@
                         }
                         $(this).find('candidate').each(function () {
                             var candidate = Phono.util.getAttributes(this);
-                            console.log("candidate: "+JSON.stringify(candidate,null," "));
+                            //Phono.log.debug("candidate: "+JSON.stringify(candidate,null," "));
                             sdpObj.candidates.push(candidate);
                         });
                     }
@@ -454,7 +454,7 @@
         dumpSDP: function(sdpString) {
             var sdpLines = sdpString.split("\r\n");
             for (var sdpLine in sdpLines) {
-                console.log(sdpLines[sdpLine]);
+                //Phono.log.debug(sdpLines[sdpLine]);
             }
         },
 
@@ -468,7 +468,7 @@
             // Iterate the lines
             var sdpLines = sdpString.split("\r\n");
             for (var sdpLine in sdpLines) {
-                console.log(sdpLines[sdpLine]);
+                //Phono.log.debug(sdpLines[sdpLine]);
                 var line = _parseLine(sdpLines[sdpLine]);
 
                 if (line.type == "o") {

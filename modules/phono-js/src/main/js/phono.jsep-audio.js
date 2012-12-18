@@ -73,7 +73,6 @@ JSEPAudio.prototype.play = function(transport, autoPlay) {
         start: function() {
             if (url) {
                 audioPlayer = new Audio(url); 
-                console.log("starting");
                 var loop = function() {
                     audioPlayer = new Audio(url); 
                     audioPlayer.play();
@@ -243,10 +242,10 @@ JSEPAudio.prototype.transport = function(config) {
                 if (!complete) {
                     if ((evt.candidate == null) || 
                         (candidateCount >= 1 && !audio.config.media['video'] && direction == "answer")) {
-		        Phono.log.info("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
+		        //Phono.log.info("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
                         complete = true;
                         var sdpObj = Phono.sdp.parseSDP(pc.localDescription.sdp);
-                        Phono.log.info("sdpObj = " + JSON.stringify(sdpObj));
+                        //Phono.log.info("sdpObj = " + JSON.stringify(sdpObj));
                         Phono.sdp.buildJingle(j, sdpObj);
                         var codecId = 0;
                         if (sdpObj.contents[0].codecs[0].name == "telephone-event") codecId = 1;
@@ -258,31 +257,31 @@ JSEPAudio.prototype.transport = function(config) {
                             };
 		        callback(codec);
                     } else {
-        	        Phono.log.info("An Ice candidate "+JSON.stringify(evt.candidate));
+        	        //Phono.log.info("An Ice candidate "+JSON.stringify(evt.candidate));
                         candidateCount += 1;
                     }
                 }
             }
-            pc.onconnecting = function(message) {Phono.log.info("onSessionConnecting.");};
-	    pc.onopen = function(message) {Phono.log.info("onSessionOpened.");};
+            //pc.onconnecting = function(message) {Phono.log.info("onSessionConnecting.");};
+	    //pc.onopen = function(message) {Phono.log.info("onSessionOpened.");};
             pc.onaddstream = function (event) {
-                Phono.log.info("onAddStream."); 
+                //Phono.log.info("onAddStream."); 
                 var url = webkitURL.createObjectURL(event.stream);
                 remoteVideo.style.opacity = 1;
                 remoteVideo.src = url;
             };
-            pc.onremovestream = function (event) {Phono.log.info("onRemoveStream."); };
-	    pc.onicechange= function (event) {Phono.log.info("onIceChange: "+pc.iceState); };
-	    pc.onnegotiationneeded = function (event) {Phono.log.info("onNegotiationNeeded."); };
-            pc.onstatechange = function (event) {Phono.log.info("onStateChange: "+pc.readyState); };
+            //pc.onremovestream = function (event) {Phono.log.info("onRemoveStream."); };
+	    //pc.onicechange= function (event) {Phono.log.info("onIceChange: "+pc.iceState); };
+	    //pc.onnegotiationneeded = function (event) {Phono.log.info("onNegotiationNeeded."); };
+            //pc.onstatechange = function (event) {Phono.log.info("onStateChange: "+pc.readyState); };
 
-            Phono.log.info("Adding localStream");
+            Phono.log.debug("Adding localStream");
 
             var cb2 = function() {
                 pc.addStream(JSEPAudio.localStream);
                 
 	        var cb = function(localDesc) {
-                    Phono.log.info("Created localDesc");
+                    //Phono.log.info("Created localDesc");
                     var sdpObj = Phono.sdp.parseSDP(localDesc.sdp);
                     // Nail it to google-ice
                     sdpObj.contents[0].ice.options = "google-ice";
@@ -290,17 +289,17 @@ JSEPAudio.prototype.transport = function(config) {
                     var sd = new RTCSessionDescription({'sdp':sdp, 'type':localDesc.type} );
    		    pc.setLocalDescription(sd);
 		    var msgString = JSON.stringify(sd,null," ");
-                    Phono.log.info('Set localDesc ' + msgString);
-                    Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
+                    //Phono.log.info('Set localDesc ' + msgString);
+                    //Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
 	        };
                 
                 if (direction == "answer") {
                     pc.setRemoteDescription(inboundOffer,
-                                            function(){Phono.log.info("remotedescription happy");
-				                       Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
+                                            function(){Phono.log.debug("remoteDescription happy");
+				                       //Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
                                                        pc.createAnswer(cb , null, constraints);
 			                              },
-			                    function(){Phono.log.info("remotedescription sad")});
+			                    function(){Phono.log.error("remoteDescription error")});
                 } else {
 		    pc.createOffer(cb , null, constraints);
                 }
@@ -313,8 +312,6 @@ JSEPAudio.prototype.transport = function(config) {
             }
         },
         processTransport: function(t, update, iq) {
-            Phono.log.info("process message");
-
             var sdpObj = Phono.sdp.parseJingle(iq);
             var sdp = Phono.sdp.buildSDP(sdpObj);
             var codecId = 0;
@@ -329,12 +326,12 @@ JSEPAudio.prototype.transport = function(config) {
             if (pc) {
                 // We are an answer to an outbound call
                 var sd = new RTCSessionDescription({'sdp':sdp, 'type':"answer"} );
-		Phono.log.info("about to set the remote description: "+JSON.stringify(sd,null," "));
+		//Phono.log.info("about to set the remote description: "+JSON.stringify(sd,null," "));
 		pc.setRemoteDescription(sd,
-			                function(){Phono.log.info("remotedescription happy");
-				                   Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
+			                function(){Phono.log.debug("remoteDescription happy");
+				                   //Phono.log.debug("Pc now: "+JSON.stringify(pc,null," "));
 			                          },
-			                function(){Phono.log.info("remotedescription sad")});
+			                function(){Phono.log.error("remoteDescription sad")});
                 
             } else {
                 // We are an offer for an inbound call
