@@ -79,6 +79,10 @@ FlashAudio.count = 0;
 // approach to aid in debugging now that the Flash side has been reduced to a few simple calls.
 // =============================================================================================
 
+FlashAudio.prototype.getCaps = function(c) {
+    return c.c(this.type,{protocol:this.config.protocol, bridged:this.config.bridged}).up();
+};
+
 // Show the Flash Audio permission box
 FlashAudio.prototype.showPermissionBox = function() {
     this.$flash.showPermissionBox();

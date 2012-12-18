@@ -34,11 +34,11 @@ $(document).ready(function() {
 	var firstPhono = $('.phono').first()
 	var newPhonoDiv = firstPhono.clone()
         var audioType = $('.audio-plugin').val();
-        var directP2P = true;
+        var bridged = false;
         var connectionUrl = window.location.protocol+"//app.phono.com/http-bind";
         var dialString = "sip:3366@login.zipdx.com";
         var chatString = "en2fr@bot.talk.google.com";
-        var gw = "gw-v4.d.phono.com";
+        var gw = "gw-v6.d.phono.com";
         
         if (connectionUrl.indexOf("file:") == 0){
             connectionUrl = "http://app.phono.com/http-bind";
@@ -49,6 +49,8 @@ $(document).ready(function() {
         if (urlParam("connectionUrl") != undefined) connectionUrl = urlParam("connectionUrl");
         if (urlParam("dial") != undefined) dialString = urlParam("dial");
         if (urlParam("chat") != undefined) chatString = urlParam("chat");
+        if (urlParam("gateway") != undefined) gw = urlParam("gateway");
+
 
         console.log("audioType = " + audioType);
         console.log("dialString = " + dialString);
@@ -61,25 +63,33 @@ $(document).ready(function() {
         newPhonoDiv.find(".chatTo").val(chatString);
 
         var audio = audioType;
+        var video = false;
+
         var protocol = "sip:";
-        if (audioType == "webrtc") protocol = "xmpp:";
+        if (audioType == "webrtc" || audioType == "jsep") protocol = "xmpp:";
 
         if (audioType == "flash") {
             gw = "gw-v3.d.phono.com";
             audio = "flash";
-            directP2P = false;
+            bridged = true;
         }
 
         if (audioType == "panda") {
             gw = "gw-v4.d.phono.com";
             audio = "flash";
-            directP2P = true;
+            bridged = false;
         }
 
         if (audioType == "pandabridged") {
             gw = "gw-v4.d.phono.com";
             audio = "flash";
-            directP2P = false;
+            bridged = true;
+        }
+
+        if (audioType == "jsep") {
+            gw = "gw-v6.d.phono.com";
+            audio = "jsep";
+            video = true;
         }
 
 	phonos[newPhonoID] = $.phono({
@@ -99,7 +109,7 @@ $(document).ready(function() {
 
                 newPhonoDiv.find(".audioType").text(this.audio.type);
                 if (this.audio.type == "flash" && gw == "gw-v4.d.phono.com") {
-                    newPhonoDiv.find(".audioType").text(directP2P?"flash (new)":"flash (new - bridged)");
+                    newPhonoDiv.find(".audioType").text(bridged?"flash (new - bridged)":"flash (new)");
                 } else if (this.audio.type == "flash") {
                     newPhonoDiv.find(".audioType").text("flash (old)");
                 }
@@ -135,7 +145,8 @@ $(document).ready(function() {
                 type: audio,
                 jar: "../../../plugins/audio/phono.audio.jar",
                 swf: "../../../plugins/audio/phono.audio.swf",
-                direct: directP2P,
+                media: {audio:true, video:video},
+                bridged: bridged,
                 onPermissionBoxShow: function(event) {
                     console.log("["+newPhonoID+"] Flash permission box loaded"); 
                 },

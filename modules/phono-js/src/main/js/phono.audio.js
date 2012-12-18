@@ -4,6 +4,7 @@
     //@Include=phono.phonegap-ios-audio.js
     //@Include=phono.phonegap-android-audio.js
     //@Include=phono.webrtc-audio.js
+    //@Include=phono.jsep-audio.js
 
     Phono.registerPlugin("audio", {
         
@@ -30,24 +31,26 @@
 
             } else if (config.type === "jsep") {
                 return Phono.util.loggify("JSEPAudio", new JSEPAudio(phono, config, callback));
-                
+
             } else if (config.type === "none") {
                 window.setTimeout(callback,10);
                 return null;
                 
             } else if (config.type === "auto") {
                 
-                console.log("Detecting Audio Plugin");
-                
-                if (PhonegapIOSAudio.exists())  { 
-                    console.log("Detected iOS"); 
+                Phono.log.info("Detecting Audio Plugin");
+
+                if (JSEPAudio.exists()) {
+                    Phono.log.info("Detected JSEP browser"); 
+                    return Phono.util.loggify("JSEPAudio", new JSEPAudio(phono, config, callback));
+                } else if (PhonegapIOSAudio.exists())  { 
+                    Phono.log.info("Detected iOS"); 
                     return Phono.util.loggify("PhonegapIOSAudio", new PhonegapIOSAudio(phono, config, callback));
-                    
                 } else if (PhonegapAndroidAudio.exists()) { 
-                    console.log("Detected Android"); 
+                    Phono.log.info("Detected Android"); 
                     return Phono.util.loggify("PhonegapAndroidAudio", new PhonegapAndroidAudio(phono, config, callback));
                 } else { 
-                    console.log("Detected Flash"); 
+                    Phono.log.info("Using Flash default"); 
                     return Phono.util.loggify("FlashAudio", new FlashAudio(phono, config, callback));
                     
                 }

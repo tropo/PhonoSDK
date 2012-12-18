@@ -2,7 +2,7 @@
 
    // Define defualt config and merge from constructor
    this.config = Phono.util.extend({
-      gateway: "gw-v4.d.phono.com",
+      gateway: "gw-v6.d.phono.com",
       connectionUrl: window.location.protocol+"//app.phono.com/http-bind"
    }, config);
    if (this.config.connectionUrl.indexOf("file:")==0){
@@ -26,7 +26,10 @@
    // Initialize Fields
    this.sessionId = null;
    Phono.log.debug("ConnectionUrl: " + this.config.connectionUrl);
-   this.connection = new Strophe.Connection(this.config.connectionUrl);
+
+   // Existing connection?
+   this.connection = this.config.connection || new Strophe.Connection(this.config.connectionUrl);
+
    if(navigator.appName.indexOf('Internet Explorer')>0){
     xmlSerializer = {};
     xmlSerializer.serializeToString = function(body) {return body.xml;};
@@ -74,33 +77,21 @@
 
    Phono.prototype.connect = function() {
 
-      // Noop if already connected
-      if(this.connection.connected) return;
+      // If this is our own internal connection
+      if(!this.config.connection) {
+         if(!this.connection.connected) {
+            this.connection.connect(
+               this.config.gateway, 
+               null, 
+               this.handleStropheStatusChange,
+               50
+            );
+         }
+      }
+      else {
+         this.handleConnect();  
+      }
 
-      var phono = this;
-
-      this.connection.connect(phono.config.gateway, null, function (status) {
-         if (status === Strophe.Status.CONNECTED) {
-             var apiKeyIQ = $iq(
-                 {type:"set"})
-                 .c("apikey", {xmlns:"http://phono.com/apikey"})
-                 .t(phono.config.apiKey);
-             phono.connection.sendIQ(apiKeyIQ, 
-                                    phono.handleConnect,
-                                    function() {
-                                        Phono.events.trigger(phono, "error", {
-                                            reason: "API key rejected"
-                                        });
-                                    });
-         } else if (status === Strophe.Status.DISCONNECTED) {
-            phono.handleDisconnect();
-         } else if (status === Strophe.Status.ERROR 
-                 || status === Strophe.Status.CONNFAIL 
-                 || status === Strophe.Status.CONNFAIL 
-                 || status === Strophe.Status.AUTHFAIL) {
-            phono.handleError();
-          }
-      },50);
    };
 
    Phono.prototype.disconnect = function() {
@@ -111,14 +102,53 @@
       return this.connection.connected;
    };
 
-   // Fires when the underlying Strophe Connection is estabilshed
-   Phono.prototype.handleConnect = function() {
-      this.sessionId = Strophe.getBareJidFromJid(this.connection.jid);
-      new PluginManager(this, this.config, function(plugins) {
-         Phono.events.trigger(this, "ready");
-      }).init();
+   Phono.prototype.handleStropheStatusChange = function(status) {
+      if (status === Strophe.Status.CONNECTED) {
+          new PluginManager(this, this.config, function(plugins) {
+              this.handleConnect();
+          }).init();
+      } else if (status === Strophe.Status.DISCONNECTED) {
+          this.handleDisconnect();
+      } else if (status === Strophe.Status.ERROR 
+                 || status === Strophe.Status.CONNFAIL 
+                 || status === Strophe.Status.CONNFAIL 
+                 || status === Strophe.Status.AUTHFAIL) {
+          this.handleError();
+      }
    };
 
+   // Fires when the underlying Strophe Connection is estabilshed
+   Phono.prototype.handleConnect = function() {
+       var phono = this;
+       phono.sessionId = Strophe.getBareJidFromJid(this.connection.jid);
+
+       var apiKeyIQ = $iq(
+           {type:"set"})
+           .c("apikey", {xmlns:"http://phono.com/apikey"})
+           .t(phono.config.apiKey).up()
+           .c("caps", {xmlns:"http://phono.com/caps", ver:Phono.version});
+
+       // Loop over all plugins adding any caps that we have
+       for(pluginName in Phono.plugins) {
+           if (phono[pluginName].getCaps) {
+               apiKeyIQ = phono[pluginName].getCaps(apiKeyIQ.c(pluginName));
+               apiKeyIQ.up();
+           }
+       }
+       apiKeyIQ = apiKeyIQ.c('browser',{version:navigator.appVersion, agent:navigator.userAgent}).up();
+       
+       phono.connection.sendIQ(apiKeyIQ, 
+                               phono.handleKeySuccess,
+                               function() {
+                                   Phono.events.trigger(phono, "error", {
+                                       reason: "API key rejected"
+                                   });
+                               });
+   };
+
+   Phono.prototype.handleKeySuccess = function() {
+       Phono.events.trigger(this, "ready");
+   }
    // Fires when the underlying Strophe Connection errors out
    Phono.prototype.handleError = function() {
       Phono.events.trigger(this, "error", {
@@ -140,6 +170,7 @@
    //@Include=flashembed.min.js
    //@Include=$phono-audio
    //@Include=phono.messaging.js
+   //@Include=phono.sdp.js
    //@Include=phono.phone.js
 
    // ======================================================================
