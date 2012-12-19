@@ -564,7 +564,7 @@
             } else {
                 var id = new Date().getTime();
                 var ver = 2;
-                sdp = sdp + "o=-" + " " + id + " " + ver + " IN IP4 192.67.4.14" + "\r\n"; // does the IP here matter ?!?
+                sdp = sdp + "o=-" + " 3" + id + " " + ver + " IN IP4 192.67.4.14" + "\r\n"; // does the IP here matter ?!?
             }
 
             sdp = sdp + "s=-\r\n" + 

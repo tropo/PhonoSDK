@@ -284,12 +284,12 @@ JSEPAudio.prototype.transport = function(config) {
                     //Phono.log.info("Created localDesc");
                     var sdpObj = Phono.sdp.parseSDP(localDesc.sdp);
                     // Nail it to google-ice
-                    sdpObj.contents[0].ice.options = "google-ice";
+                    //sdpObj.contents[0].ice.options = "google-ice";
                     var sdp = Phono.sdp.buildSDP(sdpObj);
                     var sd = new RTCSessionDescription({'sdp':sdp, 'type':localDesc.type} );
    		    pc.setLocalDescription(sd);
 		    var msgString = JSON.stringify(sd,null," ");
-                    //Phono.log.info('Set localDesc ' + msgString);
+                    Phono.log.info('Set local description ' + msgString);
                     //Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
 	        };
                 
@@ -326,7 +326,7 @@ JSEPAudio.prototype.transport = function(config) {
             if (pc) {
                 // We are an answer to an outbound call
                 var sd = new RTCSessionDescription({'sdp':sdp, 'type':"answer"} );
-		//Phono.log.info("about to set the remote description: "+JSON.stringify(sd,null," "));
+		Phono.log.info("Set remote description: "+JSON.stringify(sd,null," "));
 		pc.setRemoteDescription(sd,
 			                function(){Phono.log.debug("remoteDescription happy");
 				                   //Phono.log.debug("Pc now: "+JSON.stringify(pc,null," "));
