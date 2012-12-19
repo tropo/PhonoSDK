@@ -336,6 +336,7 @@ JSEPAudio.prototype.transport = function(config) {
             } else {
                 // We are an offer for an inbound call
                 var sd = new RTCSessionDescription({'sdp':sdp, 'type':"offer"} );
+                Phono.log.info("Set remote description: "+JSON.stringify(sd,null," "));
                 inboundOffer = sd;
             }
             return {codec:codec, input:remoteVideo};
