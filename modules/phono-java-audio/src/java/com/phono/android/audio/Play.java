@@ -18,9 +18,11 @@
 package com.phono.android.audio;
 
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
-import org.apache.cordova.api.CordovaInterface;
+import com.phono.api.PlayFace;
 import com.phono.rtp.Endpoint;
 import com.phono.srtplight.Log;
 
@@ -29,14 +31,15 @@ import com.phono.srtplight.Log;
  *
  * @author tim
  */
-public class Play extends Endpoint implements OnPreparedListener {
+public class Play extends Endpoint implements OnPreparedListener, PlayFace {
 
     MediaPlayer _mp;
     String _uri;
     boolean _prepared = false;
+	private boolean _startme;
     final static String FILE = "file://";
 
-    public Play(String uri, CordovaInterface ctx) throws Exception {
+    public Play(String uri, Context ctx) throws Exception {
         super(uri);
         _uri = uri;
         _mp = new MediaPlayer();
@@ -49,13 +52,15 @@ public class Play extends Endpoint implements OnPreparedListener {
             _mp.setOnPreparedListener(this);
             _mp.prepareAsync();
         }
-
-
+        _mp.setLooping(true);
+        //_mp.setAudioStreamType(AudioManager.MODE_RINGTONE);
     }
 
     public void stop() {
         if (_mp != null) {
             _mp.stop();
+            _startme = false;
+
         }
     }
 
@@ -65,6 +70,7 @@ public class Play extends Endpoint implements OnPreparedListener {
                 _mp.start();
             } else {
                 Log.debug("not ready to play " + _uri);
+                _startme = true;
             }
         }
     }
@@ -79,5 +85,8 @@ public class Play extends Endpoint implements OnPreparedListener {
     public void onPrepared(MediaPlayer mp) {
         Log.debug("prepared " + _uri);
         _prepared = true;
+        if(_startme){
+        	mp.start();
+        }
     }
 }

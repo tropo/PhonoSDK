@@ -312,6 +312,8 @@
     NSXMLElement *xios = [NSXMLElement elementWithName:@"ios-native"];
     [xios addAttributeWithName:@"protocol" stringValue:@"(s)rtp"];
     [xios addAttributeWithName:@"bridged" stringValue:@"true"];
+    [xios addAttributeWithName:@"hasIce" stringValue:@"false"];
+
     [xcaps addChild:xaudio];
     [xaudio addChild:xios];
     NSXMLElement *xdevice = [NSXMLElement elementWithName:@"device"];
