@@ -36,6 +36,7 @@ $(document).ready(function() {
         var audioType = $('.audio-plugin').val();
         var bridged = false;
         var connectionUrl = window.location.protocol+"//app.phono.com/http-bind";
+        var provisioningUrl = undefined;
         var dialString = "sip:3366@login.zipdx.com";
         var chatString = "en2fr@bot.talk.google.com";
         var gw = "gw-v6.d.phono.com";
@@ -47,6 +48,7 @@ $(document).ready(function() {
         // Do we have URL parameters to override here?
         if (audioType == "auto" && urlParam("audio") != undefined) audioType = urlParam("audio");
         if (urlParam("connectionUrl") != undefined) connectionUrl = urlParam("connectionUrl");
+        if (urlParam("provisioningUrl") != undefined) provisioningUrl = urlParam("provisioningUrl");
         if (urlParam("dial") != undefined) dialString = urlParam("dial");
         if (urlParam("chat") != undefined) chatString = urlParam("chat");
         if (urlParam("gateway") != undefined) gw = urlParam("gateway");
@@ -95,6 +97,7 @@ $(document).ready(function() {
 	phonos[newPhonoID] = $.phono({
 	    apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
             connectionUrl:connectionUrl,
+            provisioningUrl:provisioningUrl,
             gateway:gw,
 
             onReady: function(event) {

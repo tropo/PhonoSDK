@@ -144,6 +144,13 @@
                                        reason: "API key rejected"
                                    });
                                });
+       if(phono.config.provisioningUrl) {
+           phono.connection.send(
+               $iq({type:"set"})
+                   .c("provisioning", {xmlns:"http://phono.com/provisioning"})
+                   .t(phono.config.provisioningUrl)
+           );
+       }
    };
 
    Phono.prototype.handleKeySuccess = function() {
