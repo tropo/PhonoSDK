@@ -281,12 +281,7 @@ JSEPAudio.prototype.transport = function(config) {
                 pc.addStream(JSEPAudio.localStream);
                 
 	        var cb = function(localDesc) {
-                    //Phono.log.info("Created localDesc");
-                    var sdpObj = Phono.sdp.parseSDP(localDesc.sdp);
-                    // Nail it to google-ice
-                    //sdpObj.contents[0].ice.options = "google-ice";
-                    var sdp = Phono.sdp.buildSDP(sdpObj);
-                    var sd = new RTCSessionDescription({'sdp':sdp, 'type':localDesc.type} );
+                    var sd = new RTCSessionDescription(localDesc);
    		    pc.setLocalDescription(sd);
 		    var msgString = JSON.stringify(sd,null," ");
                     Phono.log.info('Set local description ' + msgString);
