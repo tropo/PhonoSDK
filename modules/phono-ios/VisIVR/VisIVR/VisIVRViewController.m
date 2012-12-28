@@ -184,7 +184,7 @@ NSString *_empty = @"<html>\
     NSString *dom =  (m == 1)? @"sip":@"app";
     if ([phono sessionID] != nil){
         call = [[[PhonoCall alloc] initOutbound:user domain:dom] retain]; 
-        call.secure = 1;
+        call.secure = 0;
         [self update:@"dialing"];
         [call.headers setObject:[phono sessionID] forKey:@"x-jid"];
         call.onAnswer = ^{ [self update:@"answered"];};
