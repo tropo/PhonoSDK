@@ -7,7 +7,8 @@ function FlashAudio(phono, config, callback) {
         swf: "//" + MD5.hexdigest(window.location.host+phono.config.apiKey) + ".u.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf",
         cirrus: "rtmfp://phono-fms1-ext.voxeolabs.net/phono",
         bridged: false,
-        media: {audio:true,video:true}
+        media: {audio:true,video:true},
+        watchdog: 25000
     }, config);
 
     // Bind Event Listeners
@@ -56,6 +57,15 @@ function FlashAudio(phono, config, callback) {
     if ((navigator.appVersion.indexOf("X11")!=-1) || (navigator.appVersion.indexOf("Linux")!=-1) || ($.browser.opera)) {
         wmodeSetting = "window";
     }
+
+    window.setInterval(function(){
+        if (!plugin.$flash) {
+            Phono.events.trigger(phono, "error", {
+                reason: "Timeout waiting for flash to load."
+            });
+            Phono.log.error("Timeout waiting for flash to load.");
+        }
+    }, plugin.config.watchdog);
     
     // Embed flash plugin
     flashembed(containerId, 
