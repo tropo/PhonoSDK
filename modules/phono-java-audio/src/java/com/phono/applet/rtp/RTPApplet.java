@@ -69,7 +69,7 @@ public class RTPApplet extends Applet {
         PhonoAudioShim.getMixersJSON(bret);
         bret.append("}\n");
         _deviceList = bret.toString();
-	//Log.debug("audio list is :"+_deviceList);
+//	Log.debug("audio list is :"+_deviceList);
         _audio = new PhonoAudioShim();
         _codecList = new CodecList(_audio);
 
@@ -161,11 +161,11 @@ public class RTPApplet extends Applet {
         return _codecList.getCodecs();
     }
 
-    public Codec mkCodec(Codec c, int ptype){
-        Codec ret = new Codec(ptype,c.name,c.rate,c.ptime, c.iaxcn);
+    public Codec mkCodec(Codec c, int ptype) {
+        Codec ret = new Codec(ptype, c.name, c.rate, c.ptime, c.iaxcn);
         return ret;
     }
-    
+
     public Share share(String uri, final Codec codec, boolean autoStart) {
         return share(uri, codec, autoStart, null, null);
     }
@@ -202,7 +202,7 @@ public class RTPApplet extends Applet {
                 Log.error("srtp Props invalid format" + ex.toString());
             }
         }
-        Log.debug("in share() codec = " + codec.name + " rate ="+codec.rate +" pt = "+codec.pt);
+        Log.debug("in share() codec = " + codec.name + " rate =" + codec.rate + " pt = " + codec.pt);
         Log.debug("in share() uri = " + uri);
         try {
             PhonoAudioShim af = getAudio(codec);
@@ -292,7 +292,9 @@ public class RTPApplet extends Applet {
         while (rat.hasMoreElements()) {
             Endpoint r = (Endpoint) rat.nextElement();
             r.getJSONStatus(ret);
-            if(rat.hasMoreElements()){ ret.append(","); }
+            if (rat.hasMoreElements()) {
+                ret.append(",");
+            }
         }
         ret.append("]\n");
         ret.append("}\n");
@@ -334,16 +336,21 @@ public class RTPApplet extends Applet {
             try {
                 float ofreq = (_audio.getCodec(_audio.getCodec())).getSampleRate();
                 float nfreq = (_audio.getCodec(codec.iaxcn)).getSampleRate();
-                Log.debug("getting audio is "+ofreq+" = "+nfreq+ " ? "+((nfreq != ofreq)?"No":"Yes"));
+                Log.debug("getting audio is " + ofreq + " = " + nfreq + " ? " + ((nfreq != ofreq) ? "No" : "Yes"));
 
                 if (nfreq != ofreq) {
-                    _audio.unInit();
+                    AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                        public Void run() {
+                            _audio.unInit();
+                            return null; // nothing to return
+                        }
+                    });
                 }
             } catch (IllegalStateException ok) {
                 // thats actually legit - it is an uninitialized audio
                 // so we haven't _set_ a rate yet
             }
-        } 
+        }
         return _audio;
     }
 }

@@ -84,15 +84,15 @@ public class PhonoAudio implements AudioFace {
     private StampedAudio _holdPlay;
     /* Variables relating to outbound audio: microphone recording going to network */
     private TargetDataLine _rec;
-    private byte[] _macbuff;
+    private byte[] _downSampleBuff;
     private EncoderFace _encode;
     private byte _framebuffR[];
     private Thread _recThread;
     public int _cutsz;
     public float _sampleRate;
-    // protected AudioFormat _cdmono;
     protected AudioFormat _bestMacFormat;
-    private short[] _macbuffp;
+
+    private short[] _resampleBuffp;
     // a circular buffer for StampedAudio, read from the mic
     private StampedAudio[] _stampedBuffer;
     private int _stampedBufferStart;
@@ -106,6 +106,7 @@ public class PhonoAudio implements AudioFace {
     private int _pvadhvc;
     private int _pvadvc;
     private static float __mac_rate = 44100.0F;
+
     protected FloatControl pan;
     private int _dtmfDigit = -1;
     private int _samplesPerFrame;
@@ -116,6 +117,7 @@ public class PhonoAudio implements AudioFace {
     public PhonoAudio() {
         //_cdmono = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100.0F, 16, 1, 2, 44100.0F, true);
         _bestMacFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, __mac_rate, 16, 1, 2, __mac_rate, true);
+
         _codecMap = new LinkedHashMap<Long, CodecFace>();
         fillCodecMap();
 
@@ -126,6 +128,7 @@ public class PhonoAudio implements AudioFace {
         } else {
             _osname = "";
         }
+        Log.debug("Os name is "+_osname);
         _javaVersion = System.getProperty("java.specification.version");
         _audioProperties = new Properties();
     }
@@ -222,8 +225,7 @@ public class PhonoAudio implements AudioFace {
 
     synchronized public void unInit() {
         _codec = null;
-        stopPlay();
-        stopRec();
+        destroy();
         _rec = null;
         _play = null;
         _sampleRate = 0;
@@ -236,7 +238,7 @@ public class PhonoAudio implements AudioFace {
         _decode = null;
         _encodedbuffPlay = null;
         _framebuffR = null;
-        _macbuff = null;
+        _downSampleBuff = null;
         Log.debug("uninit()ed audio device");
     }
 
@@ -547,8 +549,8 @@ public class PhonoAudio implements AudioFace {
             if (sframe != null) {
                 int trimmed = 0;
                 short[] eframe = effectOut(sframe);
-                if (_macbuffp != null) {
-                    eframe = upsample(eframe, _macbuffp);
+                if (_resampleBuffp != null) {
+                    eframe = upsample(eframe, _resampleBuffp);
                 }
                 byte[] framebuffP = CodecUtil.shortsToBytes(eframe);
 
@@ -668,21 +670,23 @@ public class PhonoAudio implements AudioFace {
      */
     protected void initMic(Mixer m) throws AudioException {
         if (_rec == null) {
-            // TODO: other codecs might not work very well with 8k!
             AudioFormat slin = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, _sampleRate, 16, 1, 2, _sampleRate, true);
 
             AudioFormat recfmt = slin;
 
             int recBuffsz = _bytesPerFrame * _deep;
 
-            // macs won't give you 8k slin
-            if ("mac os x".equals(_osname)) {
+            // macs won't give you 8k slin 
+            if ("mac os x".equals(_osname) ){
                 recfmt = _bestMacFormat;
                 int mbpf = _bytesPerFrame * (int) recfmt.getFrameRate() / (int) _sampleRate;
                 recBuffsz = mbpf * _deep;
-                _macbuff = new byte[mbpf];
+                _downSampleBuff = new byte[mbpf];
+                Log.debug("Using sample rate of "+recfmt.getFrameRate()+" downsample to "+_sampleRate );
+            } else {
+                Log.debug("Using native sample rate of "+_sampleRate );
             }
-            Log.verb("PhonoAudio.initMic(): audioFormat = " + recfmt);
+            Log.debug("PhonoAudio.initMic(): audioFormat = " + recfmt);
             DataLine.Info info = null;
 
             if (m == null) {
@@ -691,7 +695,6 @@ public class PhonoAudio implements AudioFace {
                 info = new DataLine.Info(TargetDataLine.class, recfmt);
             }
 
-            // _encodedbuffRec = new byte[_codecFrameSize];
             _framebuffR = new byte[_bytesPerFrame];
 
             try {
@@ -706,12 +709,9 @@ public class PhonoAudio implements AudioFace {
                 }
 
             } catch (LineUnavailableException lue) {
-                // setMute(true);
                 lue.printStackTrace();
-//                Log.database(lue, this, "initMic");
                 throw new AudioException(lue.getMessage(), lue);
             } catch (Exception e) {
-//                Log.database(e, this, "initMic");
                 e.printStackTrace();
                 throw new AudioException(e.getMessage(), e);
             }
@@ -737,8 +737,8 @@ public class PhonoAudio implements AudioFace {
         if (_rec != null) {
             int av = _rec.available();
             int bsz = 0;
-            if (_macbuff != null) {
-                bsz = _macbuff.length;
+            if (_downSampleBuff != null) {
+                bsz = _downSampleBuff.length;
             } else {
                 bsz = _framebuffR.length;
             }
@@ -751,9 +751,9 @@ public class PhonoAudio implements AudioFace {
                 timestamp = 0;
                 }  dont bother... */
 
-                if (_macbuff != null) {
-                    _rec.read(_macbuff, 0, _macbuff.length);
-                    downsample(_macbuff, _framebuffR);
+                if (_downSampleBuff != null) {
+                    _rec.read(_downSampleBuff, 0, _downSampleBuff.length);
+                    downsample(_downSampleBuff, _framebuffR);
                 } else {
                     _rec.read(_framebuffR, 0, _bytesPerFrame);
                 }

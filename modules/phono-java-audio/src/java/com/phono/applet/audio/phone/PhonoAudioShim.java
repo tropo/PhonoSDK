@@ -383,7 +383,7 @@ public class PhonoAudioShim extends EsupPhonoAudio {
                 sb.append("minBuf : ").append("" + dataLineInfo.getMinBufferSize()).append("\n,");
                 sb.append("maxBuf : ").append("" + dataLineInfo.getMaxBufferSize()).append("\n,");
 
-                getMixerLineFormatsJSON(sb, supportedFormats);
+                //getMixerLineFormatsJSON(sb, supportedFormats);
                 sb.append("}\n");
 
             }
