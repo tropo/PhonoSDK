@@ -174,7 +174,7 @@ $(document).ready(function() {
                     newCallDiv.find(".callHeader .callID").html(newCallID);
             	    calls[newCallID] = event.call;
             	    console.log("["+newPhonoID+"] New incoming call");
-                    
+                    event.call.tones(true); 
             	    //Bind events from this call
             	    calls[newCallID].bind({
              	        onHangup: function(event) {
