@@ -102,8 +102,8 @@
  <target name="buildlib" depends="-compile , -post-compile">
   </target>
     <target name="build-sample" depends="buildlib">
-                <ant target="debug" dir="samples/VisIVRA" inheritAll="false">
-                </ant>
+      <ant target="copyJars" dir="samples/VisIVRA" inheritAll="false" useNativeBaseDir="true"/>
+      <ant target="debug" dir="samples/VisIVRA" inheritAll="false" useNativeBaseDir="true"/>
   </target>
   <target name="build" depends="buildlib , build-sample">
         <echo> Built. </echo>

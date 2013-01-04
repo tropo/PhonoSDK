@@ -36,6 +36,7 @@
     <antcall target="build-phonegap-ios" />
     <antcall target="build-native-ios" />
     <antcall target="build-phonegap-android" />
+    <antcall target="build-native-android" />
   </target>
 
   <!-- Modules -->
@@ -56,6 +57,9 @@
   </target>
   <target name="build-phonegap-android">
 		<ant inheritAll="true" target="build" dir="modules/phono-phonegap-android" />
+  </target>
+  <target name="build-native-android">
+		<ant inheritAll="true" target="build" dir="modules/phono-native-android" />
   </target>
 
   <!-- Util -->
