@@ -29,6 +29,7 @@
   <target name="build-desktop">
     <antcall target="build-as-audio" />
     <antcall target="build-java-audio" />
+    <antcall target="build-native-java" />
     <antcall target="build-js" />
   </target>
   <target name="build-mobile">
@@ -57,6 +58,9 @@
   </target>
   <target name="build-phonegap-android">
 		<ant inheritAll="true" target="build" dir="modules/phono-phonegap-android" />
+  </target>
+  <target name="build-native-java">
+		<ant inheritAll="true" target="build" dir="modules/phono-java" />
   </target>
   <target name="build-native-android">
 		<ant inheritAll="true" target="build" dir="modules/phono-native-android" />
