@@ -31,6 +31,8 @@ import android.support.v4.app.NavUtils;
 import com.phono.android.audio.Play;
 import com.phono.android.rtp.DroidPhonoAudioShim;
 import com.phono.api.PlayFace;
+import com.phono.api.DeviceInfoFace;
+import com.phono.android.DeviceInfo;
 import com.phono.audio.AudioFace;
 import com.phono.jingle.PhonoCall;
 import com.phono.jingle.PhonoMessage;
@@ -154,9 +156,9 @@ public class VisIVR extends Activity {
 
 		};
 		// Likewise PhonoNative - set the address of the phono server
-		_pn = new PhonoNative(/*"phono-trunk-ext.qa.voxeolabs.net"*/ "phono10-ext.joyent.bharti.voxeolabs.net" ) {
+		_pn = new PhonoNative("app.phono.com") {
 
-			// 2 boilerplate android methods - we return platform specific implementations of the AudioFace and PlayFace
+			// 3 boilerplate android methods - we return platform specific implementations of the AudioFace and PlayFace and DeviceInfoFace
 			// interfaces.
 			
 			@Override
@@ -176,6 +178,11 @@ public class VisIVR extends Activity {
 				}
 				return f;
 			}
+			@Override
+                        public DeviceInfoFace newDeviceInfo(){
+				return new DeviceInfo();
+			}
+
 
 			
 			// What to do when an error occurs
