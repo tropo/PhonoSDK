@@ -48,7 +48,7 @@ NSString *_empty = @"<html>\
     if (speakerSw != nil) {
         [phono setUseSpeaker:[speakerSw isOn]];
     }
-    NSDictionary *cprefs = [phono lowBWPrefs];
+    NSDictionary *cprefs = [phono guessCodecPrefs];
     if (cprefs != nil) {
         [phono setAudio:cprefs]; // or make up your own.
     }
@@ -119,14 +119,14 @@ NSString *_empty = @"<html>\
     NSString *dev = [[UIDevice currentDevice] uniqueIdentifier] ; // deprecated - do _not_ use in appstore app
 
     phono = [[PhonoNative alloc] initWithPhone:phone ];
-    [phono setGateway:@"sfa.westhawk.co.uk"];
+    [phono setGateway:@"phono-trunk-ext.qa.voxeolabs.net"];
     phono.messaging.onMessage = ^(PhonoMessage *message){
         [self gotMessage:message];
     };
     phono.onReady = ^{ [self gotjId];};
     phono.onUnready = ^{ [self gotjId];};
     phono.onError = ^{ [self update:@"error"];};
-    phono.provisioningURL = [NSString stringWithFormat:@"http://sfa.westhawk.co.uk:8080/MTS/AudioOnly/%@.groovy",dev];
+    //phono.provisioningURL = [NSString stringWithFormat:@"http://sfa.westhawk.co.uk:8080/MTS/AudioOnly/%@.groovy",dev];
 
     NSURL *base = [NSURL URLWithString:@"http://s.phono.com/"];
     NSString *empty = [NSString stringWithFormat:_empty,@""];    

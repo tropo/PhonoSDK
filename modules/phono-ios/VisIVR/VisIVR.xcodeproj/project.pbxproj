@@ -1,0 +1,453 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		221BD7BF14A49A4900E3972C /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 221BD7BE14A49A4900E3972C /* CoreFoundation.framework */; };
+		222180ED169B05B000801ABD /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 222180EC169B05B000801ABD /* Default-568h@2x.png */; };
+		2223084D1499E05400AEF013 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2223084C1499E05400AEF013 /* UIKit.framework */; };
+		2223084F1499E05400AEF013 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2223084E1499E05400AEF013 /* Foundation.framework */; };
+		222308511499E05400AEF013 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 222308501499E05400AEF013 /* CoreGraphics.framework */; };
+		222308571499E05400AEF013 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 222308551499E05400AEF013 /* InfoPlist.strings */; };
+		222308591499E05400AEF013 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 222308581499E05400AEF013 /* main.m */; };
+		2223085D1499E05400AEF013 /* VisIVRAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2223085C1499E05400AEF013 /* VisIVRAppDelegate.m */; };
+		222308601499E05400AEF013 /* VisIVRViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2223085F1499E05400AEF013 /* VisIVRViewController.m */; };
+		222308631499E05400AEF013 /* VisIVRViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 222308611499E05400AEF013 /* VisIVRViewController_iPhone.xib */; };
+		222308661499E05400AEF013 /* VisIVRViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 222308641499E05400AEF013 /* VisIVRViewController_iPad.xib */; };
+		22230963149A086B00AEF013 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230962149A086B00AEF013 /* CFNetwork.framework */; };
+		22230A5F149A0A7000AEF013 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A5E149A0A7000AEF013 /* libresolv.dylib */; };
+		22230A61149A0ACB00AEF013 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A60149A0ACB00AEF013 /* CoreLocation.framework */; };
+		22230A63149A0AE000AEF013 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A62149A0AE000AEF013 /* SystemConfiguration.framework */; };
+		22230A65149A0AEE00AEF013 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230A64149A0AEE00AEF013 /* CoreData.framework */; };
+		229AD0EB14A3AC3A008C656D /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EA14A3AC3A008C656D /* AudioToolbox.framework */; };
+		229AD0ED14A3AC41008C656D /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EC14A3AC41008C656D /* CoreAudio.framework */; };
+		229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EE14A3AC59008C656D /* Security.framework */; };
+		229AD0F114A3AC81008C656D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0F014A3AC81008C656D /* AVFoundation.framework */; };
+		22A510F2169B27F0003555B1 /* PhonoNative-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22A510F1169B27F0003555B1 /* PhonoNative-i386.a */; };
+		22D926A514AC96A100F9D295 /* Diggztone_Agent94.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269A14AC96A100F9D295 /* Diggztone_Agent94.mp3 */; };
+		22D926A614AC96A100F9D295 /* Diggztone_AngryBirds.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269B14AC96A100F9D295 /* Diggztone_AngryBirds.mp3 */; };
+		22D926A714AC96A100F9D295 /* Diggztone_Countdown.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269C14AC96A100F9D295 /* Diggztone_Countdown.mp3 */; };
+		22D926A814AC96A100F9D295 /* Diggztone_DigitalSanity.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269D14AC96A100F9D295 /* Diggztone_DigitalSanity.mp3 */; };
+		22D926A914AC96A100F9D295 /* Diggztone_DigitalSymmetry.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269E14AC96A100F9D295 /* Diggztone_DigitalSymmetry.mp3 */; };
+		22D926AA14AC96A100F9D295 /* Diggztone_Lambchops.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269F14AC96A100F9D295 /* Diggztone_Lambchops.mp3 */; };
+		22D926AB14AC96A100F9D295 /* Diggztone_Marimba.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D926A014AC96A100F9D295 /* Diggztone_Marimba.mp3 */; };
+		22D926AC14AC96A100F9D295 /* Diggztone_Piano.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D926A114AC96A100F9D295 /* Diggztone_Piano.mp3 */; };
+		22D926AD14AC96A100F9D295 /* Diggztone_Vibe.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D926A214AC96A100F9D295 /* Diggztone_Vibe.mp3 */; };
+		22D926AE14AC96A100F9D295 /* ringback-uk.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D926A314AC96A100F9D295 /* ringback-uk.mp3 */; };
+		22D926AF14AC96A100F9D295 /* ringback-us.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D926A414AC96A100F9D295 /* ringback-us.mp3 */; };
+		22F126BF14B75A6D00E2FB89 /* Headers in Resources */ = {isa = PBXBuildFile; fileRef = 22F126BE14B75A6D00E2FB89 /* Headers */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		221BD7BE14A49A4900E3972C /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		222180EC169B05B000801ABD /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		222308481499E05400AEF013 /* VisIVR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VisIVR.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2223084C1499E05400AEF013 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		2223084E1499E05400AEF013 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		222308501499E05400AEF013 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		222308541499E05400AEF013 /* VisIVR-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "VisIVR-Info.plist"; sourceTree = "<group>"; };
+		222308561499E05400AEF013 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		222308581499E05400AEF013 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2223085A1499E05400AEF013 /* VisIVR-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VisIVR-Prefix.pch"; sourceTree = "<group>"; };
+		2223085B1499E05400AEF013 /* VisIVRAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VisIVRAppDelegate.h; sourceTree = "<group>"; };
+		2223085C1499E05400AEF013 /* VisIVRAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VisIVRAppDelegate.m; sourceTree = "<group>"; };
+		2223085E1499E05400AEF013 /* VisIVRViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VisIVRViewController.h; sourceTree = "<group>"; };
+		2223085F1499E05400AEF013 /* VisIVRViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VisIVRViewController.m; sourceTree = "<group>"; };
+		222308621499E05400AEF013 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/VisIVRViewController_iPhone.xib; sourceTree = "<group>"; };
+		222308651499E05400AEF013 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/VisIVRViewController_iPad.xib; sourceTree = "<group>"; };
+		22230962149A086B00AEF013 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		22230A5E149A0A7000AEF013 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
+		22230A60149A0ACB00AEF013 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		22230A62149A0AE000AEF013 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		22230A64149A0AEE00AEF013 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		229AD0EA14A3AC3A008C656D /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		229AD0EC14A3AC41008C656D /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		229AD0EE14A3AC59008C656D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		229AD0F014A3AC81008C656D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		22A510F1169B27F0003555B1 /* PhonoNative-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "PhonoNative-i386.a"; path = "../target/PhonoNative-i386.a"; sourceTree = "<group>"; };
+		22D9269A14AC96A100F9D295 /* Diggztone_Agent94.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_Agent94.mp3; sourceTree = "<group>"; };
+		22D9269B14AC96A100F9D295 /* Diggztone_AngryBirds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_AngryBirds.mp3; sourceTree = "<group>"; };
+		22D9269C14AC96A100F9D295 /* Diggztone_Countdown.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_Countdown.mp3; sourceTree = "<group>"; };
+		22D9269D14AC96A100F9D295 /* Diggztone_DigitalSanity.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_DigitalSanity.mp3; sourceTree = "<group>"; };
+		22D9269E14AC96A100F9D295 /* Diggztone_DigitalSymmetry.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_DigitalSymmetry.mp3; sourceTree = "<group>"; };
+		22D9269F14AC96A100F9D295 /* Diggztone_Lambchops.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_Lambchops.mp3; sourceTree = "<group>"; };
+		22D926A014AC96A100F9D295 /* Diggztone_Marimba.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_Marimba.mp3; sourceTree = "<group>"; };
+		22D926A114AC96A100F9D295 /* Diggztone_Piano.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_Piano.mp3; sourceTree = "<group>"; };
+		22D926A214AC96A100F9D295 /* Diggztone_Vibe.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_Vibe.mp3; sourceTree = "<group>"; };
+		22D926A314AC96A100F9D295 /* ringback-uk.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "ringback-uk.mp3"; sourceTree = "<group>"; };
+		22D926A414AC96A100F9D295 /* ringback-us.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "ringback-us.mp3"; sourceTree = "<group>"; };
+		22F126BE14B75A6D00E2FB89 /* Headers */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Headers; path = ../../target/Headers; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		222308451499E05400AEF013 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				22A510F2169B27F0003555B1 /* PhonoNative-i386.a in Frameworks */,
+				221BD7BF14A49A4900E3972C /* CoreFoundation.framework in Frameworks */,
+				229AD0F114A3AC81008C656D /* AVFoundation.framework in Frameworks */,
+				229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */,
+				229AD0ED14A3AC41008C656D /* CoreAudio.framework in Frameworks */,
+				229AD0EB14A3AC3A008C656D /* AudioToolbox.framework in Frameworks */,
+				22230A65149A0AEE00AEF013 /* CoreData.framework in Frameworks */,
+				22230A63149A0AE000AEF013 /* SystemConfiguration.framework in Frameworks */,
+				22230A61149A0ACB00AEF013 /* CoreLocation.framework in Frameworks */,
+				22230A5F149A0A7000AEF013 /* libresolv.dylib in Frameworks */,
+				22230963149A086B00AEF013 /* CFNetwork.framework in Frameworks */,
+				2223084D1499E05400AEF013 /* UIKit.framework in Frameworks */,
+				2223084F1499E05400AEF013 /* Foundation.framework in Frameworks */,
+				222308511499E05400AEF013 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2223083D1499E05400AEF013 = {
+			isa = PBXGroup;
+			children = (
+				22A510F1169B27F0003555B1 /* PhonoNative-i386.a */,
+				222180EC169B05B000801ABD /* Default-568h@2x.png */,
+				221BD7BE14A49A4900E3972C /* CoreFoundation.framework */,
+				229AD0F014A3AC81008C656D /* AVFoundation.framework */,
+				229AD0EE14A3AC59008C656D /* Security.framework */,
+				229AD0EC14A3AC41008C656D /* CoreAudio.framework */,
+				229AD0EA14A3AC3A008C656D /* AudioToolbox.framework */,
+				22230A64149A0AEE00AEF013 /* CoreData.framework */,
+				22230A62149A0AE000AEF013 /* SystemConfiguration.framework */,
+				22230A60149A0ACB00AEF013 /* CoreLocation.framework */,
+				22230A5E149A0A7000AEF013 /* libresolv.dylib */,
+				22230962149A086B00AEF013 /* CFNetwork.framework */,
+				222308521499E05400AEF013 /* VisIVR */,
+				2223084B1499E05400AEF013 /* Frameworks */,
+				222308491499E05400AEF013 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		222308491499E05400AEF013 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				222308481499E05400AEF013 /* VisIVR.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2223084B1499E05400AEF013 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2223084C1499E05400AEF013 /* UIKit.framework */,
+				2223084E1499E05400AEF013 /* Foundation.framework */,
+				222308501499E05400AEF013 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		222308521499E05400AEF013 /* VisIVR */ = {
+			isa = PBXGroup;
+			children = (
+				22F126BE14B75A6D00E2FB89 /* Headers */,
+				2223085B1499E05400AEF013 /* VisIVRAppDelegate.h */,
+				2223085C1499E05400AEF013 /* VisIVRAppDelegate.m */,
+				2223085E1499E05400AEF013 /* VisIVRViewController.h */,
+				2223085F1499E05400AEF013 /* VisIVRViewController.m */,
+				222308611499E05400AEF013 /* VisIVRViewController_iPhone.xib */,
+				222308641499E05400AEF013 /* VisIVRViewController_iPad.xib */,
+				222308531499E05400AEF013 /* Supporting Files */,
+			);
+			path = VisIVR;
+			sourceTree = "<group>";
+		};
+		222308531499E05400AEF013 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				22D2E8F814ADC868000C4786 /* www */,
+				22D9269914AC96A100F9D295 /* ringtones */,
+				222308541499E05400AEF013 /* VisIVR-Info.plist */,
+				222308551499E05400AEF013 /* InfoPlist.strings */,
+				222308581499E05400AEF013 /* main.m */,
+				2223085A1499E05400AEF013 /* VisIVR-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		22D2E8F814ADC868000C4786 /* www */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = www;
+			sourceTree = "<group>";
+		};
+		22D9269914AC96A100F9D295 /* ringtones */ = {
+			isa = PBXGroup;
+			children = (
+				22D9269A14AC96A100F9D295 /* Diggztone_Agent94.mp3 */,
+				22D9269B14AC96A100F9D295 /* Diggztone_AngryBirds.mp3 */,
+				22D9269C14AC96A100F9D295 /* Diggztone_Countdown.mp3 */,
+				22D9269D14AC96A100F9D295 /* Diggztone_DigitalSanity.mp3 */,
+				22D9269E14AC96A100F9D295 /* Diggztone_DigitalSymmetry.mp3 */,
+				22D9269F14AC96A100F9D295 /* Diggztone_Lambchops.mp3 */,
+				22D926A014AC96A100F9D295 /* Diggztone_Marimba.mp3 */,
+				22D926A114AC96A100F9D295 /* Diggztone_Piano.mp3 */,
+				22D926A214AC96A100F9D295 /* Diggztone_Vibe.mp3 */,
+				22D926A314AC96A100F9D295 /* ringback-uk.mp3 */,
+				22D926A414AC96A100F9D295 /* ringback-us.mp3 */,
+			);
+			path = ringtones;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		222308471499E05400AEF013 /* VisIVR */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 222308691499E05400AEF013 /* Build configuration list for PBXNativeTarget "VisIVR" */;
+			buildPhases = (
+				222308441499E05400AEF013 /* Sources */,
+				222308451499E05400AEF013 /* Frameworks */,
+				222308461499E05400AEF013 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VisIVR;
+			productName = VisIVR;
+			productReference = 222308481499E05400AEF013 /* VisIVR.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2223083F1499E05400AEF013 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = "Westhhawk Ltd";
+			};
+			buildConfigurationList = 222308421499E05400AEF013 /* Build configuration list for PBXProject "VisIVR" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2223083D1499E05400AEF013;
+			productRefGroup = 222308491499E05400AEF013 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				222308471499E05400AEF013 /* VisIVR */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		222308461499E05400AEF013 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				222308571499E05400AEF013 /* InfoPlist.strings in Resources */,
+				222308631499E05400AEF013 /* VisIVRViewController_iPhone.xib in Resources */,
+				222308661499E05400AEF013 /* VisIVRViewController_iPad.xib in Resources */,
+				22D926A514AC96A100F9D295 /* Diggztone_Agent94.mp3 in Resources */,
+				22D926A614AC96A100F9D295 /* Diggztone_AngryBirds.mp3 in Resources */,
+				22D926A714AC96A100F9D295 /* Diggztone_Countdown.mp3 in Resources */,
+				22D926A814AC96A100F9D295 /* Diggztone_DigitalSanity.mp3 in Resources */,
+				22D926A914AC96A100F9D295 /* Diggztone_DigitalSymmetry.mp3 in Resources */,
+				22D926AA14AC96A100F9D295 /* Diggztone_Lambchops.mp3 in Resources */,
+				22D926AB14AC96A100F9D295 /* Diggztone_Marimba.mp3 in Resources */,
+				22D926AC14AC96A100F9D295 /* Diggztone_Piano.mp3 in Resources */,
+				22D926AD14AC96A100F9D295 /* Diggztone_Vibe.mp3 in Resources */,
+				22D926AE14AC96A100F9D295 /* ringback-uk.mp3 in Resources */,
+				22D926AF14AC96A100F9D295 /* ringback-us.mp3 in Resources */,
+				22F126BF14B75A6D00E2FB89 /* Headers in Resources */,
+				222180ED169B05B000801ABD /* Default-568h@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		222308441499E05400AEF013 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				222308591499E05400AEF013 /* main.m in Sources */,
+				2223085D1499E05400AEF013 /* VisIVRAppDelegate.m in Sources */,
+				222308601499E05400AEF013 /* VisIVRViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		222308551499E05400AEF013 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				222308561499E05400AEF013 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		222308611499E05400AEF013 /* VisIVRViewController_iPhone.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				222308621499E05400AEF013 /* en */,
+			);
+			name = VisIVRViewController_iPhone.xib;
+			sourceTree = "<group>";
+		};
+		222308641499E05400AEF013 /* VisIVRViewController_iPad.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				222308651499E05400AEF013 /* en */,
+			);
+			name = VisIVRViewController_iPad.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		222308671499E05400AEF013 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = armv7;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lxml2",
+				);
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		222308681499E05400AEF013 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = armv7;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lxml2",
+				);
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2223086A1499E05400AEF013 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = armv7;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "VisIVR/VisIVR-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					../PhonoNative/PhonoNative,
+					/usr/include/libxml2,
+				);
+				INFOPLIST_FILE = "VisIVR/VisIVR-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../3rdParty/XMPPFramework/Vendor/libidn\"",
+					"\"$(SRCROOT)/../target\"",
+					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
+					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lxml2",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		2223086B1499E05400AEF013 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = armv7;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "VisIVR/VisIVR-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					../PhonoNative/PhonoNative,
+					/usr/include/libxml2,
+				);
+				INFOPLIST_FILE = "VisIVR/VisIVR-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../3rdParty/XMPPFramework/Vendor/libidn\"",
+					"\"$(SRCROOT)/../target\"",
+					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
+					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lxml2",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		222308421499E05400AEF013 /* Build configuration list for PBXProject "VisIVR" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				222308671499E05400AEF013 /* Debug */,
+				222308681499E05400AEF013 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		222308691499E05400AEF013 /* Build configuration list for PBXNativeTarget "VisIVR" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2223086A1499E05400AEF013 /* Debug */,
+				2223086B1499E05400AEF013 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2223083F1499E05400AEF013 /* Project object */;
+}
