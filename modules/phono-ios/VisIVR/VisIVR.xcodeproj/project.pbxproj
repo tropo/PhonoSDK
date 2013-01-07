@@ -28,6 +28,10 @@
 		229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EE14A3AC59008C656D /* Security.framework */; };
 		229AD0F114A3AC81008C656D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0F014A3AC81008C656D /* AVFoundation.framework */; };
 		22A510F2169B27F0003555B1 /* PhonoNative-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22A510F1169B27F0003555B1 /* PhonoNative-i386.a */; };
+		22A510F6169B30A5003555B1 /* phono-slide-icon57.png in Resources */ = {isa = PBXBuildFile; fileRef = 22A510F5169B30A5003555B1 /* phono-slide-icon57.png */; };
+		22A510F8169B30BE003555B1 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 22A510F7169B30BE003555B1 /* Default.png */; };
+		22A510FA169B30CD003555B1 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 22A510F9169B30CD003555B1 /* Default@2x.png */; };
+		22A510FC169B3142003555B1 /* phono-slide-icon114.png in Resources */ = {isa = PBXBuildFile; fileRef = 22A510FB169B3142003555B1 /* phono-slide-icon114.png */; };
 		22D926A514AC96A100F9D295 /* Diggztone_Agent94.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269A14AC96A100F9D295 /* Diggztone_Agent94.mp3 */; };
 		22D926A614AC96A100F9D295 /* Diggztone_AngryBirds.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269B14AC96A100F9D295 /* Diggztone_AngryBirds.mp3 */; };
 		22D926A714AC96A100F9D295 /* Diggztone_Countdown.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269C14AC96A100F9D295 /* Diggztone_Countdown.mp3 */; };
@@ -69,6 +73,10 @@
 		229AD0EE14A3AC59008C656D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		229AD0F014A3AC81008C656D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		22A510F1169B27F0003555B1 /* PhonoNative-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "PhonoNative-i386.a"; path = "../target/PhonoNative-i386.a"; sourceTree = "<group>"; };
+		22A510F5169B30A5003555B1 /* phono-slide-icon57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "phono-slide-icon57.png"; sourceTree = "<group>"; };
+		22A510F7169B30BE003555B1 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		22A510F9169B30CD003555B1 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		22A510FB169B3142003555B1 /* phono-slide-icon114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "phono-slide-icon114.png"; sourceTree = "<group>"; };
 		22D9269A14AC96A100F9D295 /* Diggztone_Agent94.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_Agent94.mp3; sourceTree = "<group>"; };
 		22D9269B14AC96A100F9D295 /* Diggztone_AngryBirds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_AngryBirds.mp3; sourceTree = "<group>"; };
 		22D9269C14AC96A100F9D295 /* Diggztone_Countdown.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_Countdown.mp3; sourceTree = "<group>"; };
@@ -111,6 +119,10 @@
 		2223083D1499E05400AEF013 = {
 			isa = PBXGroup;
 			children = (
+				22A510FB169B3142003555B1 /* phono-slide-icon114.png */,
+				22A510F9169B30CD003555B1 /* Default@2x.png */,
+				22A510F7169B30BE003555B1 /* Default.png */,
+				22A510F5169B30A5003555B1 /* phono-slide-icon57.png */,
 				22A510F1169B27F0003555B1 /* PhonoNative-i386.a */,
 				222180EC169B05B000801ABD /* Default-568h@2x.png */,
 				221BD7BE14A49A4900E3972C /* CoreFoundation.framework */,
@@ -267,6 +279,10 @@
 				22D926AF14AC96A100F9D295 /* ringback-us.mp3 in Resources */,
 				22F126BF14B75A6D00E2FB89 /* Headers in Resources */,
 				222180ED169B05B000801ABD /* Default-568h@2x.png in Resources */,
+				22A510F6169B30A5003555B1 /* phono-slide-icon57.png in Resources */,
+				22A510F8169B30BE003555B1 /* Default.png in Resources */,
+				22A510FA169B30CD003555B1 /* Default@2x.png in Resources */,
+				22A510FC169B3142003555B1 /* phono-slide-icon114.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
