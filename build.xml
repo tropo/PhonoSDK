@@ -37,7 +37,7 @@
     <antcall target="build-phonegap-ios" />
     <antcall target="build-native-ios" />
     <antcall target="build-phonegap-android" />
-    <!--antcall target="build-native-android" /-->
+    <antcall target="build-native-android" />
   </target>
 
   <!-- Modules -->
