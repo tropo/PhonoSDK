@@ -72,6 +72,9 @@
     <copy todir="../../target/sdk/plugins/native-ios" overwrite="true">
       <fileset dir="target"/>
     </copy>
+    <copy todir="../../target/sdk/samples/mobile/VisIVR" overwrite="true">
+      <fileset dir="VisIVR"/>
+    </copy>
   </target>
  
   <target name="clean" depends="clean-PhonoNative">

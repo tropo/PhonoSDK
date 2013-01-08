@@ -106,6 +106,14 @@
       <ant target="debug" dir="samples/VisIVRA" inheritAll="false" useNativeBaseDir="true"/>
   </target>
   <target name="build" depends="buildlib , build-sample">
+     <copy todir="../../target/sdk/samples/mobile" overwrite="true">
+      <fileset dir="samples">
+      </fileset>
+     </copy>
+     <copy todir="../../target/sdk/plugins/native-android" overwrite="true">
+      <fileset dir="samples/VisIVRA/libs">
+      </fileset>
+     </copy>
         <echo> Built. </echo>
   </target>
 
