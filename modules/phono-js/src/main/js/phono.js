@@ -89,9 +89,10 @@
          }
       }
       else {
-         this.handleConnect();  
+          new PluginManager(this, this.config, function(plugins) {
+              this.handleConnect();
+          }).init();
       }
-
    };
 
    Phono.prototype.disconnect = function() {
@@ -122,34 +123,38 @@
        var phono = this;
        phono.sessionId = Strophe.getBareJidFromJid(this.connection.jid);
 
-       var apiKeyIQ = $iq(
-           {type:"set"})
-           .c("apikey", {xmlns:"http://phono.com/apikey"})
-           .t(phono.config.apiKey).up()
-           .c("caps", {xmlns:"http://phono.com/caps", ver:Phono.version});
-
-       // Loop over all plugins adding any caps that we have
-       for(pluginName in Phono.plugins) {
-           if (phono[pluginName].getCaps) {
-               apiKeyIQ = phono[pluginName].getCaps(apiKeyIQ.c(pluginName));
-               apiKeyIQ.up();
+       if (!this.config.connection) {
+           var apiKeyIQ = $iq(
+               {type:"set"})
+               .c("apikey", {xmlns:"http://phono.com/apikey"})
+               .t(phono.config.apiKey).up()
+               .c("caps", {xmlns:"http://phono.com/caps", ver:Phono.version});
+           
+           // Loop over all plugins adding any caps that we have
+           for(pluginName in Phono.plugins) {
+               if (phono[pluginName] && phono[pluginName].getCaps) {
+                   apiKeyIQ = phono[pluginName].getCaps(apiKeyIQ.c(pluginName));
+                   apiKeyIQ.up();
+               }
            }
-       }
-       apiKeyIQ = apiKeyIQ.c('browser',{version:navigator.appVersion, agent:navigator.userAgent}).up();
-       
-       phono.connection.sendIQ(apiKeyIQ, 
-                               phono.handleKeySuccess,
-                               function() {
-                                   Phono.events.trigger(phono, "error", {
-                                       reason: "API key rejected"
+           apiKeyIQ = apiKeyIQ.c('browser',{version:navigator.appVersion, agent:navigator.userAgent}).up();
+           
+           phono.connection.sendIQ(apiKeyIQ, 
+                                   phono.handleKeySuccess,
+                                   function() {
+                                       Phono.events.trigger(phono, "error", {
+                                           reason: "API key rejected"
+                                       });
                                    });
-                               });
-       if(phono.config.provisioningUrl) {
-           phono.connection.send(
-               $iq({type:"set"})
-                   .c("provisioning", {xmlns:"http://phono.com/provisioning"})
-                   .t(phono.config.provisioningUrl)
-           );
+           if(phono.config.provisioningUrl) {
+               phono.connection.send(
+                   $iq({type:"set"})
+                       .c("provisioning", {xmlns:"http://phono.com/provisioning"})
+                       .t(phono.config.provisioningUrl)
+               );
+           }
+       } else {
+           Phono.events.trigger(this, "ready");
        }
    };
 

@@ -20,14 +20,14 @@ $(document).ready(function() {
     */ 
 
     var phonos={}, calls={}, chats={};
-    
+
     function urlParam(name){
 	var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
 	if (!results) { return undefined; }
 	return decodeURIComponent(results[1]) || undefined;
     }
 
-    function createNewPhono(){
+    function createNewPhono(connection){
 	//Clone a phono div
 	var phonoCtr = ($(".phono").size() + 1) - 1;
 	var newPhonoID = "Phono" + phonoCtr;
@@ -52,7 +52,6 @@ $(document).ready(function() {
         if (urlParam("dial") != undefined) dialString = urlParam("dial");
         if (urlParam("chat") != undefined) chatString = urlParam("chat");
         if (urlParam("gateway") != undefined) gw = urlParam("gateway");
-
 
         console.log("audioType = " + audioType);
         console.log("dialString = " + dialString);
@@ -93,13 +92,14 @@ $(document).ready(function() {
             audio = "jsep";
             video = true;
         }
-
-	phonos[newPhonoID] = $.phono({
+        
+        phonos[newPhonoID] = $.phono({
 	    apiKey: "C17D167F-09C6-4E4C-A3DD-2025D48BA243",
             connectionUrl:connectionUrl,
             provisioningUrl:provisioningUrl,
             gateway:gw,
-
+            connection: connection,
+            
             onReady: function(event) {
                 var baseUrl = window.location.href.substring(0, window.location.href.indexOf('?'));
                 newPhonoDiv.find(".sessionId").html("<a class='sessionId' target='_blank' href='" + 
@@ -109,20 +109,20 @@ $(document).ready(function() {
                                                     + "&chat=" + this.sessionId + "'>" 
                                                     + this.sessionId + "</a>");
                 newPhonoDiv.find(".phoneControl").show();
-
+                
                 newPhonoDiv.find(".audioType").text(this.audio.type);
                 if (this.audio.type == "flash" && gw == "gw-v4.d.phono.com") {
                     newPhonoDiv.find(".audioType").text(bridged?"flash (new - bridged)":"flash (new)");
                 } else if (this.audio.type == "flash") {
                     newPhonoDiv.find(".audioType").text("flash (old)");
                 }
-
+                
                 if (this.audio.audioInDevices){
                     var inList = this.audio.audioInDevices();
                     //var inList = ["A","B","C"];
                     console.log("devices are :"+inList);
                     var output = [];
-
+                    
                     for (l=0;l<inList.length;l++){
                         output.push('<option value="'+ inList[l] +'">'+ inList[l] +'</option>');
                     }
@@ -131,10 +131,10 @@ $(document).ready(function() {
                 console.log("["+newPhonoID+"] Phono loaded"); 
                 
                 if( ! this.audio.permission() ){
-                   this.audio.showPermissionBox();
+                    this.audio.showPermissionBox();
                 }
-
-
+                
+                
             },
             onUnready: function(event) {
                 newPhonoDiv.find(".sessionId").text("disconnected");
@@ -225,7 +225,7 @@ $(document).ready(function() {
 	    }
         });
     }
-    
+        
     //Creates a new call
     function createNewCall(phonoID, to){
 	//clone a call box
@@ -577,6 +577,18 @@ $(document).ready(function() {
 	    .prependTo("body");
     }
 
-    createNewPhono();
+    if (urlParam("connectionUrl") != undefined && urlParam("jid") != undefined && urlParam("password") != undefined) {
+        connection = new Strophe.Connection(urlParam("connectionUrl"));
+        connection.connect(urlParam("jid") + "/phono",
+                           urlParam("password"),
+                           function(status) {
+                               if (status == Strophe.Status.CONNECTED) {
+                                   connection.send($pres().tree());
+                                   createNewPhono(connection);
+                               };
+                           });
+    } else {
+        createNewPhono(null);
+    }
 });
 

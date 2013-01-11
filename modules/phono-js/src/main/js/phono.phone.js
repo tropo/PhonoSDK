@@ -1,8 +1,9 @@
 ;(function() {
 
-   Strophe.addNamespace('JINGLE', "urn:xmpp:jingle:1");
-   Strophe.addNamespace('JINGLE_SESSION_INFO',"urn:xmpp:jingle:apps:rtp:1:info");
-   Strophe.addNamespace('JINGLE_DTMF',"urn:xmpp:jingle:dtmf:0");
+   var NS = {};
+   NS.JINGLE = "urn:xmpp:jingle:1";
+   NS.JINGLE_SESSION_INFO = "urn:xmpp:jingle:apps:rtp:1:info";
+   NS.JINGLE_DTMF = "urn:xmpp:jingle:dtmf:0";
 
    var CallState = {
        CONNECTED: 0,
@@ -119,7 +120,7 @@
       var initiateIq = $iq({type:"set", to:call.remoteJid});
       
       var initiate = initiateIq.c('jingle', {
-         xmlns: Strophe.NS.JINGLE,
+         xmlns: NS.JINGLE,
          action: "session-initiate",
          initiator: call.initiator,
          sid: call.id
@@ -132,7 +133,7 @@
        var updateIq = $iq({type:"set", to:call.remoteJid});
        
        var update = updateIq.c('jingle', {
-           xmlns: Strophe.NS.JINGLE,
+           xmlns: NS.JINGLE,
            action: "transport-accept",
            initiator: call.initiator,
            sid: call.id
@@ -194,12 +195,12 @@
          type: "set", 
          to: call.remoteJid})
          .c('jingle', {
-            xmlns: Strophe.NS.JINGLE,
+            xmlns: NS.JINGLE,
             action: "session-info",
             initiator: call.initiator,
             sid: call.id})
          .c('ringing', {
-            xmlns:Strophe.NS.JINGLE_SESSION_INFO}
+            xmlns:NS.JINGLE_SESSION_INFO}
       );
          
       this.connection.sendIQ(jingleIq, function (iq) {
@@ -219,7 +220,7 @@
        var acceptIq = $iq({type:"set", to:call.remoteJid});
       
        var accept = acceptIq.c('jingle', {
-           xmlns: Strophe.NS.JINGLE,
+           xmlns: NS.JINGLE,
            action: "session-accept",
            initiator: call.initiator,
            sid: call.id
@@ -230,7 +231,7 @@
        var updateIq = $iq({type:"set", to:call.remoteJid});
       
        var update = updateIq.c('jingle', {
-           xmlns: Strophe.NS.JINGLE,
+           xmlns: NS.JINGLE,
            action: "transport-replace",
            initiator: call.initiator,
            sid: call.id
@@ -328,7 +329,7 @@
          type:"set", 
          to:call.remoteJid})
          .c('jingle', {
-            xmlns: Strophe.NS.JINGLE,
+            xmlns: NS.JINGLE,
             action: "session-terminate",
             initiator: call.initiator,
             sid: call.id}
@@ -358,12 +359,12 @@
               type: "set", 
               to: this.remoteJid})
               .c('jingle', {
-                  xmlns: Strophe.NS.JINGLE,
+                  xmlns: NS.JINGLE,
                   action: "session-info",
                   initiator: this.initiator,
                   sid: this.id})
               .c('dtmf', {
-                  xmlns: Strophe.NS.JINGLE_DTMF,
+                  xmlns: NS.JINGLE_DTMF,
                   code: value,
                   duration: duration,
                   volume: "42"});
@@ -610,7 +611,7 @@
       // Register Strophe handler for JINGLE messages
       this.connection.addHandler(
          this.doJingle.bind(this), 
-         Strophe.NS.JINGLE, "iq", "set"
+         NS.JINGLE, "iq", "set"
       );
       
       callback(this);
