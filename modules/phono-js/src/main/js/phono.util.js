@@ -237,16 +237,18 @@
     loggyFunction: function(objName, obj, funcName) {
         var original = obj[funcName];
         obj[funcName] = function() {
-
-            // Convert arguments to a real array
-            var sep = "";
-            var args = "";
-            for (var i = 0; i < arguments.length; i++) {
-                args+= (sep + arguments[i]);
-                sep = ",";
+            try { 
+                // Convert arguments to a real array
+                var sep = "";
+                var args = "";
+                for (var i = 0; i < arguments.length; i++) {
+                    args+= (sep + arguments[i]);
+                    sep = ",";
+                }
+                Phono.log.debug("[INVOKE] " + objName + "." + funcName + "(" + args  + ")");
+            } catch (e) {
+                Phono.log.debug("[INVOKE] " + objName + "." + funcName + "(...)");
             }
-            
-            Phono.log.debug("[INVOKE] " + objName + "." + funcName + "(" + args  + ")");
             return original.apply(obj, arguments);
         }
     },
