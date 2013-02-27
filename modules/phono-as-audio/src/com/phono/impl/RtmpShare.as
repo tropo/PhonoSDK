@@ -47,11 +47,12 @@ package com.phono.impl
 	private var _mic:Microphone;
 	private var _active:Boolean = false;		
 	private var _tail:int = 0;
-        private var _release:Function;
+        private var _release:Function; 
+        private var _reliable:Boolean = false;
 	
 	private var _soundTimer:Timer = new Timer(ECHO_TICKER_MS, 0);
 	
-	public function RtmpShare(hasEC:Boolean, queue:Array, nc:NetConnection, streamName:String, codec:Codec, url:String, mic:Microphone, suppress:Boolean, direct:Boolean, release:Function)
+	public function RtmpShare(hasEC:Boolean, queue:Array, nc:NetConnection, streamName:String, codec:Codec, url:String, mic:Microphone, suppress:Boolean, direct:Boolean, reliable:Boolean, release:Function)
 	{
             _release = release;
             _mic = mic;     
@@ -61,6 +62,7 @@ package com.phono.impl
 	    _tones = new Tones();
 	    _codec = codec;
             _suppress = suppress;
+            _reliable = reliable;
             if (_mic) {
 	        _mic.setSilenceLevel(0,2000);
 	        _mic.gain = 50;
@@ -90,6 +92,7 @@ package com.phono.impl
                     _mic.framesPerPacket = 1;
                     if (_direct) _tx = new NetStream(_nc, NetStream.DIRECT_CONNECTIONS);
                     else _tx = new NetStream(_nc);	
+                    _tx.audioReliable = _reliable;
 		    //_tx.bufferTime = 0;
 		    _tx.client = this;
 		    _tx.attachAudio(_mic);

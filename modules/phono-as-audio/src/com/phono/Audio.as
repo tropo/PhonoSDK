@@ -159,7 +159,7 @@ package com.phono
 	    return player;
 	}
 	
-	public function share(url:String, autoStart:Boolean, codecId:String="97", codecName:String="SPEEX", codecRate:String="16000", suppress:Boolean=true, peerID:String="", video:Boolean=false):Share
+	public function share(url:String, autoStart:Boolean, codecId:String="97", codecName:String="SPEEX", codecRate:String="16000", suppress:Boolean=true, peerID:String="", video:Boolean=false, reliable:Boolean=false):Share
 	{
 	    // Force an open request for microphone permisson if we don't already have it - 
 	    // Flash will automatically open the box, so we need to be ready
@@ -192,7 +192,7 @@ package com.phono
 		}
 		
 		var queue:Array = _waitQs[rtmpUri]
-		var share:Share = new RtmpShare(_hasEC, queue, nc, streamName, codec, url, _mic, suppress, direct, function():void {
+		var share:Share = new RtmpShare(_hasEC, queue, nc, streamName, codec, url, _mic, suppress, direct, reliable, function():void {
                     if (!direct) {
                         releaseNetConnection(rtmpUri);
                     }

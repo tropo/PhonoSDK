@@ -7,6 +7,7 @@ function FlashAudio(phono, config, callback) {
         swf: "//" + MD5.hexdigest(window.location.host+phono.config.apiKey) + ".u.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.swf",
         cirrus: "rtmfp://phono-fms1-ext.voxeolabs.net/phono",
         bridged: false,
+        reliable: false,
         media: {audio:true,video:true},
         watchdog: 25000
     }, config);
@@ -156,7 +157,7 @@ FlashAudio.prototype.share = function(transport, autoPlay, codec) {
         Phono.log.info("Direct media share with peer " + transport.peerID);
     }
     var isSecure = false;
-    var share = this.$flash.share(url, autoPlay, codec.id, codec.name, codec.rate, true, peerID, this.config.video);
+    var share = this.$flash.share(url, autoPlay, codec.id, codec.name, codec.rate, true, peerID, this.config.video, this.config.reliable);
     if (url.indexOf("rtmfp://") == 0) isSecure = true;
 
     var s = {
