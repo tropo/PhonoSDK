@@ -125,19 +125,25 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
             return null;
         },
         mute: function(value) {
+            var tracks;
+            if (webkitMediaStream.prototype.getAudioTracks) {
+                tracks = JSEPAudio.localStream.getAudioTracks();
+            } else {
+                tracks = JSEPAudio.localStream.audioTracks
+            }
             if(arguments.length === 0) {
                 var muted = true;
-                Phono.util.each(JSEPAudio.localStream.audioTracks, function() {
+                Phono.util.each(tracks, function() {
                     if (this.enabled == true) muted = false;
                 });
    		return muted;
    	    }
             if (value == true) {
-                Phono.util.each(JSEPAudio.localStream.audioTracks, function() {
+                Phono.util.each(tracks, function() {
                     this.enabled = false;
                 });
             } else {
-                Phono.util.each(JSEPAudio.localStream.audioTracks, function() {
+                Phono.util.each(tracks, function() {
                     this.enabled = true;
                 });
             }
