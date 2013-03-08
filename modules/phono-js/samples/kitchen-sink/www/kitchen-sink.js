@@ -516,11 +516,19 @@ $(document).ready(function() {
     $('.mute').live('click', function() {
 	var thisCall = $(this).closest(".callHldr").attr("id");
 	calls[thisCall].mute(true);
+        if (calls[thisCall].mute()) {
+            $('.mute').attr("disabled", "disabled");
+            $('.unMute').removeAttr("disabled");
+        }
     });
     
     $('.unMute').live('click', function() {
 	var thisCall = $(this).closest(".callHldr").attr("id");
 	calls[thisCall].mute(false);
+        if (!calls[thisCall].mute()) {
+            $('.unMute').attr("disabled", "disabled");
+            $('.mute').removeAttr("disabled");
+        }
     });
     
     $('.digit').live('click', function() {
