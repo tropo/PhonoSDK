@@ -76,13 +76,13 @@ $(document).ready(function() {
         }
 
         if (audioType == "panda") {
-            gw = "gw-v4.d.phono.com";
+            gw = "gw-v6.d.phono.com";
             audio = "flash";
             bridged = false;
         }
 
         if (audioType == "pandabridged") {
-            gw = "gw-v4.d.phono.com";
+            gw = "gw-v6.d.phono.com";
             audio = "flash";
             bridged = true;
         }
@@ -111,7 +111,7 @@ $(document).ready(function() {
                 newPhonoDiv.find(".phoneControl").show();
                 
                 newPhonoDiv.find(".audioType").text(this.audio.type);
-                if (this.audio.type == "flash" && gw == "gw-v4.d.phono.com") {
+                if (this.audio.type == "flash" && gw == "gw-v6.d.phono.com") {
                     newPhonoDiv.find(".audioType").text(bridged?"flash (new - bridged)":"flash (new)");
                 } else if (this.audio.type == "flash") {
                     newPhonoDiv.find(".audioType").text("flash (old)");
