@@ -2,7 +2,8 @@ function JSEPAudio(phono, config, callback) {
     this.type = "jsep";
 
     Phono.log.info("Initialize JSEP");
-    if (webkitAudioContext){
+    if (typeof(webkitAudioContext) !== 'undefined'){
+        console.log("Have webkitAudio def");
         JSEPAudio.webAudioContext = new webkitAudioContext();
     } 
 
