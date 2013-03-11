@@ -42,6 +42,7 @@ package com.phono.impl
 	private var _gain:Number;
 	private var _mute:Boolean = false;
 	private var _suppress:Boolean = false;
+        private var _hasEC:Boolean = false;
         private var _direct:Boolean = false;
 	private var _queue:Array;
 	private var _mic:Microphone;
@@ -61,7 +62,7 @@ package com.phono.impl
 	    _url = url;
 	    _tones = new Tones();
 	    _codec = codec;
-            _suppress = suppress;
+            _hasEC = hasEC;
             _reliable = reliable;
             if (_mic) {
 	        _mic.setSilenceLevel(0,2000);
@@ -71,8 +72,8 @@ package com.phono.impl
 	    _gain = _mic.gain;
 	    _queue = queue;
             _direct = direct;
-            // Disable suppression if we have a working EC, even if they have asked for it
-            if (hasEC) _suppress = false;
+            // Set the echo suppression state
+            this.suppress = suppress;
             
             if (_mic) {
 	        _mic.codec = SoundCodec.SPEEX;				
@@ -99,7 +100,7 @@ package com.phono.impl
 		    trace("publish("+_streamName+")");
 		    _tx.publish(_streamName);
 		    
-		    if (_suppress) {						
+		    if (_suppress && !_hasEC) {						
 			_soundTimer.start();
 		    }
 		    _active = true;
@@ -169,10 +170,10 @@ package com.phono.impl
 	    trace("mute: " + value);
 	    _mute = value;
 	    if (_mute) {
-		if (_suppress && _active) _soundTimer.stop();
+		if (_suppress && !_hasEC && _active) _soundTimer.stop();
                 if (_mic) _mic.gain = 0;
 	    } else {
-		if (_suppress && _active) _soundTimer.start();
+		if (_suppress && !_hasEC && _active) _soundTimer.start();
 		if (_mic) _mic.gain = _gain;
 	    }
 	}
@@ -186,10 +187,25 @@ package com.phono.impl
 	{
 	    trace("suppress: " + value);
 	    _suppress = value;
-	    if (_suppress) {
-		if (!_mute && _active) _soundTimer.start();
-	    }
-	    else if (_active) _soundTimer.stop();
+
+            if (_hasEC) {
+                var enhancedOptions:MicrophoneEnhancedOptions = new MicrophoneEnhancedOptions();
+                enhancedOptions.autoGain = false;
+                if (_suppress) {
+                    // We need to enable the echo canceller
+                    enhancedOptions.mode = MicrophoneEnhancedMode.FULL_DUPLEX;
+                    _mic.enhancedOptions = enhancedOptions;
+                } else {
+                    // We need to disable the echo canceller
+                    enhancedOptions.mode = MicrophoneEnhancedMode.OFF;
+                    _mic.enhancedOptions = enhancedOptions;
+                }
+            } else {
+	        if (_suppress) {
+		    if (!_mute && _active) _soundTimer.start();
+	        }
+	        else if (_active) _soundTimer.stop();
+            }
 	}
 	
 	public function get suppress():Boolean
