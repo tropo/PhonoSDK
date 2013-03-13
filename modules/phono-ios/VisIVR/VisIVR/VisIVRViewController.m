@@ -48,7 +48,7 @@ NSString *_empty = @"<html>\
     if (speakerSw != nil) {
         [phono setUseSpeaker:[speakerSw isOn]];
     }
-    NSDictionary *cprefs = [phono guessCodecPrefs];
+    NSDictionary *cprefs = [phono hiBWPrefs];
     if (cprefs != nil) {
         [phono setAudio:cprefs]; // or make up your own.
     }
@@ -119,7 +119,7 @@ NSString *_empty = @"<html>\
     NSString *dev = [[UIDevice currentDevice] uniqueIdentifier] ; // deprecated - do _not_ use in appstore app
 
     phono = [[PhonoNative alloc] initWithPhone:phone ];
-    [phono setGateway:@"phono-trunk-ext.qa.voxeolabs.net"];
+    //[phono setGateway:@"phono-trunk-ext.qa.voxeolabs.net"];
     phono.messaging.onMessage = ^(PhonoMessage *message){
         [self gotMessage:message];
     };
