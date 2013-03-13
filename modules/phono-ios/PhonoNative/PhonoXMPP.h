@@ -10,11 +10,12 @@
 @class UIImage;
 #import "XMPPFramework.h"
 #import "XMPPReconnect.h"
+#import "XMPPSRVResolver.h"
 #import "XMPPJingle.h"
 #import "XMPPAutoPing.h"
 #import "PhonoNative.h"
 
-@interface PhonoXMPP : NSObject <XMPPStreamDelegate , XMPPJingleDelegate>
+@interface PhonoXMPP : NSObject <XMPPStreamDelegate , XMPPJingleDelegate, XMPPSRVResolverDelegate>
 {
     XMPPStream *xmppStream;
 	XMPPReconnect *xmppReconnect;

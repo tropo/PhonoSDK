@@ -87,13 +87,8 @@
     //[xmppStream setHostName:@"ec2-50-19-77-101.compute-1.amazonaws.com"];
     //[xmppStream setHostName:@"app-phono-com-1412939140.us-east-1.elb.amazonaws.com"]; http://haproxy1-ext.voxeolabs.net/http-bind
     //[xmppStream setHostName:@"app.phono.com"];
-    //[xmppStream setHostName:@"phono-srtp-ext.qa.voxeolabs.net"];
-    NSLog(@"Connecting to %@",gateway);
-
     [xmppStream setHostName:gateway];
-    [xmppStream setHostPort:5222];	
-    
-	
+ 	
     
 	// You may need to alter these settings depending on the server you're connecting to
 	allowSelfSignedCertificates = NO;
@@ -147,12 +142,15 @@
 	}
     
 	[xmppStream setMyJID:[XMPPJID jidWithString:myJID]];
-	NSError *error = nil;
-	if (![xmppStream connect:&error]){        
-		NSLog(@"Error connecting: %@", error);
-        
-		return NO;
-	}
+    NSString *q = [XMPPSRVResolver srvNameFromXMPPDomain:[xmppStream hostName]];
+    
+    NSLog(@"Sending SRV query for %@",q);
+    
+    
+    XMPPSRVResolver * srvres = [[XMPPSRVResolver alloc] initWithdDelegate:self delegateQueue:dispatch_get_main_queue() resolverQueue:NULL];
+    [srvres startWithSRVName:q timeout:30.0];
+
+
     
 	return YES;
 }
@@ -624,4 +622,28 @@ didReceiveTerminate:(NSString *)sid reason:(NSString*)reason{
     }
     isXmppConnected = NO;
 }
+
+- (void)srvResolver:(XMPPSRVResolver *)sender didResolveRecords:(NSArray *)records{
+    XMPPSRVRecord *rec = [records objectAtIndex:0];
+    NSLog(@"Got SRV answer - first reply was %@ %d",[rec target], [rec port]);
+
+    [xmppStream setHostName:[rec target]];
+    [xmppStream setHostPort:[rec port]];
+    NSError *error = nil;
+
+	if (![xmppStream connect:&error]){
+		NSLog(@"Error connecting: %@", error);
+    }
+}
+- (void)srvResolver:(XMPPSRVResolver *)sender didNotResolveDueToError:(NSError *)error{
+    NSLog(@"Got SRV fail - using %@ %d",[xmppStream hostName], 5222);
+    [xmppStream setHostPort:5222];
+    NSError *lerror = nil;
+
+    if (![xmppStream connect:&error]){
+		NSLog(@"Error connecting: %@", lerror);
+    }
+}
+
+
 @end
