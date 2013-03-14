@@ -1,5 +1,5 @@
 ;function Phono(config) {
-
+   var Strophe = PhonoStrophe;
    // Define defualt config and merge from constructor
    this.config = Phono.util.extend({
       gateway: "gw-v6.d.phono.com",
@@ -27,8 +27,17 @@
    this.sessionId = null;
    Phono.log.debug("ConnectionUrl: " + this.config.connectionUrl);
 
-   // Existing connection?
-   this.connection = this.config.connection || new Strophe.Connection(this.config.connectionUrl);
+   // Existing connection? do some voodoo to make sure we use their Strophe not PhonoStrophe
+   if (this.config.connection != null) {
+        Strophe = window.Strophe;
+        Strophe.build = $build;
+        Strophe.msg = $msg;
+        Strophe.iq = $iq;
+        Strophe.pres = $pres;
+        this.connection = this.config.connection;
+   } else {
+        this.connection = new Strophe.Connection(this.config.connectionUrl);
+   } 
 
    if(navigator.appName.indexOf('Internet Explorer')>0){
     xmlSerializer = {};
@@ -104,16 +113,16 @@
    };
 
    Phono.prototype.handleStropheStatusChange = function(status) {
-      if (status === Strophe.Status.CONNECTED) {
+      if (status === PhonoStrophe.Status.CONNECTED) {
           new PluginManager(this, this.config, function(plugins) {
               this.handleConnect();
           }).init();
-      } else if (status === Strophe.Status.DISCONNECTED) {
+      } else if (status === PhonoStrophe.Status.DISCONNECTED) {
           this.handleDisconnect();
-      } else if (status === Strophe.Status.ERROR 
-                 || status === Strophe.Status.CONNFAIL 
-                 || status === Strophe.Status.CONNFAIL 
-                 || status === Strophe.Status.AUTHFAIL) {
+      } else if (status === PhonoStrophe.Status.ERROR
+                 || status === PhonoStrophe.Status.CONNFAIL
+                 || status === PhonoStrophe.Status.CONNFAIL
+                 || status === PhonoStrophe.Status.AUTHFAIL) {
           this.handleError();
       }
    };
@@ -121,10 +130,10 @@
    // Fires when the underlying Strophe Connection is estabilshed
    Phono.prototype.handleConnect = function() {
        var phono = this;
-       phono.sessionId = Strophe.getBareJidFromJid(this.connection.jid);
+       phono.sessionId = PhonoStrophe.getBareJidFromJid(this.connection.jid);
 
        if (!this.config.connection) {
-           var apiKeyIQ = $iq(
+           var apiKeyIQ = PhonoStrophe.iq(
                {type:"set"})
                .c("apikey", {xmlns:"http://phono.com/apikey"})
                .t(phono.config.apiKey).up()
@@ -148,7 +157,7 @@
                                    });
            if(phono.config.provisioningUrl) {
                phono.connection.send(
-                   $iq({type:"set"})
+                   Strophe.iq({type:"set"})
                        .c("provisioning", {xmlns:"http://phono.com/provisioning"})
                        .t(phono.config.provisioningUrl)
                );
@@ -163,6 +172,7 @@
    }
    // Fires when the underlying Strophe Connection errors out
    Phono.prototype.handleError = function() {
+       // add load balance retry code here ?
       Phono.events.trigger(this, "error", {
          reason: "Error connecting to XMPP server"
       });
@@ -188,8 +198,8 @@
 
    // ======================================================================
 
-   Strophe.log = function(level, msg) {
-       Phono.log.debug("[STROPHE] " + msg);
+   PhonoStrophe.log = function(level, msg) {
+       Phono.log.debug("[PHONOSTROPHE] " + msg);
    };
 
    // Register Loggign Callback

@@ -5,7 +5,7 @@
 */
 console.log("about to add loadbalancer");
 
-Strophe.addConnectionPlugin('loadbalance', {
+PhonoStrophe.addConnectionPlugin('loadbalance', {
     _srv: null,
     _conn: null,
     _offs: 0,
@@ -33,7 +33,7 @@ Strophe.addConnectionPlugin('loadbalance', {
         console.log("adding loadbalancer");
         this._conn = conn;
         var a="",b= function (){} ,c="";
-        var sr = new Strophe.Request(a,b,c,0);
+        var sr = new PhonoStrophe.Request(a,b,c,0);
         var srvreq = sr.xhr;
         var uri = document.createElement('a');
         uri.href = conn.service;

@@ -3,13 +3,13 @@
 ** flXHR.js should be loaded before this plugin if flXHR support is required.
 */
 
-Strophe.addConnectionPlugin('cors', {
+PhonoStrophe.addConnectionPlugin('cors', {
     init: function () {
         // replace Strophe.Request._newXHR with new CORS version
         if (window.XDomainRequest) {
             // We are in IE with CORS support
-            Strophe.debug("CORS with IE");
-            Strophe.Request.prototype._newXHR = function () {
+            PhonoStrophe.debug("CORS with IE");
+            PhonoStrophe.Request.prototype._newXHR = function () {
                 var stateChange = function(xhr, state) {
                     // Fudge the calling of onreadystatechange()
                     xhr.status = state;
@@ -48,16 +48,16 @@ Strophe.addConnectionPlugin('cors', {
             };
         } else if (new XMLHttpRequest().withCredentials !== undefined) {
             // We are in a sane browser with CROS support - no need to do anything
-            Strophe.debug("CORS with Firefox/Safari/Chome");
+            PhonoStrophe.debug("CORS with Firefox/Safari/Chome");
         } else if (flensed && flensed.flXHR) {
             // We don't have CORS support, so include flXHR
-            Strophe.debug("CORS not supported, using flXHR");
+            PhonoStrophe.debug("CORS not supported, using flXHR");
             var poolingSetting = true;
             if (navigator.userAgent.indexOf('MSIE') !=-1) {
                 // IE 7 has an issue with instance pooling and flash 10.1
                 poolingSetting = false;
             }
-            Strophe.Request.prototype._newXHR = function () {
+            PhonoStrophe.Request.prototype._newXHR = function () {
                 var xhr = new flensed.flXHR({
                     autoUpdatePlayer: true,
                     instancePooling: poolingSetting,
@@ -66,7 +66,7 @@ Strophe.addConnectionPlugin('cors', {
                 return xhr;
             };
         } else {
-            Strophe.error("No CORS and no flXHR. You may experience cross domain turbulence.");
+            PhonoStrophe.error("No CORS and no flXHR. You may experience cross domain turbulence.");
         }
     }
 });

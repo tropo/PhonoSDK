@@ -117,7 +117,7 @@
 
       if (call.state != CallState.INITIAL) return;
        
-      var initiateIq = $iq({type:"set", to:call.remoteJid});
+      var initiateIq = Strophe.iq({type:"set", to:call.remoteJid});
       
       var initiate = initiateIq.c('jingle', {
          xmlns: NS.JINGLE,
@@ -130,7 +130,7 @@
          initiate.c("custom-header", {name:this.name, data:this.value}).up();
       });
              
-       var updateIq = $iq({type:"set", to:call.remoteJid});
+       var updateIq = Strophe.iq({type:"set", to:call.remoteJid});
        
        var update = updateIq.c('jingle', {
            xmlns: NS.JINGLE,
@@ -191,7 +191,7 @@
 
       if (call.state != CallState.PROGRESS) return;
       
-      var jingleIq = $iq({
+      var jingleIq = Strophe.iq({
          type: "set", 
          to: call.remoteJid})
          .c('jingle', {
@@ -217,7 +217,7 @@
       if (call.state != CallState.RINGING 
       && call.state != CallState.PROGRESS) return;
 
-       var acceptIq = $iq({type:"set", to:call.remoteJid});
+       var acceptIq = Strophe.iq({type:"set", to:call.remoteJid});
       
        var accept = acceptIq.c('jingle', {
            xmlns: NS.JINGLE,
@@ -228,7 +228,7 @@
        
        
        
-       var updateIq = $iq({type:"set", to:call.remoteJid});
+       var updateIq = Strophe.iq({type:"set", to:call.remoteJid});
       
        var update = updateIq.c('jingle', {
            xmlns: NS.JINGLE,
@@ -325,7 +325,7 @@
        && call.state != CallState.RINGING 
        && call.state != CallState.PROGRESS) return;
       
-      var jingleIq = $iq({
+      var jingleIq = Strophe.iq({
          type:"set", 
          to:call.remoteJid})
          .c('jingle', {
@@ -355,7 +355,7 @@
           this.output.digit(value, duration, this._tones);
       } else {
           // Send as Jingle
-          var jingleIq = $iq({
+          var jingleIq = Strophe.iq({
               type: "set", 
               to: this.remoteJid})
               .c('jingle', {
@@ -746,7 +746,7 @@
 
       // Send Reply
       this.connection.send(
-         $iq({
+         Strophe.iq({
             type: "result", 
              id: $(iq).attr('id'),
              to:call.remoteJid

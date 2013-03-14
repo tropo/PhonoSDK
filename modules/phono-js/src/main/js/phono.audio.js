@@ -3,7 +3,6 @@
     //@Include=phono.java-audio.js
     //@Include=phono.phonegap-ios-audio.js
     //@Include=phono.phonegap-android-audio.js
-    //@Include=phono.webrtc-audio.js
     //@Include=phono.jsep-audio.js
 
     Phono.registerPlugin("audio", {
@@ -25,9 +24,6 @@
                 
             } else if (config.type === "flash") {
                 return Phono.util.loggify("FlashAudio", new FlashAudio(phono, config, callback));
-
-            } else if (config.type === "webrtc") {
-                return Phono.util.loggify("WebRTCAudio", new WebRTCAudio(phono, config, callback));
 
             } else if (config.type === "jsep") {
                 return Phono.util.loggify("JSEPAudio", new JSEPAudio(phono, config, callback));

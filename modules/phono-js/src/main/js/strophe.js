@@ -3534,11 +3534,12 @@ Strophe.Connection.prototype = {
 if (callback) {
     callback(Strophe, $build, $msg, $iq, $pres);
 }
-
+// notice that this exposes our strophe as PhonoStrophe, protecting the any
+// user supplied strophe for collisions. 
 })(function () {
-    window.Strophe = arguments[0];
-    window.$build = arguments[1];
-    window.$msg = arguments[2];
-    window.$iq = arguments[3];
-    window.$pres = arguments[4];
+  window.PhonoStrophe = arguments[0];
+  window.PhonoStrophe.build = arguments[1];
+  window.PhonoStrophe.msg = arguments[2];
+  window.PhonoStrophe.iq = arguments[3];
+  window.PhonoStrophe.pres = arguments[4];
 });
