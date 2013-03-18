@@ -1,5 +1,7 @@
+var Strophe = null;
+
 ;function Phono(config) {
-   var Strophe = PhonoStrophe;
+   Strophe = PhonoStrophe;
    // Define defualt config and merge from constructor
    this.config = Phono.util.extend({
       gateway: "gw-v6.d.phono.com",
@@ -25,6 +27,7 @@
    
    // Initialize Fields
    this.sessionId = null;
+   this.connTimer = null;
    Phono.log.debug("ConnectionUrl: " + this.config.connectionUrl);
 
    // Existing connection? do some voodoo to make sure we use their Strophe not PhonoStrophe
@@ -71,7 +74,7 @@
 
    
    // Global
-   Phono.version = "0.5";
+   Phono.version = "1.0";
    
    Phono.log = new PhonoLogger();
    
@@ -84,17 +87,24 @@
 
    // ======================================================================
 
-   Phono.prototype.connect = function() {
 
+   Phono.prototype.connect = function() {
+      var phono = this;
       // If this is our own internal connection
       if(!this.config.connection) {
          if(!this.connection.connected) {
-            this.connection.connect(
-               this.config.gateway, 
-               null, 
-               this.handleStropheStatusChange,
-               50
-            );
+            var connFunc = function () {
+                Phono.log.debug("Connecting....");
+                phono.connection.connect(
+                    phono.config.gateway, 
+                    null, 
+                    phono.handleStropheStatusChange,
+                    50
+                );
+            };
+            this.connTimer = setTimeout(connFunc, 60000);
+            connFunc();
+            // 10 second deadman handle timer.
          }
       }
       else {
@@ -113,16 +123,20 @@
    };
 
    Phono.prototype.handleStropheStatusChange = function(status) {
-      if (status === PhonoStrophe.Status.CONNECTED) {
+      if (status === Strophe.Status.CONNECTED) {
+          if (this.connTimer != null){ 
+            Phono.log.debug("Clear timeout");
+            clearTimeout(this.connTimer);
+          }
           new PluginManager(this, this.config, function(plugins) {
               this.handleConnect();
           }).init();
-      } else if (status === PhonoStrophe.Status.DISCONNECTED) {
+      } else if (status === Strophe.Status.DISCONNECTED) {
           this.handleDisconnect();
-      } else if (status === PhonoStrophe.Status.ERROR
-                 || status === PhonoStrophe.Status.CONNFAIL
-                 || status === PhonoStrophe.Status.CONNFAIL
-                 || status === PhonoStrophe.Status.AUTHFAIL) {
+      } else if (status === Strophe.Status.ERROR
+                 || status === Strophe.Status.CONNFAIL
+                 || status === Strophe.Status.CONNFAIL
+                 || status === Strophe.Status.AUTHFAIL) {
           this.handleError();
       }
    };
@@ -130,10 +144,10 @@
    // Fires when the underlying Strophe Connection is estabilshed
    Phono.prototype.handleConnect = function() {
        var phono = this;
-       phono.sessionId = PhonoStrophe.getBareJidFromJid(this.connection.jid);
+       phono.sessionId = Strophe.getBareJidFromJid(this.connection.jid);
 
        if (!this.config.connection) {
-           var apiKeyIQ = PhonoStrophe.iq(
+           var apiKeyIQ = Strophe.iq(
                {type:"set"})
                .c("apikey", {xmlns:"http://phono.com/apikey"})
                .t(phono.config.apiKey).up()
@@ -173,6 +187,8 @@
    // Fires when the underlying Strophe Connection errors out
    Phono.prototype.handleError = function() {
        // add load balance retry code here ?
+      Phono.log.debug("connection failed - logging in handleError");
+
       Phono.events.trigger(this, "error", {
          reason: "Error connecting to XMPP server"
       });

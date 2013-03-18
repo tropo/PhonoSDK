@@ -12,17 +12,23 @@ PhonoStrophe.addConnectionPlugin('loadbalance', {
     _path: "http-bind",
     _origT: "",
     _proto: "http:",
+    _oldstatus: -1,
     _rotate: function(){
         if (this._srv != null){
             var nexts = this._srv.servers[this._offs];
-            this._offs = this._offs++ % this._srv.servers.length;
-            console.log("loadbalancer rotating to " + nexts.target);
-            // if the target matches the original connectionURL then use the path from that
-            // otherwise just append /http-bind
-            if (this._origT == nexts.target){
-                this._conn.service = this._proto+"//"+nexts.target +":"+nexts.port+this._path;
+            this._offs++;
+            if (this._offs < this._srv.servers.length){
+                console.log("loadbalancer rotating to " + nexts.target);
+                // if the target matches the original connectionURL then use the path from that
+                // otherwise just append /http-bind
+                if (this._origT == nexts.target){
+                    this._conn.service = this._proto+"//"+nexts.target +":"+nexts.port+this._path;
+                } else {
+                    this._conn.service = this._proto+"//"+nexts.target +":"+nexts.port+"/http-bind";
+                }
             } else {
-                this._conn.service = this._proto+"//"+nexts.target +":"+nexts.port+"/http-bind";
+                console.log("loadbalancer ran out of options" );
+                this._conn.service= null;
             }
         } else {
             console.log("loadbalancer cant rotate _srv null" );
@@ -68,5 +74,12 @@ PhonoStrophe.addConnectionPlugin('loadbalance', {
             console.log("ignoring a loadbalance error "+e);
         }
 
+    },
+    statusChanged: function(status){
+        console.log("_status changed "+status+ " old status "+this._oldstatus);
+        if ((status == Strophe.Status.DISCONNECTED) && (this._oldstatus ==Strophe.Status.CONNECTING )){
+            this._rotate();
+        }
+        this._oldstatus = status;
     }
 });

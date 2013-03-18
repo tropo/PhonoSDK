@@ -2515,7 +2515,13 @@ Strophe.Connection.prototype = {
             // Fires the XHR request -- may be invoked immediately
             // or on a gradually expanding retry window for reconnects
             var sendFunc = function () {
-                req.xhr.send(req.data);
+                try {
+                    req.xhr.send(req.data);
+                } catch (e) {
+                    Strophe.error("send func caught an error in _requests[" + i +
+                          "], reqStatus: " + req.xhr.status);
+                    Strophe.error("exception was "+e);  
+                }
             };
 
             // Implement progressive backoff for reconnects --
@@ -2706,10 +2712,12 @@ Strophe.Connection.prototype = {
         this.rid = Math.floor(Math.random() * 4294967295);
 
         // tell the parent we disconnected
-        if (this.connected) {
+        // RESTORE this ?
+        //if (this.connected) {
+        
             this._changeConnectStatus(Strophe.Status.DISCONNECTED, null);
             this.connected = false;
-        }
+        //}
 
         // delete handlers
         this.handlers = [];
