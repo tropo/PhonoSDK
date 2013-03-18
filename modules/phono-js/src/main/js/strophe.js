@@ -2712,12 +2712,10 @@ Strophe.Connection.prototype = {
         this.rid = Math.floor(Math.random() * 4294967295);
 
         // tell the parent we disconnected
-        // RESTORE this ?
-        //if (this.connected) {
-        
+        if (this.connected) {
             this._changeConnectStatus(Strophe.Status.DISCONNECTED, null);
             this.connected = false;
-        //}
+        }
 
         // delete handlers
         this.handlers = [];
