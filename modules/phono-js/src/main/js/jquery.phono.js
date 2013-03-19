@@ -1,7 +1,13 @@
 //@Include=FABridge.js
 
 // FIXME: Needed by flXHR
-var flensed={base_path:"//s.phono.com/deps/flensed/1.0/"};
+var flensed;
+
+if (typeof phonoFlensedOverride != 'undefined') {
+    flensed = phonoFlensedOverride;
+} else {
+    flensed = {base_path:"//s.phono.com/deps/flensed/1.0/"};
+}
 
 (function($) {
 
