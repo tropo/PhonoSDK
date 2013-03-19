@@ -124,10 +124,14 @@
 
     //a=rtpmap:101 telephone-event/8000"
     _parseRtpmap = function(params) {
+        var bits = params[1].split("/");
         var codec = {
             id: params[0],
-            name: params[1].split("/")[0],
-            clockrate: params[1].split("/")[1]
+            name: bits[0],
+            clockrate: bits[1]
+        }
+        if (bits.length >2){
+            codec.channels = bits[2];
         }
         return codec;
     }
@@ -190,7 +194,11 @@
     }
 
     _buildCodec = function(codecObj) {
-        var sdp = "a=rtpmap:" + codecObj.id + " " + codecObj.name + "/" + codecObj.clockrate + "\r\n";
+        var sdp = "a=rtpmap:" + codecObj.id + " " + codecObj.name + "/" + codecObj.clockrate 
+        if (codecObj.channels){
+            sdp+="/"+codecObj.channels;
+        }
+        sdp += "\r\n";
         return sdp;
     }
 

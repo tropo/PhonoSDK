@@ -8,12 +8,19 @@ function JSEPAudio(phono, config, callback) {
     } 
 
     if (typeof webkitRTCPeerConnection== "function") {
-        JSEPAudio.GUM = function(p,s,f) {navigator.webkitGetUserMedia(p,s,f)};
-        JSEPAudio.mkPeerConnection = function (a,b) { return new webkitRTCPeerConnection(a,b);};
+        JSEPAudio.GUM = function(p,s,f) {
+            navigator.webkitGetUserMedia(p,s,f)
+        };
+        JSEPAudio.mkPeerConnection = function (a,b) {
+            return new webkitRTCPeerConnection(a,b);
+        };
     }
 
     this.config = Phono.util.extend({
-        media: {audio:true, video:false}
+        media: {
+            audio:true,
+            video:false
+        }
     }, config);
     
     var plugin = this;
@@ -22,7 +29,7 @@ function JSEPAudio(phono, config, callback) {
 
     // Create audio continer if user did not specify one
     if(!localContainerId) {
-	this.config.localContainerId = this.createContainer();
+        this.config.localContainerId = this.createContainer();
     }
 
     JSEPAudio.localVideo = document.getElementById(this.config.localContainerId);
@@ -41,19 +48,19 @@ JSEPAudio.prototype.getCaps = function(c) {
 JSEPAudio.stun = "STUN stun.l.google.com:19302";
 JSEPAudio.count = 0;
 JSEPAudio.toneMap = {
-                '0':[1336,941],
-                '1':[1209,697],
-                '2':[1336,697],
-                '3':[1477,696],
-                '4':[1209,770],
-                '5':[1336,770],
-                '6':[1477,770],
-                '7':[1209,852],
-                '8':[1336,852],
-                '9':[1447,852],
-                '*':[1209,941],
-                '#':[1477,941]
-            };
+    '0':[1336,941],
+    '1':[1209,697],
+    '2':[1336,697],
+    '3':[1477,696],
+    '4':[1209,770],
+    '5':[1336,770],
+    '6':[1477,770],
+    '7':[1209,852],
+    '8':[1336,852],
+    '9':[1447,852],
+    '*':[1209,941],
+    '#':[1477,941]
+};
 
 // JSEPAudio Functions
 //
@@ -87,12 +94,12 @@ JSEPAudio.prototype.play = function(transport, autoPlay) {
             audioPlayer = null;
         },
         volume: function(value) {
-   	    if(arguments.length === 0) {
-   		return transport.volume * 100;
-   	    }
-   	    else {
-   		transport.volume = (value / 100);
-   	    }
+            if(arguments.length === 0) {
+                return transport.volume * 100;
+            }
+            else {
+                transport.volume = (value / 100);
+            }
         }
     }
 };
@@ -137,8 +144,8 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
                 Phono.util.each(tracks, function() {
                     if (this.enabled == true) muted = false;
                 });
-   		return muted;
-   	    }
+                return muted;
+            }
             if (value == true) {
                 Phono.util.each(tracks, function() {
                     this.enabled = false;
@@ -153,10 +160,30 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
             // Echo canceller is on always
             return null;
         },
-        energy: function(){        
-            return {
-                mic: 0.0,
-                spk: 0.0
+        energy: function(){
+            if (JSEPAudio.analyser == undefined) {
+                return {
+                    mic: 0.0,
+                    spk: 0.0
+                }
+            } else {
+                var analyser = JSEPAudio.analyser;
+                var sz = analyser.frequencyBinCount;
+                var timeData = new Float32Array(sz);
+                analyser.getByteTimeDomainData(timeData);
+                var mean = 0;
+                for(var i = 0; i < sz; i++) {
+                    mean += timeData[i];
+                }
+                mean =  mean / (sz*256.0);
+                Phono.log.info("spk zpm  "+timeData[0]);
+
+                Phono.log.info("mean spk energy is  "+mean);
+
+                return {
+                    mic: 0.0,
+                    spk: mean
+                }
             }
         },
         secure: function() {
@@ -180,32 +207,35 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
                     note1.noteOn(0.0);
                     note2.noteOn(0.0);
                     window.setTimeout(
-                      function(){
-                        note1.noteOff(0.0);
-                        note2.noteOff(0.0);
+                        function(){
+                            note1.noteOff(0.0);
+                            note2.noteOff(0.0);
                         }, duration);
-               } 
-          }
-      }
-   };
+                }
+            }
+        }
+    };
 };   
 
 JSEPAudio.prototype.showPermissionBox = function(callback) {
     Phono.log.info("Requesting access to local media");
 
-    JSEPAudio.GUM({'audio':this.config.media['audio'], 'video':this.config.media['video']}, 
-                  function(stream) {
-                      JSEPAudio.localStream = stream;
-                      var url = webkitURL.createObjectURL(stream);
-                      JSEPAudio.localVideo.style.opacity = 1;
-                      JSEPAudio.localVideo.src = url;
-                      if (typeof callback == 'function') callback(true);
-                  },
-                  function(error) {
-                      Phono.log.info("Failed to get access to local media. Error code was " + error.code);
-                      alert("Failed to get access to local media. Error code was " + error.code + ".");   
-                      if (typeof callback == 'function') callback(false);
-                  });
+    JSEPAudio.GUM({
+        'audio':this.config.media['audio'],
+        'video':this.config.media['video']
+    },
+    function(stream) {
+        JSEPAudio.localStream = stream;
+        var url = webkitURL.createObjectURL(stream);
+        JSEPAudio.localVideo.style.opacity = 1;
+        JSEPAudio.localVideo.src = url;
+        if (typeof callback == 'function') callback(true);
+    },
+    function(error) {
+        Phono.log.info("Failed to get access to local media. Error code was " + error.code);
+        alert("Failed to get access to local media. Error code was " + error.code + ".");
+        if (typeof callback == 'function') callback(false);
+    });
 
 };
 
@@ -218,14 +248,23 @@ JSEPAudio.prototype.permission = function() {
 JSEPAudio.prototype.transport = function(config) {
     var pc;
     var inboundOffer;
-    var configuration = {iceServers:[ { url:"stun:stun.l.google.com:19302" } ]};
+    var configuration = {
+        iceServers:[ {
+            url:"stun:stun.l.google.com:19302"
+        } ]
+    };
     var constraints;
     var remoteContainerId;
     var complete = false;
     var audio = this;
     var candidateCount = 0;
 
-    constraints =  {'mandatory': {'OfferToReceiveAudio':this.config.media['audio'], 'OfferToReceiveVideo':this.config.media['video']}};
+    constraints =  {
+        'mandatory': {
+            'OfferToReceiveAudio':this.config.media['audio'],
+            'OfferToReceiveVideo':this.config.media['video']
+        }
+    };
 
     if(!config || !config.remoteContainerId) {
         if (this.config.remoteContainerId) {
@@ -237,7 +276,7 @@ JSEPAudio.prototype.transport = function(config) {
         remoteContainerId = config.remoteContainerId;
     }
 
-    var remoteVideo = document.getElementById(remoteContainerId);   
+    var remoteVideo = document.getElementById(remoteContainerId);
 
     return {
         name: "urn:xmpp:jingle:transports:ice-udp:1",
@@ -245,11 +284,11 @@ JSEPAudio.prototype.transport = function(config) {
             
             pc = JSEPAudio.mkPeerConnection(configuration,constraints);
             
-	    pc.onicecandidate = function(evt) {
+            pc.onicecandidate = function(evt) {
                 if (!complete) {
                     if ((evt.candidate == null) || 
                         (candidateCount >= 1 && !audio.config.media['video'] && direction == "answer")) {
-		        //Phono.log.info("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
+                        //Phono.log.info("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
                         complete = true;
                         var sdpObj = Phono.sdp.parseSDP(pc.localDescription.sdp);
                         //Phono.log.info("sdpObj = " + JSON.stringify(sdpObj));
@@ -257,29 +296,41 @@ JSEPAudio.prototype.transport = function(config) {
                         var codecId = 0;
                         if (sdpObj.contents[0].codecs[0].name == "telephone-event") codecId = 1;
                         var codec = 
-                            {
-                                id: sdpObj.contents[0].codecs[codecId].id,
-                                name: sdpObj.contents[0].codecs[codecId].name,
-                                rate: sdpObj.contents[0].codecs[codecId].clockrate
-                            };
-		        callback(codec);
+                        {
+                            id: sdpObj.contents[0].codecs[codecId].id,
+                            name: sdpObj.contents[0].codecs[codecId].name,
+                            rate: sdpObj.contents[0].codecs[codecId].clockrate
+                        };
+                        callback(codec);
                     } else {
-        	        //Phono.log.info("An Ice candidate "+JSON.stringify(evt.candidate));
+                        //Phono.log.info("An Ice candidate "+JSON.stringify(evt.candidate));
                         candidateCount += 1;
                     }
                 }
             }
             //pc.onconnecting = function(message) {Phono.log.info("onSessionConnecting.");};
-	    //pc.onopen = function(message) {Phono.log.info("onSessionOpened.");};
+            //pc.onopen = function(message) {Phono.log.info("onSessionOpened.");};
             pc.onaddstream = function (event) {
-                //Phono.log.info("onAddStream."); 
-                var url = webkitURL.createObjectURL(event.stream);
-                remoteVideo.style.opacity = 1;
-                remoteVideo.src = url;
+                Phono.log.info("onAddStream. "+JSON.stringify(event.stream));
+                var context = JSEPAudio.webAudioContext;
+                if ((context) && (typeof context.createMediaStreamSource == "function")) {
+                    var source = context.createMediaStreamSource(event.stream);
+                    var analyser =  context.createAnalyser();
+                    analyser.fftSize = 2048;
+                    source.connect(analyser);
+                    analyser.connect(context.destination);
+                    JSEPAudio.analyser = analyser;
+                    Phono.log.info("Added analyser for peer audio. ");
+                } else {
+                    var url = webkitURL.createObjectURL(event.stream);
+                    remoteVideo.style.opacity = 1;
+                    remoteVideo.src = url;
+                }
+                
             };
             //pc.onremovestream = function (event) {Phono.log.info("onRemoveStream."); };
-	    //pc.onicechange= function (event) {Phono.log.info("onIceChange: "+pc.iceState); };
-	    //pc.onnegotiationneeded = function (event) {Phono.log.info("onNegotiationNeeded."); };
+            //pc.onicechange= function (event) {Phono.log.info("onIceChange: "+pc.iceState); };
+            //pc.onnegotiationneeded = function (event) {Phono.log.info("onNegotiationNeeded."); };
             //pc.onstatechange = function (event) {Phono.log.info("onStateChange: "+pc.readyState); };
 
             Phono.log.debug("Adding localStream");
@@ -287,23 +338,26 @@ JSEPAudio.prototype.transport = function(config) {
             var cb2 = function() {
                 pc.addStream(JSEPAudio.localStream);
                 
-	        var cb = function(localDesc) {
+                var cb = function(localDesc) {
                     var sd = new RTCSessionDescription(localDesc);
-   		    pc.setLocalDescription(sd);
-		    var msgString = JSON.stringify(sd,null," ");
+                    pc.setLocalDescription(sd);
+                    var msgString = JSON.stringify(sd,null," ");
                     Phono.log.info('Set local description ' + msgString);
-                    //Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
-	        };
+                //Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
+                };
                 
                 if (direction == "answer") {
                     pc.setRemoteDescription(inboundOffer,
-                                            function(){Phono.log.debug("remoteDescription happy");
-				                       //Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
-                                                       pc.createAnswer(cb , null, constraints);
-			                              },
-			                    function(){Phono.log.error("remoteDescription error")});
+                        function(){
+                            Phono.log.debug("remoteDescription happy");
+                            //Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
+                            pc.createAnswer(cb , null, constraints);
+                        },
+                        function(){
+                            Phono.log.error("remoteDescription error")
+                        });
                 } else {
-		    pc.createOffer(cb , null, constraints);
+                    pc.createOffer(cb , null, constraints);
                 }
             }
             
@@ -319,29 +373,41 @@ JSEPAudio.prototype.transport = function(config) {
             var codecId = 0;
             if (sdpObj.contents[0].codecs[0].name == "telephone-event") codecId = 1;
             var codec = 
-                {
-                    id: sdpObj.contents[0].codecs[codecId].id,
-                    name: sdpObj.contents[0].codecs[codecId].name,
-                    rate: sdpObj.contents[0].codecs[codecId].clockrate
-                };
+            {
+                id: sdpObj.contents[0].codecs[codecId].id,
+                name: sdpObj.contents[0].codecs[codecId].name,
+                rate: sdpObj.contents[0].codecs[codecId].clockrate
+            };
 
             if (pc) {
                 // We are an answer to an outbound call
-                var sd = new RTCSessionDescription({'sdp':sdp, 'type':"answer"} );
-		Phono.log.info("Set remote description: "+JSON.stringify(sd,null," "));
-		pc.setRemoteDescription(sd,
-			                function(){Phono.log.debug("remoteDescription happy");
-				                   //Phono.log.debug("Pc now: "+JSON.stringify(pc,null," "));
-			                          },
-			                function(){Phono.log.error("remoteDescription sad")});
+                var sd = new RTCSessionDescription({
+                    'sdp':sdp,
+                    'type':"answer"
+                } );
+                Phono.log.info("Set remote description: "+JSON.stringify(sd,null," "));
+                pc.setRemoteDescription(sd,
+                    function(){
+                        Phono.log.debug("remoteDescription happy");
+                    //Phono.log.debug("Pc now: "+JSON.stringify(pc,null," "));
+                    },
+                    function(){
+                        Phono.log.error("remoteDescription sad")
+                    });
                 
             } else {
                 // We are an offer for an inbound call
-                var sd = new RTCSessionDescription({'sdp':sdp, 'type':"offer"} );
+                var sd = new RTCSessionDescription({
+                    'sdp':sdp,
+                    'type':"offer"
+                } );
                 Phono.log.info("Set remote description: "+JSON.stringify(sd,null," "));
                 inboundOffer = sd;
             }
-            return {codec:codec, input:remoteVideo};
+            return {
+                codec:codec,
+                input:remoteVideo
+            };
         },
         destroyTransport: function() {
             // Destroy any transport state we have created
@@ -371,9 +437,9 @@ JSEPAudio.prototype.audioInDevices = function(){
 // Creates a DIV to hold the video element if not specified by the user
 JSEPAudio.prototype.createContainer = function() {
     var webRTC = $("<video>")
-      	.attr("id","_phono-audio-webrtc" + (JSEPAudio.count++))
-        .attr("autoplay","autoplay")
-      	.appendTo("body");
+    .attr("id","_phono-audio-webrtc" + (JSEPAudio.count++))
+    .attr("autoplay","autoplay")
+    .appendTo("body");
 
     var containerId = $(webRTC).attr("id");       
     return containerId;
