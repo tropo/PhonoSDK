@@ -15,7 +15,7 @@ function JSEPAudio(phono, config, callback) {
             return new webkitRTCPeerConnection(a,b);
         };
     }
-
+    JSEPAudio.spk = 0.0;
     this.config = Phono.util.extend({
         media: {
             audio:true,
@@ -161,30 +161,29 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
             return null;
         },
         energy: function(){
-            if (JSEPAudio.analyser == undefined) {
-                return {
-                    mic: 0.0,
-                    spk: 0.0
-                }
-            } else {
-                var analyser = JSEPAudio.analyser;
-                var sz = analyser.frequencyBinCount;
-                var timeData = new Float32Array(sz);
-                analyser.getByteTimeDomainData(timeData);
-                var mean = 0;
-                for(var i = 0; i < sz; i++) {
-                    mean += timeData[i];
-                }
-                mean =  mean / (sz*256.0);
-                Phono.log.info("spk zpm  "+timeData[0]);
-
-                Phono.log.info("mean spk energy is  "+mean);
-
-                return {
-                    mic: 0.0,
-                    spk: mean
-                }
-            }
+            if ((JSEPAudio.pc) && (JSEPAudio.pc.getStats)) {
+                JSEPAudio.pc.getStats(function(stats){
+                    var sr = stats.result();
+                    for (var i=0;i< sr.length; i++){
+                        var obj = sr[i].remote;
+                        if (obj){
+                            var nspk = 0.0;
+                            if (obj.stat('audioOutputLevel')){
+                                nspk = obj.stat('audioOutputLevel');
+                            }
+                            if (nspk > 0.0){
+                                JSEPAudio.spk = Math.floor(Math.max((Math.LOG2E * Math.log(nspk)-4.0),0.0));
+                            }
+                            Phono.log.info("nspk " + nspk +" spk "+JSEPAudio.spk);
+                        }
+                    }
+                });
+            } 
+            return {
+                mic: 0.0,
+                spk: JSEPAudio.spk
+            };
+            
         },
         secure: function() {
             return true;
@@ -207,10 +206,10 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
                     note1.noteOn(0.0);
                     note2.noteOn(0.0);
                     window.setTimeout(
-                        function(){
-                            note1.noteOff(0.0);
-                            note2.noteOff(0.0);
-                        }, duration);
+                    function(){
+                        note1.noteOff(0.0);
+                        note2.noteOff(0.0);
+                    }, duration);
                 }
             }
         }
@@ -250,8 +249,8 @@ JSEPAudio.prototype.transport = function(config) {
     var inboundOffer;
     var configuration = {
         iceServers:[ {
-            url:"stun:stun.l.google.com:19302"
-        } ]
+                url:"stun:stun.l.google.com:19302"
+            } ]
     };
     var constraints;
     var remoteContainerId;
@@ -283,7 +282,7 @@ JSEPAudio.prototype.transport = function(config) {
         buildTransport: function(direction, j, callback, u, updateCallback) {
             
             pc = JSEPAudio.mkPeerConnection(configuration,constraints);
-            
+            JSEPAudio.pc = pc;
             pc.onicecandidate = function(evt) {
                 if (!complete) {
                     if ((evt.candidate == null) || 
@@ -296,7 +295,7 @@ JSEPAudio.prototype.transport = function(config) {
                         var codecId = 0;
                         if (sdpObj.contents[0].codecs[0].name == "telephone-event") codecId = 1;
                         var codec = 
-                        {
+                            {
                             id: sdpObj.contents[0].codecs[codecId].id,
                             name: sdpObj.contents[0].codecs[codecId].name,
                             rate: sdpObj.contents[0].codecs[codecId].clockrate
@@ -312,7 +311,7 @@ JSEPAudio.prototype.transport = function(config) {
             //pc.onopen = function(message) {Phono.log.info("onSessionOpened.");};
             pc.onaddstream = function (event) {
                 Phono.log.info("onAddStream. "+JSON.stringify(event.stream));
-                var context = JSEPAudio.webAudioContext;
+                /*var context = JSEPAudio.webAudioContext;
                 if ((context) && (typeof context.createMediaStreamSource == "function")) {
                     var source = context.createMediaStreamSource(event.stream);
                     var analyser =  context.createAnalyser();
@@ -321,12 +320,10 @@ JSEPAudio.prototype.transport = function(config) {
                     analyser.connect(context.destination);
                     JSEPAudio.analyser = analyser;
                     Phono.log.info("Added analyser for peer audio. ");
-                } else {
-                    var url = webkitURL.createObjectURL(event.stream);
-                    remoteVideo.style.opacity = 1;
-                    remoteVideo.src = url;
-                }
-                
+                } */
+                var url = webkitURL.createObjectURL(event.stream);
+                remoteVideo.style.opacity = 1;
+                remoteVideo.src = url;
             };
             //pc.onremovestream = function (event) {Phono.log.info("onRemoveStream."); };
             //pc.onicechange= function (event) {Phono.log.info("onIceChange: "+pc.iceState); };
@@ -343,19 +340,19 @@ JSEPAudio.prototype.transport = function(config) {
                     pc.setLocalDescription(sd);
                     var msgString = JSON.stringify(sd,null," ");
                     Phono.log.info('Set local description ' + msgString);
-                //Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
+                    //Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
                 };
                 
                 if (direction == "answer") {
                     pc.setRemoteDescription(inboundOffer,
-                        function(){
-                            Phono.log.debug("remoteDescription happy");
-                            //Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
-                            pc.createAnswer(cb , null, constraints);
-                        },
-                        function(){
-                            Phono.log.error("remoteDescription error")
-                        });
+                    function(){
+                        Phono.log.debug("remoteDescription happy");
+                        //Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
+                        pc.createAnswer(cb , null, constraints);
+                    },
+                    function(){
+                        Phono.log.error("remoteDescription error")
+                    });
                 } else {
                     pc.createOffer(cb , null, constraints);
                 }
@@ -373,7 +370,7 @@ JSEPAudio.prototype.transport = function(config) {
             var codecId = 0;
             if (sdpObj.contents[0].codecs[0].name == "telephone-event") codecId = 1;
             var codec = 
-            {
+                {
                 id: sdpObj.contents[0].codecs[codecId].id,
                 name: sdpObj.contents[0].codecs[codecId].name,
                 rate: sdpObj.contents[0].codecs[codecId].clockrate
@@ -387,13 +384,13 @@ JSEPAudio.prototype.transport = function(config) {
                 } );
                 Phono.log.info("Set remote description: "+JSON.stringify(sd,null," "));
                 pc.setRemoteDescription(sd,
-                    function(){
-                        Phono.log.debug("remoteDescription happy");
+                function(){
+                    Phono.log.debug("remoteDescription happy");
                     //Phono.log.debug("Pc now: "+JSON.stringify(pc,null," "));
-                    },
-                    function(){
-                        Phono.log.error("remoteDescription sad")
-                    });
+                },
+                function(){
+                    Phono.log.error("remoteDescription sad")
+                });
                 
             } else {
                 // We are an offer for an inbound call
