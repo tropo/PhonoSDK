@@ -274,6 +274,7 @@ $(document).ready(function() {
             	console.log("["+phonoDiv.attr('id')+"] ["+newCallID+"] Call hungup");
             }
         });
+        calls[newCallID].phonoID = phonoID;
     }
     
     //Routes a message to the appropriate chat or creates a new chat
@@ -412,6 +413,18 @@ $(document).ready(function() {
 	var thisPhono = $(this).closest(".phono");
 	var thisPhonoID = $(this).closest(".phono").attr("id");
 	thisPhono.slideUp();
+
+        // Hangup any call that is in progress
+        $.each(calls, function(key, value) {
+            if (value != null && value.phonoID == thisPhonoID) {
+                value.hangup();
+            }
+        });
+	
+	$("#"+thisCall).slideUp("fast", function(){
+	    $(this).remove();	
+	});
+
 	phonos[thisPhono.attr("id")] = null;
 	
 	thisPhono.find(".callHldr").each(function(){
