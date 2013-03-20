@@ -410,6 +410,7 @@ JSEPAudio.prototype.transport = function(config) {
             // Destroy any transport state we have created
             if (pc) {
                 pc.close();
+                remoteVideo.parentNode.removeChild(remoteVideo);
             }
 
             if (JSEPAudio.localStream) {
