@@ -1,10 +1,9 @@
 The Phono SDK provides an object-oriented JavaScript API for embedding
 two-way audio and chat onto any web page. The Phono SDK is a pure
 client-side solution and requires zero server-side logic on your part;
-all communication is handled transparently by the Voxeo Cloud. In the
-near future we will release a downloadable Phono Gateway that allows
-Phono to connect to any SIP Voice over IP infrastructure directly
-without the Voxeo cloud.
+all communication is handled transparently by the Voxeo Labs Cloud. 
+
+For private cloud deployments visit http://voxeolabs.com/about/contact/
 
 More information about Phono can be found at:
 
