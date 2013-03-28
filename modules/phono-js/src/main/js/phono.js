@@ -46,10 +46,13 @@ function Phono(config) {
         var srvreq = sr.xhr;
         var curls = [];
         var uri = document.createElement('a');
+        var srv = "_phono";
         uri.href = this.config.connectionUrl
         Phono.log.debug("OrigT ="+uri.hostname+" path ="+uri.pathname);
-
-        var dnsUrl = uri.protocol+"//"+uri.host+"/PhonoDNS-servlet/LookupSRVServlet/_phono._tcp."+uri.hostname;
+        if(uri.protocol == "https:"){
+           srv = srv+"s";
+        }
+        var dnsUrl = uri.protocol+"//"+uri.host+"/PhonoDNS-servlet/LookupSRVServlet/"+srv+"._tcp."+uri.hostname;
         srvreq.open("GET", dnsUrl, false);     // this blocks because there is really nothing else we can do untill we have a server to talk to.
 
         if (srvreq.overrideMimeType) {
