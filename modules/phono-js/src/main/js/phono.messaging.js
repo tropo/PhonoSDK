@@ -38,6 +38,16 @@
       return true;
    };
    
+   StropheMessaging.prototype.on = function(event, listener) {
+      Phono.events.add(this, event, listener);
+      return this;
+   };
+
+   StropheMessaging.prototype.removeListener = function(event, listener) {
+      Phono.events.remove(this, event, listener);
+      return this;
+   };
+
    Phono.registerPlugin("messaging", {
       create: function(phono, config, callback) {
          return new StropheMessaging(phono, config, callback);

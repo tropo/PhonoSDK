@@ -567,7 +567,19 @@
 
       return codec;
        
-   };
+    };
+
+    Call.prototype.on = function(event, listener) {
+        Phono.events.add(this, event, listener);
+        return this;
+
+    };
+
+    Call.prototype.removeListener = function(event, listener) {
+        Phono.events.remove(this, event, listener);
+        return this;
+    };
+
 
    // Phone
    //
@@ -875,6 +887,16 @@
        }
        this._security = value;
    }
+
+   Phone.prototype.on = function(event, listener) {
+      Phono.events.add(this, event, listener);
+      return this;
+   };
+
+   Phone.prototype.removeListener = function(event, listener) {
+      Phono.events.remove(this, event, listener);
+      return this;
+   };   
 
    Phono.registerPlugin("phone", {
       create: function(phono, config, callback) {
