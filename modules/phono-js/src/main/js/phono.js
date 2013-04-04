@@ -31,6 +31,15 @@ function Phono(config) {
     this.connTimers = [];
     Phono.log.debug("ConnectionUrl: " + this.config.connectionUrl);
 
+    if(navigator.appName.indexOf('Internet Explorer')>0){
+        xmlSerializer = {};
+        xmlSerializer.serializeToString = function(body) {
+            return body.xml;
+        };
+    } else {
+        xmlSerializer = new XMLSerializer();
+    }
+
     // Existing connection? do some voodoo to make sure we use their Strophe not PhonoStrophe
     if (this.config.connection != null) {
         Strophe = window.Strophe;
@@ -93,25 +102,8 @@ function Phono(config) {
         }
         Phono.log.debug("adding default connection URL "+this.config.connectionUrl);
         curls.push(this.config.connectionUrl);
-        Phono.log.debug("initial connection URL"+curls[0]);
-        this.connection = new Strophe.Connection(curls[0]);
+        Phono.log.debug("initial connection URL "+curls[0]);
     } 
-
-    if(navigator.appName.indexOf('Internet Explorer')>0){
-        xmlSerializer = {};
-        xmlSerializer.serializeToString = function(body) {
-            return body.xml;
-        };
-    } else {
-        xmlSerializer = new XMLSerializer();
-    }
-    this.connection.xmlInput = function (body) {
-        Phono.log.debug("[WIRE] (i) " + xmlSerializer.serializeToString(body));
-    };
-
-    this.connection.xmlOutput = function (body) {
-        Phono.log.debug("[WIRE] (o) " + xmlSerializer.serializeToString(body));
-    };
 
     // Wrap ourselves with logging
     Phono.util.loggify("Phono", this);
@@ -124,6 +116,15 @@ function Phono(config) {
                 phono.connection.disconnect();
             }
             phono.connection = new Strophe.Connection(curl);
+            
+            phono.connection.xmlInput = function (body) {
+                Phono.log.debug("[WIRE] (i) " + xmlSerializer.serializeToString(body));
+            };
+            
+            phono.connection.xmlOutput = function (body) {
+                Phono.log.debug("[WIRE] (o) " + xmlSerializer.serializeToString(body));
+            };
+
             phono.connect();
         } else {
             Phono.log.debug("already connected... not trying URL "+curl);
@@ -134,7 +135,6 @@ function Phono(config) {
     for (var c in curls ){
         setTimeout(cfunc,20+(c*10000),curls[c]);
     }
-   
 };
 
 (function() {
@@ -188,7 +188,7 @@ function Phono(config) {
     };
 
     Phono.prototype.connected = function() {
-        return this.connection.connected;
+        return (typeof(this.connection) != 'undefined' && this.connection.connected);
     };
 
     Phono.prototype.handleStropheStatusChange = function(status) {
