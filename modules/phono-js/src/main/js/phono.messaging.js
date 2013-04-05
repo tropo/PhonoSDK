@@ -7,7 +7,7 @@
    };
    
    Message.prototype.reply = function(body) {
-      this.connection.send($msg({to:this.from, type:"chat"}).c("body").t(body));
+      this.connection.send(Strophe.msg({to:this.from, type:"chat"}).c("body").t(body));
    };
 
    function StropheMessaging(phono, config, callback) {
@@ -25,7 +25,7 @@
    };
    
    StropheMessaging.prototype.send = function(to, body) {
-      this.connection.send($msg({to:to, type:"chat"}).c("body").t(body));
+      this.connection.send(Strophe.msg({to:to, type:"chat"}).c("body").t(body));
    };
 
    StropheMessaging.prototype.handleMessage = function(msg) {
