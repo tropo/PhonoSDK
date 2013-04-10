@@ -61,7 +61,7 @@ function Phono(config) {
         if(uri.protocol == "https:"){
            srv = srv+"s";
         }
-        var dnsUrl = uri.protocol+"//"+uri.host+"/PhonoDNS-servlet/LookupSRVServlet/"+srv+"._tcp."+uri.hostname;
+        var dnsUrl = uri.protocol+"//"+uri.host+"/Phono/srvlookup/"+srv+"._tcp."+uri.hostname;
         srvreq.open("GET", dnsUrl, false);     // this blocks because there is really nothing else we can do untill we have a server to talk to.
 
         if (srvreq.overrideMimeType) {
