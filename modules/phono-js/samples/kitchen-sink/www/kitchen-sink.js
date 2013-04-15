@@ -110,30 +110,31 @@ $(document).ready(function() {
                                                     + this.sessionId + "</a>");
                 newPhonoDiv.find(".phoneControl").show();
                 
-                newPhonoDiv.find(".audioType").text(this.audio.type);
-                if (this.audio.type == "flash" && gw == "gw-v6.d.phono.com") {
-                    newPhonoDiv.find(".audioType").text(bridged?"flash (new - bridged)":"flash (new)");
-                } else if (this.audio.type == "flash") {
-                    newPhonoDiv.find(".audioType").text("flash (old)");
-                }
-                
-                if (this.audio.audioInDevices){
-                    var inList = this.audio.audioInDevices();
-                    //var inList = ["A","B","C"];
-                    console.log("devices are :"+inList);
-                    var output = [];
-                    
-                    for (l=0;l<inList.length;l++){
-                        output.push('<option value="'+ inList[l] +'">'+ inList[l] +'</option>');
+                if (typeof(this.audio) !== 'undefined') {
+                    newPhonoDiv.find(".audioType").text(this.audio.type);
+                    if (this.audio.type == "flash" && gw == "gw-v6.d.phono.com") {
+                        newPhonoDiv.find(".audioType").text(bridged?"flash (new - bridged)":"flash (new)");
+                    } else if (this.audio.type == "flash") {
+                        newPhonoDiv.find(".audioType").text("flash (old)");
                     }
-                    newPhonoDiv.find(".audio-input").html(output.join(''));;
+                    
+                    if (this.audio.audioInDevices){
+                        var inList = this.audio.audioInDevices();
+                        //var inList = ["A","B","C"];
+                        console.log("devices are :"+inList);
+                        var output = [];
+                        
+                        for (l=0;l<inList.length;l++){
+                            output.push('<option value="'+ inList[l] +'">'+ inList[l] +'</option>');
+                        }
+                        newPhonoDiv.find(".audio-input").html(output.join(''));;
+                    }
+                    console.log("["+newPhonoID+"] Phono loaded"); 
+                    
+                    if( ! this.audio.permission() ){
+                        this.audio.showPermissionBox();
+                    }
                 }
-                console.log("["+newPhonoID+"] Phono loaded"); 
-                
-                if( ! this.audio.permission() ){
-                    this.audio.showPermissionBox();
-                }
-                
                 
             },
             onUnready: function(event) {
