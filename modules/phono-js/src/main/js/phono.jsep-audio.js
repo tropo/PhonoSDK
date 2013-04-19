@@ -228,6 +228,7 @@ JSEPAudio.prototype.showPermissionBox = function(callback) {
         var url = webkitURL.createObjectURL(stream);
         JSEPAudio.localVideo.style.opacity = 1;
         JSEPAudio.localVideo.src = url;
+        JSEPAudio.localVideo.muted = "muted";
         if (typeof callback == 'function') callback(true);
     },
     function(error) {
