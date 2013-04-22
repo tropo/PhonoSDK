@@ -172,14 +172,20 @@
        
        this.transport.buildTransport("offer", initiate, 
                                      function() {
-                                         call.connection.sendIQ(initiateIq, function (iq) {
-                                             call.state = CallState.PROGRESS;
-                                         });
+                                         // Check that we still mean to
+                                         if (call.state != CallState.DISCONNECTED) {
+                                             call.connection.sendIQ(initiateIq, function (iq) {
+                                                 call.state = CallState.PROGRESS;
+                                             });
+                                         }
                                      },
                                      partialUpdate.up(),
                                      function() {
-                                         call.connection.sendIQ(updateIq, function (iq) {
-                                         });   
+                                         // Check that we still mean to
+                                         if (call.state != CallState.DISCONNECTED) {
+                                             call.connection.sendIQ(updateIq, function (iq) {
+                                             });   
+                                         }
                                      }
                                     );
 
@@ -320,6 +326,11 @@
    Call.prototype.hangup = function() {
 
       var call = this;
+
+      if (call.state == CallState.INITIAL) {
+          call.state = CallState.DISCONNECTED;
+          return;
+      }
       
       if (call.state != CallState.CONNECTED 
        && call.state != CallState.RINGING 
