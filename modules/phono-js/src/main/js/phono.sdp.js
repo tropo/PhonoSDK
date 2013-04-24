@@ -121,6 +121,14 @@
         }
         return crypto;
     }
+    _parseFingerprint = function(params) {
+        var finger = {
+            'hash':params[0],
+            'print':params[1],
+            'required':'1'
+        }
+        return finger;
+    }
 
     //a=rtpmap:101 telephone-event/8000"
     _parseRtpmap = function(params) {
@@ -208,6 +216,11 @@
         return sdp;
     }
 
+    _buildFingerprint = function(fingerObj) {
+        var sdp = "a=fingerprint:" + fingerObj.hash + " " + fingerObj.print + "\r\n";
+        return sdp;
+    }
+
     _buildMedia = function(sdpObj) {
         var sdp = "m=" + sdpObj.media.type + " " + sdpObj.media.port + " " + sdpObj.media.proto;
         var mi = 0;
@@ -265,6 +278,9 @@
             sdp = sdp + "a=rtcp-mux" + "\r\n";
         } 
  
+        if (sdpObj.fingerprint) {
+            sdp = sdp + _buildFingerprint(sdpObj.fingerprint);
+        }
         if (sdpObj.crypto) {
             sdp = sdp + _buildCrypto(sdpObj.crypto);
         }
@@ -361,6 +377,13 @@
                 Phono.util.each(sdpObj.candidates, function() {
                     c = c.c('candidate', this).up();           
                 });
+                if (sdpObj.fingerprint){
+                    c = c.c('fingerprint',{xmlns:"urn:xmpp:tmp:jingle:apps:dtls:0",
+				hash:sdpObj.fingerprint.hash,
+                                required:sdpObj.fingerprint.required});
+                    c.t(sdpObj.fingerprint.print);
+                    c.up();
+		}
                 c = c.up().up();
             });
             return c;
@@ -419,6 +442,12 @@
                     var crypto = Phono.util.getAttributes(this);
                     //Phono.log.debug("crypto: "+JSON.stringify(crypto,null," "));
                     sdpObj.crypto = crypto;
+                });
+                $(this).find('fingerprint').each(function () {
+                    var fingerprint = Phono.util.getAttributes(this);
+                    fingerprint.print = Strophe.getText(this);
+                    Phono.log.debug("fingerprint: "+JSON.stringify(fingerprint,null," "));
+                    sdpObj.fingerprint = fingerprint;
                 });
                 sdpObj.ice = {};
                 $(this).find('transport').each(function () {
@@ -537,6 +566,10 @@
                         break;
                     case "ssrc":
                         sdpObj.ssrc = _parseSsrc(a.params, sdpObj.ssrc);
+                        break;
+                    case "fingerprint":
+                        var print = _parseFingerprint(a.params);
+                        sdpObj.fingerprint = print;
                         break;
                     case "crypto":
                         var crypto = _parseCrypto(a.params);

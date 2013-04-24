@@ -263,7 +263,8 @@ JSEPAudio.prototype.transport = function(config) {
         'mandatory': {
             'OfferToReceiveAudio':this.config.media['audio'],
             'OfferToReceiveVideo':this.config.media['video']
-        }
+        },
+        'optional': [{'DtlsSrtpKeyAgreement': 'true'}]
     };
 
     if(!config || !config.remoteContainerId) {
