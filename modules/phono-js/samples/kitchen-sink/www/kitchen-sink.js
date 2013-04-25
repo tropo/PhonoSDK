@@ -40,6 +40,7 @@ $(document).ready(function() {
         var dialString = "sip:3366@login.zipdx.com";
         var chatString = "en2fr@bot.talk.google.com";
         var gw = "gw-v6.d.phono.com";
+        var video = false;
         
         if (connectionUrl.indexOf("file:") == 0){
             connectionUrl = "http://app.phono.com/http-bind";
@@ -52,6 +53,7 @@ $(document).ready(function() {
         if (urlParam("dial") != undefined) dialString = urlParam("dial");
         if (urlParam("chat") != undefined) chatString = urlParam("chat");
         if (urlParam("gateway") != undefined) gw = urlParam("gateway");
+        if (urlParam("video") != undefined) video = true;
 
         console.log("audioType = " + audioType);
         console.log("dialString = " + dialString);
@@ -90,7 +92,7 @@ $(document).ready(function() {
         if (audioType == "jsep") {
             gw = "gw-v6.d.phono.com";
             audio = "jsep";
-            video = true;
+            video = video;
         }
         
         phonos[newPhonoID] = $.phono({

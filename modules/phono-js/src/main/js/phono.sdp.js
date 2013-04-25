@@ -359,13 +359,15 @@
                 c = c.c('candidate', {component:'1',
                                       ip: sdpObj.connection.address,
                                       port: sdpObj.media.port}).up();
-                c = c.c('candidate', {component:'2',
+                if(sdpObj.rtcp) {
+                    c = c.c('candidate', {component:'2',
                                       ip: sdpObj.rtcp.address,
-                                      port: sdpObj.rtcp.port});
-                c.up().up();
+                                      port: sdpObj.rtcp.port}).up();
+                }
+                c = c.up();
 
                 if (!sdpObj.ice.pwd) sdpObj.ice.pwd = sdpObj.candidates[0].password;
-                if (!sdpObj.ice.ufrag) sdpObj.ice.ufrag = dpObj.candidates[0].username;
+                if (!sdpObj.ice.ufrag) sdpObj.ice.ufrag = sdpObj.candidates[0].username;
                 // Ice candidates
                 var transp = {xmlns:"urn:xmpp:jingle:transports:ice-udp:1",
                              pwd: sdpObj.ice.pwd,
@@ -500,12 +502,15 @@
         parseSDP: function(sdpString) {
             var contentsObj = {};
             contentsObj.contents = [];
-            var sdpObj = null;
+            var sdpObj = {};
+            sdpObj.candidates = [];
+            sdpObj.codecs = [];
+            sdpObj.ice = {};
 
             // Iterate the lines
             var sdpLines = sdpString.split("\r\n");
             for (var sdpLine in sdpLines) {
-                //Phono.log.debug(sdpLines[sdpLine]);
+                Phono.log.debug(sdpLines[sdpLine]);
                 var line = _parseLine(sdpLines[sdpLine]);
 
                 if (line.type == "o") {
@@ -514,12 +519,13 @@
                 if (line.type == "m") {
                     // New m-line, create a new content
                     var media = _parseM(line.contents);
-                    sdpObj = {};
+                    /*if (sdpObj != null) {
+                       sdpObj = {};
+                       sdpObj.candidates = [];
+                       sdpObj.codecs = [];
+                       sdpObj.ice = {};
+		    } */
                     sdpObj.media = media;
-                    sdpObj.candidates = [];
-                    sdpObj.codecs = [];
-                    sdpObj.ice = {};
-                    
                     contentsObj.contents.push(sdpObj);
                 }
                 if (line.type == "c") {
