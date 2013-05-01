@@ -177,7 +177,7 @@
         var c = candidateObj;
         var sdp = "a=candidate:" + c.foundation + " " +
             c.component + " " + 
-            c.protocol + " " +
+            c.protocol.toUpperCase() + " " +
             c.priority + " " +
             c.ip + " " +
             c.port;
@@ -207,6 +207,10 @@
             sdp+="/"+codecObj.channels;
         }
         sdp += "\r\n";
+	if (codecObj.ptime){
+	    sdp+="a=ptime:"+codecObj.ptime;
+	    sdp += "\r\n";
+        }
         return sdp;
     }
 
@@ -222,7 +226,22 @@
     }
 
     _buildMedia = function(sdpObj) {
-        var sdp = "m=" + sdpObj.media.type + " " + sdpObj.media.port + " " + sdpObj.media.proto;
+        var sdp ="";
+// move fingerprint and ice to outside the m=
+        if (sdpObj.fingerprint) {
+            sdp = sdp + _buildFingerprint(sdpObj.fingerprint);
+        }
+        if (sdpObj.ice) {
+            var ice = sdpObj.ice;
+            if (!ice.filterLines) {
+                sdp = sdp + "a=ice-ufrag:" + ice.ufrag + "\r\n";
+                sdp = sdp + "a=ice-pwd:" + ice.pwd + "\r\n";
+            }
+            if (ice.options) {
+                sdp = sdp + "a=ice-options:" + ice.options + "\r\n";
+            }
+        }
+        sdp += "m=" + sdpObj.media.type + " " + sdpObj.media.port + " " + sdpObj.media.proto;
         var mi = 0;
         while (mi + 1 <= sdpObj.media.pts.length) {
             sdp = sdp + " " + sdpObj.media.pts[mi];
@@ -251,26 +270,20 @@
             ci = ci + 1;
         }
 
-        if (sdpObj.ice) {
-            var ice = sdpObj.ice;
-            if (!ice.filterLines) {
-                sdp = sdp + "a=ice-ufrag:" + ice.ufrag + "\r\n";
-                sdp = sdp + "a=ice-pwd:" + ice.pwd + "\r\n";
-            }
-            if (ice.options) {
-                sdp = sdp + "a=ice-options:" + ice.options + "\r\n";
-            }
-        }
 
-        if (sdpObj.direction == "recvonly") {
-            sdp = sdp + "a=recvonly\r\n";
-        } else if (sdpObj.direction == "sendonly") {
-            sdp = sdp + "a=sendonly\r\n";
-        } else if (sdpObj.direction == "none") {
-            sdp = sdp;
-        } else {
-           sdp = sdp + "a=sendrecv\r\n";
-        }
+        if (sdpObj.direction) {
+            if (sdpObj.direction == "recvonly") {
+                sdp = sdp + "a=recvonly\r\n";
+            } else if (sdpObj.direction == "sendonly") {
+                sdp = sdp + "a=sendonly\r\n";
+            } else if (sdpObj.direction == "none") {
+                sdp = sdp;
+            } else {
+               sdp = sdp + "a=sendrecv\r\n";
+            }
+	} else {
+            sdp = sdp + "a=sendrecv\r\n";
+	}
 
 
 
@@ -278,9 +291,6 @@
             sdp = sdp + "a=rtcp-mux" + "\r\n";
         } 
  
-        if (sdpObj.fingerprint) {
-            sdp = sdp + _buildFingerprint(sdpObj.fingerprint);
-        }
         if (sdpObj.crypto) {
             sdp = sdp + _buildCrypto(sdpObj.crypto);
         }

@@ -21,6 +21,12 @@ function JSEPAudio(phono, config, callback) {
             return webkitURL.createObjectURL(s);
         };
         JSEPAudio.stun = "stun:stun.l.google.com:19302";
+        JSEPAudio.attachMediaStream = function(element, stream) {
+            element.src = webkitURL.createObjectURL(stream);
+        };
+        JSEPAudio.stripCrypto = function(sdpObj){
+	    return sdpObj;
+        };
     } else if (typeof mozRTCPeerConnection == "function") {
         JSEPAudio.GUM = function(p,s,f) {
             navigator.mozGetUserMedia(p,s,f)
@@ -35,6 +41,27 @@ function JSEPAudio(phono, config, callback) {
             return URL.createObjectURL(s);
         };
         JSEPAudio.stun = "stun:23.21.150.121";
+        JSEPAudio.attachMediaStream = function(element, stream) {
+            element.mozSrcObject = stream;
+            element.play();
+        };
+        JSEPAudio.stripCrypto = function(sdpObj){
+	   Phono.util.each(sdpObj.contents, function() {
+              if(this.rtcp) {delete this.rtcp;};
+              if(this['rtcp-mux']) {delete this['rtcp-mux'];};
+              if(this.crypto) {delete this.crypto;};
+	      if(this.mid) { delete this.mid;};
+              /*var ncandy = [];
+	      Phono.util.each(this.candidates, function(){
+                 if (this.component != "2") {
+                    ncandy.push(this);
+		 }
+              });  
+              this.candidates = ncandy; */
+           }); 
+           if (sdpObj.group) {delete sdpObj.group;};
+	   return sdpObj;
+        };
     }
     JSEPAudio.spk = 0.0;
     this.config = Phono.util.extend({
@@ -243,9 +270,8 @@ JSEPAudio.prototype.showPermissionBox = function(callback) {
     },
     function(stream) {
         JSEPAudio.localStream = stream;
-        var url = JSEPAudio.createObjectURL(stream);
         JSEPAudio.localVideo.style.opacity = 1;
-        JSEPAudio.localVideo.src = url;
+        JSEPAudio.attachMediaStream(JSEPAudio.localVideo,stream);
         JSEPAudio.localVideo.muted = "muted";
         if (typeof callback == 'function') callback(true);
     },
@@ -337,10 +363,9 @@ JSEPAudio.prototype.transport = function(config) {
             //pc.onconnecting = function(message) {Phono.log.info("onSessionConnecting.");};
             //pc.onopen = function(message) {Phono.log.info("onSessionOpened.");};
             pc.onaddstream = function (event) {
-                Phono.log.info("onAddStream. ");
-                var url = JSEPAudio.createObjectURL(event.stream);
+                Phono.log.info("onAddStream. Attaching");
+		JSEPAudio.attachMediaStream(remoteVideo,event.stream);
                 remoteVideo.style.opacity = 1;
-                remoteVideo.src = url;
             };
             //pc.onremovestream = function (event) {Phono.log.info("onRemoveStream."); };
             //pc.onicechange= function (event) {Phono.log.info("onIceChange: "+pc.iceState); };
@@ -371,6 +396,7 @@ JSEPAudio.prototype.transport = function(config) {
                 };
                 
                 if (direction == "answer") {
+                    Phono.log.info('Set remote description ' + JSON.stringify(inboundOffer));
                     pc.setRemoteDescription(inboundOffer,
                     function(){
                         Phono.log.debug("remoteDescription happy");
@@ -393,6 +419,7 @@ JSEPAudio.prototype.transport = function(config) {
         },
         processTransport: function(t, update, iq) {
             var sdpObj = Phono.sdp.parseJingle(iq);
+            sdpObj = JSEPAudio.stripCrypto(sdpObj);
             var sdp = Phono.sdp.buildSDP(sdpObj);
             var codecId = 0;
             if (sdpObj.contents[0].codecs[0].name == "telephone-event") codecId = 1;
@@ -405,10 +432,12 @@ JSEPAudio.prototype.transport = function(config) {
 
             if (pc) {
                 // We are an answer to an outbound call
+                Phono.log.info('Got remote sdp ' + JSON.stringify(sdp));
                 var sd = JSEPAudio.mkSessionDescription({
                     'sdp':sdp,
                     'type':"answer"
                 } );
+                Phono.log.info('Set remote description ' + JSON.stringify(sd));
                 pc.setRemoteDescription(sd,
                 function(){
                     Phono.log.debug("remoteDescription happy");
