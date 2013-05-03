@@ -27,6 +27,9 @@ function JSEPAudio(phono, config, callback) {
         JSEPAudio.stripCrypto = function(sdpObj){
 	    return sdpObj;
         };
+	JSEPAudio.AudioUrl = function(url){
+		return url;
+	};
     } else if (typeof mozRTCPeerConnection == "function") {
         JSEPAudio.GUM = function(p,s,f) {
             navigator.mozGetUserMedia(p,s,f)
@@ -62,6 +65,9 @@ function JSEPAudio(phono, config, callback) {
            if (sdpObj.group) {delete sdpObj.group;};
 	   return sdpObj;
         };
+	JSEPAudio.AudioUrl = function(url){
+		return url.replace(".mp3",".ogg");
+	};
     }
     JSEPAudio.spk = 0.0;
     this.config = Phono.util.extend({
@@ -118,7 +124,7 @@ JSEPAudio.prototype.play = function(transport, autoPlay) {
     var url = null;
     var audioPlayer = null;
     if (transport.uri) {
-        url = transport.uri;
+        url = JSEPAudio.AudioUrl(transport.uri);
     }
     
     return {
