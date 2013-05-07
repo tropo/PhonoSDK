@@ -446,7 +446,7 @@
                 sdpObj.codecs = [];
                 $(this).find('payload-type').each(function () {
                     var codec = Phono.util.getAttributes(this);
-                    //Phono.log.debug("codec: "+JSON.stringify(codec,null," "));
+                    Phono.log.debug("codec: "+JSON.stringify(codec,null," "));
                     sdpObj.codecs.push(codec);
                     mediaObj.pts.push(codec.id);
                 });

@@ -54,13 +54,6 @@ function JSEPAudio(phono, config, callback) {
               if(this['rtcp-mux']) {delete this['rtcp-mux'];};
               if(this.crypto) {delete this.crypto;};
 	      if(this.mid) { delete this.mid;};
-              /*var ncandy = [];
-	      Phono.util.each(this.candidates, function(){
-                 if (this.component != "2") {
-                    ncandy.push(this);
-		 }
-              });  
-              this.candidates = ncandy; */
            }); 
            if (sdpObj.group) {delete sdpObj.group;};
 	   return sdpObj;
@@ -425,8 +418,10 @@ JSEPAudio.prototype.transport = function(config) {
         },
         processTransport: function(t, update, iq) {
             var sdpObj = Phono.sdp.parseJingle(iq);
+	    Phono.log.info('Made remote sdp Obj' + JSON.stringify(sdpObj));
             sdpObj = JSEPAudio.stripCrypto(sdpObj);
             var sdp = Phono.sdp.buildSDP(sdpObj);
+            Phono.log.info('constructed remote sdp ' + JSON.stringify(sdp));
             var codecId = 0;
             if (sdpObj.contents[0].codecs[0].name == "telephone-event") codecId = 1;
             var codec = 
@@ -454,6 +449,7 @@ JSEPAudio.prototype.transport = function(config) {
                 
             } else {
                 // We are an offer for an inbound call
+	        Phono.log.info('Got remote description ' + JSON.stringify(sdp));
                 var sd = JSEPAudio.mkSessionDescription({
                     'sdp':sdp,
                     'type':"offer"
