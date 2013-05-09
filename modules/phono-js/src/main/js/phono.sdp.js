@@ -419,9 +419,12 @@
                 mediaObj.pts = [];
                 
                 blobObj.contents.push(sdpObj);
+                sdpObj.candidates = [];
+                sdpObj.codecs = [];
 
                 $(this).find('description').each(function () {
-                    var mediaType = $(this).attr('media');
+                  if($(this).attr('xmlns') == "urn:xmpp:jingle:apps:rtp:1"){
+		    var mediaType = $(this).attr('media');
                     mediaObj.type = mediaType;
                     mediaObj.proto = "RTP/SAVPF"; // HACK
                     mediaObj.port = 1000;
@@ -440,16 +443,17 @@
                         sdpObj['mid'] = $(this).attr('mid');
                     }
                     sdpObj.media = mediaObj;
+		    $(this).find('payload-type').each(function () {
+                        var codec = Phono.util.getAttributes(this);
+                        Phono.log.debug("codec: "+JSON.stringify(codec,null," "));
+                        sdpObj.codecs.push(codec);
+                        mediaObj.pts.push(codec.id);
+                    });
+		  } else {
+	            Phono.log.debug("skip description with wrong xmlns: "+$(this).attr('xmlns'));
+		  }
                 });
 
-                sdpObj.candidates = [];
-                sdpObj.codecs = [];
-                $(this).find('payload-type').each(function () {
-                    var codec = Phono.util.getAttributes(this);
-                    Phono.log.debug("codec: "+JSON.stringify(codec,null," "));
-                    sdpObj.codecs.push(codec);
-                    mediaObj.pts.push(codec.id);
-                });
                 $(this).find('crypto').each(function () {
                     var crypto = Phono.util.getAttributes(this);
                     //Phono.log.debug("crypto: "+JSON.stringify(crypto,null," "));

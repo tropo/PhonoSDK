@@ -53,6 +53,7 @@ function JSEPAudio(phono, config, callback) {
               if(this.rtcp) {delete this.rtcp;};
               if(this['rtcp-mux']) {delete this['rtcp-mux'];};
               if(this.crypto) {delete this.crypto;};
+	      if(this.ssrc) { delete this.ssrc;};
 	      if(this.mid) { delete this.mid;};
            }); 
            if (sdpObj.group) {delete sdpObj.group;};
@@ -383,8 +384,8 @@ JSEPAudio.prototype.transport = function(config) {
                 };
                 
                 var cb = function(localDesc) {
-                    //var sd = JSEPAudio.mkSessionDescription(localDesc);
-                    pc.setLocalDescription(localDesc,setlok,setlfail);
+                    var sd = JSEPAudio.mkSessionDescription(localDesc);
+                    pc.setLocalDescription(sd,setlok,setlfail);
                     Phono.log.info('Set local description ' + JSON.stringify(localDesc));
                 };
 		var offerfail = function(){
