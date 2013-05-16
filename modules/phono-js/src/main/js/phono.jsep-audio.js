@@ -3,9 +3,17 @@ function JSEPAudio(phono, config, callback) {
 
     Phono.log.info("Initialize JSEP");
     if (typeof(webkitAudioContext) !== 'undefined'){
-        console.log("Have webkitAudio def");
+        Phono.log.info("Have webkitAudio def");
         JSEPAudio.webAudioContext = new webkitAudioContext();
-    } 
+    }  else if (typeof(AudioContext) !== 'undefined'){
+        Phono.log.info("Have AudioContext def");
+        JSEPAudio.webAudioContext = new AudioContext();
+    }  else if (typeof(mozAudioContext) !== 'undefined'){
+        Phono.log.info("Have mozAudio def");
+        JSEPAudio.webAudioContext = new mozAudioContext();
+    } else {
+	Phono.log.info("No webAudio available - so no freep");
+    }
 
     if (typeof webkitRTCPeerConnection== "function") {
         JSEPAudio.GUM = function(p,s,f) {
@@ -29,6 +37,9 @@ function JSEPAudio(phono, config, callback) {
         };
 	JSEPAudio.AudioUrl = function(url){
 		return url;
+	};
+	JSEPAudio.addCreateConstraint = function(constraint){
+		return constraint;
 	};
     } else if (typeof mozRTCPeerConnection == "function") {
         JSEPAudio.GUM = function(p,s,f) {
@@ -61,6 +72,10 @@ function JSEPAudio(phono, config, callback) {
         };
 	JSEPAudio.AudioUrl = function(url){
 		return url.replace(".mp3",".ogg");
+	};
+	JSEPAudio.addCreateConstraint = function(constraint){
+		constraint.mandatory.MozDontOfferDataChannel=true;
+		return constraint;
 	};
     }
     JSEPAudio.spk = 0.0;
@@ -312,6 +327,7 @@ JSEPAudio.prototype.transport = function(config) {
             'OfferToReceiveVideo':this.config.media['video']
         }
     };
+    offerconstraints = JSEPAudio.addCreateConstraint(offerconstraints);
     peerconstraints = {
         'optional': [{'DtlsSrtpKeyAgreement': 'true'}]
     };
@@ -334,7 +350,7 @@ JSEPAudio.prototype.transport = function(config) {
             
             pc = JSEPAudio.mkPeerConnection(configuration,peerconstraints);
             JSEPAudio.pc = pc;
-            pc.onicecandidate = function(evt) {
+	    var oic = function(evt) {
                 if (!complete) {
                     if ((evt.candidate == null) || 
                         (candidateCount >= 1 && !audio.config.media['video'] && direction == "answer")) {
@@ -359,7 +375,8 @@ JSEPAudio.prototype.transport = function(config) {
                         candidateCount += 1;
                     }
                 }
-            }
+            };
+	    pc.onicecandidate = oic;
             //pc.onconnecting = function(message) {Phono.log.info("onSessionConnecting.");};
             //pc.onopen = function(message) {Phono.log.info("onSessionOpened.");};
             pc.onaddstream = function (event) {
@@ -386,6 +403,7 @@ JSEPAudio.prototype.transport = function(config) {
                 var cb = function(localDesc) {
                     var sd = JSEPAudio.mkSessionDescription(localDesc);
                     pc.setLocalDescription(sd,setlok,setlfail);
+		    window.setTimeout(function() {oic({})},1000);
                     Phono.log.info('Set local description ' + JSON.stringify(localDesc));
                 };
 		var offerfail = function(){
