@@ -33,10 +33,7 @@
     <antcall target="build-js" />
   </target>
   <target name="build-mobile">
-    <antcall target="build-js" />
-    <antcall target="build-phonegap-ios" />
     <antcall target="build-native-ios" />
-    <antcall target="build-phonegap-android" />
     <antcall target="build-native-android" />
   </target>
 
