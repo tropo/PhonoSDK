@@ -1,0 +1,87 @@
+<html>
+<head>
+    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <script src="../../../jquery.phono.js"></script>
+</head>
+<body>
+	<ol id="tests">
+	</ol>
+
+<script>
+var apiKey="C17D167F-09C6-4E4C-A3DD-2025D48BA243";
+var connectionUrl="http://sfa.westhawk.co.uk:8080/http-bind";
+var phone = {onIncomingCall:function (evt) { 
+		call=evt.call;
+		call.bind({ onHangup: function(ev){testPassed("hangup")}}); 
+		call.answer();
+		testPassed("callback");}};
+var phono;
+var call;
+var player;
+$(document).ready(function(){
+	addTest("load");
+	addTest("call");
+	addTest("speak");
+	addTest("message");
+	addTest("dtmf");
+	addTest("mic");
+	addTest("callback");
+	addTest("hangup");
+	phono = $.phono(
+     {
+	apiKey:apiKey,
+	connectionUrl:connectionUrl,
+	audio:{media:{audio:true,video:false}},
+	phone:phone,
+	messaging:{ onMessage: function(event) { eval(event.message.body); } },
+	onReady:function(){
+		testPassed("load");
+		call = phono.phone.dial("app:9996179470",{onAnswer:function(){
+				testPassed("call");
+				checkEnergy();
+		}});
+		}
+	}
+	);
+	});
+
+function say(snd){
+	player = phono.audio.play({uri:snd});
+	player.start();
+}
+function stopSay(){
+	player.stop();
+}
+function dtmf(d){
+   call.digit(d);
+}
+function checkEnergy(){
+	var cnt = 0;
+	var spoll = window.setInterval(function(){
+		var spk= call.energy().spk;
+		console.log("spk = "+spk);
+		if (spk > 3.0) {
+			testPassed("speak");
+			window.clearInterval(spoll);
+		}
+		cnt++;
+		if (cnt>10){
+			testFailed("speak");
+			window.clearInterval(spoll);
+		}
+	},1000);
+}
+
+function addTest(name){
+	$("#tests").append($('<li>').attr('id',name).text(name));
+}
+function testPassed(name){
+	$("#"+name).css({backgroundColor: 'green'});
+}
+function testFailed(name){
+	$("#"+name).css({backgroundColor: 'red'});
+}
+
+</script>
+</body>
+</html>
