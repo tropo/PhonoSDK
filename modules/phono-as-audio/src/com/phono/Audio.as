@@ -220,17 +220,20 @@ package com.phono
 		    var count:Number = 0;
 		    
 		    dispatchEvent(new MediaEvent(MediaEvent.OPEN, audio));
-		    var alert:Alert = Alert.show('Click "OK" to continue.', "Success", Alert.OK, null, function(e:Event):void {
+		    var alert:Alert = Alert.show('', "-", Alert.OK, null, function(e:Event):void {
 			dispatchEvent(new MediaEvent(MediaEvent.CLOSE, audio));
 			_boxOpen = false;
 		    });
-		    
+
+                    alert.alpha = 0;
+
 		    var listener:Function = function(event:flash.events.Event):void {
 			if(count == 0) {
 			    Security.showSettings(SecurityPanel.PRIVACY);
 			    count = count +1;
 			}
 			else if(count == 1) {
+                            Security.showSettings(SecurityPanel.PRIVACY);
 			    count = count +1;
 			}
 			else {
@@ -242,8 +245,8 @@ package com.phono
 		    };
 		    
 		    alert.addEventListener(flash.events.Event.RENDER, listener);
-		    
-		}, 1000);		
+
+		}, 100);		
 	    }
 	}	
 
