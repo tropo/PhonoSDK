@@ -79,6 +79,7 @@ function JSEPAudio(phono, config, callback) {
 	};
     }
     JSEPAudio.spk = 0.0;
+    JSEPAudio.mic = 0.0;
     this.config = Phono.util.extend({
         media: {
             audio:true,
@@ -228,19 +229,26 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
                         var obj = sr[i].remote;
                         if (obj){
                             var nspk = 0.0;
+			    var nmic = 0.0;
+                            if (obj.stat('audioInputLevel')){
+                                nmic = obj.stat('audioInputLevel');
+                            }
+                            if (nmic > 0.0){
+                                JSEPAudio.mic = Math.floor(Math.max((Math.LOG2E * Math.log(nmic)-4.0),0.0));
+                            }
                             if (obj.stat('audioOutputLevel')){
                                 nspk = obj.stat('audioOutputLevel');
                             }
                             if (nspk > 0.0){
                                 JSEPAudio.spk = Math.floor(Math.max((Math.LOG2E * Math.log(nspk)-4.0),0.0));
                             }
-                            Phono.log.info("nspk " + nspk +" spk "+JSEPAudio.spk);
+                            Phono.log.info("nspk " + nspk +" spk "+JSEPAudio.spk+" nmic "+ nmic+ "mic "+JSEPAudio.mic);
                         }
                     }
                 });
             } 
             return {
-                mic: 0.0,
+                mic: JSEPAudio.mic,
                 spk: JSEPAudio.spk
             };
             
