@@ -118,10 +118,6 @@ abstract public class PhonoPhone {
     public PhonoCall dial(String jid, Hashtable headers) {
 
 
-        if (headers != null) {
-            Log.warn("headers not implemented yet.");
-        }
-
         PhonoCall currentCall = (PhonoCall) newCall();
 
         Log.debug("Phone.dial(): " + jid);
@@ -136,7 +132,7 @@ abstract public class PhonoPhone {
         currentCall.setRJid(jid);
         _currentCalls.put(sid, currentCall); // need to axe these at some point
 
-        final Jingle initiate = new Jingle(sid, localJid, jid, Jingle.SESSION_INITIATE);
+        final Jingle initiate = new Jingle(sid, localJid, jid, Jingle.SESSION_INITIATE,headers);
         final Content localContent = new Content(localJid, localJid.split("/")[0], "both", localDescription, theTransport);
 
         initiate.setContent(localContent);

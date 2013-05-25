@@ -5,6 +5,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
 import org.minijingle.jingle.description.Description;
 import org.minijingle.jingle.transport.RawUdpTransport;
@@ -33,7 +34,7 @@ public class Content {
                 transport.add((RawUdpTransport) o);
             } else if (o instanceof Description) {
                 description.add((Description) o);
-            }
+            } 
         }
 
     }

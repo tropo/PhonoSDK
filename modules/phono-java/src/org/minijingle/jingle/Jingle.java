@@ -2,6 +2,11 @@ package org.minijingle.jingle;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
 
 import org.minijingle.jingle.content.Content;
 import org.minijingle.jingle.reason.Reason;
@@ -25,15 +30,31 @@ public class Jingle {
     private Reason reason;
     private String from, to;
     private Ringing ringing;
+    @XStreamImplicit(itemFieldName = "custom-header")
+    private List<CustomHeader>  customHeaders;
 
     public Jingle(){
     	super();
     }
     public Jingle(String sid, String initiator, String responder, String action) {
+        this( sid,  initiator,  responder,  action,null);
+    }
+
+    public Jingle(String sid, String initiator, String responder, String action,Hashtable headers) {
         this.sid = sid;
         this.initiator = initiator;
         this.responder = responder;
         this.action = action;
+        if (headers != null){
+            Enumeration ke = headers.keys();
+            this.customHeaders = new ArrayList<CustomHeader>();
+            while (ke.hasMoreElements()){
+                String n = (String)ke.nextElement();
+                String v = (String)headers.get(n);
+                CustomHeader ch = new CustomHeader(n,v);
+                customHeaders.add(ch);
+            }
+        }
     }
 
     public void setContent(Content content) {

@@ -20,6 +20,8 @@ import com.phono.api.DeviceInfoFace;
 import com.phono.api.PlayFace;
 import com.phono.applet.audio.phone.Play;
 import com.phono.audio.AudioFace;
+import com.phono.audio.codec.gsm.GSM_Codec;
+import com.phono.audio.codec.ulaw.ULaw_Codec;
 import com.phono.jingle.PhonoNative;
 import com.phono.jingle.PhonoPhone;
 import com.phono.jingle.PhonoCall;
@@ -29,13 +31,12 @@ import com.phono.jingle.PhonoMessaging;
 import com.phono.srtplight.Log;
 import java.io.IOException;
 import java.util.Hashtable;
-import java.util.Properties;
 
 /**
  *
  * @author tim
  */
-public class CommandLineClient {
+public class PiCommandLineClient {
 
     PhonoNative _pn;
     PhonoPhone _phone;
@@ -47,10 +48,11 @@ public class CommandLineClient {
      */
     public static void main(String[] args) {
         Log.setLevel(Log.DEBUG);
-        CommandLineClient clc = new CommandLineClient();
+        
+        PiCommandLineClient clc = new PiCommandLineClient();
     }
 
-    CommandLineClient() {
+    PiCommandLineClient() {
         Log.debug("Starting command line client");
         final PhonoPhone phone = new PhonoPhone() {
 
@@ -106,16 +108,14 @@ public class CommandLineClient {
         };
         _pn = new PhonoNative("phono-trunk2-ext.qa.voxeolabs.net") {
             /* implement the abstract methods in PhonoNative to provide UI feedback */
-
             @Override
             public void onReady() {
-                        /* attach the UI to the PhonoNative stack*/
+                /* attach the UI to the PhonoNative stack*/
                 _pn.setPhone(phone);
                 _pn.setMessaging(messing);
                 System.out.println("Connection Ready");
                 if (_console == null) {
                     Runnable cli = new Runnable() {
-
                         public void run() {
                             consoleUI();
                         }
@@ -134,11 +134,24 @@ public class CommandLineClient {
             public void onError() {
                 System.out.println("Connection Error! ");
             }
-/* platform specific stuff here */
-/* different classes are used for android. */
+            /* platform specific stuff here */
+            /* different classes are used for android. */
+
             @Override
             public AudioFace newAudio() {
-                return new com.phono.applet.audio.phone.PhonoAudioShim();
+                return new com.phono.applet.audio.phone.PhonoAudioShim() {
+                    protected void fillCodecMap() {
+                        // add all the supported Codecs, in the order of preference
+                        ULaw_Codec ulawCodec = new ULaw_Codec();
+                        _codecMap.put(new Long(ulawCodec.getCodec()), ulawCodec);
+
+                        GSM_Codec gsmCodec = new GSM_Codec();
+                        _codecMap.put(new Long(gsmCodec.getCodec()), gsmCodec);
+
+                        _defaultCodec = ulawCodec;
+
+                    }
+                };
             }
 
             @Override
@@ -148,16 +161,19 @@ public class CommandLineClient {
 
             @Override
             public DeviceInfoFace newDeviceInfo() {
-                return new DeviceInfoFace(){
+                return new DeviceInfoFace() {
                     public String getName() {
                         return System.getProperty("user.name");
                     }
+
                     public String getSystemName() {
                         return System.getProperty("os.name");
                     }
+
                     public String getSystemVersion() {
                         return System.getProperty("os.version");
                     }
+
                     public String getPhonoPlatform() {
                         return "java-cmdline";
                     }
@@ -176,16 +192,6 @@ public class CommandLineClient {
 
     }
 
-    private Hashtable testHeaders(){
-        Hashtable ret = new Hashtable();
-        Properties sp = System.getProperties();
-        for (Object k:sp.keySet()){
-            if (((String) k ).startsWith("os.")){
-            ret.put("x-"+k, sp.getProperty((String)k));
-        }
-        }
-        return ret;
-    }
     /**
      * primitive (minimal) commandline UI
      */
@@ -207,10 +213,9 @@ public class CommandLineClient {
                         System.out.println("No current call to hangup on...");
                     }
                 }
-                Hashtable headers = testHeaders();
                 if ((c == 'd') || (c == 'D')) {
                     if (_call == null) {
-                        _call = _phone.dial("9996160714@app", headers);
+                        _call = _phone.dial("9996160714@app", null);
                     } else {
                         System.out.println("Currently in a call, can't start a new one.");
                     }
