@@ -194,19 +194,20 @@ $(document).ready(function() {
                             calls[newCallID].energyPoll = window.setInterval(function(){
 	                        var callDiv = $("#"+newCallID);
                                 str = "<strong>Mic:</strong> ";
-                                me = calls[newCallID].energy().mic;
+                                var e = calls[newCallID].energy();
+				me = e.mic;
                                 for (i=0;i<10;i++){
                                     str = str+ ((i < me)?"X":"_");
                                 }
                                 callDiv.find(".callMicEnergy").html(str);	
                                 
                                 str = "<strong>Spk:</strong> ";
-                                se = calls[newCallID].energy().spk;
+                                se = e.spk;
                                 for (i=0;i<10;i++){
                                     str = str+ ((i < se)?"X":"_");
                                 }
                                 newCallDiv.find(".callSpkEnergy").html(str);	
-		            },500);
+		            },2000);
 			    
                         },
              	        onError: function(event) {
@@ -255,19 +256,20 @@ $(document).ready(function() {
                 calls[newCallID].energyPoll = window.setInterval(function(){
 	             var callDiv = $("#"+newCallID);
                      str = "<strong>Mic:</strong> ";
-                     me = calls[newCallID].energy().mic;
+                     e = calls[newCallID].energy();
+                     me = e.mic;
                      for (i=0;i<10;i++){
                        str = str+ ((i < me)?"X":"_");
                      }
                      callDiv.find(".callMicEnergy").html(str);	
                      
                      str = "<strong>Spk:</strong> ";
-                     se = calls[newCallID].energy().spk;
+                     se = e.spk;
                      for (i=0;i<10;i++){
                        str = str+ ((i < se)?"X":"_");
                      }
                      callDiv.find(".callSpkEnergy").html(str);	
-		},500);
+		},2000);
 			
             },
             onHangup: function() {
