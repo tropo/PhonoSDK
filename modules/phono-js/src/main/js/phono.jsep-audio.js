@@ -242,7 +242,6 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
                             if (nspk > 0.0){
                                 JSEPAudio.spk = Math.floor(Math.max((Math.LOG2E * Math.log(nspk)-4.0),0.0));
                             }
-                            Phono.log.info("nspk " + nspk +" spk "+JSEPAudio.spk+" nmic "+ nmic+ "mic "+JSEPAudio.mic);
                         }
                     }
                 });
