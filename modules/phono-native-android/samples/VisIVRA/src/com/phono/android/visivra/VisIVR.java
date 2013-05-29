@@ -155,8 +155,8 @@ public class VisIVR extends Activity {
 			}
 
 		};
-		// Likewise PhonoNative - set the address of the phono server
-		_pn = new PhonoNative("app.phono.com") {
+		// Likewise PhonoNative - optionally set the address of the phono server
+		_pn = new PhonoNative() {
 
 			// 3 boilerplate android methods - we return platform specific implementations of the AudioFace and PlayFace and DeviceInfoFace
 			// interfaces.

@@ -93,7 +93,7 @@ abstract public class PhonoNative {
 	 * Constructor with an concrete PhonoPhone and PhonoMessaging instances
 	 * 
 	 * @param domain
-	 *            - alternate domain to connect to - instead of app.phono.com
+	 *            - alternate domain to connect to - instead of gw.v1.phono.com
 	 * @param p
 	 * @param m
 	 */
@@ -109,7 +109,7 @@ abstract public class PhonoNative {
 	 * instances once it is constructed.
 	 */
 	public PhonoNative() {
-		this("app.phono.com");
+		this("gw.v1.phono.com");
 	}
 
 	/**

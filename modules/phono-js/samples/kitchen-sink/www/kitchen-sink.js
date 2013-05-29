@@ -35,14 +35,14 @@ $(document).ready(function() {
 	var newPhonoDiv = firstPhono.clone()
         var audioType = $('.audio-plugin').val();
         var bridged = false;
-        var connectionUrl = window.location.protocol+"//app.phono.com/http-bind";
+        var connectionUrl = window.location.protocol+"//app.v1.phono.com/http-bind";
         var provisioningUrl = undefined;
         var dialString = "sip:3366@login.zipdx.com";
         var chatString = "en2fr@bot.talk.google.com";
         var gw = "gw-v6.d.phono.com";
         
         if (connectionUrl.indexOf("file:") == 0){
-            connectionUrl = "http://app.phono.com/http-bind";
+            connectionUrl = "http://app.v1.phono.com/http-bind";
         }
 
         // Do we have URL parameters to override here?
