@@ -121,6 +121,14 @@
         }
         return crypto;
     }
+    _parseFingerprint = function(params) {
+        var finger = {
+            'hash':params[0],
+            'print':params[1],
+            'required':'1'
+        }
+        return finger;
+    }
 
     //a=rtpmap:101 telephone-event/8000"
     _parseRtpmap = function(params) {
@@ -169,7 +177,7 @@
         var c = candidateObj;
         var sdp = "a=candidate:" + c.foundation + " " +
             c.component + " " + 
-            c.protocol + " " +
+            c.protocol.toUpperCase() + " " +
             c.priority + " " +
             c.ip + " " +
             c.port;
@@ -199,6 +207,10 @@
             sdp+="/"+codecObj.channels;
         }
         sdp += "\r\n";
+	if (codecObj.ptime){
+	    sdp+="a=ptime:"+codecObj.ptime;
+	    sdp += "\r\n";
+        }
         return sdp;
     }
 
@@ -208,8 +220,28 @@
         return sdp;
     }
 
+    _buildFingerprint = function(fingerObj) {
+        var sdp = "a=fingerprint:" + fingerObj.hash + " " + fingerObj.print + "\r\n";
+        return sdp;
+    }
+
     _buildMedia = function(sdpObj) {
-        var sdp = "m=" + sdpObj.media.type + " " + sdpObj.media.port + " " + sdpObj.media.proto;
+        var sdp ="";
+// move fingerprint and ice to outside the m=
+        if (sdpObj.fingerprint) {
+            sdp = sdp + _buildFingerprint(sdpObj.fingerprint);
+        }
+        if (sdpObj.ice) {
+            var ice = sdpObj.ice;
+            if (!ice.filterLines) {
+                sdp = sdp + "a=ice-ufrag:" + ice.ufrag + "\r\n";
+                sdp = sdp + "a=ice-pwd:" + ice.pwd + "\r\n";
+            }
+            if (ice.options) {
+                sdp = sdp + "a=ice-options:" + ice.options + "\r\n";
+            }
+        }
+        sdp += "m=" + sdpObj.media.type + " " + sdpObj.media.port + " " + sdpObj.media.proto;
         var mi = 0;
         while (mi + 1 <= sdpObj.media.pts.length) {
             sdp = sdp + " " + sdpObj.media.pts[mi];
@@ -238,26 +270,20 @@
             ci = ci + 1;
         }
 
-        if (sdpObj.ice) {
-            var ice = sdpObj.ice;
-            if (!ice.filterLines) {
-                sdp = sdp + "a=ice-ufrag:" + ice.ufrag + "\r\n";
-                sdp = sdp + "a=ice-pwd:" + ice.pwd + "\r\n";
-            }
-            if (ice.options) {
-                sdp = sdp + "a=ice-options:" + ice.options + "\r\n";
-            }
-        }
 
-        if (sdpObj.direction == "recvonly") {
-            sdp = sdp + "a=recvonly\r\n";
-        } else if (sdpObj.direction == "sendonly") {
-            sdp = sdp + "a=sendonly\r\n";
-        } else if (sdpObj.direction == "none") {
-            sdp = sdp;
-        } else {
-           sdp = sdp + "a=sendrecv\r\n";
-        }
+        if (sdpObj.direction) {
+            if (sdpObj.direction == "recvonly") {
+                sdp = sdp + "a=recvonly\r\n";
+            } else if (sdpObj.direction == "sendonly") {
+                sdp = sdp + "a=sendonly\r\n";
+            } else if (sdpObj.direction == "none") {
+                sdp = sdp;
+            } else {
+               sdp = sdp + "a=sendrecv\r\n";
+            }
+	} else {
+            sdp = sdp + "a=sendrecv\r\n";
+	}
 
 
 
@@ -343,13 +369,15 @@
                 c = c.c('candidate', {component:'1',
                                       ip: sdpObj.connection.address,
                                       port: sdpObj.media.port}).up();
-                c = c.c('candidate', {component:'2',
+                if(sdpObj.rtcp) {
+                    c = c.c('candidate', {component:'2',
                                       ip: sdpObj.rtcp.address,
-                                      port: sdpObj.rtcp.port});
-                c.up().up();
+                                      port: sdpObj.rtcp.port}).up();
+                }
+                c = c.up();
 
                 if (!sdpObj.ice.pwd) sdpObj.ice.pwd = sdpObj.candidates[0].password;
-                if (!sdpObj.ice.ufrag) sdpObj.ice.ufrag = dpObj.candidates[0].username;
+                if (!sdpObj.ice.ufrag) sdpObj.ice.ufrag = sdpObj.candidates[0].username;
                 // Ice candidates
                 var transp = {xmlns:"urn:xmpp:jingle:transports:ice-udp:1",
                              pwd: sdpObj.ice.pwd,
@@ -361,6 +389,13 @@
                 Phono.util.each(sdpObj.candidates, function() {
                     c = c.c('candidate', this).up();           
                 });
+                if (sdpObj.fingerprint){
+                    c = c.c('fingerprint',{xmlns:"urn:xmpp:tmp:jingle:apps:dtls:0",
+				hash:sdpObj.fingerprint.hash,
+                                required:sdpObj.fingerprint.required});
+                    c.t(sdpObj.fingerprint.print);
+                    c.up();
+		}
                 c = c.up().up();
             });
             return c;
@@ -384,9 +419,12 @@
                 mediaObj.pts = [];
                 
                 blobObj.contents.push(sdpObj);
+                sdpObj.candidates = [];
+                sdpObj.codecs = [];
 
                 $(this).find('description').each(function () {
-                    var mediaType = $(this).attr('media');
+                  if($(this).attr('xmlns') == "urn:xmpp:jingle:apps:rtp:1"){
+		    var mediaType = $(this).attr('media');
                     mediaObj.type = mediaType;
                     mediaObj.proto = "RTP/SAVPF"; // HACK
                     mediaObj.port = 1000;
@@ -405,20 +443,27 @@
                         sdpObj['mid'] = $(this).attr('mid');
                     }
                     sdpObj.media = mediaObj;
+		    $(this).find('payload-type').each(function () {
+                        var codec = Phono.util.getAttributes(this);
+                        Phono.log.debug("codec: "+JSON.stringify(codec,null," "));
+                        sdpObj.codecs.push(codec);
+                        mediaObj.pts.push(codec.id);
+                    });
+		  } else {
+	            Phono.log.debug("skip description with wrong xmlns: "+$(this).attr('xmlns'));
+		  }
                 });
 
-                sdpObj.candidates = [];
-                sdpObj.codecs = [];
-                $(this).find('payload-type').each(function () {
-                    var codec = Phono.util.getAttributes(this);
-                    //Phono.log.debug("codec: "+JSON.stringify(codec,null," "));
-                    sdpObj.codecs.push(codec);
-                    mediaObj.pts.push(codec.id);
-                });
                 $(this).find('crypto').each(function () {
                     var crypto = Phono.util.getAttributes(this);
                     //Phono.log.debug("crypto: "+JSON.stringify(crypto,null," "));
                     sdpObj.crypto = crypto;
+                });
+                $(this).find('fingerprint').each(function () {
+                    var fingerprint = Phono.util.getAttributes(this);
+                    fingerprint.print = Strophe.getText(this);
+                    Phono.log.debug("fingerprint: "+JSON.stringify(fingerprint,null," "));
+                    sdpObj.fingerprint = fingerprint;
                 });
                 sdpObj.ice = {};
                 $(this).find('transport').each(function () {
@@ -471,12 +516,15 @@
         parseSDP: function(sdpString) {
             var contentsObj = {};
             contentsObj.contents = [];
-            var sdpObj = null;
+            var sdpObj = {};
+            sdpObj.candidates = [];
+            sdpObj.codecs = [];
+            sdpObj.ice = {};
 
             // Iterate the lines
             var sdpLines = sdpString.split("\r\n");
             for (var sdpLine in sdpLines) {
-                //Phono.log.debug(sdpLines[sdpLine]);
+                Phono.log.debug(sdpLines[sdpLine]);
                 var line = _parseLine(sdpLines[sdpLine]);
 
                 if (line.type == "o") {
@@ -485,12 +533,13 @@
                 if (line.type == "m") {
                     // New m-line, create a new content
                     var media = _parseM(line.contents);
-                    sdpObj = {};
+                    /*if (sdpObj != null) {
+                       sdpObj = {};
+                       sdpObj.candidates = [];
+                       sdpObj.codecs = [];
+                       sdpObj.ice = {};
+		    } */
                     sdpObj.media = media;
-                    sdpObj.candidates = [];
-                    sdpObj.codecs = [];
-                    sdpObj.ice = {};
-                    
                     contentsObj.contents.push(sdpObj);
                 }
                 if (line.type == "c") {
@@ -537,6 +586,10 @@
                         break;
                     case "ssrc":
                         sdpObj.ssrc = _parseSsrc(a.params, sdpObj.ssrc);
+                        break;
+                    case "fingerprint":
+                        var print = _parseFingerprint(a.params);
+                        sdpObj.fingerprint = print;
                         break;
                     case "crypto":
                         var crypto = _parseCrypto(a.params);

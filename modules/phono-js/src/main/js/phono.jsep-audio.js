@@ -3,9 +3,17 @@ function JSEPAudio(phono, config, callback) {
 
     Phono.log.info("Initialize JSEP");
     if (typeof(webkitAudioContext) !== 'undefined'){
-        console.log("Have webkitAudio def");
+        Phono.log.info("Have webkitAudio def");
         JSEPAudio.webAudioContext = new webkitAudioContext();
-    } 
+    }  else if (typeof(AudioContext) !== 'undefined'){
+        Phono.log.info("Have AudioContext def");
+        JSEPAudio.webAudioContext = new AudioContext();
+    }  else if (typeof(mozAudioContext) !== 'undefined'){
+        Phono.log.info("Have mozAudio def");
+        JSEPAudio.webAudioContext = new mozAudioContext();
+    } else {
+	Phono.log.info("No webAudio available - so no freep");
+    }
 
     if (typeof webkitRTCPeerConnection== "function") {
         JSEPAudio.GUM = function(p,s,f) {
@@ -14,8 +22,64 @@ function JSEPAudio(phono, config, callback) {
         JSEPAudio.mkPeerConnection = function (a,b) {
             return new webkitRTCPeerConnection(a,b);
         };
+        JSEPAudio.mkSessionDescription = function(a){
+            return new RTCSessionDescription(a);
+        };
+        JSEPAudio.createObjectURL = function (s){
+            return webkitURL.createObjectURL(s);
+        };
+        JSEPAudio.stun = "stun:stun.l.google.com:19302";
+        JSEPAudio.attachMediaStream = function(element, stream) {
+            element.src = webkitURL.createObjectURL(stream);
+        };
+        JSEPAudio.stripCrypto = function(sdpObj){
+	    return sdpObj;
+        };
+	JSEPAudio.AudioUrl = function(url){
+		return url;
+	};
+	JSEPAudio.addCreateConstraint = function(constraint){
+		return constraint;
+	};
+    } else if (typeof mozRTCPeerConnection == "function") {
+        JSEPAudio.GUM = function(p,s,f) {
+            navigator.mozGetUserMedia(p,s,f)
+        };
+        JSEPAudio.mkPeerConnection = function (a,b) {
+            return new mozRTCPeerConnection(a,b);
+        };
+        JSEPAudio.mkSessionDescription = function(a){
+            return new mozRTCSessionDescription(a);
+        };
+        JSEPAudio.createObjectURL = function (s){
+            return URL.createObjectURL(s);
+        };
+        JSEPAudio.stun = "stun:23.21.150.121";
+        JSEPAudio.attachMediaStream = function(element, stream) {
+            element.mozSrcObject = stream;
+            element.play();
+        };
+        JSEPAudio.stripCrypto = function(sdpObj){
+	   Phono.util.each(sdpObj.contents, function() {
+              if(this.rtcp) {delete this.rtcp;};
+              if(this['rtcp-mux']) {delete this['rtcp-mux'];};
+              if(this.crypto) {delete this.crypto;};
+	      if(this.ssrc) { delete this.ssrc;};
+	      if(this.mid) { delete this.mid;};
+           }); 
+           if (sdpObj.group) {delete sdpObj.group;};
+	   return sdpObj;
+        };
+	JSEPAudio.AudioUrl = function(url){
+		return url.replace(".mp3",".ogg");
+	};
+	JSEPAudio.addCreateConstraint = function(constraint){
+		constraint.mandatory.MozDontOfferDataChannel=true;
+		return constraint;
+	};
     }
     JSEPAudio.spk = 0.0;
+    JSEPAudio.mic = 0.0;
     this.config = Phono.util.extend({
         media: {
             audio:true,
@@ -38,14 +102,13 @@ function JSEPAudio(phono, config, callback) {
 }
 
 JSEPAudio.exists = function() {
-    return (typeof webkitRTCPeerConnection == "function");
+    return ((typeof webkitRTCPeerConnection == "function") || (typeof mozRTCPeerConnection == "function"));
 }
 
 JSEPAudio.prototype.getCaps = function(c) {
     return c.c(this.type).up();
 };
 
-JSEPAudio.stun = "STUN stun.l.google.com:19302";
 JSEPAudio.count = 0;
 JSEPAudio.toneMap = {
     '0':[1336,941],
@@ -71,7 +134,7 @@ JSEPAudio.prototype.play = function(transport, autoPlay) {
     var url = null;
     var audioPlayer = null;
     if (transport.uri) {
-        url = transport.uri;
+        url = JSEPAudio.AudioUrl(transport.uri);
     }
     
     return {
@@ -133,11 +196,9 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
             return null;
         },
         mute: function(value) {
-            var tracks;
-            if (webkitMediaStream.prototype.getAudioTracks) {
+            var tracks = [];
+            if (JSEPAudio.localStream.getAudioTracks) {
                 tracks = JSEPAudio.localStream.getAudioTracks();
-            } else {
-                tracks = JSEPAudio.localStream.audioTracks
             }
             if(arguments.length === 0) {
                 var muted = true;
@@ -168,19 +229,25 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
                         var obj = sr[i].remote;
                         if (obj){
                             var nspk = 0.0;
+			    var nmic = 0.0;
+                            if (obj.stat('audioInputLevel')){
+                                nmic = obj.stat('audioInputLevel');
+                            }
+                            if (nmic > 0.0){
+                                JSEPAudio.mic = Math.floor(Math.max((Math.LOG2E * Math.log(nmic)-4.0),0.0));
+                            }
                             if (obj.stat('audioOutputLevel')){
                                 nspk = obj.stat('audioOutputLevel');
                             }
                             if (nspk > 0.0){
                                 JSEPAudio.spk = Math.floor(Math.max((Math.LOG2E * Math.log(nspk)-4.0),0.0));
                             }
-                            Phono.log.info("nspk " + nspk +" spk "+JSEPAudio.spk);
                         }
                     }
                 });
             } 
             return {
-                mic: 0.0,
+                mic: JSEPAudio.mic,
                 spk: JSEPAudio.spk
             };
             
@@ -225,9 +292,8 @@ JSEPAudio.prototype.showPermissionBox = function(callback) {
     },
     function(stream) {
         JSEPAudio.localStream = stream;
-        var url = webkitURL.createObjectURL(stream);
         JSEPAudio.localVideo.style.opacity = 1;
-        JSEPAudio.localVideo.src = url;
+        JSEPAudio.attachMediaStream(JSEPAudio.localVideo,stream);
         JSEPAudio.localVideo.muted = "muted";
         if (typeof callback == 'function') callback(true);
     },
@@ -250,20 +316,27 @@ JSEPAudio.prototype.transport = function(config) {
     var inboundOffer;
     var configuration = {
         iceServers:[ {
-                url:"stun:stun.l.google.com:19302"
+                url:JSEPAudio.stun
             } ]
     };
-    var constraints;
+    var offerconstraints;
+    var peerconstraints;
     var remoteContainerId;
     var complete = false;
     var audio = this;
     var candidateCount = 0;
 
-    constraints =  {
+
+
+    offerconstraints =  {
         'mandatory': {
             'OfferToReceiveAudio':this.config.media['audio'],
             'OfferToReceiveVideo':this.config.media['video']
         }
+    };
+    offerconstraints = JSEPAudio.addCreateConstraint(offerconstraints);
+    peerconstraints = {
+        'optional': [{'DtlsSrtpKeyAgreement': 'true'}]
     };
 
     if(!config || !config.remoteContainerId) {
@@ -282,16 +355,18 @@ JSEPAudio.prototype.transport = function(config) {
         name: "urn:xmpp:jingle:transports:ice-udp:1",
         buildTransport: function(direction, j, callback, u, updateCallback) {
             
-            pc = JSEPAudio.mkPeerConnection(configuration,constraints);
+            pc = JSEPAudio.mkPeerConnection(configuration,peerconstraints);
             JSEPAudio.pc = pc;
-            pc.onicecandidate = function(evt) {
+	    var oic = function(evt) {
                 if (!complete) {
                     if ((evt.candidate == null) || 
                         (candidateCount >= 1 && !audio.config.media['video'] && direction == "answer")) {
-                        //Phono.log.info("All Ice candidates in description is now: "+JSON.stringify(pc.localDescription));
+                        Phono.log.info("All Ice candidates in ");
                         complete = true;
-                        var sdpObj = Phono.sdp.parseSDP(pc.localDescription.sdp);
-                        //Phono.log.info("sdpObj = " + JSON.stringify(sdpObj));
+			var sdp = pc.localDescription.sdp;
+			Phono.log.info('SDP ' + JSON.stringify(sdp));
+                        var sdpObj = Phono.sdp.parseSDP(sdp);
+                        Phono.log.info('SdpObj ' + JSON.stringify(sdpObj));
                         Phono.sdp.buildJingle(j, sdpObj);
                         var codecId = 0;
                         if (sdpObj.contents[0].codecs[0].name == "telephone-event") codecId = 1;
@@ -303,28 +378,18 @@ JSEPAudio.prototype.transport = function(config) {
                         };
                         callback(codec);
                     } else {
-                        //Phono.log.info("An Ice candidate "+JSON.stringify(evt.candidate));
+                        Phono.log.info("An Ice candidate ");
                         candidateCount += 1;
                     }
                 }
-            }
+            };
+	    pc.onicecandidate = oic;
             //pc.onconnecting = function(message) {Phono.log.info("onSessionConnecting.");};
             //pc.onopen = function(message) {Phono.log.info("onSessionOpened.");};
             pc.onaddstream = function (event) {
-                Phono.log.info("onAddStream. "+JSON.stringify(event.stream));
-                /*var context = JSEPAudio.webAudioContext;
-                if ((context) && (typeof context.createMediaStreamSource == "function")) {
-                    var source = context.createMediaStreamSource(event.stream);
-                    var analyser =  context.createAnalyser();
-                    analyser.fftSize = 2048;
-                    source.connect(analyser);
-                    analyser.connect(context.destination);
-                    JSEPAudio.analyser = analyser;
-                    Phono.log.info("Added analyser for peer audio. ");
-                } */
-                var url = webkitURL.createObjectURL(event.stream);
+                Phono.log.info("onAddStream. Attaching");
+		JSEPAudio.attachMediaStream(remoteVideo,event.stream);
                 remoteVideo.style.opacity = 1;
-                remoteVideo.src = url;
             };
             //pc.onremovestream = function (event) {Phono.log.info("onRemoveStream."); };
             //pc.onicechange= function (event) {Phono.log.info("onIceChange: "+pc.iceState); };
@@ -335,27 +400,39 @@ JSEPAudio.prototype.transport = function(config) {
 
             var cb2 = function() {
                 pc.addStream(JSEPAudio.localStream);
+		var setlfail = function(er){
+                    Phono.log.error('failed to setlocal '+er);
+                };
+		var setlok = function(){
+                    Phono.log.info('setlocal ok');
+                };
                 
                 var cb = function(localDesc) {
-                    var sd = new RTCSessionDescription(localDesc);
-                    pc.setLocalDescription(sd);
-                    var msgString = JSON.stringify(sd,null," ");
-                    Phono.log.info('Set local description ' + msgString);
-                    //Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
+                    var sd = JSEPAudio.mkSessionDescription(localDesc);
+                    pc.setLocalDescription(sd,setlok,setlfail);
+		    window.setTimeout(function() {oic({})},1000);
+                    Phono.log.info('Set local description ' + JSON.stringify(localDesc));
+                };
+		var offerfail = function(){
+                    Phono.log.error('failed to create offer');
+                };
+		var ansfail = function(){
+                    Phono.log.error('failed to create answer');
                 };
                 
                 if (direction == "answer") {
+                    Phono.log.info('Set remote description ' + JSON.stringify(inboundOffer));
                     pc.setRemoteDescription(inboundOffer,
                     function(){
                         Phono.log.debug("remoteDescription happy");
-                        //Phono.log.info("Pc now: "+JSON.stringify(pc,null," "));
-                        pc.createAnswer(cb , null, constraints);
+                        pc.createAnswer(cb ,ansfail);
                     },
                     function(){
                         Phono.log.error("remoteDescription error")
                     });
                 } else {
-                    pc.createOffer(cb , null, constraints);
+                    Phono.log.info('create offer with  '+ JSON.stringify(offerconstraints) );
+                    pc.createOffer(cb , offerfail, offerconstraints);
                 }
             }
             
@@ -367,7 +444,10 @@ JSEPAudio.prototype.transport = function(config) {
         },
         processTransport: function(t, update, iq) {
             var sdpObj = Phono.sdp.parseJingle(iq);
+	    Phono.log.info('Made remote sdp Obj' + JSON.stringify(sdpObj));
+            sdpObj = JSEPAudio.stripCrypto(sdpObj);
             var sdp = Phono.sdp.buildSDP(sdpObj);
+            Phono.log.info('constructed remote sdp ' + JSON.stringify(sdp));
             var codecId = 0;
             if (sdpObj.contents[0].codecs[0].name == "telephone-event") codecId = 1;
             var codec = 
@@ -379,15 +459,15 @@ JSEPAudio.prototype.transport = function(config) {
 
             if (pc) {
                 // We are an answer to an outbound call
-                var sd = new RTCSessionDescription({
+                Phono.log.info('Got remote sdp ' + JSON.stringify(sdp));
+                var sd = JSEPAudio.mkSessionDescription({
                     'sdp':sdp,
                     'type':"answer"
                 } );
-                Phono.log.info("Set remote description: "+JSON.stringify(sd,null," "));
+                Phono.log.info('Set remote description ' + JSON.stringify(sd));
                 pc.setRemoteDescription(sd,
                 function(){
                     Phono.log.debug("remoteDescription happy");
-                    //Phono.log.debug("Pc now: "+JSON.stringify(pc,null," "));
                 },
                 function(){
                     Phono.log.error("remoteDescription sad")
@@ -395,11 +475,11 @@ JSEPAudio.prototype.transport = function(config) {
                 
             } else {
                 // We are an offer for an inbound call
-                var sd = new RTCSessionDescription({
+	        Phono.log.info('Got remote description ' + JSON.stringify(sdp));
+                var sd = JSEPAudio.mkSessionDescription({
                     'sdp':sdp,
                     'type':"offer"
                 } );
-                Phono.log.info("Set remote description: "+JSON.stringify(sd,null," "));
                 inboundOffer = sd;
             }
             return {
@@ -411,7 +491,9 @@ JSEPAudio.prototype.transport = function(config) {
             // Destroy any transport state we have created
             if (pc) {
                 pc.close();
-                remoteVideo.parentNode.removeChild(remoteVideo);
+		if (($(remoteVideo).attr("id")).indexOf("_phono-audio-webrtc") == 0){
+                     remoteVideo.parentNode.removeChild(remoteVideo);
+		}
             }
 
             if (JSEPAudio.localStream) {
