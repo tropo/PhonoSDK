@@ -315,7 +315,10 @@
 
     // Fake Phono for node.js
     if (typeof Phono == 'undefined') {
-        Phono = {};
+        Phono = {
+        log:{debug:function(mess){debug(mess);}}
+        };
+	load("phono.util.js");
     }
 
     Phono.sdp = {
@@ -516,10 +519,8 @@
         parseSDP: function(sdpString) {
             var contentsObj = {};
             contentsObj.contents = [];
-            var sdpObj = {};
-            sdpObj.candidates = [];
-            sdpObj.codecs = [];
-            sdpObj.ice = {};
+            var sessionSDP = {ice:{}};
+            var sdpObj = sessionSDP;
 
             // Iterate the lines
             var sdpLines = sdpString.split("\r\n");
@@ -531,14 +532,16 @@
                     contentsObj.session = _parseO(line.contents);
                 }
                 if (line.type == "m") {
-                    // New m-line, create a new content
+                    // New m-line, 
+                    // create a new content
                     var media = _parseM(line.contents);
-                    /*if (sdpObj != null) {
-                       sdpObj = {};
-                       sdpObj.candidates = [];
-                       sdpObj.codecs = [];
-                       sdpObj.ice = {};
-		    } */
+                    sdpObj = {};
+                    sdpObj.candidates = [];
+                    sdpObj.codecs = [];
+                    sdpObj.ice = sessionSDP.ice;
+                    if (sessionSDP.fingerprint != null){
+                        sdpObj.fingerprint = sessionSDP.fingerprint;
+                    }
                     sdpObj.media = media;
                     contentsObj.contents.push(sdpObj);
                 }
@@ -674,16 +677,30 @@
     if (typeof window === 'undefined') {
         // Unit tests under node.js
 
-        var testSDP = "v=0\r\no=- 1825865780 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE audio video\r\nm=audio 51937 RTP/SAVPF 103 104 0 8 106 105 13 126\r\nc=IN IP4 92.20.224.185\r\na=rtcp:51937 IN IP4 92.20.224.185\r\na=candidate:257138899 1 udp 2113937151 192.168.0.151 54066 typ host generation 0\r\na=candidate:257138899 2 udp 2113937151 192.168.0.151 54066 typ host generation 0\r\na=candidate:2384176743 1 udp 1677729535 92.20.224.185 51937 typ srflx generation 0\r\na=candidate:2384176743 2 udp 1677729535 92.20.224.185 51937 typ srflx generation 0\r\na=candidate:1104174115 1 tcp 1509957375 192.168.0.151 49878 typ host generation 0\r\na=candidate:1104174115 2 tcp 1509957375 192.168.0.151 49878 typ host generation 0\r\na=ice-ufrag:2hm6kQUKfYZcwx0Q\r\na=ice-pwd:BFTSrs0UhQfGi2dS3XiPoJ3b\r\na=ice-options:google-ice\r\na=sendrecv\r\na=mid:audio\r\na=rtcp-mux\r\na=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:F8KwGDYU0lGx39pduFGhysbmcPLLNwIvGdYBSgNK\r\na=rtpmap:103 ISAC/16000\r\na=rtpmap:104 ISAC/32000\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:106 CN/32000\r\na=rtpmap:105 CN/16000\r\na=rtpmap:13 CN/8000\r\na=rtpmap:126 telephone-event/8000\r\na=ssrc:414494470 cname:mCuCMzMwfauXes6i\r\na=ssrc:414494470 mslabel:FlTQmWsZfu8BKQjMHYBkFSLNWthbpQE0e3HP\r\na=ssrc:414494470 label:FlTQmWsZfu8BKQjMHYBkFSLNWthbpQE0e3HP00\r\nm=video 51937 RTP/SAVPF 100 101 102\r\nc=IN IP4 92.20.224.185\r\na=rtcp:51937 IN IP4 92.20.224.185\r\na=candidate:257138899 1 udp 2113937151 192.168.0.151 54066 typ host generation 0\r\na=candidate:257138899 2 udp 2113937151 192.168.0.151 54066 typ host generation 0\r\na=candidate:2384176743 1 udp 1677729535 92.20.224.185 51937 typ srflx generation 0\r\na=candidate:2384176743 2 udp 1677729535 92.20.224.185 51937 typ srflx generation 0\r\na=candidate:1104174115 1 tcp 1509957375 192.168.0.151 49878 typ host generation 0\r\na=candidate:1104174115 2 tcp 1509957375 192.168.0.151 49878 typ host generation 0\r\na=ice-ufrag:2hm6kQUKfYZcwx0Q\r\na=ice-pwd:BFTSrs0UhQfGi2dS3XiPoJ3b\r\na=ice-options:google-ice\r\na=sendrecv\r\na=mid:video\r\na=rtcp-mux\r\na=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:F8KwGDYU0lGx39pduFGhysbmcPLLNwIvGdYBSgNK\r\na=rtpmap:100 VP8/90000\r\na=rtpmap:101 red/90000\r\na=rtpmap:102 ulpfec/90000\r\n";
-        
-        var sdpObj = Phono.sdp.parseSDP(testSDP);
-        console.log("SDP Object:");
-        console.log(JSON.stringify(sdpObj));
+        var SDP ={
+	chromeVideo:"v=0\r\no=- 2242705449 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE audio video\r\na=msid-semantic: WMS mXFROJeVMQxDhCFH34Yukxots985y812wGPJ\r\nm=audio 49548 RTP/SAVPF 111 103 104 0 8 107 106 105 13 126\r\nc=IN IP4 192.67.4.11\r\na=rtcp:49548 IN IP4 192.67.4.11\r\na=candidate:521808905 1 udp 2113937151 192.67.4.11 49548 typ host generation 0\r\na=candidate:521808905 2 udp 2113937151 192.67.4.11 49548 typ host generation 0\r\na=ice-ufrag:rl/PIMG6Pd1h6Ymp\r\na=ice-pwd:jsymMG3rh3Fq1vK83jHyQVtt\r\na=ice-options:google-ice\r\na=fingerprint:sha-256 C0:F7:9C:63:AC:84:62:E9:0D:F5:3B:D9:F8:7E:53:29:E2:1F:44:41:84:D1:B6:D7:48:39:A5:64:1F:E7:B4:E4\r\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\na=sendrecv\r\na=mid:audio\r\na=rtcp-mux\r\na=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:f4OO7dHJbCQsjecAC+0TFp6g6KBXyOub6yBmx+Xx\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 minptime=10\r\na=rtpmap:103 ISAC/16000\r\na=rtpmap:104 ISAC/32000\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:107 CN/48000\r\na=rtpmap:106 CN/32000\r\na=rtpmap:105 CN/16000\r\na=rtpmap:13 CN/8000\r\na=rtpmap:126 telephone-event/8000\r\na=maxptime:60\r\na=ssrc:3666452233 cname:XsXQR1VfOels9+3s\r\na=ssrc:3666452233 msid:mXFROJeVMQxDhCFH34Yukxots985y812wGPJ mXFROJeVMQxDhCFH34Yukxots985y812wGPJa0\r\na=ssrc:3666452233 mslabel:mXFROJeVMQxDhCFH34Yukxots985y812wGPJ\r\na=ssrc:3666452233 label:mXFROJeVMQxDhCFH34Yukxots985y812wGPJa0\r\nm=video 49548 RTP/SAVPF 100 116 117\r\nc=IN IP4 192.67.4.11\r\na=rtcp:49548 IN IP4 192.67.4.11\r\na=candidate:521808905 1 udp 2113937151 192.67.4.11 49548 typ host generation 0\r\na=candidate:521808905 2 udp 2113937151 192.67.4.11 49548 typ host generation 0\r\na=ice-ufrag:rl/PIMG6Pd1h6Ymp\r\na=ice-pwd:jsymMG3rh3Fq1vK83jHyQVtt\r\na=ice-options:google-ice\r\na=fingerprint:sha-256 C0:F7:9C:63:AC:84:62:E9:0D:F5:3B:D9:F8:7E:53:29:E2:1F:44:41:84:D1:B6:D7:48:39:A5:64:1F:E7:B4:E4\r\na=extmap:2 urn:ietf:params:rtp-hdrext:toffset\r\na=sendrecv\r\na=mid:video\r\na=rtcp-mux\r\na=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:f4OO7dHJbCQsjecAC+0TFp6g6KBXyOub6yBmx+Xx\r\na=rtpmap:100 VP8/90000\r\na=rtcp-fb:100 ccm fir\r\na=rtcp-fb:100 nack \r\na=rtpmap:116 red/90000\r\na=rtpmap:117 ulpfec/90000\r\na=ssrc:3255638847 cname:XsXQR1VfOels9+3s\r\na=ssrc:3255638847 msid:mXFROJeVMQxDhCFH34Yukxots985y812wGPJ mXFROJeVMQxDhCFH34Yukxots985y812wGPJv0\r\na=ssrc:3255638847 mslabel:mXFROJeVMQxDhCFH34Yukxots985y812wGPJ\r\na=ssrc:3255638847 label:mXFROJeVMQxDhCFH34Yukxots985y812wGPJv0\r\n",
 
-        var resultSDP = Phono.sdp.buildSDP(sdpObj);
-        console.log("Resulting SDP:");
-        console.log(resultSDP);
+	chromeAudio:"v=0\r\no=- 2751679977 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE audio\r\na=msid-semantic: WMS YyMaveYaWtkfdWeZtSHs3AHFuH4TEYh4MZDh\r\nm=audio 63231 RTP/SAVPF 111 103 104 0 8 107 106 105 13 126\r\nc=IN IP4 192.67.4.11\r\na=rtcp:63231 IN IP4 192.67.4.11\r\na=candidate:521808905 1 udp 2113937151 192.67.4.11 63231 typ host generation 0\r\na=candidate:521808905 2 udp 2113937151 192.67.4.11 63231 typ host generation 0\r\na=ice-ufrag:1VZUXywcfSTmvPBK\r\na=ice-pwd:NHrjWPuvIlyBQD7UVw4zi/4F\r\na=ice-options:google-ice\r\na=fingerprint:sha-256 49:1E:A3:EB:78:C2:89:55:5D:0D:6E:F2:B7:41:50:DB:10:C4:B2:54:8F:D8:24:A5:E8:56:0A:56:F4:BA:3A:ED\r\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\na=sendrecv\r\na=mid:audio\r\na=rtcp-mux\r\na=crypto:0 AES_CM_128_HMAC_SHA1_32 inline:MpqMpDpEDjNDfpquFL8jIkO9oLp2Dp4NOYiSmrea\r\na=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:/yAvMdC0p1e/4c/Jc6ljepmHpIuHV9jO3FyrrTX4\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 minptime=10\r\na=rtpmap:103 ISAC/16000\r\na=rtpmap:104 ISAC/32000\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:107 CN/48000\r\na=rtpmap:106 CN/32000\r\na=rtpmap:105 CN/16000\r\na=rtpmap:13 CN/8000\r\na=rtpmap:126 telephone-event/8000\r\na=maxptime:60\r\na=ssrc:3334051080 cname:ECpt57S24HzaX1WY\r\na=ssrc:3334051080 msid:YyMaveYaWtkfdWeZtSHs3AHFuH4TEYh4MZDh YyMaveYaWtkfdWeZtSHs3AHFuH4TEYh4MZDha0\r\na=ssrc:3334051080 mslabel:YyMaveYaWtkfdWeZtSHs3AHFuH4TEYh4MZDh\r\na=ssrc:3334051080 label:YyMaveYaWtkfdWeZtSHs3AHFuH4TEYh4MZDha0\r\n",
+
+	firefoxVideo:"v=0\r\no=Mozilla-SIPUA-24.0a1 12643 0 IN IP4 0.0.0.0\r\ns=SIP Call\r\nt=0 0\r\na=ice-ufrag:1a870bf3\r\na=ice-pwd:948d30c7fe15b95a7bd63743ae84ac2e\r\na=fingerprint:sha-256 1C:D2:EC:A0:51:89:35:BE:84:4B:BC:11:F3:D4:D6:C7:F7:39:52:C5:2D:55:88:1D:61:24:7A:54:20:8A:AE:C2\r\nm=audio 50859 RTP/SAVPF 109 0 8 101\r\nc=IN IP4 192.67.4.11\r\na=rtpmap:109 opus/48000/2\r\na=ptime:20\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:101 telephone-event/8000\r\na=fmtp:101 0-15\r\na=sendrecv\r\na=candidate:0 1 UDP 2113601791 192.67.4.11 50859 typ host\r\na=candidate:0 2 UDP 2113601790 192.67.4.11 53847 typ host\r\nm=video 62311 RTP/SAVPF 120\r\nc=IN IP4 192.67.4.11\r\na=rtpmap:120 VP8/90000\r\na=sendrecv\r\na=candidate:0 1 UDP 2113601791 192.67.4.11 62311 typ host\r\na=candidate:0 2 UDP 2113601790 192.67.4.11 54437 typ host\r\n",
         
+
+	firefoxAudio:"v=0\r\no=Mozilla-SIPUA-24.0a1 20557 0 IN IP4 0.0.0.0\r\ns=SIP Call\r\nt=0 0\r\na=ice-ufrag:66600851\r\na=ice-pwd:aab7c3c8d881f6406eff1f1ff2e3bc5e\r\na=fingerprint:sha-256 C3:C4:98:95:D0:58:B1:D2:F9:72:A0:44:EB:C7:C4:49:95:8F:EE:00:05:10:82:A8:6E:F6:4A:DF:43:A3:2A:16\r\nm=audio 56026 RTP/SAVPF 109 0 8 101\r\nc=IN IP4 192.67.4.11\r\na=rtpmap:109 opus/48000/2\r\na=ptime:20\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:101 telephone-event/8000\r\na=fmtp:101 0-15\r\na=sendrecv\r\na=candidate:0 1 UDP 2113601791 192.67.4.11 56026 typ host\r\na=candidate:0 2 UDP 2113601790 192.67.4.11 56833 typ host\r\n",
+
+};
+
+        for (s in SDP){
+		var bro = s;
+                var bs = SDP[s];	
+		Phono.log.debug("testing "+ s);
+		var sdpObj = Phono.sdp.parseSDP(bs);
+		Phono.log.debug(JSON.stringify(sdpObj,null," "));
+
+		var resultSDP = Phono.sdp.buildSDP(sdpObj);
+		Phono.log.debug(s+ " Resulting SDP:");
+		Phono.log.debug(resultSDP);
+        }
+
     }
     
 }()); 
