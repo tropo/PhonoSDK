@@ -58,6 +58,7 @@ $(document).ready(function() {
         console.log("audioType = " + audioType);
         console.log("dialString = " + dialString);
         console.log("charString = " + chatString);
+        console.log("video = " + video);
 
 	newPhonoDiv.attr("id",newPhonoID).appendTo('.phonoHldr').show();
 	newPhonoDiv.find(".phonoID").text(newPhonoID+":");
@@ -66,10 +67,9 @@ $(document).ready(function() {
         newPhonoDiv.find(".chatTo").val(chatString);
 
         var audio = audioType;
-        var video = false;
 
         var protocol = "sip:";
-        if (audioType == "webrtc" || audioType == "jsep") protocol = "xmpp:";
+        if (video && audioType == "jsep") protocol = "xmpp:";
 
         if (audioType == "flash") {
             gw = "gw-v3.d.phono.com";
@@ -92,7 +92,6 @@ $(document).ready(function() {
         if (audioType == "jsep") {
             gw = "gw-v6.d.phono.com";
             audio = "jsep";
-            video = video;
         }
         
         phonos[newPhonoID] = $.phono({
@@ -108,7 +107,8 @@ $(document).ready(function() {
                                                     baseUrl + "?audio=" + audioType 
                                                     + "&connectionUrl=" + connectionUrl 
                                                     + "&dial=" + protocol + this.sessionId 
-                                                    + "&chat=" + this.sessionId + "'>" 
+                                                    + "&chat=" + this.sessionId 
+						    + (video?"&video=true":"") + "'>" 
                                                     + this.sessionId + "</a>");
                 newPhonoDiv.find(".phoneControl").show();
                 
