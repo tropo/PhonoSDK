@@ -181,7 +181,7 @@
             c.priority + " " +
             c.ip + " " +
             c.port;
-        if (c.type) sdp = sdp + " typ " + c.type;
+        if (c.type) sdp = sdp + " typ host"; //+ c.type;
         if (c.component == 1) sdp = sdp + " name rtp";
         if (c.component == 2) sdp = sdp + " name rtcp";
         sdp = sdp + " network_name en0";
@@ -210,7 +210,12 @@
 	if (codecObj.ptime){
 	    sdp+="a=ptime:"+codecObj.ptime;
 	    sdp += "\r\n";
-        }
+        } else if (codecObj.name.toLowerCase().indexOf("opus")==0){
+	    sdp+="a=ptime:20\r\n";
+	}
+	if (codecObj.name.toLowerCase().indexOf("telephone-event")==0){
+	    sdp+="a=fmtp:"+codecObj.id+" 0-15\r\n";
+	}
         return sdp;
     }
 
@@ -225,7 +230,7 @@
         return sdp;
     }
 
-    _buildMedia = function(sdpObj) {
+    _buildSessProps = function(sdpObj) {
         var sdp ="";
 // move fingerprint and ice to outside the m=
         if (sdpObj.fingerprint) {
@@ -241,6 +246,11 @@
                 sdp = sdp + "a=ice-options:" + ice.options + "\r\n";
             }
         }
+        return sdp;
+    }
+
+    _buildMedia =function(sdpObj) {
+        var sdp ="";
         sdp += "m=" + sdpObj.media.type + " " + sdpObj.media.port + " " + sdpObj.media.proto;
         var mi = 0;
         while (mi + 1 <= sdpObj.media.pts.length) {
@@ -316,7 +326,7 @@
     // Fake Phono for node.js
     if (typeof Phono == 'undefined') {
         Phono = {
-        log:{debug:function(mess){debug(mess);}}
+        log:{debug:function(mess){print(mess);}}
         };
 	load("phono.util.js");
     }
@@ -652,6 +662,7 @@
 
             var contents = contentsObj.contents;
             var ic = 0;
+	    sdp = sdp + _buildSessProps(contents[0]);
             while (ic + 1 <= contents.length) {
                 var sdpObj = contents[ic];
                 sdp = sdp + _buildMedia(sdpObj);

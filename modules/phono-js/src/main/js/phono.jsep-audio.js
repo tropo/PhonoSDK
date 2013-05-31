@@ -61,13 +61,13 @@ function JSEPAudio(phono, config, callback) {
         };
         JSEPAudio.stripCrypto = function(sdpObj){
 	   Phono.util.each(sdpObj.contents, function() {
-              if(this.rtcp) {delete this.rtcp;};
-              if(this['rtcp-mux']) {delete this['rtcp-mux'];};
+              //if(this.rtcp) {delete this.rtcp;};
+              //if(this['rtcp-mux']) {delete this['rtcp-mux'];};
               if(this.crypto) {delete this.crypto;};
-	      if(this.ssrc) { delete this.ssrc;};
-	      if(this.mid) { delete this.mid;};
+	      //if(this.ssrc) { delete this.ssrc;};
+	      //if(this.mid) { delete this.mid;};
            }); 
-           if (sdpObj.group) {delete sdpObj.group;};
+           //if (sdpObj.group) {delete sdpObj.group;};
 	   return sdpObj;
         };
 	JSEPAudio.AudioUrl = function(url){
