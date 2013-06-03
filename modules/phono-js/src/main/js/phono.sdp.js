@@ -230,21 +230,27 @@
         return sdp;
     }
 
-    _buildSessProps = function(sdpObj) {
-        var sdp ="";
-// move fingerprint and ice to outside the m=
-        if (sdpObj.fingerprint) {
-            sdp = sdp + _buildFingerprint(sdpObj.fingerprint);
-        }
-        if (sdpObj.ice) {
-            var ice = sdpObj.ice;
+    _buildIce= function(ice) {
+	var sdp="";
+        if (ice.ufrag) {
             if (!ice.filterLines) {
                 sdp = sdp + "a=ice-ufrag:" + ice.ufrag + "\r\n";
                 sdp = sdp + "a=ice-pwd:" + ice.pwd + "\r\n";
             }
             if (ice.options) {
                 sdp = sdp + "a=ice-options:" + ice.options + "\r\n";
-            }
+	    }
+	}
+	return sdp;
+    }
+
+    _buildSessProps = function(sdpObj) {
+        var sdp ="";
+        if (sdpObj.fingerprint) {
+            sdp = sdp + _buildFingerprint(sdpObj.fingerprint);
+        }
+        if (sdpObj.ice) {
+	    sdp= sdp + _buildIce(sdpObj.ice);
         }
         return sdp;
     }
@@ -272,6 +278,9 @@
             sdp = sdp + "a=rtcp:" + sdpObj.rtcp.port + " " + sdpObj.rtcp.nettype + " " + 
                 sdpObj.rtcp.addrtype + " " +
                 sdpObj.rtcp.address + "\r\n";
+        }
+        if (sdpObj.ice) {
+	    sdp= sdp + _buildIce(sdpObj.ice);
         }
 
         var ci = 0;
@@ -303,6 +312,9 @@
  
         if (sdpObj.crypto) {
             sdp = sdp + _buildCrypto(sdpObj.crypto);
+        }
+        if (sdpObj.fingerprint) {
+            sdp = sdp + _buildFingerprint(sdpObj.fingerprint);
         }
  
         var cdi = 0;
@@ -389,24 +401,43 @@
                 }
                 c = c.up();
 
-                if (!sdpObj.ice.pwd) sdpObj.ice.pwd = sdpObj.candidates[0].password;
-                if (!sdpObj.ice.ufrag) sdpObj.ice.ufrag = sdpObj.candidates[0].username;
+		// 3 places we might find ice creds - in order of priority:
+		// candidate username
+		// media level icefrag
+		// session level icefrag
+		var iceObj = {};
+		if (sdpObj.candidates[0].username ){
+			iceObj = {ufrag:sdpObj.candidates[0].username,pwd:sdpObj.candidates[0].password};
+		} else if ((sdpObj.ice) && (sdpObj.ice.ufrag)){
+			iceObj = sdpObj.ice;
+		} else if ((blob.session.ice) && (blob.session.ice.ufrag)){
+			iceObj = blob.session.ice;
+		}
                 // Ice candidates
                 var transp = {xmlns:"urn:xmpp:jingle:transports:ice-udp:1",
-                             pwd: sdpObj.ice.pwd,
-                             ufrag: sdpObj.ice.ufrag};
-                if (sdpObj.ice.options) {
-                    transp.options = sdpObj.ice.options;
+                             pwd: iceObj.pwd,
+                             ufrag: iceObj.ufrag};
+                if (iceObj.options) {
+                    transp.options = iceObj.options;
                 }
 	        c = c.c('transport',transp);
                 Phono.util.each(sdpObj.candidates, function() {
                     c = c.c('candidate', this).up();           
                 });
-                if (sdpObj.fingerprint){
+		// two places to find the fingerprint
+		// media 
+		// session
+		var fp = null;
+		if (sdpObj.fingerprint) {
+		    fp= sdpObj.fingerprint;
+		}else if(blob.session.fingerprint){
+		    fp = blob.session.fingerprint;
+		}
+                if (fp){
                     c = c.c('fingerprint',{xmlns:"urn:xmpp:tmp:jingle:apps:dtls:0",
-				hash:sdpObj.fingerprint.hash,
-                                required:sdpObj.fingerprint.required});
-                    c.t(sdpObj.fingerprint.print);
+				hash:fp.hash,
+                                required:fp.required});
+                    c.t(fp.print);
                     c.up();
 		}
                 c = c.up().up();
@@ -529,8 +560,7 @@
         parseSDP: function(sdpString) {
             var contentsObj = {};
             contentsObj.contents = [];
-            var sessionSDP = {ice:{}};
-            var sdpObj = sessionSDP;
+            var sdpObj = null;
 
             // Iterate the lines
             var sdpLines = sdpString.split("\r\n");
@@ -540,6 +570,8 @@
 
                 if (line.type == "o") {
                     contentsObj.session = _parseO(line.contents);
+		    contentsObj.session.ice = {};
+		    sdpObj = contentsObj.session;
                 }
                 if (line.type == "m") {
                     // New m-line, 
@@ -548,9 +580,9 @@
                     sdpObj = {};
                     sdpObj.candidates = [];
                     sdpObj.codecs = [];
-                    sdpObj.ice = sessionSDP.ice;
-                    if (sessionSDP.fingerprint != null){
-                        sdpObj.fingerprint = sessionSDP.fingerprint;
+                    sdpObj.ice = {};
+                    if (contentsObj.session.fingerprint != null){
+                        sdpObj.fingerprint = contentsObj.session.fingerprint;
                     }
                     sdpObj.media = media;
                     contentsObj.contents.push(sdpObj);
@@ -660,9 +692,11 @@
                 sdp = sdp + "\r\n";
             }
 
+	    if (contentsObj.session){
+	        sdp = sdp + _buildSessProps(contentsObj.session);
+	    }
             var contents = contentsObj.contents;
             var ic = 0;
-	    sdp = sdp + _buildSessProps(contents[0]);
             while (ic + 1 <= contents.length) {
                 var sdpObj = contents[ic];
                 sdp = sdp + _buildMedia(sdpObj);
@@ -689,7 +723,7 @@
         // Unit tests under node.js
 
         var SDP ={
-	chromeVideo:"v=0\r\no=- 2242705449 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE audio video\r\na=msid-semantic: WMS mXFROJeVMQxDhCFH34Yukxots985y812wGPJ\r\nm=audio 49548 RTP/SAVPF 111 103 104 0 8 107 106 105 13 126\r\nc=IN IP4 192.67.4.11\r\na=rtcp:49548 IN IP4 192.67.4.11\r\na=candidate:521808905 1 udp 2113937151 192.67.4.11 49548 typ host generation 0\r\na=candidate:521808905 2 udp 2113937151 192.67.4.11 49548 typ host generation 0\r\na=ice-ufrag:rl/PIMG6Pd1h6Ymp\r\na=ice-pwd:jsymMG3rh3Fq1vK83jHyQVtt\r\na=ice-options:google-ice\r\na=fingerprint:sha-256 C0:F7:9C:63:AC:84:62:E9:0D:F5:3B:D9:F8:7E:53:29:E2:1F:44:41:84:D1:B6:D7:48:39:A5:64:1F:E7:B4:E4\r\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\na=sendrecv\r\na=mid:audio\r\na=rtcp-mux\r\na=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:f4OO7dHJbCQsjecAC+0TFp6g6KBXyOub6yBmx+Xx\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 minptime=10\r\na=rtpmap:103 ISAC/16000\r\na=rtpmap:104 ISAC/32000\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:107 CN/48000\r\na=rtpmap:106 CN/32000\r\na=rtpmap:105 CN/16000\r\na=rtpmap:13 CN/8000\r\na=rtpmap:126 telephone-event/8000\r\na=maxptime:60\r\na=ssrc:3666452233 cname:XsXQR1VfOels9+3s\r\na=ssrc:3666452233 msid:mXFROJeVMQxDhCFH34Yukxots985y812wGPJ mXFROJeVMQxDhCFH34Yukxots985y812wGPJa0\r\na=ssrc:3666452233 mslabel:mXFROJeVMQxDhCFH34Yukxots985y812wGPJ\r\na=ssrc:3666452233 label:mXFROJeVMQxDhCFH34Yukxots985y812wGPJa0\r\nm=video 49548 RTP/SAVPF 100 116 117\r\nc=IN IP4 192.67.4.11\r\na=rtcp:49548 IN IP4 192.67.4.11\r\na=candidate:521808905 1 udp 2113937151 192.67.4.11 49548 typ host generation 0\r\na=candidate:521808905 2 udp 2113937151 192.67.4.11 49548 typ host generation 0\r\na=ice-ufrag:rl/PIMG6Pd1h6Ymp\r\na=ice-pwd:jsymMG3rh3Fq1vK83jHyQVtt\r\na=ice-options:google-ice\r\na=fingerprint:sha-256 C0:F7:9C:63:AC:84:62:E9:0D:F5:3B:D9:F8:7E:53:29:E2:1F:44:41:84:D1:B6:D7:48:39:A5:64:1F:E7:B4:E4\r\na=extmap:2 urn:ietf:params:rtp-hdrext:toffset\r\na=sendrecv\r\na=mid:video\r\na=rtcp-mux\r\na=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:f4OO7dHJbCQsjecAC+0TFp6g6KBXyOub6yBmx+Xx\r\na=rtpmap:100 VP8/90000\r\na=rtcp-fb:100 ccm fir\r\na=rtcp-fb:100 nack \r\na=rtpmap:116 red/90000\r\na=rtpmap:117 ulpfec/90000\r\na=ssrc:3255638847 cname:XsXQR1VfOels9+3s\r\na=ssrc:3255638847 msid:mXFROJeVMQxDhCFH34Yukxots985y812wGPJ mXFROJeVMQxDhCFH34Yukxots985y812wGPJv0\r\na=ssrc:3255638847 mslabel:mXFROJeVMQxDhCFH34Yukxots985y812wGPJ\r\na=ssrc:3255638847 label:mXFROJeVMQxDhCFH34Yukxots985y812wGPJv0\r\n",
+		chromeVideo:"v=0\r\no=- 466604799 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=msid-semantic: WMS 0c2n3jRwGhjfwzKzLxMER8lpRIHMQaZiIw7k\r\nm=audio 51233 RTP/SAVPF 109 0 8 101\r\nc=IN IP4 192.67.4.10\r\na=rtcp:62387 IN IP4 192.67.4.10\r\na=candidate:2812693356 1 udp 2113937151 192.67.4.10 51233 typ host generation 0\r\na=candidate:2812693356 2 udp 2113937150 192.67.4.10 62387 typ host generation 0\r\na=ice-ufrag:A7xRf5m5sDv8Qnda\r\na=ice-pwd:sIxXUQ1R5euE6QY/ntMS9xpu\r\na=fingerprint:sha-256 A4:06:4B:AC:92:8B:FA:A0:CE:56:78:A4:B9:A4:2A:41:16:DD:D7:6C:E9:D2:71:81:20:99:F1:3A:4E:C7:71:8D\r\na=sendrecv\r\na=mid:audio\r\na=rtpmap:109 opus/48000/2\r\na=fmtp:109 minptime=10\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:101 telephone-event/8000\r\na=maxptime:60\r\na=ssrc:3307173785 cname:3iNNp5tCCbH8QdE8\r\na=ssrc:3307173785 msid:0c2n3jRwGhjfwzKzLxMER8lpRIHMQaZiIw7k 0c2n3jRwGhjfwzKzLxMER8lpRIHMQaZiIw7ka0\r\na=ssrc:3307173785 mslabel:0c2n3jRwGhjfwzKzLxMER8lpRIHMQaZiIw7k\r\na=ssrc:3307173785 label:0c2n3jRwGhjfwzKzLxMER8lpRIHMQaZiIw7ka0\r\nm=video 51841 RTP/SAVPF 120\r\nc=IN IP4 192.67.4.10\r\na=rtcp:58612 IN IP4 192.67.4.10\r\na=candidate:2812693356 1 udp 2113937151 192.67.4.10 51841 typ host generation 0\r\na=candidate:2812693356 2 udp 2113937150 192.67.4.10 58612 typ host generation 0\r\na=ice-ufrag:vYDcPP0KgdP9VHjY\r\na=ice-pwd:JEkYOiuKuiny1sJNZlBHZyZ5\r\na=fingerprint:sha-256 A4:06:4B:AC:92:8B:FA:A0:CE:56:78:A4:B9:A4:2A:41:16:DD:D7:6C:E9:D2:71:81:20:99:F1:3A:4E:C7:71:8D\r\na=sendrecv\r\na=mid:video\r\na=rtpmap:120 VP8/90000\r\na=ssrc:1230164494 cname:3iNNp5tCCbH8QdE8\r\na=ssrc:1230164494 msid:0c2n3jRwGhjfwzKzLxMER8lpRIHMQaZiIw7k 0c2n3jRwGhjfwzKzLxMER8lpRIHMQaZiIw7kv0\r\na=ssrc:1230164494 mslabel:0c2n3jRwGhjfwzKzLxMER8lpRIHMQaZiIw7k\r\na=ssrc:1230164494 label:0c2n3jRwGhjfwzKzLxMER8lpRIHMQaZiIw7kv0\r\n",
 
 	chromeAudio:"v=0\r\no=- 2751679977 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE audio\r\na=msid-semantic: WMS YyMaveYaWtkfdWeZtSHs3AHFuH4TEYh4MZDh\r\nm=audio 63231 RTP/SAVPF 111 103 104 0 8 107 106 105 13 126\r\nc=IN IP4 192.67.4.11\r\na=rtcp:63231 IN IP4 192.67.4.11\r\na=candidate:521808905 1 udp 2113937151 192.67.4.11 63231 typ host generation 0\r\na=candidate:521808905 2 udp 2113937151 192.67.4.11 63231 typ host generation 0\r\na=ice-ufrag:1VZUXywcfSTmvPBK\r\na=ice-pwd:NHrjWPuvIlyBQD7UVw4zi/4F\r\na=ice-options:google-ice\r\na=fingerprint:sha-256 49:1E:A3:EB:78:C2:89:55:5D:0D:6E:F2:B7:41:50:DB:10:C4:B2:54:8F:D8:24:A5:E8:56:0A:56:F4:BA:3A:ED\r\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\r\na=sendrecv\r\na=mid:audio\r\na=rtcp-mux\r\na=crypto:0 AES_CM_128_HMAC_SHA1_32 inline:MpqMpDpEDjNDfpquFL8jIkO9oLp2Dp4NOYiSmrea\r\na=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:/yAvMdC0p1e/4c/Jc6ljepmHpIuHV9jO3FyrrTX4\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 minptime=10\r\na=rtpmap:103 ISAC/16000\r\na=rtpmap:104 ISAC/32000\r\na=rtpmap:0 PCMU/8000\r\na=rtpmap:8 PCMA/8000\r\na=rtpmap:107 CN/48000\r\na=rtpmap:106 CN/32000\r\na=rtpmap:105 CN/16000\r\na=rtpmap:13 CN/8000\r\na=rtpmap:126 telephone-event/8000\r\na=maxptime:60\r\na=ssrc:3334051080 cname:ECpt57S24HzaX1WY\r\na=ssrc:3334051080 msid:YyMaveYaWtkfdWeZtSHs3AHFuH4TEYh4MZDh YyMaveYaWtkfdWeZtSHs3AHFuH4TEYh4MZDha0\r\na=ssrc:3334051080 mslabel:YyMaveYaWtkfdWeZtSHs3AHFuH4TEYh4MZDh\r\na=ssrc:3334051080 label:YyMaveYaWtkfdWeZtSHs3AHFuH4TEYh4MZDha0\r\n",
 
