@@ -109,7 +109,7 @@ abstract public class PhonoNative {
 	 * instances once it is constructed.
 	 */
 	public PhonoNative() {
-		this("gw.v1.phono.com");
+		this("gw.v1-1.phono.com");
 	}
 
 	/**

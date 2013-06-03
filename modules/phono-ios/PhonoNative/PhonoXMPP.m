@@ -30,7 +30,7 @@
     return isXmppConnected;
 }
 - (void)setupStream {
-    [self setupStreamWithGateway:@"gw.v1.phono.com"];
+    [self setupStreamWithGateway:@"gw.v1-1.phono.com"];
 }
 - (void)setupStreamWithGateway:(NSString*)gateway
 {
