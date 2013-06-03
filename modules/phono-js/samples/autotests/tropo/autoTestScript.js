@@ -44,6 +44,7 @@ function jqm(s){
 }
 
 function testDTMF(){
+	say("Testing D T M F",v);
 	jqm("dtmf('1')");
 	var next = ask("", {
 		      voice:vo,
@@ -62,7 +63,7 @@ function testDTMF(){
 	}
 }
 function testMic(){
-	jqm("say('7.mp3')");
+	jqm("sayafter('7.mp3',500)");
 	next = ask("", {
 		      voice:vo,
 		       choices:"[3 DIGITS]",
@@ -80,7 +81,9 @@ function testMic(){
 	}
 }
 
-say("Welcome to the Phono auto test call",v);
+say("Welcome to the Phono automatic test call.",v);
+say("If you hear this, please tick off the speak test.",v);
+say("Now sending a text message.",v);
 jqm("testPassed('message')");
 testDTMF(); 
 testMic();
@@ -88,10 +91,11 @@ say("Calling you back.",v);
 hangup();
 wait(5000);
 call("sip:"+jid,{onAnswer: function(){
+	wait(5000);
 	say("Called you back.",v);
 	jqm("call.hangup()");
 }});
-wait(5000)
+wait(15000);
 if (_conn != null){
     _conn.disconnect();
 }
