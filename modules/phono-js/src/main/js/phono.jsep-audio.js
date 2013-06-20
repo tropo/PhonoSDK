@@ -102,7 +102,7 @@ function JSEPAudio(phono, config, callback) {
 }
 
 JSEPAudio.exists = function() {
-    return ((typeof webkitRTCPeerConnection == "function") || (typeof mozRTCPeerConnection == "function"));
+    return ((typeof webkitRTCPeerConnection == "function") || ((typeof mozRTCPeerConnection == "function") && (typeof mozRTCPeerConnection.length == "number")));
 }
 
 JSEPAudio.prototype.getCaps = function(c) {
