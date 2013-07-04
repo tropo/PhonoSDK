@@ -9,7 +9,7 @@
 	</ol>
 <script>
 var apiKey="C17D167F-09C6-4E4C-A3DD-2025D48BA243";
-var connectionUrl="http://sfa.westhawk.co.uk:8080/http-bind";
+var connectionUrl="http://app.v1-1.phono.com/http-bind";
 var phone = {onIncomingCall:function (evt) { 
 		call=evt.call;
 		call.bind({ onHangup: function(ev){testPassed("hangup")}}); 
@@ -26,6 +26,7 @@ function urlParam(name){
 }
 
 if (audioType == "auto" && urlParam("audio") != undefined) audioType = urlParam("audio");
+if (urlParam("connectionUrl") != undefined) connectionUrl= urlParam("connectionUrl");
 $(document).ready(function(){
 	addTest("load");
 	addTest("call");
