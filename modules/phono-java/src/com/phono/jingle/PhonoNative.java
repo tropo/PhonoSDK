@@ -84,7 +84,7 @@ abstract public class PhonoNative {
 	 * @param m
 	 */
 	public PhonoNative(PhonoPhone p, PhonoMessaging m) {
-		this();
+		this(null);
 		setPhone(p);
 		setMessaging(m);
 	}
@@ -103,25 +103,19 @@ abstract public class PhonoNative {
 		setMessaging(m);
 	}
 
-	/**
-	 * 
-	 * bare constructor - you must set concrete PhonoPhone and PhonoMessaging
-	 * instances once it is constructed.
-	 */
-	public PhonoNative() {
-		this("gw.v1.phono.com");
-	}
 
 	/**
 	 * bare constructor - you must set concrete PhonoPhone and PhonoMessaging
 	 * instances once it is constructed.
 	 * 
 	 * @param domain
-	 *            alternate domain to connect to - instead of app.phono.com
+	 *            alternate domain to connect to - instead of default
 	 */
 	public PhonoNative(String domain) {
+                if (domain == null) {
+                    domain = "gw.v1-1.phono.com";
+                }
 		_stpe = new ScheduledThreadPoolExecutor(1);
-		Log.setLevel(Log.DEBUG);
 		_audio = newAudio();
 		_codecList = new CodecList(_audio);
 		_domain = domain;

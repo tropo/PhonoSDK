@@ -18,7 +18,6 @@ package com.phono.jingle.test;
 
 import com.phono.api.DeviceInfoFace;
 import com.phono.api.PlayFace;
-import com.phono.applet.audio.phone.Play;
 import com.phono.audio.AudioFace;
 import com.phono.jingle.PhonoNative;
 import com.phono.jingle.PhonoPhone;
@@ -41,17 +40,22 @@ public class CommandLineClient {
     PhonoPhone _phone;
     PhonoCall _call;
     Thread _console;
+    String _gateway;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         Log.setLevel(Log.DEBUG);
-        CommandLineClient clc = new CommandLineClient();
+        CommandLineClient clc = new CommandLineClient(args);
     }
 
-    CommandLineClient() {
+    CommandLineClient(String [] args) {
         Log.debug("Starting command line client");
+        if (args.length > 0){
+            _gateway = args[0];
+            Log.debug("using "+_gateway+" as xmpp/phono server.");
+        }
         final PhonoPhone phone = new PhonoPhone() {
 
             /* implement the abstract methods in PhonoPhone to give UI feedback */
@@ -104,7 +108,7 @@ public class CommandLineClient {
                 System.out.println("message from " + message.getFrom() + ": " + message.getBody());
             }
         };
-        _pn = new PhonoNative("phono-trunk2-ext.qa.voxeolabs.net") {
+        _pn = new PhonoNative(_gateway) {
             /* implement the abstract methods in PhonoNative to provide UI feedback */
 
             @Override
@@ -220,6 +224,9 @@ public class CommandLineClient {
                 }
                 if ((c == 'a') || (c == 'A')) {
                     _call.answer();
+                }
+                if ((c == 'q') || (c == 'Q')) {
+                    System.exit(0);
                 }
             } catch (IOException ex) {
                 Log.warn(ex.getMessage());

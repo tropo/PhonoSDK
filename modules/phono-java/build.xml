@@ -19,7 +19,7 @@
             <pathelement location="${pjadir}/src/java"/>
   </path>
   
-  <target name="build" depends="clean">
+  <target name="compile">
     <mkdir dir="target"/>
     <mkdir dir="build/classes"/>
     <javac destdir="build/classes" 
@@ -30,6 +30,10 @@
             <src path="${pjadir}/src/java"/>
             <exclude name="**/android/**"/>
     </javac>
+    <copy file="test/com/phono/jingle/test/autotest.js" todir="build/classes">
+    </copy>
+  </target>
+  <target depends="compile" name="jar">
     <jar destfile="target/phonoNativeJava.jar" basedir="build/classes">
       <zipfileset src="${lib.dir}/xstream-1.4.3.jar"/>
       <zipfileset src="${lib.dir}/smack.jar"/>
@@ -40,8 +44,8 @@
             value="com.phono.jingle.test.CommandLineClient"/>
     </manifest>
     </jar>
-
   </target>
+  <target depends="clean,jar" name="build"/>
   <target name="builddocs">
   <javadoc 
            destdir="docs/api"
