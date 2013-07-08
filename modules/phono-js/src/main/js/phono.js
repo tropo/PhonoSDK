@@ -165,6 +165,14 @@ function Phono(config) {
    
     Phono.log = new PhonoLogger();
    
+    Phono.prototype.setLogLevel = function(a){
+        Phono.log.setLogLevel(a);
+    }
+
+    Phono.prototype.getLogLevel = function(){
+        return Phono.log.getLogLevel();
+    }
+   
     Phono.registerPlugin = function(name, config) {
         if(!Phono.plugins) {
             Phono.plugins = {};
