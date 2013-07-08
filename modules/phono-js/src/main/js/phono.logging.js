@@ -2,7 +2,7 @@
     var logger = this;
     logger.eventQueue = [];
     logger.initialized = false;
-    logger.level = "ALL"; //Default log level is WARN
+    logger.level = "WARN"; //Default log level is WARN
     $(document).ready(function() {
         if (typeof console === "undefined" || typeof console.log === "undefined") {
          console = {};
