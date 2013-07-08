@@ -2,6 +2,7 @@
     var logger = this;
     logger.eventQueue = [];
     logger.initialized = false;
+    logger.level = "ALL"; //Default log level is WARN
     $(document).ready(function() {
         if (typeof console === "undefined" || typeof console.log === "undefined") {
          console = {};
@@ -73,6 +74,17 @@
 
     PhonoLogger.prototype.log = function(level, params) {
 
+        var levels = {
+            "ALL":PhonoLogLevel.ALL,
+            "TRACE":PhonoLogLevel.TRACE,
+            "DEBUG":PhonoLogLevel.DEBUG,
+            "INFO":PhonoLogLevel.INFO,
+            "WARN":PhonoLogLevel.WARN,
+            "ERROR":PhonoLogLevel.ERROR,
+            "FATAL":PhonoLogLevel.FATAL,
+            "OFF":PhonoLogLevel.OFF
+        };
+
         var exception;
         var finalParamIndex = params.length - 1;
         var lastParam = params[params.length - 1];
@@ -86,12 +98,27 @@
             messages[i] = params[i];
         }
 
-        var loggingEvent = new PhonoLogEvent(new Date(), level , messages, exception);
-        this.eventQueue.push(loggingEvent);
+        if(level.isGreaterOrEqual(levels[this.level])){
 
-        this.flushEventQueue();
+            var loggingEvent = new PhonoLogEvent(new Date(), level , messages, exception);
+            this.eventQueue.push(loggingEvent);
+
+            this.flushEventQueue();
+        }
         
     };
+
+    PhonoLogger.prototype.setLogLevel = function(level){
+        this.flushEventQueue();
+
+        level = level.toUpperCase();
+        if(["ALL", "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF"].indexOf(level) < 0) return false;
+        this.level = level;
+    }
+
+    PhonoLogger.prototype.getLogLevel = function(){
+        return this.level;
+    }
     
     PhonoLogger.prototype.flushEventQueue = function() {
         if(this.initialized) {
