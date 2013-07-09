@@ -245,7 +245,9 @@
                     args+= (sep + arguments[i]);
                     sep = ",";
                 }
-                Phono.log.debug("[INVOKE] " + objName + "." + funcName + "(" + args  + ")");
+                if (!Phono.log.mute(objName + "." + funcName)){
+                    Phono.log.debug("[INVOKE] " + objName + "." + funcName + "(" + args  + ")");
+                }
             } catch (e) {
                 Phono.log.debug("[INVOKE] " + objName + "." + funcName + "(...)");
             }

@@ -73,6 +73,9 @@
     // ====================================================================================
 
     PhonoLogger.prototype.log = function(level, params) {
+// some functions are so chatty we mute the 'INVOKE' log even in 
+// debug mode - here is a list.
+        this.silentfunctions = [ "Call.energy"];
 
         var levels = {
             "ALL":PhonoLogLevel.ALL,
@@ -118,6 +121,16 @@
 
     PhonoLogger.prototype.getLogLevel = function(){
         return this.level;
+    }
+    
+    PhonoLogger.prototype.mute = function(fname){
+         var found = false;
+         for (i = 0; i < this.silentfunctions.length && !found; i++) {
+             if (this.silentfunctions[i] === fname) {
+                 found = true;
+             }
+         }
+         return found;
     }
     
     PhonoLogger.prototype.flushEventQueue = function() {

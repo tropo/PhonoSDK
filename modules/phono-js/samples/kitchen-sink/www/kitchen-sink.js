@@ -228,6 +228,7 @@ $(document).ready(function() {
                 }
 	    }
         });
+        phonos[newPhonoID].setLogLevel("DEBUG");
     }
         
     //Creates a new call
