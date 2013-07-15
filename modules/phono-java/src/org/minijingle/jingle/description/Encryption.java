@@ -22,11 +22,13 @@ public class Encryption {
 
     public Crypto getCrypto()
     {
-		return crypto;
-	}
+        return crypto;
+    }
+
     public void setCrypto(Crypto x){
     	crypto =x;
     }
+
     public void setRequired(String rec){
     	required = rec;
     }

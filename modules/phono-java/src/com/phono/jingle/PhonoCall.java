@@ -19,6 +19,7 @@ package com.phono.jingle;
 import com.phono.api.PlayFace;
 import com.phono.api.Share;
 import com.phono.rtp.Endpoint;
+import com.phono.srtplight.Log;
 import java.net.SocketException;
 import java.util.List;
 import org.minijingle.jingle.Jingle;
@@ -27,19 +28,22 @@ import org.minijingle.jingle.description.Description;
 import org.minijingle.jingle.description.Payload;
 import org.minijingle.jingle.reason.Reason;
 import org.minijingle.jingle.transport.Candidate;
+import org.minijingle.jingle.transport.IceUdpTransport;
 import org.minijingle.jingle.transport.RawUdpTransport;
+import org.minijingle.jingle.transport.Transport;
 import org.minijingle.xmpp.smack.JingleIQ;
 
 /**
- * Abstract Class representing a Phono call
- * You must implement the abstract methods for your UI logic etc.
+ * Abstract Class representing a Phono call You must implement the abstract
+ * methods for your UI logic etc.
+ *
  * @author tim
  */
 abstract public class PhonoCall {
 
     private PhonoPhone _phone;
     private Description _localDescription;
-    private RawUdpTransport _transport;
+    private Transport _transport;
     private Endpoint _end;
     private String _luri;
     private Candidate _candidate;
@@ -48,8 +52,10 @@ abstract public class PhonoCall {
     private String _sid;
     private String _rjid;
     private Content _remoteContent;
-	private int _gain = 100;
-	private int _volume = 100;
+    private int _gain = 100;
+    private int _volume = 100;
+    private Payload _farpay;
+    private Candidate _farcandi;
 
     public PhonoCall(PhonoPhone pp) {
         _phone = pp;
@@ -59,7 +65,7 @@ abstract public class PhonoCall {
             String bod = _luri.substring("rtp://".length());
             String bits[] = bod.split(":");
             _candidate = new Candidate(bits[0], bits[1], "1");
-            _transport = new RawUdpTransport(_candidate);
+            _transport = new IceUdpTransport(_candidate, "secret", "username");
             _localDescription = new Description("audio", null);// explicitly _don't_ support SRTP in this release.
             PhonoNative pni = pp.getNative();
             List<Payload> payloads = pni.getPayloads();
@@ -74,31 +80,32 @@ abstract public class PhonoCall {
     /* expect to have these overridden */
 
     /**
-     * You must implement this abstract method.
-     * It will be called when this outbound call is ringing
+     * You must implement this abstract method. It will be called when this
+     * outbound call is ringing
      */
     abstract public void onRing();
 
     /**
-     * You must implement this abstract method.
-     * It will be called when this outbound call is answered
+     * You must implement this abstract method. It will be called when this
+     * outbound call is answered
      */
     abstract public void onAnswer();
 
     /**
-     * You must implement this abstract method.
-     * It will be called when this  call is answered
+     * You must implement this abstract method. It will be called when this call
+     * is answered
      */
     abstract public void onHangup();
 
     /**
-     * You must implement this abstract method.
-     * It will be called when a call related error occurs
+     * You must implement this abstract method. It will be called when a call
+     * related error occurs
      */
     abstract public void onError();
 
     /**
      * Set a custom header on this call
+     *
      * @param name
      * @param value
      */
@@ -108,6 +115,7 @@ abstract public class PhonoCall {
 
     /**
      * set 'hold' on or off on this call
+     *
      * @param h
      */
     public void setHold(boolean h) {
@@ -116,6 +124,7 @@ abstract public class PhonoCall {
 
     /**
      * set to true if you require this call to be encrypted (not implemented)
+     *
      * @param s
      */
     public void setSecure(boolean s) {
@@ -124,44 +133,49 @@ abstract public class PhonoCall {
 
     /**
      * Mute this call
+     *
      * @param m
      */
     public void setMute(boolean m) {
-    	_share.mute(m);
+        _share.mute(m);
     }
 
     /**
      * check to see if this call is in the ringing state
+     *
      * @return
      */
     public boolean isRinging() {
-    	return _play != null;
+        return _play != null;
     }
 
     /**
      * set the playback volume
+     *
      * @param v
      */
     public void setVolume(int v) {
-    	_volume = v;
-    	if (_share != null){
-    		_share.volume((float)v);
-    	}
+        _volume = v;
+        if (_share != null) {
+            _share.volume((float) v);
+        }
     }
 
     /**
      * set the microphone gain
+     *
      * @param v
      */
     public void setGain(int v) {
-    	_gain = v;
-    	if(_share != null){
-    		_share.gain((float)v);
-    	}
+        _gain = v;
+        if (_share != null) {
+            _share.gain((float) v);
+        }
     }
 
     /**
      * send a dtmf digit
+     *
      * @param character
      */
     public void digit(Character character) {
@@ -177,7 +191,7 @@ abstract public class PhonoCall {
         onHangup();
     }
 
-    RawUdpTransport getTransport() {
+    Transport getTransport() {
         return _transport;
     }
 
@@ -203,24 +217,54 @@ abstract public class PhonoCall {
     }
 
     void setup(Content c) {
-        // stop any ringing.
-        if (_play != null) {
-            _play.stop();
-            _play = null;
+        try {
+            // can come here more than once - adding transports or candidates (in theory)
+            // stop any ringing.
+            if (_play != null) {
+                _play.stop();
+                _play = null;
+            }
+            Log.verb("call " + this.getSid() + " arrived in setup() with content" + c.getName());
+            if (c.getDescription() != null) {
+                List<Payload> payloads = c.getDescription().getPayloads();
+                if (!payloads.isEmpty()) {
+                    _farpay = _phone.getNative().findAudioPayload(payloads);
+                    Log.verb("got payloads in " + c.getDescription());
+                } else {
+                    Log.verb("no payloads in " + c.getDescription());
+                }
+            } else {
+                Log.verb("no description in " + c.toString());
+            }
+            if (c.getTransport() != null) {
+                List<Candidate> candidates = c.getTransport().getCandidates();
+                if (!candidates.isEmpty()) {
+                    Log.verb("got candidates in " + c.getTransport());
+                    _farcandi = candidates.get(0);
+                } else {
+                    Log.verb("no candidates in " + c.getTransport());
+                }
+            } else {
+                Log.verb("no transport in " + c.toString());
+            }
+            if (_farpay != null && _farcandi != null) {
+                String uri = _luri + ":" + _farcandi.getIp() + ":" + _farcandi.getPort();
+                _end.release(); // ugly... and a race condition .
+                Log.verb("make share " + uri + " with " + _farpay);
+
+                _share = _phone.getNative().mkShare(uri, _farpay);
+                _share.gain(_gain);
+                _share.volume(_volume);
+                _share.start();
+            } else {
+                Log.verb("call " + this.getSid() + " far : payload = " + _farpay + "candiate = " + _farcandi);
+            }
+        } catch (Throwable t) {
+            Log.error("exception " + t.getMessage());
+            if (Log.getLevel() > Log.INFO) {
+                t.printStackTrace();
+            }
         }
-
-        List<Payload> payloads = c.getDescription().getPayloads();
-        Payload pay = _phone.getNative().findAudioPayload(payloads);
-        List<Candidate> candidates = c.getTransport().getCandidates();
-        Candidate candi = candidates.get(0);
-        String uri = _luri + ":" + candi.getIp() + ":" + candi.getPort();
-        _end.release(); // ugly... and a race condition .
-
-        _share = _phone.getNative().mkShare(uri, pay);
-        _share.gain(_gain);
-        _share.volume(_volume);
-        _share.start();
-
 
     }
 
@@ -262,7 +306,7 @@ abstract public class PhonoCall {
         if (this._remoteContent != null) {
             PhonoNative pni = _phone.getNative();
             // craft up an accept.....
-            RawUdpTransport theTransport = getTransport();
+            Transport theTransport = getTransport();
             Description ld = new Description("audio", null);// explicitly _don't_ support SRTP in this release.
             List<Payload> nearpays = pni.getPayloads();
             List<Payload> farpays = this._remoteContent.getDescription().getPayloads();
@@ -279,7 +323,7 @@ abstract public class PhonoCall {
             String localJid = pni.getSessionID();
 
             Jingle accept = new Jingle(_sid, localJid, _rjid, Jingle.SESSION_ACCEPT);
-            Content combContent = new Content(localJid, localJid.split("/")[0], "both", ld, theTransport);
+            Content combContent = new Content(localJid, "audio", "both", ld, theTransport);
 
             accept.setContent(combContent);
 

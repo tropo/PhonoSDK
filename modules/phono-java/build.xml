@@ -3,20 +3,19 @@
   <property environment="env" />
 
   <property name="lib.dir" value="lib"/>
-  <property name="srtplightlib.dir" value="lib"/>
   <property name="pjadir" value="../phono-java-audio"/>
 
   <path id="classpath">
     <fileset dir="${lib.dir}" includes="**/*.jar"/>
     <fileset dir="${java.home}" includes="**/plugin.jar"/>
     <fileset dir="${pjadir}/lib/" includes="JLayer.jar"/>
-    <fileset dir="${pjadir}/lib/" includes="srtplight.jar"/>
   </path>
 
   <path id="sourcepath">
             <pathelement location="src" />
             <pathelement location="test" />
             <pathelement location="${pjadir}/src/java"/>
+            <pathelement location="/project2/github/steely-glint/srtplight/src"/>
   </path>
   
   <target name="compile">
@@ -38,7 +37,6 @@
       <zipfileset src="${lib.dir}/xstream-1.4.3.jar"/>
       <zipfileset src="${lib.dir}/smack.jar"/>
       <zipfileset src="${pjadir}/lib/JLayer.jar"/>
-      <zipfileset src="${pjadir}/lib/srtplight.jar"/>
     <manifest>
       <attribute name="Main-Class"
             value="com.phono.jingle.test.CommandLineClient"/>

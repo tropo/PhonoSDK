@@ -17,6 +17,9 @@ public class Description {
     @XStreamAsAttribute
     private  String media;
 
+    @XStreamAsAttribute
+    private  String ssrc;
+
     @XStreamImplicit
     @XStreamAlias("payload-type")
     private  List<Payload> payloads = new ArrayList<Payload>();
@@ -53,6 +56,14 @@ public class Description {
 
     public String getMedia() {
         return media;
+    }
+
+    public String getSSRC() {
+        return ssrc;
+    }
+
+    public void setSSRC(final String ssrc){
+        this.ssrc = ssrc;
     }
 }
 

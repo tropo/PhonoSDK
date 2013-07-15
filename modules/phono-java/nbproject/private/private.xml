@@ -2,11 +2,4 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
-    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
-        <file>file:/project2/github/phono/PhonoSDK.master/modules/phono-java-audio/src/java/com/phono/api/CodecList.java</file>
-        <file>file:/project2/github/phono/PhonoSDK.master/modules/phono-java/test/com/phono/jingle/test/PiCommandLineClient.java</file>
-        <file>file:/project2/github/phono/PhonoSDK.master/modules/phono-java-audio/src/java/com/phono/applet/audio/phone/PhonoAudioShim.java</file>
-        <file>file:/project2/github/phono/PhonoSDK.master/modules/phono-java-audio/src/java/com/phono/applet/audio/phone/EsupPhonoAudio.java</file>
-        <file>file:/project2/github/phono/PhonoSDK.master/modules/phono-java-audio/src/java/com/phono/applet/audio/phone/PhonoAudio.java</file>
-    </open-files>
 </project-private>

@@ -29,6 +29,7 @@ import org.minijingle.jingle.reason.Reason;
 import org.minijingle.jingle.reason.Success;
 import org.minijingle.jingle.ringing.Ringing;
 import org.minijingle.jingle.transport.RawUdpTransport;
+import org.minijingle.jingle.transport.Transport;
 import org.minijingle.xmpp.smack.JingleIQ;
 
 /**
@@ -122,7 +123,7 @@ abstract public class PhonoPhone {
 
         Log.debug("Phone.dial(): " + jid);
 
-        RawUdpTransport theTransport = currentCall.getTransport();
+        Transport theTransport = currentCall.getTransport();
         Description localDescription;
         localDescription = currentCall.getLocalDescription();
 
@@ -133,7 +134,7 @@ abstract public class PhonoPhone {
         _currentCalls.put(sid, currentCall); // need to axe these at some point
 
         final Jingle initiate = new Jingle(sid, localJid, jid, Jingle.SESSION_INITIATE,headers);
-        final Content localContent = new Content(localJid, localJid.split("/")[0], "both", localDescription, theTransport);
+        final Content localContent = new Content(localJid, "audio", "both", localDescription, theTransport);
 
         initiate.setContent(localContent);
 
@@ -169,6 +170,15 @@ abstract public class PhonoPhone {
             this.onIncommingCall(call);
 
         } // Call Accepted
+        else if (Jingle.TRANSPORT_INFO.equals(jingle.getAction())) {
+            String sid = jingleIQ.getElement().getSid();
+            PhonoCall call = _currentCalls.get(sid);
+            Content c = jingleIQ.getElement().getContent();
+            if ((call != null) && (c != null)) {
+                Log.debug("Transport info");
+                call.setup(c);
+            }
+        }
         else if (Jingle.SESSION_ACCEPT.equals(jingle.getAction())) {
             String sid = jingleIQ.getElement().getSid();
             PhonoCall call = _currentCalls.get(sid);

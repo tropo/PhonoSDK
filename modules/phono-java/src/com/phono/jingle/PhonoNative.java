@@ -103,7 +103,16 @@ abstract public class PhonoNative {
 		setMessaging(m);
 	}
 
+        
+        public PhonoNative() {
+            this(null,false);
+        }
 
+        public PhonoNative(String domain) {
+            this(domain,false);
+        }
+
+        
 	/**
 	 * bare constructor - you must set concrete PhonoPhone and PhonoMessaging
 	 * instances once it is constructed.
@@ -111,7 +120,8 @@ abstract public class PhonoNative {
 	 * @param domain
 	 *            alternate domain to connect to - instead of default
 	 */
-	public PhonoNative(String domain) {
+	public PhonoNative(String domain, boolean ice) {
+            final boolean lice = ice;
                 if (domain == null) {
                     domain = "gw.v1-1.phono.com";
                 }
@@ -123,7 +133,7 @@ abstract public class PhonoNative {
 			public void run() {
 
 				if (_xmppConnection == null) {
-					JingleProvider jp = new JingleProvider();
+					JingleProvider jp = new JingleProvider(lice);
 					ProviderManager.getInstance().addIQProvider("jingle",
 							Jingle.XMLNS, jp);
 					ConnectionConfiguration cc = new ConnectionConfiguration(

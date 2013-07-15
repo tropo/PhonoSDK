@@ -20,6 +20,8 @@ public class Jingle {
     public final static String SESSION_TERMINATE = "session-terminate";
     public final static String SESSION_ACCEPT = "session-accept";
     public final static String SESSION_INFO = "session-info";
+    public final static String TRANSPORT_INFO = "transport-info";
+
     @XStreamAsAttribute
     @XStreamAlias("xmlns")
     public final String NAMESPACE = "urn:xmpp:jingle:1";

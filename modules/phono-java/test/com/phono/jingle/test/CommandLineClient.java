@@ -108,7 +108,7 @@ public class CommandLineClient {
                 System.out.println("message from " + message.getFrom() + ": " + message.getBody());
             }
         };
-        _pn = new PhonoNative(_gateway) {
+        _pn = new PhonoNative(_gateway, true) {
             /* implement the abstract methods in PhonoNative to provide UI feedback */
 
             @Override
@@ -214,7 +214,7 @@ public class CommandLineClient {
                 Hashtable headers = testHeaders();
                 if ((c == 'd') || (c == 'D')) {
                     if (_call == null) {
-                        _call = _phone.dial("9996160714@app", headers);
+                        _call = _phone.dial("star@pi.westhawk.co.uk/asterisk",null); //headers);
                     } else {
                         System.out.println("Currently in a call, can't start a new one.");
                     }

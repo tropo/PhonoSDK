@@ -33,6 +33,7 @@ public class Crypto {
     public String getCryptoSuite() {return  cryptoSuite; }
     public String getKeyParams() {return  keyParams; }
     public String getSessionParams() {return  sessionParams; }
+    public String getTag() { return tag;}
     public void setKeyParams(String k){
     	keyParams =k;
     }

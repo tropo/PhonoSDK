@@ -5,10 +5,9 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.List;
 import org.minijingle.jingle.description.Description;
-import org.minijingle.jingle.transport.RawUdpTransport;
+import org.minijingle.jingle.transport.Transport;
 
 @XStreamAlias("content")
 public class Content {
@@ -18,7 +17,7 @@ public class Content {
     @XStreamImplicit(itemFieldName = "description")
     private List<Description> description;
     @XStreamImplicit(itemFieldName = "transport")
-    private List<RawUdpTransport> transport;
+    private List<Transport> transport;
 
     //private RawUdpTransport transport;
     //private Description description;
@@ -28,21 +27,21 @@ public class Content {
         this.senders = senders;
 
         this.description = new ArrayList<Description>();
-        this.transport = new ArrayList<RawUdpTransport>();
+        this.transport = new ArrayList<Transport>();
         for (Object o : things) {
-            if (o instanceof RawUdpTransport) {
-                transport.add((RawUdpTransport) o);
+            if (o instanceof Transport) {
+                transport.add((Transport) o);
             } else if (o instanceof Description) {
                 description.add((Description) o);
-            } 
+            }
         }
 
     }
 
-    public Content(){
-    	super();
+    public Content() {
+        super();
     }
-    
+
     public String getCreator() {
         return creator;
     }
@@ -57,29 +56,33 @@ public class Content {
 
     public Description getDescription() {
         Description ret = null;
-        for (Description d : description) {
-            if (d.getPayloads() != null) {
-                ret = d;
+        if (description != null) {
+            for (Description d : description) {
+                if (d.getPayloads() != null) {
+                    ret = d;
+                }
             }
         }
         return ret;
     }
 
     /*
-    public RawUdpTransport getTransport() {
-    return transport;
-    }
+     public RawUdpTransport getTransport() {
+     return transport;
+     }
 
-    public Description getDescription() {
-    return description;
-    }
+     public Description getDescription() {
+     return description;
+     }
      *
      */
-    public RawUdpTransport getTransport() {
-        RawUdpTransport ret = null;
-        for (RawUdpTransport t : transport) {
-            if (t.getCandidates() != null) {
-                ret = t;
+    public Transport getTransport() {
+        Transport ret = null;
+        if (transport != null) {
+            for (Transport t : transport) {
+                if (t.getCandidates() != null) {
+                    ret = t;
+                }
             }
         }
         return ret;
