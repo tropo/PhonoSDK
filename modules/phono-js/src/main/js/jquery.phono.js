@@ -28,7 +28,7 @@ var flensed;
 
 (function($) {
 
-    //@Include=phono.config.js
+    //@Include=../../../../../build/phono.config.js
 
     if (typeof phonoFlensedOverride != 'undefined') {
         flensed = phonoFlensedOverride;
