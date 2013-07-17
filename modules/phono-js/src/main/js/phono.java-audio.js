@@ -4,7 +4,7 @@ function JavaAudio(phono, config, callback) {
     if (JavaAudio.exists()){
       // Define defualt config and merge from constructor
       this.config = Phono.util.extend({
-          jar: "//s.phono.com/releases/" + Phono.version + "/plugins/audio/phono.audio.jar"
+          jar: "//" + Phono.cdnUrl + "/releases/" + Phono.version + "/plugins/audio/phono.audio.jar"
       }  , config);
     
       // Bind Event Listeners

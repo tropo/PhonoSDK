@@ -24,18 +24,19 @@
 
 //@Include=FABridge.js
 
-// FIXME: Needed by flXHR
 var flensed;
-
-if (typeof phonoFlensedOverride != 'undefined') {
-    flensed = phonoFlensedOverride;
-} else {
-    flensed = {base_path:"//s.phono.com/deps/flensed/1.0/"};
-}
 
 (function($) {
 
-//@Include=$phono-core
+    //@Include=phono.config.js
+
+    if (typeof phonoFlensedOverride != 'undefined') {
+        flensed = phonoFlensedOverride;
+    } else {
+        flensed = {base_path:"//" + Phono.cdnUrl + "/deps/flensed/1.0/"};
+    }
+    
+    //@Include=$phono-core
    
    $.phono = function(config) {
       return new Phono(config);

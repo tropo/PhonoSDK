@@ -5,11 +5,11 @@ function Phono(config) {
     Strophe = PhonoStrophe;
     // Define defualt config and merge from constructor
     this.config = Phono.util.extend({
-        gateway: "gw-v6.d.phono.com",
-        connectionUrl: window.location.protocol+"//app.v1.phono.com/http-bind"
+        gateway: Phono.gateway,
+        connectionUrl: window.location.protocol + "//" + Phono.connectionUrl + "/http-bind"
     }, config);
     if (this.config.connectionUrl.indexOf("file:")==0){
-        this.config.connectionUrl = "https://app.v1.phono.com/http-bind";
+        this.config.connectionUrl = "https://" + Phono.connectionUrl + "/http-bind";
     }
 
     // Bind 'on' handlers
@@ -19,9 +19,9 @@ function Phono(config) {
     Phono.util.loggify("Phono", this);
    
     if(!config.apiKey) {
-        this.config.apiKey = prompt("Please enter your Phono API Key.\n\nTo get a new one sign up for a free account at: http://www.phono.com");
+        this.config.apiKey = prompt("Please enter your Phono API Key.\n\nTo get a new one sign up for a free account at: " + Phono.webUrl);
         if(!this.config.apiKey) {
-            var message = "A Phono API Key is required. Please get one at http://www.phono.com";
+            var message = "A Phono API Key is required. Please get one at " + Phono.webUrl;
             Phono.events.trigger(this, "error", {
                 reason: message
             });
@@ -153,7 +153,7 @@ function Phono(config) {
 (function() {
    
     // ======================================================================
-   
+
     //@Include=phono.util.js
     //@Include=phono.logging.js
    
@@ -161,8 +161,6 @@ function Phono(config) {
 
    
     // Global
-    Phono.version = "1.0";
-   
     Phono.log = new PhonoLogger();
    
     Phono.prototype.setLogLevel = function(a){
@@ -260,7 +258,7 @@ function Phono(config) {
             apiKeyIQ = apiKeyIQ.c('browser',{
                 version:navigator.appVersion, 
                 agent:navigator.userAgent
-                }).up();
+            }).up();
            
             phono.connection.sendIQ(apiKeyIQ, 
                 phono.handleKeySuccess,

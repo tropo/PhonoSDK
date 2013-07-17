@@ -601,8 +601,8 @@
       // Define defualt config and merge from constructor
       this.config = Phono.util.extend({
          audioInput: "System Default",
-         ringTone: "//s.phono.com/ringtones/Diggztone_Marimba.mp3",
-         ringbackTone: "//s.phono.com/ringtones/ringback-us.mp3",
+         ringTone: "//" + Phono.cdnUrl + "/ringtones/Diggztone_Marimba.mp3",
+         ringbackTone: "//" + Phono.cdnUrl + "/ringtones/ringback-us.mp3",
          wideband: true,
          headset: false,
          codecs: function(offer) {return offer;},
