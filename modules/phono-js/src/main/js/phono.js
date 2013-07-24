@@ -17,7 +17,7 @@ function Phono(config) {
 
     // Wrap ourselves with logging
     Phono.util.loggify("Phono", this);
-   
+
     if(!config.apiKey) {
         this.config.apiKey = prompt("Please enter your Phono API Key.\n\nTo get a new one sign up for a free account at: " + Phono.webUrl);
         if(!this.config.apiKey) {
@@ -299,6 +299,16 @@ function Phono(config) {
     // Fires when the underlying Strophe Connection disconnects
     Phono.prototype.handleDisconnect = function() {
         Phono.events.trigger(this, "unready");
+    };
+
+    Phono.prototype.on = function(event, listener) {
+        Phono.events.add(this, event, listener);
+        return this;
+    };
+
+    Phono.prototype.removeListener = function(event, listener) {
+        Phono.events.remove(this, event, listener);
+        return this;
     };
 
     // ======================================================================
