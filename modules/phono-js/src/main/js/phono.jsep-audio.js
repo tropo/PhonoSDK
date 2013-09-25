@@ -93,7 +93,7 @@ function JSEPAudio(phono, config, callback) {
 
     // Create audio continer if user did not specify one
     if(!localContainerId) {
-        this.config.localContainerId = this.createContainer();
+        this.config.localContainerId = this.createContainer(this.config.media['video']);
     }
 
     JSEPAudio.localVideo = document.getElementById(this.config.localContainerId);
@@ -351,7 +351,7 @@ JSEPAudio.prototype.transport = function(config) {
         if (this.config.remoteContainerId) {
             remoteContainerId = this.config.remoteContainerId;
         } else {
-            remoteContainerId = this.createContainer();
+            remoteContainerId = this.createContainer(this.config.media['video']);
         }
     } else {
         remoteContainerId = config.remoteContainerId;
@@ -524,10 +524,21 @@ JSEPAudio.prototype.audioInDevices = function(){
 }
 
 // Creates a DIV to hold the video element if not specified by the user
-JSEPAudio.prototype.createContainer = function() {
+JSEPAudio.prototype.createContainer = function(haveVideo) {
+    var w ="1";
+    var h ="1";
+    if (haveVideo){
+	w="640";
+	h="480";
+    }
+    Phono.log.info('Appending a <video> because we were not passed one '+w+"x"+h);
+
+
     var webRTC = $("<video>")
     .attr("id","_phono-audio-webrtc" + (JSEPAudio.count++))
     .attr("autoplay","autoplay")
+    .attr("width",w)
+    .attr("height",h)
     .appendTo("body");
 
     var containerId = $(webRTC).attr("id");       
