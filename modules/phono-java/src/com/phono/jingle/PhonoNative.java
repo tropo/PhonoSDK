@@ -104,6 +104,9 @@ abstract public class PhonoNative {
 	}
 
 
+	public PhonoNative() {
+               this(null);
+        }
 	/**
 	 * bare constructor - you must set concrete PhonoPhone and PhonoMessaging
 	 * instances once it is constructed.
