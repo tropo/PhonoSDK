@@ -120,7 +120,7 @@
 
 /* Begin PBXFileReference section */
 		221BD7C714A4D8B500E3972C /* ToDo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ToDo; sourceTree = "<group>"; };
-		221C4AE215AAE8D500312106 /* libphono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libphono.a; path = "../../phono-phonegap-ios/target/libphono.a"; sourceTree = "<group>"; };
+		221C4AE215AAE8D500312106 /* libphono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libphono.a; path = "../target/libphono.a"; sourceTree = "<group>"; };
 		22230A6D149A31E000AEF013 /* PhonoXMPP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhonoXMPP.h; sourceTree = "<group>"; };
 		22230A6E149A31E000AEF013 /* PhonoXMPP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhonoXMPP.m; sourceTree = "<group>"; };
 		22230A77149A337100AEF013 /* DDList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDList.h; sourceTree = "<group>"; };
@@ -778,7 +778,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"../../phono-phonegap-ios/libphono/src",
+					"../libphono/src",
 					/usr/include/libxml2,
 				);
 				INSTALL_PATH = ../target;
@@ -799,7 +799,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"../../phono-phonegap-ios/libphono/src",
+					"../libphono/src",
 					/usr/include/libxml2,
 				);
 				INSTALL_PATH = ../target;
@@ -820,8 +820,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../XMPPFramework-phono/Vendor/libidn\"",
-					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
-					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
+					"\"$(SRCROOT)/../target\"",
+					"\"$(SRCROOT)/../libphono/build/Release-iphoneos\"",
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-eudjhdpvcvdpzxauxxfifkmkdqsv/Build/Products/Debug-iphoneos\"",
 					"\"$(SRCROOT)/XMPPFramework-phono/Vendor/libidn\"",
 				);
@@ -842,8 +842,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../XMPPFramework-phono/Vendor/libidn\"",
-					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
-					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
+					"\"$(SRCROOT)/../target\"",
+					"\"$(SRCROOT)/../libphono/build/Release-iphoneos\"",
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-eudjhdpvcvdpzxauxxfifkmkdqsv/Build/Products/Debug-iphoneos\"",
 					"\"$(SRCROOT)/XMPPFramework-phono/Vendor/libidn\"",
 				);

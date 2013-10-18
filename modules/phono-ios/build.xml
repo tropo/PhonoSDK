@@ -1,7 +1,7 @@
 <project name="phono-ios" default="build">
   
 
-  <property name="libPhono.dir" value="../phono-phonegap-ios/libphono/"/>
+  <property name="libPhono.dir" value="libphono/"/>
   <property name="PhonoNative.dir" value="PhonoNative"/>
   <property name="header.dir" value="PhonoNative/PhonoNative"/>
 
