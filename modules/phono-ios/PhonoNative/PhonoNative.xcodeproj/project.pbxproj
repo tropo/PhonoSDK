@@ -294,7 +294,7 @@
 				22230A87149A337100AEF013 /* XMPPXFacebookPlatformAuthentication.m */,
 			);
 			name = Utilities;
-			path = ../3rdParty/XMPPFramework/Utilities;
+			path = ../XMPPFramework-phono/Utilities;
 			sourceTree = "<group>";
 		};
 		22230A73149A337100AEF013 /* Extensions */ = {
@@ -311,7 +311,7 @@
 				22230A96149A337100AEF013 /* XEP-0203 */,
 			);
 			name = Extensions;
-			path = ../3rdParty/XMPPFramework/Extensions;
+			path = ../XMPPFramework-phono/Extensions;
 			sourceTree = "<group>";
 		};
 		22230A74149A337100AEF013 /* Core */ = {
@@ -339,7 +339,7 @@
 				22230B0D149A337100AEF013 /* XMPPStream.m */,
 			);
 			name = Core;
-			path = ../3rdParty/XMPPFramework/Core;
+			path = ../XMPPFramework-phono/Core;
 			sourceTree = "<group>";
 		};
 		22230A75149A337100AEF013 /* Categories */ = {
@@ -353,7 +353,7 @@
 				22230B13149A337100AEF013 /* NSXMLElement+XMPP.m */,
 			);
 			name = Categories;
-			path = ../3rdParty/XMPPFramework/Categories;
+			path = ../XMPPFramework-phono/Categories;
 			sourceTree = "<group>";
 		};
 		22230A76149A337100AEF013 /* Vendor */ = {
@@ -458,7 +458,7 @@
 				22230B1B149A337100AEF013 /* stringprep.h */,
 			);
 			name = libidn;
-			path = ../3rdParty/XMPPFramework/Vendor/libidn;
+			path = ../XMPPFramework-phono/Vendor/libidn;
 			sourceTree = "<group>";
 		};
 		22230B15149A337100AEF013 /* KissXML */ = {
@@ -475,7 +475,7 @@
 				22230B24149A337100AEF013 /* Private */,
 			);
 			name = KissXML;
-			path = ../3rdParty/XMPPFramework/Vendor/KissXML;
+			path = ../XMPPFramework-phono/Vendor/KissXML;
 			sourceTree = "<group>";
 		};
 		22230B16149A337100AEF013 /* CocoaAsyncSocket */ = {
@@ -485,7 +485,7 @@
 				22230B29149A337100AEF013 /* GCDAsyncSocket.m */,
 			);
 			name = CocoaAsyncSocket;
-			path = ../3rdParty/XMPPFramework/Vendor/CocoaAsyncSocket;
+			path = ../XMPPFramework-phono/Vendor/CocoaAsyncSocket;
 			sourceTree = "<group>";
 		};
 		22230B17149A337100AEF013 /* CocoaLumberjack */ = {
@@ -503,7 +503,7 @@
 				22230B33149A337100AEF013 /* DDTTYLogger.m */,
 			);
 			name = CocoaLumberjack;
-			path = ../3rdParty/XMPPFramework/Vendor/CocoaLumberjack;
+			path = ../XMPPFramework-phono/Vendor/CocoaLumberjack;
 			sourceTree = "<group>";
 		};
 		22230B1C149A337100AEF013 /* Categories */ = {
@@ -819,11 +819,11 @@
 				INSTALL_PATH = ../target;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../3rdParty/XMPPFramework/Vendor/libidn\"",
+					"\"$(SRCROOT)/../XMPPFramework-phono/Vendor/libidn\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-eudjhdpvcvdpzxauxxfifkmkdqsv/Build/Products/Debug-iphoneos\"",
-					"\"$(SRCROOT)/3rdParty/XMPPFramework/Vendor/libidn\"",
+					"\"$(SRCROOT)/XMPPFramework-phono/Vendor/libidn\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -841,11 +841,11 @@
 				INSTALL_PATH = ../target;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../3rdParty/XMPPFramework/Vendor/libidn\"",
+					"\"$(SRCROOT)/../XMPPFramework-phono/Vendor/libidn\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/target\"",
 					"\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\"",
 					"\"/Users/tim/Library/Developer/Xcode/DerivedData/PhonoIOSNative-eudjhdpvcvdpzxauxxfifkmkdqsv/Build/Products/Debug-iphoneos\"",
-					"\"$(SRCROOT)/3rdParty/XMPPFramework/Vendor/libidn\"",
+					"\"$(SRCROOT)/XMPPFramework-phono/Vendor/libidn\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
