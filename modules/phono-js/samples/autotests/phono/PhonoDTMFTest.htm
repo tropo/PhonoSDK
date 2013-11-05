@@ -1,0 +1,101 @@
+<html>
+<head>
+    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <script src="../../../jquery.phono.js"></script>
+</head>
+<body>
+	<div>
+		DTMF auto test. Send first 100 digits of Pi.
+	</div>
+	<div id="status">
+		Loading...
+	</div>
+	<div >
+		Count
+	</div>
+	<div id="count">
+		0
+	</div>
+<script>
+var piDig = "31415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
+var apiKey="C17D167F-09C6-4E4C-A3DD-2025D48BA243";
+var connectionUrl="http://app.v1-1.phono.com/http-bind";
+var provisoningUrl;
+var phone = {onIncomingCall:function (evt) { 
+		call=evt.call;
+     
+		call.bind({ onHangup: function(ev){
+			clearInterval(tick);	console.log("hungup");}}); 
+		call.bind({ onAnswer: function(ev){console.log("answer"); 
+				tick = setInterval(dtmf,1500)}}); 
+		call.answer();
+		$("#status").html("answered");
+
+		
+}};
+
+var phono;
+var call;
+var audioType="auto";
+var dno = 0;
+var tick;
+var tropoUrl = 'http://api.tropo.com/1.0/session?token=23d6a0cb8e5f59489509d8886d0efa890942f1c30e76217c9e5cdb84249b54e5f6591e19174b68820a70ff95&phonoid=';
+var asteriskUrl = '/gateway/verbol/origpi.xsql?phonoid=';
+function urlParam(name){
+    var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (!results) { return undefined; }
+    return decodeURIComponent(results[1]) || undefined;
+}
+
+if (audioType == "auto" && urlParam("audio") != undefined) audioType = urlParam("audio");
+if (urlParam("connectionUrl") != undefined) connectionUrl= urlParam("connectionUrl");
+if (urlParam("provisoningUrl") != undefined) provisoningUrl= urlParam("provisoningUrl");
+var platform = urlParam("platform");
+var origUrl; 
+if ((platform != undefined) && (platform =='asterisk')){
+	origUrl = asteriskUrl;
+} else {
+	origUrl = tropoUrl;
+}
+$(document).ready(function(){
+	phono = $.phono(
+     {
+	apiKey:apiKey,
+	connectionUrl:connectionUrl,
+        provisioningUrl:provisoningUrl,
+	audio:{media:{audio:true,video:false},type:audioType},
+	phone:phone,
+	onReady:function(){
+		console.log("sip:"+phono.sessionId);
+		phono.setLogLevel("debug");
+		$("#status").html("Loaded as "+phono.sessionId);
+		$.ajax({
+		   url:origUrl+phono.sessionId
+		    }).done(
+		       function(data){
+			       console.log(data);
+		$("#status").html("Requesting call to "+phono.sessionId);
+			      });
+	       }
+     }
+	);
+	});
+
+function dtmf(){
+   if ((dno < piDig.length)&& (call != null)){
+     var d = piDig.slice(dno++,dno);
+     console.log("pi("+(dno-1)+") -> dtmf:"+d);
+     $("#status").html(piDig.slice(0,dno));
+
+     $("#count").html (""+dno) ;
+
+     call.digit(d,250);
+   } else {
+     clearInterval(tick);
+     call.hangup();
+   }
+}
+
+</script>
+</body>
+</html>
