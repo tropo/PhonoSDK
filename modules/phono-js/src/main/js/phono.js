@@ -91,7 +91,13 @@ function Phono(config) {
            srv = srv+"s";
         }
         var dnsUrl = uri.protocol+"//"+uri.host+"/Phono/srvlookup/"+srv+"._tcp."+uri.hostname;
-        srvreq.open("GET", dnsUrl, false);     // this blocks because there is really nothing else we can do untill we have a server to talk to.
+        srvreq.open("GET", dnsUrl, true); 
+        srvreq.timeout = 4000;
+        srvreq.ontimeout = function () { 
+            Phono.log.debug("[LB] Timeout");
+            Phono.log.debug("[LB] Using default connection URL "+phono.config.connectionUrl);
+            cfunc(phono.config.connectionUrl);
+        }
 
         if (srvreq.overrideMimeType) {
             srvreq.overrideMimeType("application/json");
