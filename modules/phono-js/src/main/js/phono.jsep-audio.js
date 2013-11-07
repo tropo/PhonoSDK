@@ -278,12 +278,12 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
                     var twoTone = JSEPAudio.toneMap[value];
                     note1.frequency.value = twoTone[0];
                     note2.frequency.value = twoTone[1];
-                    note1.noteOn(0.0);
-                    note2.noteOn(0.0);
+                    note1.start(0.0);
+                    note2.start(0.0);
                     window.setTimeout(
                     function(){
-                        note1.noteOff(0.0);
-                        note2.noteOff(0.0);
+                        note1.stop(0.0);
+                        note2.stop(0.0);
                     }, duration);
                 }
             }
