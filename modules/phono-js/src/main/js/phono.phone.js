@@ -10,7 +10,8 @@
        RINGING: 1,
        DISCONNECTED: 2,
        PROGRESS: 3,
-       INITIAL: 4
+       INITIAL: 4,
+       ANSWERING: 5
    };
 
    var Direction = {
@@ -223,6 +224,8 @@
       if (call.state != CallState.RINGING 
       && call.state != CallState.PROGRESS) return;
 
+       call.state = CallState.ANSWERING;
+
        var acceptIq = Strophe.iq({type:"set", to:call.remoteJid});
       
        var accept = acceptIq.c('jingle', {
@@ -231,9 +234,7 @@
            initiator: call.initiator,
            sid: call.id
        });
-       
-       
-       
+              
        var updateIq = Strophe.iq({type:"set", to:call.remoteJid});
       
        var update = updateIq.c('jingle', {
@@ -328,13 +329,15 @@
       var call = this;
 
       if (call.state == CallState.INITIAL) {
-          call.state = CallState.DISCONNECTED;
           return;
       }
       
       if (call.state != CallState.CONNECTED 
        && call.state != CallState.RINGING 
-       && call.state != CallState.PROGRESS) return;
+       && call.state != CallState.PROGRESS
+       && call.state != CallState.ANSWERING) return;
+
+      call.state = CallState.DISCONNECTED;
       
       var jingleIq = Strophe.iq({
          type:"set", 
@@ -350,7 +353,6 @@
       if (call.transport.destroyTransport) call.transport.destroyTransport();
              
       this.connection.sendIQ(jingleIq, function (iq) {
-          call.state = CallState.DISCONNECTED;
           Phono.events.trigger(call, "hangup");
           if (call.ringer != null) call.ringer.stop();
           if (call.ringback != null) call.ringback.stop();          
@@ -743,16 +745,17 @@
          // Hangup
          case "session-terminate":
             
-            call.state = CallState.DISCONNECTED;
-            
-            call.stopAudio();
-            if (call.ringer != null) call.ringer.stop();
-            if (call.ringback != null) call.ringback.stop();
-            if (call.transport.destroyTransport) call.transport.destroyTransport();
-
-            // Fire hangup event
-            Phono.events.trigger(call, "hangup")
-            
+            if (call.state != CallState.DISCONNECTED) {
+                call.state = CallState.DISCONNECTED;
+                
+                call.stopAudio();
+                if (call.ringer != null) call.ringer.stop();
+                if (call.ringback != null) call.ringback.stop();
+                if (call.transport.destroyTransport) call.transport.destroyTransport();
+                
+                // Fire hangup event
+                Phono.events.trigger(call, "hangup")
+            }
             break;
             
          // Ringing
