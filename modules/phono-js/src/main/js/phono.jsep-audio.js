@@ -36,7 +36,7 @@ function JSEPAudio(phono, config, callback) {
 	    return sdpObj;
         };
 	JSEPAudio.AudioUrl = function(url){
-		return url;
+		return url.replace(".mp3",".ogg");
 	};
 	JSEPAudio.addCreateConstraint = function(constraint){
 		return constraint;
@@ -144,8 +144,51 @@ JSEPAudio.prototype.play = function(transport, autoPlay) {
     if (transport.uri) {
         url = JSEPAudio.AudioUrl(transport.uri);
     }
-    
-    return {
+    var player = null; 
+    var context = JSEPAudio.webAudioContext;
+    if (context){
+      player = {
+	stopped: false,
+        url: function() {
+            return url;
+        },
+        start: function() {
+            if (url) {
+	      var request = new XMLHttpRequest();
+	      request.open('GET', url, true);
+	      request.responseType = 'arraybuffer';
+	// Decode asynchronously
+	      request.onload = function() {
+	          context.decodeAudioData(request.response, function(buffer) {
+		      Phono.log.info("Loaded audio from "+ url);
+		      if (!this.stopped) {
+		        audioPlayer = context.createBufferSource(); // creates a sound source
+		        audioPlayer.buffer = buffer;                    // tell the source which sound to play
+		        audioPlayer.connect(context.destination);       // connect the source to the context's destination (the speakers)
+			audioPlayer.loop = true;
+		        audioPlayer.start(0);
+                      }			
+	          }, function(){Phono.log.info("failed to load audio from "+ url)});
+	      };
+	      request.send();
+            }
+        },
+        stop: function() {
+            if (audioPlayer) audioPlayer.stop(0);
+            this.stopped = true;
+            audioPlayer = null;
+        },
+        volume: function(value) {
+            if(arguments.length === 0) {
+                return transport.volume * 100;
+            }
+            else {
+                transport.volume = (value / 100);
+            }
+        }
+     };
+    } else {
+      player = {
         url: function() {
             return url;
         },
@@ -172,7 +215,9 @@ JSEPAudio.prototype.play = function(transport, autoPlay) {
                 transport.volume = (value / 100);
             }
         }
+     };
     }
+    return player;
 };
 
 // Creates a new audio Share and will optionally begin playing
