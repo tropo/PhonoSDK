@@ -119,7 +119,7 @@ NSString *_empty = @"<html>\
     NSString *dev = [[UIDevice currentDevice] uniqueIdentifier] ; // deprecated - do _not_ use in appstore app
 
     phono = [[PhonoNative alloc] initWithPhone:phone ];
-    [phono setGateway:@"sfa.westhawk.co.uk"];
+//    [phono setGateway:@"sfa.westhawk.co.uk"];
     phono.messaging.onMessage = ^(PhonoMessage *message){
         [self gotMessage:message];
     };
@@ -184,7 +184,7 @@ NSString *_empty = @"<html>\
     NSString *dom =  (m == 1)? @"sip":@"app";
     if ([phono sessionID] != nil){
         call = [[[PhonoCall alloc] initOutbound:user domain:dom] retain]; 
-        call.secure = 1;
+        call.secure = 0;
         [self update:@"dialing"];
         [call.headers setObject:[phono sessionID] forKey:@"x-jid"];
         call.onAnswer = ^{ [self update:@"answered"];};

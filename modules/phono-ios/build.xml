@@ -19,12 +19,11 @@
         </exec>
   </target>
 
-  <target name="build-PhonoNative-iphoneos" depends="build-libphono-iphoneos">
+  <target name="build-PhonoNative-iphoneos" depends="build-libphono-iphoneos" >
         <exec executable="xCodeBuild" dir="${PhonoNative.dir}">
           <arg value="-sdk"/>
           <arg value="iphoneos"/>
         </exec>
-        <move file="PhonoNative/build/Release-iphoneos/libPhonoNative.a" tofile="target/PhonoNative-arm.a"/>
   </target>
 
   <target name="build-PhonoNative-iphonesimulator" depends="build-libphono-iphonesimulator">
@@ -32,18 +31,31 @@
           <arg value="-sdk"/>
           <arg value="iphonesimulator"/>
         </exec>
-        <move file="PhonoNative/build/Release-iphonesimulator/libPhonoNative.a" tofile="target/PhonoNative-i386.a"/>
   </target>
 
   <target name="clean-PhonoNative">
         <exec executable="xCodeBuild" dir="${PhonoNative.dir}">
           <arg value="clean"/>
         </exec>
+        <exec executable="xCodeBuild" dir="${libPhono.dir}">
+          <arg value="clean"/>
+        </exec>
   </target>
 
   <property name="xmppdirectory" value="XMPPFramework-phono"/>
 
-  <target name="build" depends="clean,build-PhonoNative-iphonesimulator,build-PhonoNative-iphoneos">
+  <target name="toolib" depends="build-PhonoNative-iphonesimulator,build-PhonoNative-iphoneos">
+        <exec  executable="libtool">
+          <arg value="-static"/>
+          <arg value="./libphono/build/Release-iphoneos/libphono.a"/>
+          <arg value="./libphono/build/Release-iphonesimulator/libphono.a"/>
+          <arg value="./PhonoNative/build/Release-iphoneos/libPhonoNative.a"/>
+          <arg value="./PhonoNative/build/Release-iphonesimulator/libPhonoNative.a"/>
+          <arg value="-o"/>
+          <arg value="target/libPhono.a"/> 
+        </exec>
+  </target>
+  <target name="build" depends="clean,toolib">
     <copy todir="target/Headers" overwrite="true">
       <fileset dir="${header.dir}" includes="*.h"/>
     </copy>

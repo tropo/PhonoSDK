@@ -69,7 +69,6 @@
 		225AA21115A1D92400C6FA08 /* key.c in Sources */ = {isa = PBXBuildFile; fileRef = 225AA20D15A1D92400C6FA08 /* key.c */; };
 		225AA21415A1E4A000C6FA08 /* phonoSRTP.h in Headers */ = {isa = PBXBuildFile; fileRef = 225AA21215A1E4A000C6FA08 /* phonoSRTP.h */; };
 		225AA21515A1E4A000C6FA08 /* phonoSRTP.m in Sources */ = {isa = PBXBuildFile; fileRef = 225AA21315A1E4A000C6FA08 /* phonoSRTP.m */; };
-		ED08F23113B49BDB00B00F0B /* libphono.a in CopyFiles */ = {isa = PBXBuildFile; fileRef = ED5BF08513B493CB00AA022F /* libphono.a */; };
 		ED1C65FC13B4A0430092960D /* PhonoAPI.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = EDA3E21513B49D6F001FDACE /* PhonoAPI.h */; };
 		ED5BF08913B493CB00AA022F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED5BF08813B493CB00AA022F /* Foundation.framework */; };
 		EDA3E21913B49D6F001FDACE /* PhonoAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = EDA3E16513B49D6F001FDACE /* PhonoAPI.m */; };
@@ -226,16 +225,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		ED08F23013B49B9100B00F0B /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "$(SRCROOT)/../target";
-			dstSubfolderSpec = 0;
-			files = (
-				ED08F23113B49BDB00B00F0B /* libphono.a in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		ED1C65FA13B4A0220092960D /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1079,7 +1068,6 @@
 				ED5BF08113B493CB00AA022F /* Sources */,
 				ED5BF08213B493CB00AA022F /* Frameworks */,
 				ED5BF08313B493CB00AA022F /* Headers */,
-				ED08F23013B49B9100B00F0B /* CopyFiles */,
 				ED1C65FA13B4A0220092960D /* CopyFiles */,
 			);
 			buildRules = (
@@ -1243,7 +1231,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "i386 armv6 armv7";
+				VALID_ARCHS = "i386 armv6 armv7 armv7s arm64";
 			};
 			name = Debug;
 		};
@@ -1260,7 +1248,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "i386 armv6 armv7";
+				VALID_ARCHS = "i386 armv6 armv7 armv7s arm64";
 			};
 			name = Release;
 		};
@@ -1280,7 +1268,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/src/iosaudio/libspeex/speex\" \"$(SRCROOT)/src/iosaudio/libspeex\" \"$(SRCROOT)/src/iosaudio\"";
-				VALID_ARCHS = "armv6 armv7 i386 armv7s";
+				VALID_ARCHS = "armv6 armv7 i386 armv7s arm64";
 			};
 			name = Debug;
 		};
@@ -1300,7 +1288,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/src/iosaudio/libspeex/speex\" \"$(SRCROOT)/src/iosaudio/libspeex\" \"$(SRCROOT)/src/iosaudio\"";
-				VALID_ARCHS = "armv6 armv7 i386 armv7s";
+				VALID_ARCHS = "armv6 armv7 i386 armv7s arm64";
 			};
 			name = Release;
 		};

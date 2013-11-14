@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		221C4AE315AAE8D500312106 /* libphono.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 221C4AE215AAE8D500312106 /* libphono.a */; };
 		22230A6F149A31E000AEF013 /* PhonoXMPP.h in Headers */ = {isa = PBXBuildFile; fileRef = 22230A6D149A31E000AEF013 /* PhonoXMPP.h */; };
 		22230A70149A31E000AEF013 /* PhonoXMPP.m in Sources */ = {isa = PBXBuildFile; fileRef = 22230A6E149A31E000AEF013 /* PhonoXMPP.m */; };
 		22230B34149A337100AEF013 /* DDList.h in Headers */ = {isa = PBXBuildFile; fileRef = 22230A77149A337100AEF013 /* DDList.h */; };
@@ -118,9 +117,18 @@
 		22E7357C16775D5600684502 /* libidn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22230B1A149A337100AEF013 /* libidn.a */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		229C2A9A1835292C00D7F654 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 229C2A961835292C00D7F654 /* libphono.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = ED5BF08513B493CB00AA022F;
+			remoteInfo = phono;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		221BD7C714A4D8B500E3972C /* ToDo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ToDo; sourceTree = "<group>"; };
-		221C4AE215AAE8D500312106 /* libphono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libphono.a; path = ../target/libphono.a; sourceTree = "<group>"; };
 		22230A6D149A31E000AEF013 /* PhonoXMPP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhonoXMPP.h; sourceTree = "<group>"; };
 		22230A6E149A31E000AEF013 /* PhonoXMPP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhonoXMPP.m; sourceTree = "<group>"; };
 		22230A77149A337100AEF013 /* DDList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDList.h; sourceTree = "<group>"; };
@@ -233,6 +241,7 @@
 		223A1DD61498C2E10019A5E3 /* PhonoMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhonoMessage.m; sourceTree = "<group>"; };
 		229B9A1414A0E1AA00E632FA /* XMPPJingle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XMPPJingle.h; path = "XEP-0166/XMPPJingle.h"; sourceTree = "<group>"; };
 		229B9A1514A0E1AA00E632FA /* XMPPJingle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XMPPJingle.m; path = "XEP-0166/XMPPJingle.m"; sourceTree = "<group>"; };
+		229C2A961835292C00D7F654 /* libphono.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libphono.xcodeproj; path = ../libphono/libphono.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -241,7 +250,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				22E7357C16775D5600684502 /* libidn.a in Frameworks */,
-				221C4AE315AAE8D500312106 /* libphono.a in Frameworks */,
 				223A1D7E149777E80019A5E3 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -526,7 +534,7 @@
 		223A1D6F149777E70019A5E3 = {
 			isa = PBXGroup;
 			children = (
-				221C4AE215AAE8D500312106 /* libphono.a */,
+				229C2A961835292C00D7F654 /* libphono.xcodeproj */,
 				22230A71149A337100AEF013 /* XMPP */,
 				22230A6B149A311900AEF013 /* PhonoXMPP */,
 				223A1D7F149777E80019A5E3 /* PhonoNative */,
@@ -584,6 +592,14 @@
 				229B9A1514A0E1AA00E632FA /* XMPPJingle.m */,
 			);
 			name = "XEP-0166";
+			sourceTree = "<group>";
+		};
+		229C2A971835292C00D7F654 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				229C2A9B1835292C00D7F654 /* libphono.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -692,12 +708,28 @@
 			mainGroup = 223A1D6F149777E70019A5E3;
 			productRefGroup = 223A1D7B149777E80019A5E3 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 229C2A971835292C00D7F654 /* Products */;
+					ProjectRef = 229C2A961835292C00D7F654 /* libphono.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				223A1D79149777E80019A5E3 /* PhonoNative */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		229C2A9B1835292C00D7F654 /* libphono.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libphono.a;
+			remoteRef = 229C2A9A1835292C00D7F654 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		223A1D76149777E80019A5E3 /* Sources */ = {
