@@ -120,7 +120,7 @@
 
 /* Begin PBXFileReference section */
 		221BD7C714A4D8B500E3972C /* ToDo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ToDo; sourceTree = "<group>"; };
-		221C4AE215AAE8D500312106 /* libphono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libphono.a; path = "../target/libphono.a"; sourceTree = "<group>"; };
+		221C4AE215AAE8D500312106 /* libphono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libphono.a; path = ../target/libphono.a; sourceTree = "<group>"; };
 		22230A6D149A31E000AEF013 /* PhonoXMPP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhonoXMPP.h; sourceTree = "<group>"; };
 		22230A6E149A31E000AEF013 /* PhonoXMPP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhonoXMPP.m; sourceTree = "<group>"; };
 		22230A77149A337100AEF013 /* DDList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDList.h; sourceTree = "<group>"; };
@@ -294,7 +294,7 @@
 				22230A87149A337100AEF013 /* XMPPXFacebookPlatformAuthentication.m */,
 			);
 			name = Utilities;
-			path = ../XMPPFramework-phono/Utilities;
+			path = "../XMPPFramework-phono/Utilities";
 			sourceTree = "<group>";
 		};
 		22230A73149A337100AEF013 /* Extensions */ = {
@@ -311,7 +311,7 @@
 				22230A96149A337100AEF013 /* XEP-0203 */,
 			);
 			name = Extensions;
-			path = ../XMPPFramework-phono/Extensions;
+			path = "../XMPPFramework-phono/Extensions";
 			sourceTree = "<group>";
 		};
 		22230A74149A337100AEF013 /* Core */ = {
@@ -339,7 +339,7 @@
 				22230B0D149A337100AEF013 /* XMPPStream.m */,
 			);
 			name = Core;
-			path = ../XMPPFramework-phono/Core;
+			path = "../XMPPFramework-phono/Core";
 			sourceTree = "<group>";
 		};
 		22230A75149A337100AEF013 /* Categories */ = {
@@ -353,7 +353,7 @@
 				22230B13149A337100AEF013 /* NSXMLElement+XMPP.m */,
 			);
 			name = Categories;
-			path = ../XMPPFramework-phono/Categories;
+			path = "../XMPPFramework-phono/Categories";
 			sourceTree = "<group>";
 		};
 		22230A76149A337100AEF013 /* Vendor */ = {
@@ -458,7 +458,7 @@
 				22230B1B149A337100AEF013 /* stringprep.h */,
 			);
 			name = libidn;
-			path = ../XMPPFramework-phono/Vendor/libidn;
+			path = "../XMPPFramework-phono/Vendor/libidn";
 			sourceTree = "<group>";
 		};
 		22230B15149A337100AEF013 /* KissXML */ = {
@@ -475,7 +475,7 @@
 				22230B24149A337100AEF013 /* Private */,
 			);
 			name = KissXML;
-			path = ../XMPPFramework-phono/Vendor/KissXML;
+			path = "../XMPPFramework-phono/Vendor/KissXML";
 			sourceTree = "<group>";
 		};
 		22230B16149A337100AEF013 /* CocoaAsyncSocket */ = {
@@ -485,7 +485,7 @@
 				22230B29149A337100AEF013 /* GCDAsyncSocket.m */,
 			);
 			name = CocoaAsyncSocket;
-			path = ../XMPPFramework-phono/Vendor/CocoaAsyncSocket;
+			path = "../XMPPFramework-phono/Vendor/CocoaAsyncSocket";
 			sourceTree = "<group>";
 		};
 		22230B17149A337100AEF013 /* CocoaLumberjack */ = {
@@ -503,7 +503,7 @@
 				22230B33149A337100AEF013 /* DDTTYLogger.m */,
 			);
 			name = CocoaLumberjack;
-			path = ../XMPPFramework-phono/Vendor/CocoaLumberjack;
+			path = "../XMPPFramework-phono/Vendor/CocoaLumberjack";
 			sourceTree = "<group>";
 		};
 		22230B1C149A337100AEF013 /* Categories */ = {
@@ -763,7 +763,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -778,12 +778,13 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"../libphono/src",
+					../libphono/src,
 					/usr/include/libxml2,
 				);
 				INSTALL_PATH = ../target;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "arm64 armv7 armv7s i386";
 			};
 			name = Debug;
 		};
@@ -791,7 +792,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -799,13 +800,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"../libphono/src",
+					../libphono/src,
 					/usr/include/libxml2,
 				);
 				INSTALL_PATH = ../target;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = "arm64 armv7 armv7s i386";
 			};
 			name = Release;
 		};

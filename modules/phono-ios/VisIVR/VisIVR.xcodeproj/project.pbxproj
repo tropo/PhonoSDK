@@ -27,11 +27,11 @@
 		229AD0ED14A3AC41008C656D /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EC14A3AC41008C656D /* CoreAudio.framework */; };
 		229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0EE14A3AC59008C656D /* Security.framework */; };
 		229AD0F114A3AC81008C656D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229AD0F014A3AC81008C656D /* AVFoundation.framework */; };
+		229C2A8C1834D7D400D7F654 /* PhonoNative-arm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 229C2A8A1834D7D400D7F654 /* PhonoNative-arm.a */; };
 		22A510F6169B30A5003555B1 /* phono-slide-icon57.png in Resources */ = {isa = PBXBuildFile; fileRef = 22A510F5169B30A5003555B1 /* phono-slide-icon57.png */; };
 		22A510F8169B30BE003555B1 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 22A510F7169B30BE003555B1 /* Default.png */; };
 		22A510FA169B30CD003555B1 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 22A510F9169B30CD003555B1 /* Default@2x.png */; };
 		22A510FC169B3142003555B1 /* phono-slide-icon114.png in Resources */ = {isa = PBXBuildFile; fileRef = 22A510FB169B3142003555B1 /* phono-slide-icon114.png */; };
-		22B7515418116A2D00AAB29D /* PhonoNative-i386.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22B7515318116A2D00AAB29D /* PhonoNative-i386.a */; };
 		22D926A514AC96A100F9D295 /* Diggztone_Agent94.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269A14AC96A100F9D295 /* Diggztone_Agent94.mp3 */; };
 		22D926A614AC96A100F9D295 /* Diggztone_AngryBirds.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269B14AC96A100F9D295 /* Diggztone_AngryBirds.mp3 */; };
 		22D926A714AC96A100F9D295 /* Diggztone_Countdown.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 22D9269C14AC96A100F9D295 /* Diggztone_Countdown.mp3 */; };
@@ -72,10 +72,13 @@
 		229AD0EC14A3AC41008C656D /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		229AD0EE14A3AC59008C656D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		229AD0F014A3AC81008C656D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		229C2A891834D7D400D7F654 /* libphono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libphono.a; path = ../target/libphono.a; sourceTree = "<group>"; };
+		229C2A8A1834D7D400D7F654 /* PhonoNative-arm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "PhonoNative-arm.a"; path = "../target/PhonoNative-arm.a"; sourceTree = "<group>"; };
 		22A510F5169B30A5003555B1 /* phono-slide-icon57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "phono-slide-icon57.png"; sourceTree = "<group>"; };
 		22A510F7169B30BE003555B1 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		22A510F9169B30CD003555B1 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		22A510FB169B3142003555B1 /* phono-slide-icon114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "phono-slide-icon114.png"; sourceTree = "<group>"; };
+		22A71E8E1834CECE001CF720 /* libPhonoNative.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPhonoNative.a; path = "../../../../../../../Users/tim/Library/Developer/Xcode/DerivedData/PhonoNative-fsbfvrjxcbtwpaalrchpraxiztri/Build/Products/Debug-iphoneos/libPhonoNative.a"; sourceTree = "<group>"; };
 		22B7515318116A2D00AAB29D /* PhonoNative-i386.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "PhonoNative-i386.a"; path = "../target/PhonoNative-i386.a"; sourceTree = "<group>"; };
 		22D9269A14AC96A100F9D295 /* Diggztone_Agent94.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_Agent94.mp3; sourceTree = "<group>"; };
 		22D9269B14AC96A100F9D295 /* Diggztone_AngryBirds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Diggztone_AngryBirds.mp3; sourceTree = "<group>"; };
@@ -96,7 +99,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22B7515418116A2D00AAB29D /* PhonoNative-i386.a in Frameworks */,
 				221BD7BF14A49A4900E3972C /* CoreFoundation.framework in Frameworks */,
 				229AD0F114A3AC81008C656D /* AVFoundation.framework in Frameworks */,
 				229AD0EF14A3AC59008C656D /* Security.framework in Frameworks */,
@@ -105,6 +107,7 @@
 				22230A65149A0AEE00AEF013 /* CoreData.framework in Frameworks */,
 				22230A63149A0AE000AEF013 /* SystemConfiguration.framework in Frameworks */,
 				22230A61149A0ACB00AEF013 /* CoreLocation.framework in Frameworks */,
+				229C2A8C1834D7D400D7F654 /* PhonoNative-arm.a in Frameworks */,
 				22230A5F149A0A7000AEF013 /* libresolv.dylib in Frameworks */,
 				22230963149A086B00AEF013 /* CFNetwork.framework in Frameworks */,
 				2223084D1499E05400AEF013 /* UIKit.framework in Frameworks */,
@@ -151,6 +154,9 @@
 		2223084B1499E05400AEF013 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				229C2A891834D7D400D7F654 /* libphono.a */,
+				229C2A8A1834D7D400D7F654 /* PhonoNative-arm.a */,
+				22A71E8E1834CECE001CF720 /* libPhonoNative.a */,
 				22B7515318116A2D00AAB29D /* PhonoNative-i386.a */,
 				2223084C1499E05400AEF013 /* UIKit.framework */,
 				2223084E1499E05400AEF013 /* Foundation.framework */,
@@ -240,6 +246,11 @@
 			attributes = {
 				LastUpgradeCheck = 0420;
 				ORGANIZATIONNAME = "Westhhawk Ltd";
+				TargetAttributes = {
+					222308471499E05400AEF013 = {
+						DevelopmentTeam = NV2YE3RNDS;
+					};
+				};
 			};
 			buildConfigurationList = 222308421499E05400AEF013 /* Build configuration list for PBXProject "VisIVR" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -390,6 +401,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = armv7;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "VisIVR/VisIVR-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -400,17 +413,20 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\\\"$(SRCROOT)/../XMPPFramework-phono/Vendor/libidn\\\"",
-					"\\\"$(SRCROOT)/../target\\\"",
-					"\\\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\\\"",
-					"\\\"$(SRCROOT)/../../phono-phonegap-ios/target\\\"",
+					"\\\\\\\\\\\\\\\"$(SRCROOT)/../XMPPFramework-phono/Vendor/libidn\\\\\\\\\\\\\\\"",
+					"\\\\\\\\\\\\\\\"$(SRCROOT)/../target\\\\\\\\\\\\\\\"",
+					"\\\\\\\\\\\\\\\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\\\\\\\\\\\\\\\"",
+					"\\\\\\\\\\\\\\\"$(SRCROOT)/../../phono-phonegap-ios/target\\\\\\\\\\\\\\\"",
 					"/project2/github/phono/PhonoSDK/modules/phono-ios/target",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/PhonoNative-fsbfvrjxcbtwpaalrchpraxiztri/Build/Products/Debug-iphoneos",
+					"/project2/github/phono/PhonoSDK.master/modules/phono-ios/target",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lxml2",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -419,6 +435,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = armv7;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "VisIVR/VisIVR-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -429,17 +447,20 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\\\"$(SRCROOT)/../XMPPFramework-phono/Vendor/libidn\\\"",
-					"\\\"$(SRCROOT)/../target\\\"",
-					"\\\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\\\"",
-					"\\\"$(SRCROOT)/../../phono-phonegap-ios/target\\\"",
+					"\\\\\\\\\\\\\\\"$(SRCROOT)/../XMPPFramework-phono/Vendor/libidn\\\\\\\\\\\\\\\"",
+					"\\\\\\\\\\\\\\\"$(SRCROOT)/../target\\\\\\\\\\\\\\\"",
+					"\\\\\\\\\\\\\\\"$(SRCROOT)/../../phono-phonegap-ios/libphono/build/Release-iphoneos\\\\\\\\\\\\\\\"",
+					"\\\\\\\\\\\\\\\"$(SRCROOT)/../../phono-phonegap-ios/target\\\\\\\\\\\\\\\"",
 					"/project2/github/phono/PhonoSDK/modules/phono-ios/target",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/PhonoNative-fsbfvrjxcbtwpaalrchpraxiztri/Build/Products/Debug-iphoneos",
+					"/project2/github/phono/PhonoSDK.master/modules/phono-ios/target",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lxml2",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

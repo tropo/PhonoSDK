@@ -20,7 +20,7 @@ NSString *_empty = @"<html>\
 <head>\
 <script src='http://code.jquery.com/jquery-1.4.2.min.js'></script>\
 </head>\
-<body id='body'>Empty\
+<body id='body'>\
 %@</body>\
 </html>";
 - (void)didReceiveMemoryWarning
@@ -119,7 +119,7 @@ NSString *_empty = @"<html>\
     NSString *dev = [[UIDevice currentDevice] uniqueIdentifier] ; // deprecated - do _not_ use in appstore app
 
     phono = [[PhonoNative alloc] initWithPhone:phone ];
-    //[phono setGateway:@"phono-trunk-ext.qa.voxeolabs.net"];
+    [phono setGateway:@"sfa.westhawk.co.uk"];
     phono.messaging.onMessage = ^(PhonoMessage *message){
         [self gotMessage:message];
     };
@@ -184,7 +184,7 @@ NSString *_empty = @"<html>\
     NSString *dom =  (m == 1)? @"sip":@"app";
     if ([phono sessionID] != nil){
         call = [[[PhonoCall alloc] initOutbound:user domain:dom] retain]; 
-        call.secure = 0;
+        call.secure = 1;
         [self update:@"dialing"];
         [call.headers setObject:[phono sessionID] forKey:@"x-jid"];
         call.onAnswer = ^{ [self update:@"answered"];};

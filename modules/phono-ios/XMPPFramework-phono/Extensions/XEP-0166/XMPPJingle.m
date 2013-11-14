@@ -124,7 +124,7 @@
 
 
 - (NSArray *) xpns:(NSXMLElement *)d q:(NSString *)q {
-    NSError *error;
+    NSError *error = nil;
     if (phonoBugs) {
         q = [q stringByReplacingOccurrencesOfString:@"pjingle:" withString:@""]; 
         q = [q stringByReplacingOccurrencesOfString:@"prtp:" withString:@""]; 
@@ -135,6 +135,10 @@
         q = [q stringByReplacingOccurrencesOfString:@"pudp:" withString:@"udp:"];         
     }
     NSArray * ret = [d nodesForXPathWithNamespaces:q namespaces:namespaces error: &error];
+    if (error != nil){
+        NSLog(@"Problem in xpath : %@", error);
+    }
+    NSLog(@"xpath was : %@", q);
     return ret;
 }
 
@@ -249,7 +253,7 @@
     }
     [[self xp0:iq q:@"/jabber:iq/jingle:jingle/jingle:content/udp:transport"] 
      addChild:[self mkCandidate:host port:port gen:@"0" comp:@"1"]];
-    [self xp0sa:iq q:@"/jabber:iq/jingle:jingle/jingle:content/rtp:description/rtp:encryption/@required" value:[NSString stringWithFormat:@"%d",cryptoRequired]];
+    [self xp0sa:iq q:@"/jabber:iq/jingle:jingle/jingle:content/rtp:description/rtp:encryption/@required" value:[NSString stringWithFormat:@"%ld",(long)cryptoRequired]];
     
     NSXMLElement *encryption = [self xp0:iq q:@"/jabber:iq/jingle:jingle/jingle:content/rtp:description/rtp:encryption"];
     NSArray * cels = [self mkCryptoElems:cryptoLines];
@@ -369,7 +373,7 @@
     
     
     NSXMLElement *sid = [self xp0:iq q:@"jingle:jingle[@action=\"session-accept\"]/@sid"];
-    NSXMLElement *candidate = [self xp0:iq q:@"jingle:jingle[@action=\"session-accept\"]/pjingle:content/udp:transport/pudp:candidate"];
+    NSXMLElement *candidate = [self xp0:iq q:@"jingle:jingle[@action=\"session-accept\"]/pjingle:content/udp:transport/pudp:candidate[@component=\"1\"]"];
     NSString *xpath = [NSString stringWithFormat:@"jingle:jingle[@action=\"session-accept\"]/pjingle:content/rtp:description[@media=\"audio\"]/prtp:payload-type%@", payloadAttrFilter];
     
     NSArray *cels = [self xpns:iq q:@"jingle:jingle[@action=\"session-accept\"]/pjingle:content/rtp:description[@media=\"audio\"]/prtp:encryption/prtp:crypto"];
@@ -389,11 +393,20 @@
         NSMutableArray * cla = [NSMutableArray arrayWithCapacity:[cels count]];
         for (NSXMLElement *ce in cels){
             [cla addObject:[ce attributesAsDictionary]];
+            NSLog(@"adding a crypto line");
         }
+        NSLog(@"now have %lu crypto lines",(unsigned long)[cla count]);
+        NSLog(@"far end required encryption attribute is %@ ",creqI);
+
         [multicastDelegate xmppJingle:self didReceiveAcceptForCall:ssid from:sfrom to:sto transport:candidate sdp:payload cryptoRequired:creqI cryptoElements:cla];
         
     } else {
         // nothing we can understand...
+        NSLog(@"confused, one of these was nil");
+        NSLog(@"payload nil %d",payload == nil );
+        NSLog(@"sid nil %d",sid == nil );
+        NSLog(@"candidate nil %d",candidate == nil );
+
         ret = [self sendResultError:iq because:SERVICEUNAVAIL];
     }
     
