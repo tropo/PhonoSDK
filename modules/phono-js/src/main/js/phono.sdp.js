@@ -311,7 +311,7 @@
         } 
  
         if (sdpObj.crypto) {
-            sdp = sdp + _buildCrypto(sdpObj.crypto);
+            // Avoid for Chrome 31+ sdp = sdp + _buildCrypto(sdpObj.crypto);
         }
         if (sdpObj.fingerprint) {
             sdp = sdp + _buildFingerprint(sdpObj.fingerprint);
