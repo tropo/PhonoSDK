@@ -367,11 +367,7 @@ JSEPAudio.prototype.permission = function() {
 JSEPAudio.prototype.transport = function(config) {
     var pc;
     var inboundOffer;
-    var configuration = {
-        iceServers:[ {
-                url:JSEPAudio.stun
-            } ]
-    };
+    var configuration;
     var offerconstraints;
     var peerconstraints;
     var remoteContainerId;
@@ -391,6 +387,11 @@ JSEPAudio.prototype.transport = function(config) {
     peerconstraints = {
         'optional': [{'DtlsSrtpKeyAgreement': 'true'}]
     };
+    if(!this.config || !this.config.iceServers) {
+	    configuration ={'iceServers':[ { url:JSEPAudio.stun } ] };
+    } else {
+	    configuration = {'iceServers':this.config.iceServers};
+    }
 
     if(!config || !config.remoteContainerId) {
         if (this.config.remoteContainerId) {
