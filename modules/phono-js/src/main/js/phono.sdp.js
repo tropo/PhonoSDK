@@ -198,7 +198,11 @@
             c.priority + " " +
             c.ip + " " +
             c.port;
-        if (c.type) sdp = sdp + " typ host"; //+ c.type;
+	if (c.type == "srflx") {
+           sdp = sdp + " typ host"; //+ c.type;
+	} else {
+           if (c.type) sdp = sdp +" typ "+  c.type;
+	}
         if (c.component == 1) sdp = sdp + " name rtp";
         if (c.component == 2) sdp = sdp + " name rtcp";
         sdp = sdp + " network_name en0";
