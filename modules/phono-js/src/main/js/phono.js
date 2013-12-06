@@ -161,7 +161,7 @@ function Phono(config) {
 
    
     // Global
-    Phono.version = "1.0";
+    Phono.version = "1.1.1";
    
     Phono.log = new PhonoLogger();
    
