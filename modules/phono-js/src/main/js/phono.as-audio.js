@@ -6,7 +6,7 @@ function FlashAudio(phono, config, callback) {
         protocol: "rtmfp",
         swf: "//" + MD5.hexdigest(window.location.host+phono.config.apiKey) + "." + Phono.dynamicCdnUrl + "/releases/" + Phono.version + "/plugins/audio/phono.audio.swf",
         cirrus: "rtmfp://" + Phono.cirrusUrl + "/phono",
-        bridged: false,
+        bridged: Phono.flashBridged,
         reliable: false,
         media: {audio:true,video:true},
         watchdog: 25000
