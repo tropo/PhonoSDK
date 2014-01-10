@@ -652,6 +652,20 @@
       var action = jingle.attr('action') || "";
       var id = jingle.attr('sid') || "";
       var call = this.calls[id] || null;
+
+      // Check if this is addressed to a new call or a known call
+      if (action != "session-initiate" && call == null) {
+          Phono.log.error("Received jingle addressed to unknown call id: " + id);
+          // Send error reply
+          this.connection.send(
+              Strophe.iq({
+                  type: "result", 
+                  id: $(iq).attr('id'),
+                  to:call.remoteJid
+              })
+          );
+          return true;
+      }
       
       switch(action) {
          
