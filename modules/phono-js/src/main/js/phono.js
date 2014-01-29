@@ -85,6 +85,7 @@ function Phono(config) {
         var curls = [];
         var uri = document.createElement('a');
         var srv = "_phono";
+        var abort = false;
         uri.href = this.config.connectionUrl
         Phono.log.debug("[LB] OrigT ="+uri.hostname+" path ="+uri.pathname);
         if(uri.protocol == "https:"){
@@ -140,8 +141,9 @@ function Phono(config) {
                             }
                         }
                     } else {
-                        Phono.log.debug("[LB] loadbalancer status was "+srvreq.status);
+                        Phono.log.debug("[LB] Load balancer status was "+srvreq.status);
                         Phono.log.debug("[LB] Using default connection URL "+phono.config.connectionUrl);
+                        abort = true;
                         cfunc(phono.config.connectionUrl);
                     }
                 }
@@ -149,9 +151,14 @@ function Phono(config) {
             // Send the request
             srvreq.send(null);
         } catch (e) {
-            Phono.log.debug("[LB] error - ignoring a loadbalance error "+e);
-            Phono.log.debug("[LB] Using default connection URL "+phono.config.connectionUrl);
-            cfunc(phono.config.connectionUrl);
+            Phono.log.debug("[LB] Error - ignoring a loadbalance error "+e);
+            if (abort != true) {
+                Phono.log.debug("[LB] Using default connection URL "+phono.config.connectionUrl);
+                abort = true;
+                cfunc(phono.config.connectionUrl); 
+            } else {
+                Phono.log.debug("[LB] Not issuing another connection as abort already in progress")
+            }       
         }
     } 
 };
