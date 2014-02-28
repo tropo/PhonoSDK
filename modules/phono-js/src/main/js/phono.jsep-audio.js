@@ -153,7 +153,7 @@ JSEPAudio.prototype.play = function(transport, autoPlay) {
             return url;
         },
         start: function() {
-            if (url) {
+            if (!audioPlayer && url) {
 	      var request = new XMLHttpRequest();
 	      request.open('GET', url, true);
 	      request.responseType = 'arraybuffer';
@@ -422,6 +422,10 @@ JSEPAudio.prototype.transport = function(config) {
                         var sdpObj = Phono.sdp.parseSDP(sdp);
                         Phono.log.info('SdpObj ' + JSON.stringify(sdpObj));
                         Phono.sdp.buildJingle(j, sdpObj);
+                        if (audio.config.debug) {
+                            // Include the full SDP
+                            // XXX
+                        }
                         var codecId = 0;
                         if (sdpObj.contents[0].codecs[0].name == "telephone-event") codecId = 1;
                         var codec = 
