@@ -222,9 +222,7 @@ JSEPAudio.prototype.play = function(transport, autoPlay) {
 
 // Creates a new audio Share and will optionally begin playing
 JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
-    var share;
-
-    return {
+    var share = {
         // Readonly
         url: function() {
             // No Share URL
@@ -334,6 +332,17 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
             }
         }
     };
+    if (JSEPAudio.pc.createDTMFSender){
+       share.digit = function(values, duration, audible) {
+         if (JSEPAudio.dtmfSender){
+            var tone = values.charAt(0);
+            JSEPAudio.dtmfSender.insertDTMF(tone);
+            this.freep(values, duration, audible);
+         }
+       };
+    }
+
+    return share;
 };   
 
 JSEPAudio.prototype.showPermissionBox = function(callback) {
@@ -444,6 +453,16 @@ JSEPAudio.prototype.transport = function(config) {
                 Phono.log.info("onAddStream. Attaching");
 		JSEPAudio.attachMediaStream(remoteVideo,event.stream);
                 remoteVideo.style.opacity = 1;
+		if ((JSEPAudio.localStream != null) && (JSEPAudio.pc.createDTMFSender) ) {
+		  var local_audio_track = JSEPAudio.localStream.getAudioTracks()[0];
+		  JSEPAudio.dtmfSender = JSEPAudio.pc.createDTMFSender(local_audio_track);
+		  Phono.log.debug("Created DTMF Sender");
+		  JSEPAudio.dtmfSender.ontonechange = function(tone){
+		     if(tone){
+			Phono.log.debug("sent Dtmf tone: \t" + tone.tone);
+		     }
+		  };
+		}
             };
             //pc.onremovestream = function (event) {Phono.log.info("onRemoveStream."); };
             //pc.onicechange= function (event) {Phono.log.info("onIceChange: "+pc.iceState); };
