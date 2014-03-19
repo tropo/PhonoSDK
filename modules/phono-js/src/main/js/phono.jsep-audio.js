@@ -335,8 +335,7 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
     if (JSEPAudio.pc.createDTMFSender){
        share.digit = function(values, duration, audible) {
          if (JSEPAudio.dtmfSender){
-            var tone = values.charAt(0);
-            JSEPAudio.dtmfSender.insertDTMF(tone);
+            JSEPAudio.dtmfSender.insertDTMF(values);
             this.freep(values, duration, audible);
          }
        };
