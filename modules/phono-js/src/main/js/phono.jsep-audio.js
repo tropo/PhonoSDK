@@ -277,8 +277,14 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
                 JSEPAudio.pc.getStats(function(stats){
                     var sr = stats.result();
                     for (var i=0;i< sr.length; i++){
-                        var obj = sr[i].remote;
-                        if (obj){
+                        var obj;
+                        if (typeof sr[i].stat == 'function') {
+                            obj = sr[i];
+                        }
+                        else {
+                            obj = sr[i].remote;
+                        }
+                        if (obj) {
                             var nspk = 0.0;
 			    var nmic = 0.0;
                             if (obj.stat('audioInputLevel')){
