@@ -268,6 +268,11 @@
             if (ice.options) {
                 sdp = sdp + "a=ice-options:" + ice.options + "\r\n";
 	    }
+            if (ice.lite) {
+                sdp = sdp + "a=ice-lite" + "\r\n";
+                sdp = sdp + "a=setup:active" + "\r\n";
+                sdp = sdp + "a=acfg:1 t=1" + "\r\n";
+            }
 	}
 	return sdp;
     }
@@ -580,6 +585,9 @@
                     if ($(this).attr('xmlns') == "urn:xmpp:jingle:transports:ice-udp:1") {
                         sdpObj.ice.pwd = $(this).attr('pwd');
                         sdpObj.ice.ufrag = $(this).attr('ufrag');
+                        if ($(this).attr('ice-lite')) {
+                            sdpObj.ice.lite = true;
+                        }
                         if ($(this).attr('options')) {
                             sdpObj.ice.options = $(this).attr('options');
                         }
@@ -700,6 +708,8 @@
                     case "ice-options":
                         sdpObj.ice.options = a.params[0];
                         break;
+                    case "ice-lite":
+                        sdpObj.ice.lite = true;
                     }
                 }
 
@@ -725,7 +735,7 @@
             }
 
             sdp = sdp + "s=-\r\n" + 
-                "t=0 0\r\n";
+                "t=0 0\r\n" + "a=ice-lite\r\n";
 
             if (contentsObj.connection) {
                 var connection = contentsObj.connection;
