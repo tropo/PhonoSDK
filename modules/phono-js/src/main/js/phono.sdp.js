@@ -735,7 +735,7 @@
             }
 
             sdp = sdp + "s=-\r\n" + 
-                "t=0 0\r\n" + "a=ice-lite\r\n";
+                "t=0 0\r\n";
 
             if (contentsObj.connection) {
                 var connection = contentsObj.connection;
