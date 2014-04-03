@@ -338,14 +338,14 @@ JSEPAudio.prototype.share = function(transport, autoPlay, codec) {
             }
         }
     };
-    if (JSEPAudio.pc.createDTMFSender){
-       share.digit = function(values, duration, audible) {
-         if (JSEPAudio.dtmfSender){
-            JSEPAudio.dtmfSender.insertDTMF(values);
-            this.freep(values, duration, audible);
-         }
-       };
-    }
+    //if (JSEPAudio.pc.createDTMFSender){
+    //   share.digit = function(values, duration, audible) {
+    //     if (JSEPAudio.dtmfSender){
+    //        JSEPAudio.dtmfSender.insertDTMF(values);
+    //        this.freep(values, duration, audible);
+    //     }
+    //   };
+    //}
 
     return share;
 };   
