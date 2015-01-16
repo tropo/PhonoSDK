@@ -103,14 +103,7 @@ function JSEPAudio(phono, config, callback) {
 
 JSEPAudio.exists = function() {
     if (typeof webkitRTCPeerConnection == "function") return true;
-    if (typeof mozRTCPeerConnection == "function") {
-        try {
-            mozRTCPeerConnection();
-        } catch (err) {
-            return false;
-        }
-        return true;
-    }
+    if (typeof mozRTCPeerConnection == "function") return true;
 }
 
 JSEPAudio.prototype.getCaps = function(c) {
