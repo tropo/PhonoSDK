@@ -7,6 +7,6 @@ Phono.dynamicCdnUrl = "u.phono.com";
 Phono.cirrusUrl = "phono-fms1-ext.voxeolabs.net"
 Phono.flashBridged = false;
 Phono.webUrl = "http://phono.com";
-Phono.version = "15.0.10";
+Phono.version = "15.0.11";
    
 
